@@ -51,7 +51,7 @@ Invalid signals are stored and rejected automatically.
 
 ## Installation
 
-Install Python 3.12+ first. On Windows, make sure `python --version` prints a real Python version, not the Microsoft Store app alias.
+Install Python 3.11+ first. On Windows, make sure `python --version` prints a real Python version, not the Microsoft Store app alias.
 
 ```powershell
 cd D:\Project\OpenClaw\crypto-paper-trading-arena
@@ -296,11 +296,12 @@ git push -u origin main
 1. Create a Render account.
 2. Connect the GitHub repository.
 3. Create a Web Service from the repository.
-4. Render uses:
+4. Render uses Python `3.11.11` from `runtime.txt`. Keep `pyproject.toml` at `requires-python = ">=3.11"` so package metadata matches Render's runtime.
+5. Render uses:
    - Build command: `pip install -r requirements.txt`
    - Start command: `streamlit run src/dashboard/app.py --server.port $PORT --server.address 0.0.0.0`
-5. Auto-deploy stays enabled, so each snapshot push redeploys the dashboard.
-6. Open the remote dashboard at:
+6. Auto-deploy stays enabled, so each snapshot push redeploys the dashboard.
+7. Open the remote dashboard at:
 
 ```text
 https://your-app-name.onrender.com
@@ -363,7 +364,7 @@ The test suite covers PnL, signal parsing, validation, paper execution, tools, r
 
 `python` opens Microsoft Store:
 
-- Install Python 3.12+ from python.org.
+- Install Python 3.11+ from python.org.
 - Disable Windows App Execution Alias for Python.
 
 OpenClaw call fails:
@@ -397,3 +398,4 @@ Render build fails:
 
 - Verify `requirements.txt` installs locally.
 - Confirm Render is using this project directory and the checked-in `render.yaml`.
+- Confirm `runtime.txt` contains `python-3.11.11`; Render should not try to build with Python 3.13 or another default runtime.
