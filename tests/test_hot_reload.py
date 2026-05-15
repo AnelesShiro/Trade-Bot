@@ -63,5 +63,18 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "reflections_summary",
         "strategy_diversity_metrics",
         "sync",
+        "runner",
+        "deployment",
     ]:
         assert key in snapshot
+    for key in [
+        "status",
+        "cycle_number",
+        "phase",
+        "last_cycle_duration_seconds",
+        "cycle_interval_seconds",
+        "next_cycle_at",
+        "last_cycle_started_at",
+        "total_cycles_completed",
+    ]:
+        assert key in snapshot["runner"]

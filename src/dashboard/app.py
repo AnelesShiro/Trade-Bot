@@ -28,7 +28,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.config import load_settings  # noqa: E402
+from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
 from src.market.indicators import ema, rsi  # noqa: E402
+from src.operations.update_manager import LiveUpdateManager  # noqa: E402
+from src.storage.models import build_session_factory  # noqa: E402
+from src.storage.repository import ArenaRepository  # noqa: E402
 
 
 st.set_page_config(
@@ -459,6 +463,63 @@ def status_class(status: str) -> str:
     return {"RUNNING": "status-running", "SCHEDULED": "status-completed", "PAUSED": "status-paused", "COMPLETED": "status-completed", "ERROR": "status-error"}.get(status, "status-paused")
 
 
+def render_deployment_panel(deployment: dict[str, Any]) -> None:
+    versions = deployment.get("versions", {}) if isinstance(deployment, dict) else {}
+    prompt = versions.get("system_prompt", {}) if isinstance(versions, dict) else {}
+    rulebook = versions.get("rulebook", {}) if isinstance(versions, dict) else {}
+    latest_checkpoint = deployment.get("latest_checkpoint", {}) if isinstance(deployment, dict) else {}
+    pending = deployment.get("pending_updates", []) if isinstance(deployment, dict) else []
+    cols = st.columns(4)
+    cols[0].metric("Code", str(versions.get("code_version") or "-")[:12])
+    cols[1].metric("Config", str(versions.get("config_version") or "-")[:12])
+    cols[2].metric("Checkpoint", latest_checkpoint.get("cycle_number") if latest_checkpoint else "-")
+    cols[3].metric("Pending updates", len(pending) if isinstance(pending, list) else 0)
+    detail_cols = st.columns(2)
+    with detail_cols[0]:
+        st.caption(f"Prompt: {str(prompt.get('hash') or '-')[:12]} · {prompt.get('path', '-')}")
+        st.caption(f"Rulebook: {str(rulebook.get('hash') or '-')[:12]} · {rulebook.get('path', '-')}")
+        st.caption(f"Active checkpoint timestamp: {deployment.get('active_checkpoint_timestamp') or '-'}")
+    with detail_cols[1]:
+        st.caption(f"Last successful restart: {deployment.get('last_successful_restart') or '-'}")
+        st.caption(f"Canary: {deployment.get('canary', {})}")
+        st.caption(f"Feature flags: {deployment.get('features', {})}")
+    if pending:
+        st.dataframe(pd.DataFrame(pending), width="stretch", hide_index=True)
+
+
+def local_runner_status(
+    status: str,
+    checkpoints: pd.DataFrame,
+    workload_cycles: pd.DataFrame,
+    next_run: datetime | None,
+) -> dict[str, Any]:
+    if checkpoints.empty:
+        return {"status": "OFFLINE" if status in {"PAUSED", "COMPLETED"} else status, "phase": "WAITING" if status == "RUNNING" else status}
+    latest_checkpoint = checkpoints.sort_values("created_at", ascending=False).iloc[0]
+    cycle_number = int(latest_checkpoint.get("cycle_number") or 0)
+    last_completed_at = pd.to_datetime(latest_checkpoint.get("created_at"), utc=True, errors="coerce")
+    last_duration = None
+    if not workload_cycles.empty:
+        latest_workload = workload_cycles.sort_values("timestamp", ascending=False).iloc[0]
+        payload = safe_json(latest_workload.get("payload_json"), {})
+        if isinstance(payload, dict) and payload.get("total_wall_time_seconds") is not None:
+            last_duration = float(payload.get("total_wall_time_seconds"))
+        elif {"local_wall_time_seconds", "deepseek_latency_seconds", "grok_latency_seconds"}.issubset(workload_cycles.columns):
+            last_duration = float(latest_workload.get("local_wall_time_seconds") or 0) + float(latest_workload.get("deepseek_latency_seconds") or 0) + float(latest_workload.get("grok_latency_seconds") or 0)
+    started_at = last_completed_at.to_pydatetime() - timedelta(seconds=last_duration) if pd.notna(last_completed_at) and last_duration is not None else None
+    runner_state = "RUNNING" if status in {"RUNNING", "SCHEDULED"} else "OFFLINE" if status in {"PAUSED", "COMPLETED"} else "ERROR"
+    return {
+        "status": runner_state,
+        "cycle_number": cycle_number,
+        "phase": "WAITING" if runner_state == "RUNNING" else runner_state,
+        "last_cycle_duration_seconds": last_duration,
+        "cycle_interval_seconds": settings.competition.poll_interval_seconds,
+        "next_cycle_at": next_run.isoformat().replace("+00:00", "Z") if next_run else None,
+        "last_cycle_started_at": started_at.isoformat().replace("+00:00", "Z") if started_at else None,
+        "total_cycles_completed": cycle_number,
+    }
+
+
 def build_markers(trades: pd.DataFrame, visible_agents: list[str]) -> list[dict[str, Any]]:
     if trades.empty:
         return []
@@ -823,6 +884,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
     banner_cols[3].metric("Start / End", f"{fmt_short_time(start_dt)} -> {fmt_short_time(end_dt)}")
     st.progress(percent_complete)
+    render_cycle_status(snapshot.get("runner", {}))
 
     tabs = st.tabs(
         [
@@ -948,6 +1010,9 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     with tabs[11]:
         st.subheader("Configuration")
+        st.markdown("#### Deployment & Versions")
+        render_deployment_panel(snapshot.get("deployment", {}))
+        st.markdown("#### Active settings")
         st.json(
             {
                 "models": agent_models,
@@ -1161,6 +1226,7 @@ open_count = 0 if positions_view.empty else int(positions_view["status"].isin(["
 api_budget = os.getenv("ARENA_API_BUDGET_USD")
 spent = float(metric_frame["estimated_api_cost"].sum()) if not metric_frame.empty else 0.0
 remaining_budget = (float(api_budget) - spent) if api_budget else None
+deployment_state = LiveUpdateManager(settings, ArenaRepository(build_session_factory(settings.database_url))).deployment_state()
 
 with st.sidebar:
     st.divider()
@@ -1200,6 +1266,12 @@ if alerts:
     with st.expander("Notifications", expanded=True):
         for note in alerts:
             st.warning(note)
+
+snapshot_for_status = read_snapshot(str(cloud_snapshot_path))
+runner_payload = snapshot_for_status.get("runner") if isinstance(snapshot_for_status, dict) else {}
+if not runner_payload:
+    runner_payload = local_runner_status(status, checkpoints, workload_cycles, next_run)
+render_cycle_status(runner_payload)
 
 tabs = st.tabs(
     [
@@ -1561,6 +1633,8 @@ with tabs[10]:
 
 with tabs[11]:
     st.subheader("Configuration")
+    st.markdown("#### Deployment & Versions")
+    render_deployment_panel(deployment_state)
     config_cols = st.columns(2)
     with config_cols[0]:
         st.markdown("#### Active settings")
@@ -1576,6 +1650,8 @@ with tabs[11]:
                 "market": settings.market.model_dump(),
                 "shared_learning": settings.shared_learning.model_dump(),
                 "hot_reload": settings.hot_reload.model_dump(),
+                "features": settings.features.model_dump(),
+                "canary": settings.canary.model_dump(),
                 "feature_flags": {name: flag.model_dump() for name, flag in settings.feature_flags.items()},
             }
         )

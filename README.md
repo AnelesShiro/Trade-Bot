@@ -139,6 +139,13 @@ python -m src.cli run-live
 python -m src.cli run-live --resume
 python -m src.cli backtest
 python -m src.cli evaluate
+python -m src.cli reload-config
+python -m src.cli queue-prompt-update .\prompts\system_prompt.v002.md
+python -m src.cli queue-rulebook-update .\rulebooks\rulebook.v002.md
+python -m src.cli validate-update
+python -m src.cli safe-restart
+python -m src.cli rollback --to previous
+python -m src.cli show-versions
 python -m src.cli analyze-workload
 python -m src.cli workload-report
 python -m src.cli dashboard
@@ -166,6 +173,7 @@ Live safeguards include:
 - warm-up mode via `safety.warmup_cycles` or `ARENA_WARMUP_MODE=true`
 - global kill switch via `ARENA_KILL_SWITCH=true` or a `KILL_SWITCH` file in the project root
 - crash-safe checkpoints after every cycle with automatic resume support
+- between-cycle position monitoring for automatic paper TP/SL exits without calling agents
 
 Relevant settings live in [config/settings.yaml](config/settings.yaml):
 
@@ -183,7 +191,41 @@ safety:
   kill_switch_file: KILL_SWITCH
   require_preflight_for_live: true
   downtime_threshold_seconds: 60
+  position_monitor_enabled: true
+  position_monitor_interval_seconds: 15
 ```
+
+During `run-live`, the position monitor runs while the runner is waiting for the next agent cycle. It polls public
+ticker price, checks open paper positions against stop loss and take profit levels, applies the same simulated fees and
+slippage, records `AUTO_REDUCE`/`AUTO_CLOSE` ledger entries when triggered, writes a monitor checkpoint, and refreshes
+dashboard outputs. It never places real orders.
+
+## Live Updates
+
+Live updates are applied only at cycle boundaries, after SQLite state and filesystem checkpoints are written. The update
+queue lives at `state/update_queue.json`; filesystem checkpoints are written to `state/checkpoints/latest.json` and
+timestamped files under `state/checkpoints/`; backups are written under `state/backups/`.
+
+Supported queue types:
+
+- `CONFIG_RELOAD`: reloads `config/settings.yaml` without restarting.
+- `PROMPT_UPDATE`: activates a versioned `prompts/system_prompt.vNNN.md` file for the next cycle.
+- `RULEBOOK_UPDATE`: activates a versioned `rulebooks/rulebook.vNNN.md` file for the next cycle.
+- `CODE_RESTART`: exits cleanly after a completed cycle so a supervisor or `safe-restart` can resume.
+- `ROLLBACK`: restores the latest backup, then restarts with resume.
+
+Useful commands:
+
+```powershell
+python -m src.cli validate-update
+python -m src.cli show-versions
+python -m src.cli queue-prompt-update .\path\to\new_prompt.md --agent crypto-deepseek
+python -m src.cli queue-rulebook-update .\path\to\new_rulebook.md
+python -m src.cli safe-restart
+python -m src.cli rollback --to previous
+```
+
+`scripts/watchdog.py` can supervise the local runner and start `run-live --resume` if the process is not running.
 
 ## Crash-Safe Resume
 

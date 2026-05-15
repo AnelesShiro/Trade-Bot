@@ -55,6 +55,8 @@ safety:
   require_preflight_for_live: true
   minimum_free_disk_mb: 500
   downtime_threshold_seconds: 60
+  position_monitor_enabled: true
+  position_monitor_interval_seconds: 15
 
 hot_reload:
   enabled: true
@@ -72,6 +74,17 @@ cloud_dashboard:
   render_enabled: true
   stale_warning_minutes: 15
   stale_critical_minutes: 60
+
+features:
+  improved_shared_learning: true
+  event_driven_tp_sl: true
+  advanced_risk_model: false
+  cloud_sync: true
+
+canary:
+  enabled: false
+  target_agents:
+    - crypto-deepseek
 
 feature_flags:
   canary_prompt_context:

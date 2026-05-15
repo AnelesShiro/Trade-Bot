@@ -85,6 +85,8 @@ class SafetySettings(BaseModel):
     require_preflight_for_live: bool = True
     minimum_free_disk_mb: int = 500
     downtime_threshold_seconds: int = 60
+    position_monitor_enabled: bool = True
+    position_monitor_interval_seconds: int = 30
 
 
 class HotReloadSettings(BaseModel):
@@ -111,6 +113,18 @@ class FeatureFlagSettings(BaseModel):
     agents: list[str] = Field(default_factory=list)
 
 
+class FeaturesSettings(BaseModel):
+    improved_shared_learning: bool = True
+    event_driven_tp_sl: bool = True
+    advanced_risk_model: bool = False
+    cloud_sync: bool = True
+
+
+class CanarySettings(BaseModel):
+    enabled: bool = False
+    target_agents: list[str] = Field(default_factory=list)
+
+
 class PathSettings(BaseModel):
     database: str = "database/arena.db"
     rulebook: str = "config/rulebook.md"
@@ -132,6 +146,8 @@ class Settings(BaseModel):
     safety: SafetySettings = Field(default_factory=SafetySettings)
     hot_reload: HotReloadSettings = Field(default_factory=HotReloadSettings)
     cloud_dashboard: CloudDashboardSettings = Field(default_factory=CloudDashboardSettings)
+    features: FeaturesSettings = Field(default_factory=FeaturesSettings)
+    canary: CanarySettings = Field(default_factory=CanarySettings)
     feature_flags: dict[str, FeatureFlagSettings] = Field(default_factory=dict)
     agents: list[AgentSettings] = Field(default_factory=list)
     paths: PathSettings

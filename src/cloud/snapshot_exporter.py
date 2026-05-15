@@ -12,6 +12,7 @@ from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import summarize_workload
 from src.config import Settings
 from src.logger import logger
+from src.operations.update_manager import LiveUpdateManager
 from src.storage.models import ReflectionRecord, SignalRecord, TradeRecord
 from src.storage.repository import ArenaRepository
 from src.trading.paper_account import PaperAccount
@@ -54,6 +55,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
             "latest_cycle_at": latest_cycle.isoformat().replace("+00:00", "Z") if latest_cycle else None,
         },
         "competition_status": status,
+        "runner": _runner_payload(repository, status, settings.competition.poll_interval_seconds),
         "competition": {
             "name": settings.competition.name,
             "start_time": start_time.isoformat().replace("+00:00", "Z"),
@@ -77,6 +79,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "rejected_signals_summary": _rejected_signals(repository),
         "reflections_summary": _reflections(repository),
         "strategy_diversity_metrics": _diversity_metrics(repository),
+        "deployment": LiveUpdateManager(settings, repository).deployment_state(),
     }
     return payload
 
@@ -287,6 +290,37 @@ def _workload_payload(repository: ArenaRepository) -> dict[str, Any]:
         "grok_pct": latest.get("grok_workload_pct", 0.0),
         "latest": latest,
         "averages": summary.get("averages", {}),
+    }
+
+
+def _runner_payload(repository: ArenaRepository, status: str, cycle_interval_seconds: int) -> dict[str, Any]:
+    checkpoint = repository.latest_checkpoint()
+    workload = repository.workload_cycles(limit=1)
+    latest_workload = workload[0] if workload else None
+    workload_payload = _safe_json(latest_workload.payload_json, {}) if latest_workload else {}
+    last_duration = workload_payload.get("total_wall_time_seconds") if isinstance(workload_payload, dict) else None
+    try:
+        last_duration_seconds = float(last_duration)
+    except (TypeError, ValueError):
+        last_duration_seconds = None
+    cycle_number = int(checkpoint.cycle_number) if checkpoint else 0
+    last_completed_at = _utc(checkpoint.created_at) if checkpoint else None
+    last_started_at = (
+        last_completed_at - timedelta(seconds=last_duration_seconds)
+        if last_completed_at and last_duration_seconds is not None
+        else None
+    )
+    next_cycle_at = last_completed_at + timedelta(seconds=cycle_interval_seconds) if last_completed_at else None
+    runner_status = "RUNNING" if status in {"RUNNING", "SCHEDULED"} else "OFFLINE" if status in {"PAUSED", "COMPLETED"} else "ERROR"
+    return {
+        "status": runner_status,
+        "cycle_number": cycle_number,
+        "phase": "WAITING" if runner_status == "RUNNING" else runner_status,
+        "last_cycle_duration_seconds": last_duration_seconds,
+        "cycle_interval_seconds": cycle_interval_seconds,
+        "next_cycle_at": _iso(next_cycle_at),
+        "last_cycle_started_at": _iso(last_started_at),
+        "total_cycles_completed": cycle_number,
     }
 
 

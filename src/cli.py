@@ -4,7 +4,9 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
+from typing import Any
 
 import typer
 
@@ -19,6 +21,7 @@ from src.storage.repository import ArenaRepository
 from src.agents.shared_learning import SharedLearningManager
 from src.competition.workload import summarize_workload
 from src.operations.preflight import has_critical_failures, run_preflight
+from src.operations.update_manager import LiveUpdateManager, create_versioned_file
 
 app = typer.Typer(help="Crypto paper trading arena CLI.")
 
@@ -152,6 +155,102 @@ def rollback_config() -> None:
         f"Rolled back to config {manager.config_hash[:12]} and queued command {command_id}. "
         f"Agents: {', '.join(agent.id for agent in rolled_back.agents)}"
     )
+
+
+@app.command("queue-prompt-update")
+def queue_prompt_update(
+    source: Path = typer.Argument(..., help="Path to the new system prompt markdown file."),
+    agent: list[str] | None = typer.Option(None, "--agent", help="Optional canary target agent id."),
+) -> None:
+    """Queue a versioned prompt update for the next cycle boundary."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    source_path = source if source.is_absolute() else Path.cwd() / source
+    version = create_versioned_file(source_path, Path.cwd() / "prompts", "system_prompt")
+    update_id = manager.queue_update("PROMPT_UPDATE", {"version_path": str(version), "target_agents": agent or []})
+    typer.echo(f"Queued prompt update {update_id}: {version}")
+
+
+@app.command("queue-rulebook-update")
+def queue_rulebook_update(source: Path = typer.Argument(..., help="Path to the new rulebook markdown file.")) -> None:
+    """Queue a versioned rulebook update for the next cycle boundary."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    source_path = source if source.is_absolute() else Path.cwd() / source
+    version = create_versioned_file(source_path, Path.cwd() / "rulebooks", "rulebook")
+    update_id = manager.queue_update("RULEBOOK_UPDATE", {"version_path": str(version)})
+    typer.echo(f"Queued rulebook update {update_id}: {version}")
+
+
+@app.command("safe-restart")
+def safe_restart(wait: bool = typer.Option(True, "--wait/--no-wait", help="Wait for the boundary update to apply, then start run-live --resume.")) -> None:
+    """Request a cycle-boundary restart and resume from the latest checkpoint."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    update_id = manager.queue_update("CODE_RESTART", {})
+    typer.echo(f"Queued safe restart {update_id}. It will apply after the current cycle checkpoint.")
+    if not wait:
+        return
+    deadline = time.time() + 1800
+    while time.time() < deadline:
+        matching = [entry for entry in manager.read_queue() if entry.get("id") == update_id]
+        status = matching[0].get("status") if matching else "UNKNOWN"
+        if status == "APPLIED":
+            for _ in range(24):
+                if not _live_runner_pids():
+                    break
+                time.sleep(2)
+            _start_live_detached()
+            manager.clear_restart_request()
+            manager.record_successful_restart("CODE_RESTART", update_id)
+            typer.echo("Restarted live runner with --resume.")
+            return
+        if status == "FAILED":
+            raise typer.Exit(code=1)
+        time.sleep(5)
+    typer.echo("Timed out waiting for safe restart boundary.")
+    raise typer.Exit(code=1)
+
+
+@app.command("rollback")
+def rollback(to: str = typer.Option("previous", "--to", help="Rollback target. Use 'previous' for latest backup or provide a backup path.")) -> None:
+    """Queue rollback at the next cycle boundary, then restart with resume."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    backup_path = None if to == "previous" else to
+    update_id = manager.queue_update("ROLLBACK", {"backup_path": backup_path})
+    typer.echo(f"Queued rollback {update_id}. It will apply after the current cycle checkpoint.")
+
+
+@app.command("show-versions")
+def show_versions() -> None:
+    """Show active code/config/prompt/rulebook versions and pending updates."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    typer.echo(json.dumps(manager.deployment_state(), indent=2, default=str))
+
+
+@app.command("validate-update")
+def validate_update(smoke: bool = typer.Option(True, "--smoke/--no-smoke", help="Run compile smoke checks.")) -> None:
+    """Validate config, prompts, rulebook, checkpoint, and smoke checks before an update."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    result = manager.validate_update(run_smoke=smoke)
+    typer.echo(json.dumps({"passed": result.passed, "checks": result.checks}, indent=2))
+    if not result.passed:
+        raise typer.Exit(code=1)
 
 
 @app.command()
@@ -320,6 +419,44 @@ def _sync_openclaw_auth_from_env() -> bool:
 def _restart_openclaw_gateway() -> None:
     binary = os.getenv("OPENCLAW_BIN", "openclaw")
     subprocess.run([binary, "gateway", "restart"], check=False, capture_output=True, text=True)
+
+
+def _start_live_detached() -> None:
+    logs = Path.cwd() / "logs"
+    logs.mkdir(parents=True, exist_ok=True)
+    stdout = (logs / "safe-restart.out.log").open("ab")
+    stderr = (logs / "safe-restart.err.log").open("ab")
+    kwargs: dict[str, Any] = {
+        "cwd": Path.cwd(),
+        "stdout": stdout,
+        "stderr": stderr,
+        "stdin": subprocess.DEVNULL,
+        "close_fds": True,
+    }
+    if os.name == "nt":
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+    subprocess.Popen([sys.executable, "-m", "src.cli", "run-live", "--resume"], **kwargs)
+
+
+def _live_runner_pids() -> list[int]:
+    if os.name == "nt":
+        result = subprocess.run(
+            [
+                "powershell.exe",
+                "-NoProfile",
+                "-Command",
+                "Get-CimInstance Win32_Process | "
+                "Where-Object { $_.CommandLine -like '*src.cli run-live*' -and $_.Name -like 'python*' } | "
+                "Select-Object -ExpandProperty ProcessId",
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        return [int(line.strip()) for line in result.stdout.splitlines() if line.strip().isdigit()]
+    result = subprocess.run(["pgrep", "-f", "src.cli run-live"], capture_output=True, text=True, check=False)
+    current = os.getpid()
+    return [int(line) for line in result.stdout.splitlines() if line.strip().isdigit() and int(line) != current]
 
 
 def _git_output(args: list[str]) -> str:

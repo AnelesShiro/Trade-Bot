@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 
 from src.competition import runner as runner_module
 from src.competition.runner import CompetitionRunner
+from src.schemas import AgentSignal
 from src.schemas import IndicatorSnapshot, MarketCandle, MarketState
 
 
@@ -123,3 +124,37 @@ def test_runner_repairs_rejected_signal(monkeypatch, test_settings) -> None:
     assert calls["crypto-deepseek"] == 2
     assert runner.repository.rejected_signal_count("crypto-deepseek") == 1
     assert runner.repository.response_usage("crypto-deepseek")["requests"] == 2
+
+
+def test_position_monitor_auto_closes_between_cycles(monkeypatch, test_settings) -> None:
+    monkeypatch.delenv("ARENA_DATABASE_URL", raising=False)
+    test_settings.cloud_dashboard.enabled = False
+    test_settings.resolve_path(test_settings.paths.rulebook).write_text("Paper trading only.", encoding="utf-8")
+
+    class FakeFeed:
+        def __init__(self, settings) -> None:
+            self.settings = settings
+
+        def fetch_ticker_price(self, symbol: str) -> float:
+            return 102100.0
+
+    monkeypatch.setattr(runner_module, "MarketDataFeed", FakeFeed)
+
+    runner = CompetitionRunner(test_settings)
+    runner._cycle_count = 7
+    signal = AgentSignal.model_validate_json(final_signal("crypto-deepseek"))
+    runner.position_manager.apply_signal(signal, 100000)
+
+    runner._monitor_positions_once()
+
+    position = runner.repository.get_position("crypto-deepseek-p1")
+    trade = runner.repository.latest_trade_for_position("crypto-deepseek-p1")
+    assert position is not None
+    assert position.status == "CLOSED"
+    assert trade is not None
+    assert trade.action == "AUTO_CLOSE"
+    assert "take_profit_2" in trade.notes
+    checkpoint = runner.repository.latest_checkpoint()
+    assert checkpoint is not None
+    assert checkpoint.status == "MONITOR"
+    assert checkpoint.cycle_number == 7

@@ -21,6 +21,7 @@ from src.competition.workload import WorkloadTracker
 from src.config import Settings, load_rulebook
 from src.logger import logger
 from src.schemas import Action, AgentSignal, MarketState
+from src.market.data_feed import MarketDataFeed
 from src.storage.models import build_session_factory, create_schema
 from src.storage.repository import ArenaRepository
 from src.storage.vector_store import LocalVectorStore
@@ -35,6 +36,7 @@ from src.utils.costs import estimate_cost_usd
 from src.validation.rule_engine import RuleEngine
 from src.validation.signal_validator import validate_signal
 from src.operations.preflight import has_critical_failures, run_preflight
+from src.operations.update_manager import LiveUpdateManager
 
 
 MAX_OPENCLAW_MESSAGE_CHARS = 24000
@@ -47,8 +49,12 @@ class CompetitionRunner:
         create_schema(settings.database_url)
         self.repository = ArenaRepository(build_session_factory(settings.database_url))
         self.config_manager = ConfigManager(self.repository)
+        self.project_root = settings.resolve_path(settings.paths.outputs_dir).parent
+        self.update_manager = LiveUpdateManager(settings, self.repository, project_root=self.project_root)
+        self.update_manager.ensure_storage()
         self._apply_settings(settings)
         self._cycle_count = 0
+        self._restart_requested = False
 
     def _apply_settings(self, settings: Settings) -> None:
         self.settings = settings
@@ -108,6 +114,7 @@ class CompetitionRunner:
         self.repository.save_workload_cycle(cycle, components)
         self._cycle_count += 1
         self._cloud_update_after_cycle()
+        self._process_cycle_boundary_updates()
 
     def run_live(self, resume: bool = False) -> None:
         if self.settings.safety.require_preflight_for_live:
@@ -118,6 +125,16 @@ class CompetitionRunner:
                 self.repository.latest_checkpoint(),
                 self.settings.safety.downtime_threshold_seconds,
             )
+            file_checkpoint = self.update_manager.latest_checkpoint_file()
+            if file_checkpoint:
+                file_cycle = int(file_checkpoint.get("cycle_number") or 0)
+                self._cycle_count = max(self._cycle_count, file_cycle)
+                self.repository.save_health_check(
+                    "resume",
+                    "PASS",
+                    False,
+                    f"Loaded filesystem checkpoint cycle {file_cycle}; SQLite remains canonical",
+                )
         official_start = self.repository.ensure_competition_started("run_live")
         if official_start.tzinfo is None:
             official_start = official_start.replace(tzinfo=UTC)
@@ -129,9 +146,15 @@ class CompetitionRunner:
             try:
                 self._reload_runtime_config()
                 self.run_once()
+                if self._restart_requested:
+                    logger.info("graceful restart requested; exiting live loop after completed cycle")
+                    return
             except Exception as error:
                 logger.exception("live loop failed: {}", error)
-            time.sleep(self.settings.competition.poll_interval_seconds)
+            self._sleep_with_position_monitor(self.settings.competition.poll_interval_seconds)
+            if self._restart_requested:
+                logger.info("graceful restart requested during wait; exiting live loop")
+                return
         market_state = get_market_state(self.settings)
         self._persist_daily_metrics(market_state)
         self._write_outputs(market_state)
@@ -151,6 +174,109 @@ class CompetitionRunner:
             retry_seconds = min(60, max(5, self.settings.competition.poll_interval_seconds))
             logger.warning("market data preflight failed; retrying live startup in {}s", retry_seconds)
             time.sleep(retry_seconds)
+
+    def _process_cycle_boundary_updates(self) -> None:
+        pending = self.update_manager.pending_updates()
+        if not pending:
+            return
+        validation = self.update_manager.validate_update(run_smoke=True)
+        if not validation.passed:
+            for entry in pending:
+                self.update_manager.mark_update(str(entry["id"]), "FAILED", {"validation": validation.checks})
+                self.update_manager.audit("VALIDATION_FAILED", str(entry["type"]), "Update validation failed; trading continues", {"id": entry["id"], "checks": validation.checks})
+            return
+        for entry in pending:
+            update_id = str(entry["id"])
+            update_type = str(entry["type"])
+            payload = entry.get("payload") if isinstance(entry.get("payload"), dict) else {}
+            try:
+                if update_type == "CONFIG_RELOAD":
+                    updated = self.config_manager.reload(source=f"update:{update_id}")
+                    self._apply_settings(updated)
+                    self.update_manager = LiveUpdateManager(updated, self.repository, project_root=self.project_root)
+                    self.update_manager.ensure_storage()
+                    self.update_manager.mark_update(update_id, "APPLIED", {"config_hash": self.config_manager.config_hash})
+                elif update_type in {"PROMPT_UPDATE", "RULEBOOK_UPDATE"}:
+                    self.update_manager.backup_current_state(update_type.lower())
+                    result = self.update_manager.apply_file_update(update_type, payload)
+                    if update_type == "PROMPT_UPDATE":
+                        self.system_prompt = self.settings.resolve_path("prompts/system_prompt.md").read_text(encoding="utf-8")
+                    else:
+                        self.rulebook = load_rulebook(self.settings)
+                    self.update_manager.mark_update(update_id, "APPLIED", result)
+                elif update_type == "CODE_RESTART":
+                    backup = self.update_manager.backup_current_state("code-restart")
+                    self.update_manager.request_restart("code-restart", update_id)
+                    self.update_manager.mark_update(update_id, "APPLIED", {"backup": str(backup)})
+                    self._restart_requested = True
+                elif update_type == "ROLLBACK":
+                    self.update_manager.backup_current_state("pre-rollback")
+                    result = self.update_manager.rollback_from_backup(payload.get("backup_path"))
+                    updated = self.config_manager.reload(source=f"rollback:{update_id}")
+                    self._apply_settings(updated)
+                    self.rulebook = load_rulebook(self.settings)
+                    self.system_prompt = self.settings.resolve_path("prompts/system_prompt.md").read_text(encoding="utf-8")
+                    self.update_manager.request_restart("rollback", update_id)
+                    self.update_manager.mark_update(update_id, "APPLIED", result)
+                    self._restart_requested = True
+                else:
+                    self.update_manager.mark_update(update_id, "FAILED", {"error": f"unknown update type {update_type}"})
+            except Exception as error:
+                self.update_manager.mark_update(update_id, "FAILED", {"error": str(error)})
+                self.update_manager.audit("FAILED", update_type, str(error), {"id": update_id})
+
+    def _sleep_with_position_monitor(self, total_seconds: int | float) -> None:
+        remaining = max(0.0, float(total_seconds))
+        interval = max(1.0, float(self.settings.safety.position_monitor_interval_seconds))
+        if not (self.settings.safety.position_monitor_enabled and self.settings.features.event_driven_tp_sl):
+            time.sleep(remaining)
+            return
+        while remaining > 0:
+            nap = min(interval, remaining)
+            time.sleep(nap)
+            remaining -= nap
+            if remaining <= 0:
+                break
+            try:
+                self._monitor_positions_once()
+            except Exception as error:
+                logger.exception("position monitor failed without stopping live loop: {}", error)
+                self.repository.save_health_check("position_monitor", "FAIL", False, str(error)[:1000])
+
+    def _monitor_positions_once(self) -> None:
+        self._ensure_not_killed()
+        if not self.repository.open_positions():
+            return
+        feed = MarketDataFeed(self.settings.market)
+        current_price = feed.fetch_ticker_price(self.settings.competition.symbol)
+        market_state = MarketState(
+            symbol=self.settings.competition.display_symbol,
+            exchange=self.settings.market.exchange,
+            current_price=current_price,
+            timeframe="ticker",
+        )
+        exit_trades = self.position_manager.update_stops_and_targets(current_price)
+        if not exit_trades:
+            return
+        snapshot_id = self.repository.save_market_snapshot(market_state)
+        logger.info(
+            "position monitor closed/reduced {} position legs at price {} snapshot {}",
+            len(exit_trades),
+            current_price,
+            snapshot_id,
+        )
+        for trade in exit_trades:
+            reflect_on_trade(self.memory, trade)
+        self._persist_daily_metrics(market_state)
+        self._write_outputs(market_state)
+        self._save_checkpoint(market_state, status="MONITOR", cycle_number=self._current_completed_cycle_number())
+        self.repository.save_health_check(
+            "position_monitor",
+            "PASS",
+            False,
+            f"Processed {len(exit_trades)} automatic TP/SL exits at {current_price}",
+        )
+        self._cloud_update_after_cycle()
 
     def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)
@@ -467,7 +593,7 @@ class CompetitionRunner:
         )
         prompt = "\n\n".join(
             [
-                self.system_prompt,
+                self._system_prompt_for_agent(agent_id),
                 "RULEBOOK:\n" + self.rulebook,
                 "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
                 "PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(context.get("private_lessons", []), separators=(",", ":"), default=str),
@@ -484,7 +610,7 @@ class CompetitionRunner:
         minimal_context = _minimal_prompt_context(context)
         prompt = "\n\n".join(
             [
-                self.system_prompt,
+                self._system_prompt_for_agent(agent_id),
                 "RULEBOOK:\n" + self.rulebook,
                 "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
                 "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, separators=(",", ":")),
@@ -502,19 +628,40 @@ class CompetitionRunner:
             prompt_preview=prompt[:1000],
         )
 
+    def _system_prompt_for_agent(self, agent_id: str) -> str:
+        if not self.settings.canary.enabled or agent_id not in set(self.settings.canary.target_agents):
+            return self.system_prompt
+        versions = self.update_manager.deployment_state().get("active_versions_file", {})
+        canary = versions.get("canary_prompts", {}) if isinstance(versions, dict) else {}
+        prompt_info = canary.get(agent_id, {}) if isinstance(canary, dict) else {}
+        prompt_path = prompt_info.get("path")
+        if not prompt_path:
+            return self.system_prompt
+        path = self.settings.resolve_path(prompt_path)
+        try:
+            text = path.read_text(encoding="utf-8")
+        except Exception:
+            return self.system_prompt
+        return text if text.strip() else self.system_prompt
+
     def _reload_runtime_config(self) -> None:
         current = self.config_manager.process_pending_commands(self.settings)
         if self.settings.hot_reload.enabled and self.settings.hot_reload.auto_detect_changes:
             current = self.config_manager.reload_if_changed(current)
         if current is not self.settings:
             self._apply_settings(current)
+            self.update_manager = LiveUpdateManager(current, self.repository)
+            self.update_manager.ensure_storage()
             logger.info("active config {} code {}", self.config_manager.config_hash, self.config_manager.code_version)
 
     def _feature_flags_for_agent(self, agent_id: str) -> dict[str, bool]:
-        return {name: self.settings.feature_enabled(name, agent_id) for name in self.settings.feature_flags}
+        flags = {name: self.settings.feature_enabled(name, agent_id) for name in self.settings.feature_flags}
+        flags.update(self.settings.features.model_dump())
+        flags["canary_target"] = self.settings.canary.enabled and agent_id in set(self.settings.canary.target_agents)
+        return flags
 
     def _cloud_update_after_cycle(self) -> None:
-        if not self.settings.cloud_dashboard.enabled:
+        if not (self.settings.cloud_dashboard.enabled and self.settings.features.cloud_sync):
             return
         try:
             write_dashboard_snapshot(self.settings, self.repository)
@@ -569,21 +716,49 @@ class CompetitionRunner:
             },
         )
 
-    def _save_checkpoint(self, market_state: MarketState, status: str) -> None:
+    def _save_checkpoint(self, market_state: MarketState, status: str, cycle_number: int | None = None) -> None:
+        checkpoint_cycle = self._cycle_count + 1 if cycle_number is None else cycle_number
         payload = build_checkpoint_payload(
             self.repository,
             [agent.id for agent in self.settings.agents],
             self.settings.accounts.initial_equity,
             market_state.current_price,
-            self._cycle_count + 1,
+            checkpoint_cycle,
         )
         payload["config_version"] = {
             "id": self.config_manager.config_version_id,
             "hash": self.config_manager.config_hash,
             "code_version": self.config_manager.code_version,
         }
-        checkpoint_id = self.repository.save_checkpoint(self._cycle_count + 1, status, payload)
-        self.repository.save_health_check("checkpoint", "PASS", False, f"Saved checkpoint {checkpoint_id} for cycle {self._cycle_count + 1}")
+        payload["competition_metadata"] = {
+            "name": self.settings.competition.name,
+            "symbol": self.settings.competition.display_symbol,
+            "duration_days": self.settings.competition.duration_days,
+            "poll_interval_seconds": self.settings.competition.poll_interval_seconds,
+        }
+        payload["token_usage"] = {agent.id: self.repository.response_usage(agent.id) for agent in self.settings.agents}
+        payload["api_costs"] = {
+            "total": sum(self.repository.response_usage(agent.id).get("estimated_cost_usd", 0.0) for agent in self.settings.agents),
+            "by_agent": {agent.id: self.repository.response_usage(agent.id).get("estimated_cost_usd", 0.0) for agent in self.settings.agents},
+        }
+        payload["dashboard_snapshot"] = {
+            "path": self.settings.cloud_dashboard.snapshot_path,
+            "enabled": self.settings.cloud_dashboard.enabled,
+            "git_auto_push": self.settings.cloud_dashboard.git_auto_push,
+        }
+        payload["versions"] = self.update_manager.current_versions()
+        payload["prompt_versions"] = {
+            "system_prompt_hash": _sha256(self.system_prompt),
+            "rulebook_hash": _sha256(self.rulebook),
+        }
+        checkpoint_id = self.repository.save_checkpoint(checkpoint_cycle, status, payload)
+        self.update_manager.write_checkpoint_file(payload, checkpoint_id, checkpoint_cycle, status)
+        self.repository.save_health_check("checkpoint", "PASS", False, f"Saved checkpoint {checkpoint_id} for cycle {checkpoint_cycle}")
+
+    def _current_completed_cycle_number(self) -> int:
+        latest = self.repository.latest_checkpoint()
+        latest_cycle = int(latest.cycle_number) if latest else 0
+        return max(self._cycle_count, latest_cycle)
 
     def _persist_daily_metrics(self, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         rows = calculate_leaderboard(
