@@ -86,8 +86,12 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "rejection_breakdown",
         "latest_accepted_signal",
         "latest_rejected_signal",
+        "recent_accepted_signals",
+        "recent_rejected_signals",
     ]:
         assert key in snapshot["signal_audit_summary"]
+    assert isinstance(snapshot["signal_audit_summary"]["recent_accepted_signals"], list)
+    assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
     assert validate_snapshot_contract(snapshot) == []
 
 

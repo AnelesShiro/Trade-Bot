@@ -61,6 +61,8 @@ def test_signal_audit_persists_extended_metadata(repository) -> None:
     assert latest["direction"] == "SHORT"
     assert latest["cycle_number"] == 12
     assert latest["execution_result"]["executed"] is True
+    assert summary["recent_accepted_signals"][0]["cycle_number"] == 12
+    assert summary["recent_rejected_signals"] == []
 
 
 def test_rejection_code_mapping() -> None:

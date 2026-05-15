@@ -56,13 +56,17 @@ class SignalAuditRepository:
         accepted = counts.get("ACCEPTED", 0)
         rejected = counts.get("REJECTED", 0)
         total = accepted + rejected
+        recent_accepted = self.latest("ACCEPTED", 100)
+        recent_rejected = self.latest("REJECTED", 100)
         return {
             "accepted_signal_count": accepted,
             "rejected_signal_count": rejected,
             "acceptance_rate": accepted / total if total else 0.0,
             "rejection_breakdown": self.rejection_breakdown(),
-            "latest_accepted_signal": (self.latest("ACCEPTED", 1) or [None])[0],
-            "latest_rejected_signal": (self.latest("REJECTED", 1) or [None])[0],
+            "latest_accepted_signal": (recent_accepted or [None])[0],
+            "latest_rejected_signal": (recent_rejected or [None])[0],
+            "recent_accepted_signals": recent_accepted,
+            "recent_rejected_signals": recent_rejected,
         }
 
 

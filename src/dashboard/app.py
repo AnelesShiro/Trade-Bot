@@ -993,8 +993,26 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         latest = audit.get("latest_accepted_signal")
         if audit_missing:
             st.error("Signal audit summary is missing from this snapshot. The exporter now blocks malformed snapshots so this clears after the next valid sync.")
-        if latest:
-            st.dataframe(pd.DataFrame([latest]), width="stretch", hide_index=True)
+        accepted_rows = pd.DataFrame(audit.get("recent_accepted_signals") or ([latest] if latest else []))
+        if not accepted_rows.empty:
+            display_cols = [
+                "timestamp_local",
+                "cycle_number",
+                "agent_name",
+                "decision",
+                "action",
+                "direction",
+                "confidence",
+                "entry_price",
+                "stop_loss",
+                "take_profit_1",
+                "take_profit_2",
+                "risk_pct",
+                "leverage",
+                "expected_rr",
+                "signal_status",
+            ]
+            st.dataframe(accepted_rows[[col for col in display_cols if col in accepted_rows.columns]], width="stretch", hide_index=True)
             with st.expander("Latest accepted signal details", expanded=False):
                 st.json(latest)
         else:
@@ -1010,7 +1028,22 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         cols[3].metric("Recent rejected", len(rejected_recent))
         if audit_missing:
             st.error("Signal audit summary is missing from this snapshot. Rejected rows below may be legacy-only.")
-        st.dataframe(rejected_recent, width="stretch", hide_index=True) if not rejected_recent.empty else st.success("No rejected signals.")
+        rejected_rows = pd.DataFrame(audit.get("recent_rejected_signals") or rejected_recent.to_dict("records"))
+        if not rejected_rows.empty:
+            display_cols = [
+                "timestamp_local",
+                "cycle_number",
+                "agent_name",
+                "rejection_reason_code",
+                "rejection_reason_message",
+                "decision",
+                "action",
+                "direction",
+                "confidence",
+            ]
+            st.dataframe(rejected_rows[[col for col in display_cols if col in rejected_rows.columns]], width="stretch", hide_index=True)
+        else:
+            st.success("No rejected signals.")
         latest = audit.get("latest_rejected_signal")
         if latest:
             with st.expander("Latest rejected signal details", expanded=False):
@@ -1179,6 +1212,8 @@ def _snapshot_audit_summary(snapshot: dict[str, Any]) -> dict[str, Any]:
         "rejection_breakdown": {},
         "latest_accepted_signal": None,
         "latest_rejected_signal": (rejected_summary.get("recent") or [None])[0],
+        "recent_accepted_signals": [],
+        "recent_rejected_signals": rejected_summary.get("recent") or [],
     }
 
 

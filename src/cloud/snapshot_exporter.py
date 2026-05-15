@@ -125,12 +125,17 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
         "rejection_breakdown",
         "latest_accepted_signal",
         "latest_rejected_signal",
+        "recent_accepted_signals",
+        "recent_rejected_signals",
     ]
     for key in required_audit:
         if key not in audit:
             errors.append(f"missing signal_audit_summary.{key}")
     if not isinstance(audit.get("rejection_breakdown"), dict):
         errors.append("signal_audit_summary.rejection_breakdown must be an object")
+    for key in ["recent_accepted_signals", "recent_rejected_signals"]:
+        if not isinstance(audit.get(key), list):
+            errors.append(f"signal_audit_summary.{key} must be a list")
     for key in ["accepted_signal_count", "rejected_signal_count"]:
         try:
             int(audit.get(key) or 0)
