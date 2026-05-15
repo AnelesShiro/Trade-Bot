@@ -23,12 +23,12 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.0005322800000000001,
-      "crypto-grok": 0.0007176
+      "crypto-deepseek": 0.0014054600000000003,
+      "crypto-grok": 0.001581
     },
-    "total": 0.00124988
+    "total": 0.0029864600000000002
   },
-  "btc_price": 79207.1,
+  "btc_price": 79268.8,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -41,21 +41,21 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T17:06:10.346404Z"
+        "timestamp": "2026-05-15T17:12:25.151866Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T17:06:11.346404Z"
+        "timestamp": "2026-05-15T17:12:26.151866Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T17:06:10.346404Z"
+        "timestamp": "2026-05-15T17:12:25.151866Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T17:06:11.346404Z"
+        "timestamp": "2026-05-15T17:12:26.151866Z"
       }
     ]
   },
@@ -63,37 +63,37 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T17:06:10.346404Z"
+        "timestamp": "2026-05-15T17:12:25.151866Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T17:06:11.346404Z"
+        "timestamp": "2026-05-15T17:12:26.151866Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T17:06:10.346404Z"
+        "timestamp": "2026-05-15T17:12:25.151866Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T17:06:11.346404Z"
+        "timestamp": "2026-05-15T17:12:26.151866Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T17:06:11.326715Z",
+  "generated_at": "2026-05-15T17:12:26.138332Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.0005322800000000001,
+      "api_cost_usd": 0.0014054600000000003,
       "equity": 10000.0,
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 1,
-      "rule_compliance": 0.5,
-      "score": 0.25,
+      "rejected_signals": 2,
+      "rule_compliance": 0.33333333333333337,
+      "score": 0.23333333333333334,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -102,14 +102,14 @@
     },
     {
       "agent_id": "crypto-grok",
-      "api_cost_usd": 0.0007176,
+      "api_cost_usd": 0.001581,
       "equity": 10000.0,
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 1,
-      "rule_compliance": 0.5,
-      "score": 0.25,
+      "rejected_signals": 2,
+      "rule_compliance": 0.33333333333333337,
+      "score": 0.23333333333333334,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -2032,40 +2032,50 @@
         "volume": 3964.471
       },
       {
-        "close": 79207.1,
-        "high": 79264.7,
-        "low": 79201.1,
+        "close": 79268.8,
+        "high": 79321.0,
+        "low": 79200.0,
         "open": 79264.7,
         "timestamp": "2026-05-15T17:00:00Z",
-        "volume": 201.506
+        "volume": 591.95
       }
     ],
-    "current_price": 79207.1,
+    "current_price": 79268.8,
     "indicators": {
-      "atr_14": 463.5714285714265,
-      "bb_high": 82066.58979623676,
-      "bb_low": 78707.07020376324,
-      "bb_mid": 80386.83,
-      "ema_20": 80063.12233216398,
-      "ema_50": 80297.54428450049,
-      "macd": -368.2841315356927,
-      "macd_signal": -164.47722680642926,
-      "rsi_14": 28.693141811012595
+      "atr_14": 467.6714285714271,
+      "bb_high": 82060.75497063587,
+      "bb_low": 78719.07502936415,
+      "bb_mid": 80389.91500000001,
+      "ema_20": 80068.99852264016,
+      "ema_50": 80299.96389234361,
+      "macd": -363.3621942137688,
+      "macd_signal": -163.49283934204448,
+      "rsi_14": 29.155475267999435
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-15T17:03:58.372700Z"
+    "timestamp": "2026-05-15T17:10:40.714184Z"
   },
   "open_positions": [],
   "recent_trades": [],
   "reflections_summary": {
     "by_agent": {
-      "crypto-deepseek": 1,
-      "crypto-grok": 1
+      "crypto-deepseek": 2,
+      "crypto-grok": 2
     },
-    "count_recent": 2,
+    "count_recent": 4,
     "recent": [
+      {
+        "agent_id": "crypto-grok",
+        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T17:12:26.048442Z"
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T17:12:25.859363Z"
+      },
       {
         "agent_id": "crypto-grok",
         "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
@@ -2080,10 +2090,28 @@
   },
   "rejected_signals_summary": {
     "by_agent": {
-      "crypto-deepseek": 1,
-      "crypto-grok": 1
+      "crypto-deepseek": 2,
+      "crypto-grok": 2
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-grok",
+        "created_at": "2026-05-15T17:12:02.712693Z",
+        "decision": "PARSE_ERROR",
+        "reasons": [
+          "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+        ]
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-15T17:11:06.444085Z",
+        "decision": "PARSE_ERROR",
+        "reasons": [
+          "parse/schema error: Expecting ',' delimiter: line 32 column 286 (char 1190)"
+        ]
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-grok",
@@ -2103,40 +2131,40 @@
         ]
       }
     ],
-    "total_recent": 2
+    "total_recent": 4
   },
   "strategy_diversity_metrics": {
     "action_agreement_rate": 1.0,
     "confidence_correlation": 0.0,
     "convergence_warning": true,
-    "created_at": "2026-05-15T17:05:26.017334Z",
+    "created_at": "2026-05-15T17:12:26.076371Z",
     "directional_agreement_rate": 1.0,
     "leverage_similarity": 1.0,
     "shared_ratio_applied": 0.1,
-    "thesis_embedding_similarity": 0.0
+    "thesis_embedding_similarity": 0.034722222222222224
   },
   "sync": {
-    "generated_at": "2026-05-15T17:06:11.326715Z",
+    "generated_at": "2026-05-15T17:12:26.138332Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-15T17:05:26.049785Z",
+    "latest_cycle_at": "2026-05-15T17:12:26.109984Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.0005322800000000001,
-      "input_tokens": 2604.0,
-      "output_tokens": 599.0,
-      "requests": 1.0
+      "estimated_cost_usd": 0.0014054600000000003,
+      "input_tokens": 6431.0,
+      "output_tokens": 1804.0,
+      "requests": 3.0
     },
     "crypto-grok": {
-      "estimated_cost_usd": 0.0007176,
-      "input_tokens": 2603.0,
-      "output_tokens": 394.0,
-      "requests": 1.0
+      "estimated_cost_usd": 0.001581,
+      "input_tokens": 6120.0,
+      "output_tokens": 714.0,
+      "requests": 3.0
     }
   },
   "trade_history_summary": {
@@ -2159,41 +2187,41 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 36.329408058903006,
-      "grok_workload_pct": 40.40753203257354,
-      "local_workload_pct": 23.263059908523466,
-      "total_api_cost_usd": 0.00124988
+      "deepseek_workload_pct": 36.97514684204445,
+      "grok_workload_pct": 39.84115319627076,
+      "local_workload_pct": 23.183699961684802,
+      "total_api_cost_usd": 0.0029864600000000002
     },
-    "deepseek_pct": 36.329408058903006,
-    "grok_pct": 40.40753203257354,
+    "deepseek_pct": 37.62088562518589,
+    "grok_pct": 39.27477435996798,
     "latest": {
-      "api_cost_usd": 0.00124988,
-      "deepseek_tokens": 3203,
-      "deepseek_workload_pct": 36.329408058903006,
-      "grok_tokens": 2997,
-      "grok_workload_pct": 40.40753203257354,
-      "local_workload_pct": 23.263059908523466,
+      "api_cost_usd": 0.0017365800000000002,
+      "deepseek_tokens": 5032,
+      "deepseek_workload_pct": 37.62088562518589,
+      "grok_tokens": 3837,
+      "grok_workload_pct": 39.27477435996798,
+      "local_workload_pct": 23.104340014846137,
       "payload": {
-        "deepseek_api_cost_usd": 0.0005322800000000001,
-        "deepseek_input_tokens": 2604,
+        "deepseek_api_cost_usd": 0.0008731800000000001,
+        "deepseek_input_tokens": 3827,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 599,
+        "deepseek_output_tokens": 1205,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
-        "grok_api_cost_usd": 0.0007176,
-        "grok_input_tokens": 2603,
+        "grok_api_cost_usd": 0.0008634000000000001,
+        "grok_input_tokens": 3517,
         "grok_lessons_generated": 1,
-        "grok_output_tokens": 394,
+        "grok_output_tokens": 320,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 15,
-        "local_functions_executed": 21,
+        "local_database_queries": 23,
+        "local_functions_executed": 29,
         "local_memory_retrievals": 4,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 88.90222620000714
+        "total_wall_time_seconds": 106.48989789999905
       },
-      "timestamp": "2026-05-15T17:05:26.057628"
+      "timestamp": "2026-05-15T17:12:26.118670"
     },
-    "local_pct": 23.263059908523466
+    "local_pct": 23.104340014846137
   }
 }
