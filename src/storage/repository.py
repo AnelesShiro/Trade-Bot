@@ -101,8 +101,10 @@ class ArenaRepository:
         signal: AgentSignal | None,
         validation: ValidationResult,
         raw_response: str,
+        metadata: dict[str, Any] | None = None,
     ) -> int:
         payload = signal.model_dump(mode="json") if signal else {}
+        audit = metadata or {}
         with self.session_factory() as session, session.begin():
             record = SignalRecord(
                 agent_id=agent_id,
@@ -112,10 +114,51 @@ class ArenaRepository:
                 reasons_json=json.dumps(validation.reasons),
                 payload_json=json.dumps(payload),
                 raw_response=raw_response,
+                timestamp_utc=audit.get("timestamp_utc"),
+                timestamp_local=audit.get("timestamp_local"),
+                cycle_number=audit.get("cycle_number"),
+                competition_time_pct=audit.get("competition_time_pct"),
+                agent_name=audit.get("agent_name"),
+                model_name=audit.get("model_name"),
+                signal_status=audit.get("signal_status") or ("ACCEPTED" if validation.accepted else "REJECTED"),
+                rejection_reason_code=audit.get("rejection_reason_code"),
+                rejection_reason_message=audit.get("rejection_reason_message"),
+                direction=audit.get("direction"),
+                confidence=audit.get("confidence"),
+                thesis=audit.get("thesis"),
+                entry_price=audit.get("entry_price"),
+                stop_loss=audit.get("stop_loss"),
+                take_profit_1=audit.get("take_profit_1"),
+                take_profit_2=audit.get("take_profit_2"),
+                leverage=audit.get("leverage"),
+                risk_pct=audit.get("risk_pct"),
+                position_size_usdt=audit.get("position_size_usdt"),
+                notional_usdt=audit.get("notional_usdt"),
+                expected_rr=audit.get("expected_rr"),
+                market_regime=audit.get("market_regime"),
+                btc_price=audit.get("btc_price"),
+                timeframe=audit.get("timeframe"),
+                prompt_version=audit.get("prompt_version"),
+                rulebook_version=audit.get("rulebook_version"),
+                config_version=audit.get("config_version"),
+                raw_model_output=audit.get("raw_model_output") or raw_response,
+                parsed_json=audit.get("parsed_json"),
+                normalized_signal_json=audit.get("normalized_signal_json"),
+                validation_details_json=audit.get("validation_details_json"),
+                execution_result_json=audit.get("execution_result_json"),
+                token_usage=audit.get("token_usage"),
+                api_cost_usd=audit.get("api_cost_usd"),
+                latency_ms=audit.get("latency_ms"),
             )
             session.add(record)
             session.flush()
             return int(record.id)
+
+    def update_signal_execution(self, signal_id: int, execution_result: dict[str, Any]) -> None:
+        with self.session_factory() as session, session.begin():
+            record = session.get(SignalRecord, signal_id)
+            if record:
+                record.execution_result_json = json.dumps(execution_result, default=str)
 
     def open_positions(self, agent_id: str | None = None) -> list[PositionRecord]:
         with self.session_factory() as session:

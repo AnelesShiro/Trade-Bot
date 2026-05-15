@@ -40,7 +40,7 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-15T18:47:54.277906Z",
     "active_versions_file": {
-      "code_version": "474f34673d46",
+      "code_version": "5fb815c7d8e6",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -50,7 +50,7 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T18:49:17.806558Z"
+      "updated_at": "2026-05-15T19:07:05.567501Z"
     },
     "canary": {
       "enabled": false,
@@ -75,9 +75,17 @@
       "id": 8,
       "status": "COMPLETED"
     },
-    "pending_updates": [],
+    "pending_updates": [
+      {
+        "id": "d5c4339848ee4e6d9bfed3f5c3b93e0b",
+        "payload": {},
+        "requested_at": "2026-05-15T19:08:21.738237Z",
+        "status": "PENDING",
+        "type": "CODE_RESTART"
+      }
+    ],
     "versions": {
-      "code_version": "474f34673d46",
+      "code_version": "5fb815c7d8e6",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -87,24 +95,24 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T18:49:27.098400Z"
+      "updated_at": "2026-05-15T19:09:21.769296Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:49:25.981662Z"
+        "timestamp": "2026-05-15T19:09:20.643569Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:49:26.981662Z"
+        "timestamp": "2026-05-15T19:09:21.643569Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:49:25.981662Z"
+        "timestamp": "2026-05-15T19:09:20.643569Z"
       },
       {
         "drawdown": -0.0005,
@@ -112,7 +120,7 @@
       },
       {
         "drawdown": -0.0029740768594689144,
-        "timestamp": "2026-05-15T18:49:26.981662Z"
+        "timestamp": "2026-05-15T19:09:21.643569Z"
       }
     ]
   },
@@ -120,17 +128,17 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:49:25.981662Z"
+        "timestamp": "2026-05-15T19:09:20.643569Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:49:26.981662Z"
+        "timestamp": "2026-05-15T19:09:21.643569Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:49:25.981662Z"
+        "timestamp": "2026-05-15T19:09:20.643569Z"
       },
       {
         "equity": 9995.0,
@@ -138,11 +146,11 @@
       },
       {
         "equity": 9970.25923140531,
-        "timestamp": "2026-05-15T18:49:26.981662Z"
+        "timestamp": "2026-05-15T19:09:21.643569Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T18:49:26.962404Z",
+  "generated_at": "2026-05-15T19:09:21.619949Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -2257,38 +2265,58 @@
       {
         "action": "NONE",
         "agent_id": "crypto-grok",
+        "agent_name": "crypto-grok",
+        "confidence": null,
         "created_at": "2026-05-15T17:12:02.712693Z",
         "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
         "reasons": [
           "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
-        ]
+        ],
+        "rejection_code": "PARSE_ERROR"
       },
       {
         "action": "NONE",
         "agent_id": "crypto-deepseek",
+        "agent_name": "crypto-deepseek",
+        "confidence": null,
         "created_at": "2026-05-15T17:11:06.444085Z",
         "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: Expecting ',' delimiter: line 32 column 286 (char 1190)",
         "reasons": [
           "parse/schema error: Expecting ',' delimiter: line 32 column 286 (char 1190)"
-        ]
+        ],
+        "rejection_code": "PARSE_ERROR"
       },
       {
         "action": "NONE",
         "agent_id": "crypto-grok",
+        "agent_name": "crypto-grok",
+        "confidence": null,
         "created_at": "2026-05-15T17:05:25.571757Z",
         "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: 4 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7920...ositions, equity=10000.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\ninstrument\n  Extra inputs are not permitted [type=extra_forbidden, input_value='BTCUSDT perpetual futures', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='new', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nconfidence_1_to_5\n  Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
         "reasons": [
           "parse/schema error: 4 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7920...ositions, equity=10000.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\ninstrument\n  Extra inputs are not permitted [type=extra_forbidden, input_value='BTCUSDT perpetual futures', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='new', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nconfidence_1_to_5\n  Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
-        ]
+        ],
+        "rejection_code": "PARSE_ERROR"
       },
       {
         "action": "NONE",
         "agent_id": "crypto-deepseek",
+        "agent_name": "crypto-deepseek",
+        "confidence": null,
         "created_at": "2026-05-15T17:04:36.550216Z",
         "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: Expecting ',' delimiter: line 32 column 291 (char 1195)",
         "reasons": [
           "parse/schema error: Expecting ',' delimiter: line 32 column 291 (char 1195)"
-        ]
+        ],
+        "rejection_code": "PARSE_ERROR"
       }
     ],
     "total_recent": 4
@@ -2303,6 +2331,82 @@
     "status": "RUNNING",
     "total_cycles_completed": 8
   },
+  "signal_audit_summary": {
+    "acceptance_rate": 0.7777777777777778,
+    "accepted_signal_count": 14,
+    "latest_accepted_signal": {
+      "action": "HOLD",
+      "agent_name": "crypto-grok",
+      "btc_price": null,
+      "confidence": 3.0,
+      "cycle_number": null,
+      "decision": "POSITION_UPDATE",
+      "direction": "LONG",
+      "entry_price": null,
+      "execution_result": {
+        "executed": false
+      },
+      "expected_rr": 2.73,
+      "id": 18,
+      "leverage": 10.0,
+      "market_regime": null,
+      "model_name": null,
+      "notional_usdt": 10000.0,
+      "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T01:47:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+      "rejection_reason_code": null,
+      "rejection_reason_message": null,
+      "risk_pct": 0.85,
+      "signal_status": "ACCEPTED",
+      "stop_loss": 78700.0,
+      "take_profit_1": 80394.0,
+      "take_profit_2": 81200.0,
+      "thesis": "Pos1 stable retrace, lows holding 79135 > BB low/SL, RSI oversold 32; mean reversion pending.",
+      "timestamp_utc": "2026-05-15 18:47:53.696676",
+      "validation_details": {
+        "accepted": true,
+        "reasons": []
+      }
+    },
+    "latest_rejected_signal": {
+      "action": "NONE",
+      "agent_name": "crypto-grok",
+      "btc_price": null,
+      "confidence": null,
+      "cycle_number": null,
+      "decision": "PARSE_ERROR",
+      "direction": null,
+      "entry_price": null,
+      "execution_result": {
+        "executed": false
+      },
+      "expected_rr": null,
+      "id": 5,
+      "leverage": null,
+      "market_regime": null,
+      "model_name": null,
+      "notional_usdt": null,
+      "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T00:11:00+07:00\",\"decision\":\"NO_TRADE\",\"action\":\"NONE\",\"symbol\":\"BTC\",\"direction\":\"NONE\",\"execution_type\":\"NONE\",\"data_used\":\"market_state: price=79268.8 (+61 from prior), RSI=29.16 (still overs",
+      "rejection_reason_code": "PARSE_ERROR",
+      "rejection_reason_message": "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+      "risk_pct": null,
+      "signal_status": "REJECTED",
+      "stop_loss": null,
+      "take_profit_1": null,
+      "take_profit_2": null,
+      "thesis": null,
+      "timestamp_utc": "2026-05-15 17:12:02.712693",
+      "validation_details": {
+        "accepted": false,
+        "reasons": [
+          "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+        ]
+      }
+    },
+    "rejected_signal_count": 4,
+    "rejection_breakdown": {
+      "PARSE_ERROR": 4
+    }
+  },
   "strategy_diversity_metrics": {
     "action_agreement_rate": 0.3333333333333333,
     "confidence_correlation": 0.7342230982143524,
@@ -2314,7 +2418,7 @@
     "thesis_embedding_similarity": 0.04627459307221656
   },
   "sync": {
-    "generated_at": "2026-05-15T18:49:26.962404Z",
+    "generated_at": "2026-05-15T19:09:21.619949Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },

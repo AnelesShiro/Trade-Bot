@@ -34,6 +34,7 @@ from src.trading.paper_account import PaperAccount
 from src.trading.position_manager import PositionManager
 from src.utils.costs import estimate_cost_usd
 from src.validation.rule_engine import RuleEngine
+from src.validation.signal_logger import signal_audit_metadata
 from src.validation.signal_validator import validate_signal
 from src.operations.preflight import has_critical_failures, run_preflight
 from src.operations.update_manager import LiveUpdateManager
@@ -333,7 +334,7 @@ class CompetitionRunner:
         if workload:
             workload.database_query("logging", agent_id=agent_id)
         prompt_id = self.repository.save_prompt(agent_id, prompt)
-        signal, validation, raw = self._run_until_valid_signal(
+        signal, validation, raw, signal_record_id = self._run_until_valid_signal(
             agent_settings=agent_settings,
             agent_id=agent_id,
             prompt=prompt,
@@ -345,12 +346,22 @@ class CompetitionRunner:
         if self._is_warmup_cycle():
             logger.info("warm-up mode active; skipping paper execution for {}", agent_id)
             self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")
+            self._record_signal_execution(signal_record_id, {"executed": False, "reason": "warmup_mode"})
             return
         if signal and validation.accepted and signal.decision.value in {"PAPER_TRADE", "POSITION_UPDATE"}:
             if workload:
                 workload.local_function("paper_execution", "execute_signal", agent_id=agent_id)
                 workload.database_query("paper_execution", agent_id=agent_id)
             position_id = self.execution.execute(signal, market_state.current_price)
+            self._record_signal_execution(
+                signal_record_id,
+                {
+                    "executed": bool(position_id),
+                    "position_id": position_id,
+                    "decision": signal.decision.value,
+                    "action": signal.action.value,
+                },
+            )
             if position_id and signal.action in {Action.REDUCE, Action.CUT, Action.CLOSE}:
                 if workload:
                     workload.database_query("reflection", agent_id=agent_id)
@@ -359,6 +370,16 @@ class CompetitionRunner:
                     reflect_on_trade(self.memory, trade)
                     if workload:
                         workload.reflection(agent_id)
+        else:
+            self._record_signal_execution(
+                signal_record_id,
+                {
+                    "executed": False,
+                    "reason": "non_trade_decision" if validation.accepted else "validation_rejected",
+                    "decision": signal.decision.value if signal else "PARSE_ERROR",
+                    "action": signal.action.value if signal else "NONE",
+                },
+            )
 
     def _run_until_valid_signal(
         self,
@@ -373,7 +394,9 @@ class CompetitionRunner:
         agent = OpenClawAgent(agent_settings)
         active_prompt = prompt
         active_prompt_id = prompt_id
+        call_started = time.perf_counter()
         raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+        latency_ms = int((time.perf_counter() - call_started) * 1000)
         for attempt in range(MAX_SIGNAL_REPAIR_ATTEMPTS + 1):
             input_tokens, output_tokens, estimated_cost = estimate_cost_usd(agent_settings.model, active_prompt, raw)
             if workload:
@@ -390,7 +413,19 @@ class CompetitionRunner:
             signal, validation = self._validate_raw_signal(agent_id, raw, summary, workload)
             if workload:
                 workload.database_query("logging", agent_id=agent_id)
-            self.repository.save_signal(agent_id, signal, validation, raw)
+            signal_record_id = self._save_signal_audit(
+                agent_settings=agent_settings,
+                agent_id=agent_id,
+                signal=signal,
+                validation=validation,
+                raw=raw,
+                market_state=market_state,
+                active_prompt=active_prompt,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                estimated_cost=estimated_cost,
+                latency_ms=latency_ms,
+            )
             if workload:
                 workload.local_function("outputs", "append_signal_output", agent_id=agent_id)
             self._append_signal_output(agent_id, raw, validation.accepted, validation.reasons)
@@ -402,7 +437,7 @@ class CompetitionRunner:
                         False,
                         f"{agent_id} produced accepted signal after {attempt} repair attempt(s)",
                     )
-                return signal, validation, raw
+                return signal, validation, raw, signal_record_id
             if attempt >= MAX_SIGNAL_REPAIR_ATTEMPTS:
                 self.repository.save_health_check(
                     "signal_repair",
@@ -410,13 +445,63 @@ class CompetitionRunner:
                     False,
                     f"{agent_id} still rejected after {MAX_SIGNAL_REPAIR_ATTEMPTS} repair attempt(s): {'; '.join(validation.reasons)[:500]}",
                 )
-                return signal, validation, raw
+                return signal, validation, raw, signal_record_id
             active_prompt = self._compose_repair_prompt(agent_id, raw, validation.reasons, attempt + 1)
             active_prompt_id = self.repository.save_prompt(agent_id, active_prompt)
             if workload:
                 workload.local_function("prompt_construction", "compose_repair_prompt", agent_id=agent_id)
                 workload.database_query("logging", agent_id=agent_id)
+            call_started = time.perf_counter()
             raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+            latency_ms = int((time.perf_counter() - call_started) * 1000)
+
+    def _save_signal_audit(
+        self,
+        *,
+        agent_settings,
+        agent_id: str,
+        signal: AgentSignal | None,
+        validation,
+        raw: str,
+        market_state: MarketState,
+        active_prompt: str,
+        input_tokens: int,
+        output_tokens: int,
+        estimated_cost: float,
+        latency_ms: int,
+    ) -> int | None:
+        try:
+            metadata = signal_audit_metadata(
+                agent_name=agent_settings.name,
+                model_name=agent_settings.model,
+                cycle_number=self._cycle_count + 1,
+                competition_time_pct=self._competition_time_pct(),
+                market_regime=market_state.regime,
+                btc_price=market_state.current_price,
+                timeframe=market_state.timeframe,
+                prompt_version=_sha256(active_prompt),
+                rulebook_version=_sha256(self.rulebook),
+                config_version=self.config_manager.config_hash,
+                signal=signal,
+                validation=validation,
+                raw_response=raw,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                api_cost_usd=estimated_cost,
+                latency_ms=latency_ms,
+            )
+            return self.repository.save_signal(agent_id, signal, validation, raw, metadata=metadata)
+        except Exception as error:
+            logger.warning("signal audit logging failed for {} without affecting trading: {}", agent_id, error)
+            return None
+
+    def _record_signal_execution(self, signal_record_id: int | None, result: dict[str, object]) -> None:
+        if signal_record_id is None:
+            return
+        try:
+            self.repository.update_signal_execution(signal_record_id, result)
+        except Exception as error:
+            logger.warning("signal execution audit update failed without affecting trading: {}", error)
 
     def _validate_raw_signal(self, agent_id: str, raw: str, summary, workload: WorkloadTracker | None):
         if workload:
@@ -762,6 +847,18 @@ class CompetitionRunner:
         latest = self.repository.latest_checkpoint()
         latest_cycle = int(latest.cycle_number) if latest else 0
         return max(self._cycle_count, latest_cycle)
+
+    def _competition_time_pct(self) -> float:
+        start = self.repository.competition_start_time()
+        if not start:
+            return 0.0
+        if start.tzinfo is None:
+            start = start.replace(tzinfo=UTC)
+        else:
+            start = start.astimezone(UTC)
+        total = max(1.0, self.settings.competition.duration_days * 86400)
+        elapsed = max(0.0, (datetime.now(UTC) - start).total_seconds())
+        return min(1.0, elapsed / total)
 
     def _persist_daily_metrics(self, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         rows = calculate_leaderboard(

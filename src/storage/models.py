@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import UTC, datetime
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, create_engine, text
@@ -64,6 +65,41 @@ class SignalRecord(Base):
     reasons_json: Mapped[str] = mapped_column(Text, default="[]")
     payload_json: Mapped[str] = mapped_column(Text)
     raw_response: Mapped[str] = mapped_column(Text)
+    timestamp_utc: Mapped[str | None] = mapped_column(String, nullable=True)
+    timestamp_local: Mapped[str | None] = mapped_column(String, nullable=True)
+    cycle_number: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    competition_time_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    agent_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    model_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    signal_status: Mapped[str | None] = mapped_column(String, nullable=True)
+    rejection_reason_code: Mapped[str | None] = mapped_column(String, nullable=True)
+    rejection_reason_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    direction: Mapped[str | None] = mapped_column(String, nullable=True)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    thesis: Mapped[str | None] = mapped_column(Text, nullable=True)
+    entry_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    stop_loss: Mapped[float | None] = mapped_column(Float, nullable=True)
+    take_profit_1: Mapped[float | None] = mapped_column(Float, nullable=True)
+    take_profit_2: Mapped[float | None] = mapped_column(Float, nullable=True)
+    leverage: Mapped[float | None] = mapped_column(Float, nullable=True)
+    risk_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    position_size_usdt: Mapped[float | None] = mapped_column(Float, nullable=True)
+    notional_usdt: Mapped[float | None] = mapped_column(Float, nullable=True)
+    expected_rr: Mapped[float | None] = mapped_column(Float, nullable=True)
+    market_regime: Mapped[str | None] = mapped_column(String, nullable=True)
+    btc_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    timeframe: Mapped[str | None] = mapped_column(String, nullable=True)
+    prompt_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    rulebook_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    config_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    raw_model_output: Mapped[str | None] = mapped_column(Text, nullable=True)
+    parsed_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    normalized_signal_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    validation_details_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    execution_result_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    token_usage: Mapped[str | None] = mapped_column(Text, nullable=True)
+    api_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
+    latency_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
 
 class PositionRecord(Base):
@@ -356,3 +392,152 @@ def _migrate_sqlite(engine) -> None:
         for column, ddl in additions.items():
             if column not in columns:
                 connection.execute(text(f"ALTER TABLE trades ADD COLUMN {column} {ddl}"))
+        signal_rows = connection.execute(text("PRAGMA table_info(signals)")).mappings().all()
+        signal_columns = {row["name"] for row in signal_rows}
+        signal_additions = {
+            "timestamp_utc": "VARCHAR",
+            "timestamp_local": "VARCHAR",
+            "cycle_number": "INTEGER",
+            "competition_time_pct": "FLOAT",
+            "agent_name": "VARCHAR",
+            "model_name": "VARCHAR",
+            "signal_status": "VARCHAR",
+            "rejection_reason_code": "VARCHAR",
+            "rejection_reason_message": "TEXT",
+            "direction": "VARCHAR",
+            "confidence": "FLOAT",
+            "thesis": "TEXT",
+            "entry_price": "FLOAT",
+            "stop_loss": "FLOAT",
+            "take_profit_1": "FLOAT",
+            "take_profit_2": "FLOAT",
+            "leverage": "FLOAT",
+            "risk_pct": "FLOAT",
+            "position_size_usdt": "FLOAT",
+            "notional_usdt": "FLOAT",
+            "expected_rr": "FLOAT",
+            "market_regime": "VARCHAR",
+            "btc_price": "FLOAT",
+            "timeframe": "VARCHAR",
+            "prompt_version": "VARCHAR",
+            "rulebook_version": "VARCHAR",
+            "config_version": "VARCHAR",
+            "raw_model_output": "TEXT",
+            "parsed_json": "TEXT",
+            "normalized_signal_json": "TEXT",
+            "validation_details_json": "TEXT",
+            "execution_result_json": "TEXT",
+            "token_usage": "TEXT",
+            "api_cost_usd": "FLOAT",
+            "latency_ms": "INTEGER",
+        }
+        for column, ddl in signal_additions.items():
+            if column not in signal_columns:
+                connection.execute(text(f"ALTER TABLE signals ADD COLUMN {column} {ddl}"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_timestamp_utc ON signals(timestamp_utc)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_cycle_number ON signals(cycle_number)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_agent_name ON signals(agent_name)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_signal_status ON signals(signal_status)"))
+        _backfill_signal_audit_columns(connection)
+
+
+def _backfill_signal_audit_columns(connection) -> None:
+    rows = connection.execute(
+        text(
+            """
+            SELECT id, agent_id, created_at, decision, action, accepted, reasons_json, payload_json, raw_response
+            FROM signals
+            WHERE signal_status IS NULL OR raw_model_output IS NULL OR direction IS NULL
+            LIMIT 5000
+            """
+        )
+    ).mappings().all()
+    for row in rows:
+        try:
+            payload = json.loads(row["payload_json"] or "{}")
+        except Exception:
+            payload = {}
+        try:
+            reasons = json.loads(row["reasons_json"] or "[]")
+        except Exception:
+            reasons = []
+        accepted = int(row["accepted"] or 0) == 1
+        status = "ACCEPTED" if accepted else "REJECTED"
+        rejection_message = "; ".join(str(reason) for reason in reasons)[:2000] if reasons else None
+        connection.execute(
+            text(
+                """
+                UPDATE signals
+                SET
+                    timestamp_utc = coalesce(timestamp_utc, :timestamp_utc),
+                    timestamp_local = coalesce(timestamp_local, :timestamp_local),
+                    agent_name = coalesce(agent_name, :agent_name),
+                    signal_status = coalesce(signal_status, :signal_status),
+                    rejection_reason_code = coalesce(rejection_reason_code, :rejection_reason_code),
+                    rejection_reason_message = coalesce(rejection_reason_message, :rejection_reason_message),
+                    direction = coalesce(direction, :direction),
+                    confidence = coalesce(confidence, :confidence),
+                    thesis = coalesce(thesis, :thesis),
+                    entry_price = coalesce(entry_price, :entry_price),
+                    stop_loss = coalesce(stop_loss, :stop_loss),
+                    take_profit_1 = coalesce(take_profit_1, :take_profit_1),
+                    take_profit_2 = coalesce(take_profit_2, :take_profit_2),
+                    leverage = coalesce(leverage, :leverage),
+                    risk_pct = coalesce(risk_pct, :risk_pct),
+                    position_size_usdt = coalesce(position_size_usdt, :position_size_usdt),
+                    notional_usdt = coalesce(notional_usdt, :notional_usdt),
+                    expected_rr = coalesce(expected_rr, :expected_rr),
+                    raw_model_output = coalesce(raw_model_output, :raw_model_output),
+                    parsed_json = coalesce(parsed_json, :parsed_json),
+                    normalized_signal_json = coalesce(normalized_signal_json, :normalized_signal_json),
+                    validation_details_json = coalesce(validation_details_json, :validation_details_json),
+                    execution_result_json = coalesce(execution_result_json, :execution_result_json)
+                WHERE id = :id
+                """
+            ),
+            {
+                "id": row["id"],
+                "timestamp_utc": row["created_at"],
+                "timestamp_local": row["created_at"],
+                "agent_name": row["agent_id"],
+                "signal_status": status,
+                "rejection_reason_code": None if accepted else _legacy_rejection_code(reasons),
+                "rejection_reason_message": rejection_message,
+                "direction": payload.get("direction"),
+                "confidence": payload.get("confidence"),
+                "thesis": payload.get("thesis"),
+                "entry_price": payload.get("entry"),
+                "stop_loss": payload.get("stop_loss"),
+                "take_profit_1": payload.get("take_profit_1"),
+                "take_profit_2": payload.get("take_profit_2"),
+                "leverage": payload.get("leverage"),
+                "risk_pct": payload.get("account_risk_percent"),
+                "position_size_usdt": payload.get("margin_used_usdt"),
+                "notional_usdt": payload.get("notional_exposure_usdt"),
+                "expected_rr": payload.get("risk_reward_to_tp2") or payload.get("risk_reward_to_tp1"),
+                "raw_model_output": row["raw_response"],
+                "parsed_json": json.dumps(payload, default=str),
+                "normalized_signal_json": json.dumps(payload, default=str),
+                "validation_details_json": json.dumps({"accepted": accepted, "reasons": reasons}, default=str),
+                "execution_result_json": json.dumps({"executed": accepted and row["decision"] in {"PAPER_TRADE", "POSITION_UPDATE"} and row["action"] not in {"NONE", "HOLD"}}, default=str),
+            },
+        )
+
+
+def _legacy_rejection_code(reasons: list[str]) -> str:
+    text_value = " ".join(str(reason).lower() for reason in reasons)
+    if "json" in text_value or "parse" in text_value or "schema" in text_value:
+        return "PARSE_ERROR"
+    if "missing" in text_value:
+        return "MISSING_FIELD"
+    if "direction" in text_value:
+        return "INVALID_DIRECTION"
+    if "action" in text_value:
+        return "INVALID_ACTION"
+    if "leverage" in text_value:
+        return "LEVERAGE_LIMIT_EXCEEDED"
+    if "position" in text_value:
+        return "POSITION_LIMIT_EXCEEDED"
+    if "risk" in text_value or "margin" in text_value:
+        return "RISK_LIMIT_EXCEEDED"
+    return "RULEBOOK_VIOLATION"

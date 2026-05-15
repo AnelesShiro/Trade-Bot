@@ -14,6 +14,7 @@ from src.config import Settings
 from src.logger import logger
 from src.operations.update_manager import LiveUpdateManager
 from src.storage.models import ReflectionRecord, SignalRecord, TradeRecord
+from src.storage.signal_repository import SignalAuditRepository
 from src.storage.repository import ArenaRepository
 from src.trading.paper_account import PaperAccount
 
@@ -76,6 +77,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "workload": _workload_payload(repository),
         "token_usage": _token_usage(repository, [agent.id for agent in settings.agents]),
         "api_costs": _api_costs(repository, [agent.id for agent in settings.agents]),
+        "signal_audit_summary": SignalAuditRepository(repository).summary(),
         "rejected_signals_summary": _rejected_signals(repository),
         "reflections_summary": _reflections(repository),
         "strategy_diversity_metrics": _diversity_metrics(repository),
@@ -347,9 +349,14 @@ def _rejected_signals(repository: ArenaRepository) -> dict[str, Any]:
             {
                 "created_at": _iso(row.created_at),
                 "agent_id": row.agent_id,
+                "agent_name": row.agent_name or row.agent_id,
+                "rejection_code": row.rejection_reason_code,
                 "decision": row.decision,
                 "action": row.action,
+                "direction": row.direction,
+                "confidence": row.confidence,
                 "reasons": _safe_json(row.reasons_json, []),
+                "message": row.rejection_reason_message,
             }
             for row in rejected[:25]
         ],

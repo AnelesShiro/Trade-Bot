@@ -29,9 +29,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
+from src.dashboard.tabs.accepted_signals import render_accepted_signals_tab  # noqa: E402
+from src.dashboard.tabs.rejected_signals import render_rejected_signals_tab  # noqa: E402
 from src.market.indicators import ema, rsi  # noqa: E402
 from src.operations.update_manager import LiveUpdateManager  # noqa: E402
-from src.storage.models import build_session_factory  # noqa: E402
+from src.storage.models import build_session_factory, create_schema  # noqa: E402
 from src.storage.repository import ArenaRepository  # noqa: E402
 
 
@@ -43,6 +45,7 @@ st.set_page_config(
 )
 
 settings = load_settings()
+create_schema(settings.database_url)
 LOCAL_TZ = ZoneInfo(os.getenv("ARENA_DISPLAY_TIMEZONE", "Asia/Bangkok"))
 db_path = settings.resolve_path(settings.paths.database)
 cloud_snapshot_path = settings.resolve_path(settings.cloud_dashboard.snapshot_path)
@@ -743,10 +746,18 @@ def notifications(signals: pd.DataFrame, trades: pd.DataFrame, positions: pd.Dat
             if pnl < 0:
                 notes.append(f"{trade.get('agent_id')} realized loss {fmt_money(pnl)}")
     if not signals.empty:
-        rejected = signals[pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 0]
+        status_series = signals.get("signal_status")
+        if status_series is None:
+            status_series = pd.Series([""] * len(signals), index=signals.index)
+        accepted = signals[(status_series.fillna("").eq("ACCEPTED")) | (pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 1)]
+        if not accepted.empty:
+            row = accepted.sort_values("created_at", ascending=False).iloc[0]
+            notes.append(f"ACCEPTED: {row.get('agent_name') or row.get('agent_id')} {row.get('decision')}/{row.get('action')}")
+        rejected = signals[(status_series.fillna("").eq("REJECTED")) | (pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 0)]
         if not rejected.empty:
             row = rejected.sort_values("created_at", ascending=False).iloc[0]
-            notes.append(f"Latest rejected signal: {row.get('agent_id')} {row.get('decision')}/{row.get('action')}")
+            code = row.get("rejection_reason_code") or "REJECTED"
+            notes.append(f"REJECTED: {row.get('agent_name') or row.get('agent_id')} {code}")
     if not metric_frame.empty:
         for _, row in metric_frame.iterrows():
             if float(row.get("total_return_pct") or 0) <= -float(settings.risk.daily_loss_limit_pct):
@@ -893,6 +904,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
             "Trade History",
             "Equity Curves",
             "Leaderboard",
+            "Accepted Signals",
             "Rejected Signals",
             "Raw Model Outputs",
             "Memory & Reflections",
@@ -966,23 +978,50 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         st.dataframe(metric_frame[[column for column in columns if column in metric_frame.columns]], width="stretch", hide_index=True) if not metric_frame.empty else st.info("No leaderboard yet.")
 
     with tabs[5]:
-        st.subheader("Rejected Signals")
-        st.dataframe(rejected_recent, width="stretch", hide_index=True) if not rejected_recent.empty else st.success("No rejected signals.")
+        st.subheader("Accepted Signals")
+        audit = snapshot.get("signal_audit_summary", {})
+        cols = st.columns(5)
+        cols[0].metric("Total accepted", int(audit.get("accepted_signal_count") or 0))
+        cols[1].metric("Acceptance rate", fmt_pct(audit.get("acceptance_rate")))
+        cols[2].metric("Total rejected", int(audit.get("rejected_signal_count") or 0))
+        cols[3].metric("Avg confidence", "-")
+        cols[4].metric("Avg expected R:R", "-")
+        latest = audit.get("latest_accepted_signal")
+        if latest:
+            st.dataframe(pd.DataFrame([latest]), width="stretch", hide_index=True)
+            with st.expander("Latest accepted signal details", expanded=False):
+                st.json(latest)
+        else:
+            st.info("No accepted signals in the current snapshot.")
 
     with tabs[6]:
+        st.subheader("Rejected Signals")
+        audit = snapshot.get("signal_audit_summary", {})
+        cols = st.columns(4)
+        cols[0].metric("Total rejected", int(audit.get("rejected_signal_count") or 0))
+        cols[1].metric("Rejection rate", fmt_pct(1 - float(audit.get("acceptance_rate") or 0)))
+        cols[2].metric("Top rejection reasons", ", ".join(f"{k}: {v}" for k, v in (audit.get("rejection_breakdown") or {}).items()) or "-")
+        cols[3].metric("Recent rejected", len(rejected_recent))
+        st.dataframe(rejected_recent, width="stretch", hide_index=True) if not rejected_recent.empty else st.success("No rejected signals.")
+        latest = audit.get("latest_rejected_signal")
+        if latest:
+            with st.expander("Latest rejected signal details", expanded=False):
+                st.json(latest)
+
+    with tabs[7]:
         st.subheader("Raw Model Outputs")
         st.info("Raw prompts and model outputs are not included in the cloud snapshot yet.")
 
-    with tabs[7]:
+    with tabs[8]:
         st.subheader("Memory & Reflections")
         st.dataframe(reflections, width="stretch", hide_index=True) if not reflections.empty else st.info("No recent reflections.")
 
-    with tabs[8]:
+    with tabs[9]:
         st.subheader("Token & Cost Analytics")
         st.dataframe(token_usage, width="stretch", hide_index=True) if not token_usage.empty else st.info("No token usage yet.")
         st.json(snapshot.get("api_costs", {}))
 
-    with tabs[9]:
+    with tabs[10]:
         st.subheader("Workload Attribution")
         latest = workload.get("latest") or {}
         kpis = st.columns(5)
@@ -995,7 +1034,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         if latest:
             st.json(latest)
 
-    with tabs[10]:
+    with tabs[11]:
         st.subheader("Strategy Diversity")
         if diversity:
             cols = st.columns(5)
@@ -1008,7 +1047,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         else:
             st.info("No diversity metrics yet.")
 
-    with tabs[11]:
+    with tabs[12]:
         st.subheader("Configuration")
         st.markdown("#### Deployment & Versions")
         render_deployment_panel(snapshot.get("deployment", {}))
@@ -1265,7 +1304,12 @@ alerts = notifications(signals, trades, positions, metric_frame)
 if alerts:
     with st.expander("Notifications", expanded=True):
         for note in alerts:
-            st.warning(note)
+            if str(note).startswith("ACCEPTED:"):
+                st.success(note)
+            elif str(note).startswith("REJECTED:"):
+                st.warning(note)
+            else:
+                st.warning(note)
 
 snapshot_for_status = read_snapshot(str(cloud_snapshot_path))
 runner_payload = snapshot_for_status.get("runner") if isinstance(snapshot_for_status, dict) else {}
@@ -1280,6 +1324,7 @@ tabs = st.tabs(
         "Trade History",
         "Equity Curves",
         "Leaderboard",
+        "Accepted Signals",
         "Rejected Signals",
         "Raw Model Outputs",
         "Memory & Reflections",
@@ -1409,22 +1454,13 @@ with tabs[4]:
         st.plotly_chart(score_fig, width="stretch")
 
 with tabs[5]:
-    st.subheader("Rejected Signals")
-    if signals.empty:
-        st.info("No signals logged yet.")
-    else:
-        rejected = signals[pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 0].copy()
-        if selected_agents and not rejected.empty:
-            rejected = rejected[rejected["agent_id"].isin(selected_agents)]
-        if rejected.empty:
-            st.success("No rejected signals.")
-        else:
-            rejected["rejection_reasons"] = rejected["reasons_json"].apply(lambda value: "; ".join(safe_json(value, [])))
-            st.dataframe(rejected[["created_at", "agent_id", "decision", "action", "rejection_reasons", "raw_response"]], width="stretch", hide_index=True)
-            download_frame("Download rejected signals", rejected, "rejected_signals.csv")
-            download_text("Download SIGNALS.md", signals_md, "SIGNALS.md")
+    render_accepted_signals_tab(str(db_path), agent_ids, date_range)
 
 with tabs[6]:
+    render_rejected_signals_tab(str(db_path), agent_ids, date_range)
+    download_text("Download SIGNALS.md", signals_md, "SIGNALS.md")
+
+with tabs[7]:
     st.subheader("Raw Model Outputs")
     if responses.empty and prompts.empty and tool_calls.empty:
         st.info("No model outputs logged yet.")
@@ -1439,7 +1475,7 @@ with tabs[6]:
         st.markdown("#### Validation Results")
         st.dataframe(signals[["created_at", "agent_id", "decision", "action", "accepted", "reasons_json"]], width="stretch", hide_index=True) if not signals.empty else st.info("No validation records.")
 
-with tabs[7]:
+with tabs[8]:
     st.subheader("Memory & Reflections")
     cols = st.columns(2)
     with cols[0]:
@@ -1476,7 +1512,7 @@ with tabs[7]:
     else:
         st.dataframe(expanded[["created_at", "agent_id", "payload_data_used"]].tail(50), width="stretch", hide_index=True)
 
-with tabs[8]:
+with tabs[9]:
     st.subheader("Token & Cost Analytics")
     usage = api_usage(responses)
     if usage.empty:
@@ -1498,7 +1534,7 @@ with tabs[8]:
         per_trade["cost_per_trade"] = per_trade.apply(lambda row: row["estimated_api_cost"] / row["trade_count"] if row["trade_count"] else 0, axis=1)
         st.dataframe(per_trade, width="stretch", hide_index=True)
 
-with tabs[9]:
+with tabs[10]:
     st.subheader("Workload Attribution")
     if workload_cycles.empty:
         st.info("No workload cycles recorded yet. Run `python -m src.cli run-once` or `python -m src.cli analyze-workload` after a cycle.")
@@ -1577,7 +1613,7 @@ with tabs[9]:
             st.dataframe(expensive, width="stretch", hide_index=True)
             download_frame("Download workload components CSV", components, "workload_components.csv")
 
-with tabs[10]:
+with tabs[11]:
     st.subheader("Strategy Diversity")
     if diversity_metrics.empty:
         st.info("No diversity metrics yet. Run `python -m src.cli analyze-diversity` or a competition cycle.")
@@ -1631,7 +1667,7 @@ with tabs[10]:
     else:
         st.dataframe(lesson_promotions.sort_values("created_at", ascending=False).head(200), width="stretch", hide_index=True)
 
-with tabs[11]:
+with tabs[12]:
     st.subheader("Configuration")
     st.markdown("#### Deployment & Versions")
     render_deployment_panel(deployment_state)
