@@ -11,24 +11,24 @@
       "unrealized_pnl": 0.0
     },
     "crypto-grok": {
-      "daily_pnl": -29.173814254987207,
-      "equity": 9970.826185745012,
+      "daily_pnl": -29.740768594689005,
+      "equity": 9970.25923140531,
       "open_margin": 1000.0,
       "open_positions": 1,
       "open_risk": 84.59854788187299,
       "realized_pnl": -5.0,
-      "roi_pct": -0.2917381425498752,
-      "unrealized_pnl": -24.173814254987207
+      "roi_pct": -0.29740768594689143,
+      "unrealized_pnl": -24.740768594689005
     }
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.004086600000000001,
-      "crypto-grok": 0.0053016
+      "crypto-deepseek": 0.004616640000000001,
+      "crypto-grok": 0.0060733
     },
-    "total": 0.009388200000000001
+    "total": 0.010689940000000002
   },
-  "btc_price": 79179.6,
+  "btc_price": 79175.1,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -37,29 +37,77 @@
     "symbol": "BTCUSDT"
   },
   "competition_status": "RUNNING",
+  "deployment": {
+    "active_checkpoint_timestamp": "2026-05-15T18:47:54.277906Z",
+    "active_versions_file": {
+      "code_version": "3f7f00eb28e5",
+      "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
+      "rulebook": {
+        "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
+        "path": "config\\rulebook.md"
+      },
+      "system_prompt": {
+        "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
+        "path": "prompts\\system_prompt.md"
+      },
+      "updated_at": "2026-05-15T18:42:30.076721Z"
+    },
+    "canary": {
+      "enabled": false,
+      "target_agents": [
+        "crypto-deepseek"
+      ]
+    },
+    "features": {
+      "advanced_risk_model": false,
+      "cloud_sync": true,
+      "event_driven_tp_sl": true,
+      "improved_shared_learning": true
+    },
+    "last_successful_restart": {},
+    "latest_checkpoint": {
+      "cycle_number": 8,
+      "id": 8,
+      "status": "COMPLETED"
+    },
+    "pending_updates": [],
+    "versions": {
+      "code_version": "3f7f00eb28e5",
+      "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
+      "rulebook": {
+        "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
+        "path": "config\\rulebook.md"
+      },
+      "system_prompt": {
+        "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
+        "path": "prompts\\system_prompt.md"
+      },
+      "updated_at": "2026-05-15T18:47:54.468908Z"
+    }
+  },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:36:11.964687Z"
+        "timestamp": "2026-05-15T18:47:53.320822Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:36:12.964687Z"
+        "timestamp": "2026-05-15T18:47:54.320822Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T18:36:11.964687Z"
+        "timestamp": "2026-05-15T18:47:53.320822Z"
       },
       {
         "drawdown": -0.0005,
         "timestamp": "2026-05-15T17:31:33.617469Z"
       },
       {
-        "drawdown": -0.002917381425498752,
-        "timestamp": "2026-05-15T18:36:12.964687Z"
+        "drawdown": -0.0029740768594689144,
+        "timestamp": "2026-05-15T18:47:54.320822Z"
       }
     ]
   },
@@ -67,34 +115,34 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:36:11.964687Z"
+        "timestamp": "2026-05-15T18:47:53.320822Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:36:12.964687Z"
+        "timestamp": "2026-05-15T18:47:54.320822Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T18:36:11.964687Z"
+        "timestamp": "2026-05-15T18:47:53.320822Z"
       },
       {
         "equity": 9995.0,
         "timestamp": "2026-05-15T17:31:33.617469Z"
       },
       {
-        "equity": 9970.826185745012,
-        "timestamp": "2026-05-15T18:36:12.964687Z"
+        "equity": 9970.25923140531,
+        "timestamp": "2026-05-15T18:47:54.320822Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T18:36:12.951176Z",
+  "generated_at": "2026-05-15T18:47:54.307258Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.004086600000000001,
+      "api_cost_usd": 0.004616640000000001,
       "equity": 10000.0,
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
@@ -110,8 +158,8 @@
     },
     {
       "agent_id": "crypto-grok",
-      "api_cost_usd": 0.0053016,
-      "equity": 9970.826185745012,
+      "api_cost_usd": 0.0060733,
+      "equity": 9970.25923140531,
       "max_drawdown_pct": 0.0005,
       "profit_factor": 0.0,
       "realized_pnl": -5.0,
@@ -120,8 +168,8 @@
       "score": 0.23233333333333334,
       "sharpe": 0.0,
       "sortino": 0.0,
-      "total_return_pct": -0.002917381425498752,
-      "unrealized_pnl": -24.173814254987207,
+      "total_return_pct": -0.0029740768594689144,
+      "unrealized_pnl": -24.740768594689005,
       "win_rate": 0.0
     }
   ],
@@ -2040,30 +2088,30 @@
         "volume": 3785.646
       },
       {
-        "close": 79179.6,
+        "close": 79175.1,
         "high": 79532.1,
         "low": 79135.4,
         "open": 79432.2,
         "timestamp": "2026-05-15T18:00:00Z",
-        "volume": 2840.152
+        "volume": 3252.444
       }
     ],
-    "current_price": 79179.6,
+    "current_price": 79175.1,
     "indicators": {
       "atr_14": 477.66428571428486,
-      "bb_high": 81947.54613232973,
-      "bb_low": 78624.68386767028,
-      "bb_mid": 80286.115,
-      "ema_20": 79998.36510325375,
-      "ema_50": 80262.18698271837,
-      "macd": -375.8840027792903,
-      "macd_signal": -203.88678822666117,
-      "rsi_14": 32.456099383523394
+      "bb_high": 81947.95317936812,
+      "bb_low": 78623.82682063188,
+      "bb_mid": 80285.89,
+      "ema_20": 79997.93653182517,
+      "ema_50": 80262.01051213013,
+      "macd": -376.242977138274,
+      "macd_signal": -203.9585830984579,
+      "rsi_14": 32.42202990505973
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-15T18:35:32.421898Z"
+    "timestamp": "2026-05-15T18:47:15.023442Z"
   },
   "open_positions": [
     {
@@ -2083,7 +2131,7 @@
       "symbol": "BTC",
       "take_profit_1": 80394.0,
       "take_profit_2": 81200.0,
-      "unrealized_pnl": -24.173814254987207
+      "unrealized_pnl": -24.740768594689005
     }
   ],
   "recent_trades": [
@@ -2108,11 +2156,21 @@
   ],
   "reflections_summary": {
     "by_agent": {
-      "crypto-deepseek": 7,
-      "crypto-grok": 7
+      "crypto-deepseek": 8,
+      "crypto-grok": 8
     },
-    "count_recent": 14,
+    "count_recent": 16,
     "recent": [
+      {
+        "agent_id": "crypto-grok",
+        "content": "Daily review: equity=9970.26, realized_pnl=-5.00, unrealized_pnl=-24.74. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T18:47:54.078819Z"
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T18:47:53.890118Z"
+      },
       {
         "agent_id": "crypto-grok",
         "content": "Daily review: equity=9970.83, realized_pnl=-5.00, unrealized_pnl=-24.17. Keep valid setups only and preserve rule compliance.",
@@ -2232,46 +2290,46 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 7,
-    "last_cycle_duration_seconds": 41.61434889999964,
-    "last_cycle_started_at": "2026-05-15T18:35:31.308797Z",
-    "next_cycle_at": "2026-05-15T19:36:12.923146Z",
+    "cycle_number": 8,
+    "last_cycle_duration_seconds": 40.55021199999919,
+    "last_cycle_started_at": "2026-05-15T18:47:13.681379Z",
+    "next_cycle_at": "2026-05-15T19:47:54.231591Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 7
+    "total_cycles_completed": 8
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.375,
-    "confidence_correlation": 0.7255423196197439,
+    "action_agreement_rate": 0.3333333333333333,
+    "confidence_correlation": 0.7342230982143524,
     "convergence_warning": false,
-    "created_at": "2026-05-15T18:36:12.895769Z",
-    "directional_agreement_rate": 0.375,
-    "leverage_similarity": 0.375,
+    "created_at": "2026-05-15T18:47:54.158523Z",
+    "directional_agreement_rate": 0.3333333333333333,
+    "leverage_similarity": 0.3333333333333333,
     "shared_ratio_applied": 0.3,
-    "thesis_embedding_similarity": 0.049399342738158526
+    "thesis_embedding_similarity": 0.04627459307221656
   },
   "sync": {
-    "generated_at": "2026-05-15T18:36:12.951176Z",
+    "generated_at": "2026-05-15T18:47:54.307258Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-15T18:36:12.923146Z",
+    "latest_cycle_at": "2026-05-15T18:47:54.231591Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.004086600000000001,
-      "input_tokens": 19784.0,
-      "output_tokens": 4703.0,
-      "requests": 8.0
+      "estimated_cost_usd": 0.004616640000000001,
+      "input_tokens": 22514.0,
+      "output_tokens": 5231.0,
+      "requests": 9.0
     },
     "crypto-grok": {
-      "estimated_cost_usd": 0.0053016,
-      "input_tokens": 20543.0,
-      "output_tokens": 2386.0,
-      "requests": 8.0
+      "estimated_cost_usd": 0.0060733,
+      "input_tokens": 23649.0,
+      "output_tokens": 2687.0,
+      "requests": 9.0
     }
   },
   "trade_history_summary": {
@@ -2294,41 +2352,41 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 38.6948778262903,
-      "grok_workload_pct": 37.579562405273414,
-      "local_workload_pct": 23.72555976843629,
-      "total_api_cost_usd": 0.009388200000000001
+      "deepseek_workload_pct": 38.5823020958034,
+      "grok_workload_pct": 37.580316456817904,
+      "local_workload_pct": 23.837381447378704,
+      "total_api_cost_usd": 0.01068994
     },
-    "deepseek_pct": 37.9759883509402,
-    "grok_pct": 37.71150189159477,
+    "deepseek_pct": 37.7942719823951,
+    "grok_pct": 37.58559481762933,
     "latest": {
-      "api_cost_usd": 0.0013078999999999999,
-      "deepseek_tokens": 3259,
-      "deepseek_workload_pct": 37.9759883509402,
-      "grok_tokens": 3357,
-      "grok_workload_pct": 37.71150189159477,
-      "local_workload_pct": 24.312509757465033,
+      "api_cost_usd": 0.00130174,
+      "deepseek_tokens": 3258,
+      "deepseek_workload_pct": 37.7942719823951,
+      "grok_tokens": 3407,
+      "grok_workload_pct": 37.58559481762933,
+      "local_workload_pct": 24.620133199975573,
       "payload": {
-        "deepseek_api_cost_usd": 0.000539,
-        "deepseek_input_tokens": 2668,
+        "deepseek_api_cost_usd": 0.0005300400000000001,
+        "deepseek_input_tokens": 2730,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 591,
+        "deepseek_output_tokens": 528,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
-        "grok_api_cost_usd": 0.0007689,
-        "grok_input_tokens": 3032,
+        "grok_api_cost_usd": 0.0007717000000000001,
+        "grok_input_tokens": 3106,
         "grok_lessons_generated": 1,
-        "grok_output_tokens": 325,
+        "grok_output_tokens": 301,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
         "local_database_queries": 17,
         "local_functions_executed": 22,
         "local_memory_retrievals": 4,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 41.61434889999964
+        "total_wall_time_seconds": 40.55021199999919
       },
-      "timestamp": "2026-05-15T18:36:12.932589"
+      "timestamp": "2026-05-15T18:47:54.289142"
     },
-    "local_pct": 24.312509757465033
+    "local_pct": 24.620133199975573
   }
 }
