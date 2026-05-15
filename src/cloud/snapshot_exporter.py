@@ -61,6 +61,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         },
         "leader": leader,
         "btc_price": btc_price,
+        "market": _market_payload(latest_snapshot),
         "agents": agents,
         "open_positions": open_positions,
         "recent_trades": recent_trades,
@@ -126,6 +127,24 @@ def _account_summary(repository: ArenaRepository, agent_id: str, initial_equity:
         "open_risk": summary.open_risk,
         "daily_pnl": summary.daily_pnl,
         "open_positions": len(summary.open_positions),
+    }
+
+
+def _market_payload(snapshot: Any) -> dict[str, Any]:
+    if not snapshot:
+        return {"candles": []}
+    payload = _safe_json(snapshot.payload_json, {})
+    candles = payload.get("candles") if isinstance(payload, dict) else []
+    if not isinstance(candles, list):
+        candles = []
+    return {
+        "symbol": snapshot.symbol,
+        "timestamp": _iso(snapshot.timestamp),
+        "current_price": snapshot.current_price,
+        "timeframe": payload.get("timeframe") if isinstance(payload, dict) else None,
+        "regime": payload.get("regime") if isinstance(payload, dict) else None,
+        "indicators": payload.get("indicators", {}) if isinstance(payload, dict) else {},
+        "candles": candles[-500:],
     }
 
 

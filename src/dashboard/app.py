@@ -741,12 +741,14 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     recent_trades = pd.DataFrame(snapshot.get("recent_trades", []))
 
     with tabs[0]:
+        st.subheader("BTCUSDT Perpetual")
+        render_cloud_price_chart(snapshot)
         st.subheader("Agent Accounts")
         if agents:
             cols = st.columns(len(agents))
             for column, (agent_id, values) in zip(cols, agents.items()):
                 column.metric(agent_id, fmt_money(values.get("equity")), f"{float(values.get('roi_pct') or 0):.2f}% ROI")
-                column.caption(f"Realized {fmt_money(values.get('realized_pnl'))} · Unrealized {fmt_money(values.get('unrealized_pnl'))}")
+                column.caption(f"Realized {fmt_money(values.get('realized_pnl'))} - Unrealized {fmt_money(values.get('unrealized_pnl'))}")
         workload = snapshot.get("workload", {})
         work_cols = st.columns(3)
         work_cols[0].metric("Local workload", f"{float(workload.get('local_pct') or 0):.1f}%")
@@ -796,6 +798,72 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         st.subheader("Reflections")
         reflections = pd.DataFrame(snapshot.get("reflections_summary", {}).get("recent", []))
         st.dataframe(reflections, width="stretch", hide_index=True) if not reflections.empty else st.info("No recent reflections.")
+
+
+def render_cloud_price_chart(snapshot: dict[str, Any]) -> None:
+    frame = _snapshot_candles(snapshot)
+    if frame.empty:
+        try:
+            frame = fetch_ohlcv(settings.competition.timeframe, limit=500)
+        except Exception:
+            frame = pd.DataFrame()
+    if frame.empty:
+        st.info("No BTCUSDT candle data available in the latest snapshot.")
+        return
+    frame = frame.tail(500).copy()
+    frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+    frame = frame.dropna(subset=["timestamp"])
+    if frame.empty:
+        st.info("BTCUSDT candle timestamps are unavailable.")
+        return
+    fig = go.Figure(
+        data=[
+            go.Candlestick(
+                x=frame["timestamp"],
+                open=frame["open"],
+                high=frame["high"],
+                low=frame["low"],
+                close=frame["close"],
+                name="BTCUSDT",
+                increasing_line_color="#22c55e",
+                decreasing_line_color="#ef4444",
+            )
+        ]
+    )
+    for length, color in [(9, "#f59e0b"), (21, "#38bdf8"), (50, "#a855f7"), (200, "#e5e7eb")]:
+        if len(frame) >= length:
+            fig.add_trace(
+                go.Scatter(
+                    x=frame["timestamp"],
+                    y=ema(frame["close"], length),
+                    mode="lines",
+                    name=f"EMA {length}",
+                    line=dict(color=color, width=1),
+                )
+            )
+    fig.update_layout(
+        template="plotly_dark",
+        height=520,
+        margin=dict(l=8, r=8, t=24, b=8),
+        xaxis_rangeslider_visible=False,
+        yaxis_title="BTCUSDT",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+    )
+    st.plotly_chart(fig, width="stretch")
+
+
+def _snapshot_candles(snapshot: dict[str, Any]) -> pd.DataFrame:
+    candles = snapshot.get("market", {}).get("candles", [])
+    if not isinstance(candles, list) or not candles:
+        return pd.DataFrame()
+    frame = pd.DataFrame(candles)
+    required = {"timestamp", "open", "high", "low", "close"}
+    if not required.issubset(frame.columns):
+        return pd.DataFrame()
+    for column in ["open", "high", "low", "close", "volume"]:
+        if column in frame.columns:
+            frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    return frame.dropna(subset=["open", "high", "low", "close"])
 
 
 def _flatten_snapshot_series(series: dict[str, list[dict[str, Any]]], value_column: str) -> pd.DataFrame:
