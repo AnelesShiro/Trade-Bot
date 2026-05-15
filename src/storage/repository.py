@@ -394,6 +394,47 @@ class ArenaRepository:
         with self.session_factory() as session, session.begin():
             session.add(HealthCheckRecord(component=component, status=status, critical=int(critical), message=message))
 
+    def competition_start_time(self) -> datetime | None:
+        with self.session_factory() as session:
+            marker = session.scalars(
+                select(HealthCheckRecord)
+                .where(HealthCheckRecord.component == "competition_start", HealthCheckRecord.status == "PASS")
+                .order_by(HealthCheckRecord.created_at.asc())
+                .limit(1)
+            ).first()
+            if marker:
+                return marker.created_at
+
+            candidates: list[datetime] = []
+            workload = session.scalars(select(WorkloadCycleRecord).order_by(WorkloadCycleRecord.timestamp.asc()).limit(1)).first()
+            checkpoint = session.scalars(select(CheckpointRecord).order_by(CheckpointRecord.created_at.asc()).limit(1)).first()
+            snapshot = session.scalars(select(MarketSnapshotRecord).order_by(MarketSnapshotRecord.created_at.asc()).limit(1)).first()
+            for record, field in [
+                (workload, "timestamp"),
+                (checkpoint, "created_at"),
+                (snapshot, "created_at"),
+            ]:
+                if record:
+                    candidates.append(getattr(record, field))
+            return min(candidates) if candidates else None
+
+    def ensure_competition_started(self, source: str) -> datetime:
+        existing = self.competition_start_time()
+        if existing:
+            return existing
+        now = datetime.now(UTC)
+        with self.session_factory() as session, session.begin():
+            session.add(
+                HealthCheckRecord(
+                    created_at=now,
+                    component="competition_start",
+                    status="PASS",
+                    critical=0,
+                    message=f"Official arena start recorded by {source}",
+                )
+            )
+        return now
+
     def latest_health_checks(self, limit: int = 100) -> list[HealthCheckRecord]:
         with self.session_factory() as session:
             stmt = select(HealthCheckRecord).order_by(HealthCheckRecord.created_at.desc()).limit(limit)

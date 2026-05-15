@@ -410,20 +410,36 @@ def metrics_table(trades: pd.DataFrame, signals: pd.DataFrame, responses: pd.Dat
     return pd.DataFrame(rows).sort_values("score", ascending=False)
 
 
-def competition_times(prompts: pd.DataFrame, responses: pd.DataFrame, signals: pd.DataFrame, trades: pd.DataFrame) -> tuple[datetime, datetime]:
-    candidates = []
-    for frame in [prompts, responses, signals, trades]:
-        if not frame.empty and "created_at" in frame.columns:
-            candidates.extend(pd.to_datetime(frame["created_at"], utc=True, errors="coerce").dropna().tolist())
-    start = min(candidates).to_pydatetime() if candidates else utc_now()
-    return start, start + timedelta(days=float(settings.competition.duration_days))
+def competition_times(
+    health_checks: pd.DataFrame,
+    checkpoints: pd.DataFrame,
+    workload_cycles: pd.DataFrame,
+) -> tuple[datetime, datetime]:
+    start = pd.NaT
+    if not health_checks.empty and {"component", "created_at"}.issubset(health_checks.columns):
+        markers = health_checks[health_checks["component"] == "competition_start"]
+        if not markers.empty:
+            start = pd.to_datetime(markers["created_at"], utc=True, errors="coerce").min()
+    if pd.isna(start):
+        candidates = []
+        for frame, column in [(workload_cycles, "timestamp"), (checkpoints, "created_at")]:
+            if not frame.empty and column in frame.columns:
+                candidate = pd.to_datetime(frame[column], utc=True, errors="coerce").min()
+                if pd.notna(candidate):
+                    candidates.append(candidate)
+        start = min(candidates) if candidates else pd.Timestamp(utc_now())
+    start_time = start.to_pydatetime()
+    return start_time, start_time + timedelta(days=float(settings.competition.duration_days))
 
 
 def last_cycle_timestamp(*frames: pd.DataFrame) -> pd.Timestamp | pd.NaT:
     timestamps = []
     for frame in frames:
-        if not frame.empty and "created_at" in frame.columns:
-            timestamps.extend(pd.to_datetime(frame["created_at"], utc=True, errors="coerce").dropna().tolist())
+        if frame.empty:
+            continue
+        for column in ["created_at", "timestamp"]:
+            if column in frame.columns:
+                timestamps.extend(pd.to_datetime(frame[column], utc=True, errors="coerce").dropna().tolist())
     return max(timestamps) if timestamps else pd.NaT
 
 
@@ -704,63 +720,164 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     age = utc_now() - generated.to_pydatetime() if pd.notna(generated) else None
     stale_warning = timedelta(minutes=settings.cloud_dashboard.stale_warning_minutes)
     stale_critical = timedelta(minutes=settings.cloud_dashboard.stale_critical_minutes)
+    competition = snapshot.get("competition", {})
+    start_time = pd.to_datetime(competition.get("start_time"), utc=True, errors="coerce")
+    end_time = pd.to_datetime(competition.get("end_time"), utc=True, errors="coerce")
+    start_dt = start_time.to_pydatetime() if pd.notna(start_time) else utc_now()
+    end_dt = end_time.to_pydatetime() if pd.notna(end_time) else start_dt + timedelta(days=float(settings.competition.duration_days))
+    elapsed = max(timedelta(0), utc_now() - start_dt)
+    duration = max(timedelta(seconds=1), end_dt - start_dt)
+    remaining = max(timedelta(0), end_dt - utc_now())
+    percent_complete = min(1.0, elapsed.total_seconds() / duration.total_seconds())
+
+    agents = snapshot.get("agents", {})
+    snapshot_agent_ids = list(agents) or agent_ids
+    market = snapshot.get("market", {})
+    chart_frame = _snapshot_candles(snapshot)
+    if not chart_frame.empty and "timestamp" in chart_frame.columns:
+        chart_frame["timestamp"] = pd.to_datetime(chart_frame["timestamp"], utc=True, errors="coerce")
+    current_price = float(snapshot.get("btc_price") or market.get("current_price") or 0.0)
+    open_positions = pd.DataFrame(snapshot.get("open_positions", []))
+    if not open_positions.empty:
+        for column in ["opened_at", "closed_at"]:
+            if column in open_positions.columns:
+                open_positions[column] = pd.to_datetime(open_positions[column], utc=True, errors="coerce")
+        open_positions = build_position_view(open_positions, current_price)
+    recent_trades = pd.DataFrame(snapshot.get("recent_trades", []))
+    if not recent_trades.empty and "created_at" in recent_trades.columns:
+        recent_trades["created_at"] = pd.to_datetime(recent_trades["created_at"], utc=True, errors="coerce")
+    metric_frame = _snapshot_metric_frame(snapshot, snapshot_agent_ids)
+    workload_cycles = _snapshot_workload_cycles(snapshot)
+    equity_rows = _flatten_snapshot_series(snapshot.get("equity_curves", {}), "equity")
+    drawdown_rows = _flatten_snapshot_series(snapshot.get("drawdown_curves", {}), "drawdown")
+    rejected_recent = pd.DataFrame(snapshot.get("rejected_signals_summary", {}).get("recent", []))
+    reflections = pd.DataFrame(snapshot.get("reflections_summary", {}).get("recent", []))
+    token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
+    diversity = snapshot.get("strategy_diversity_metrics", {})
+    workload = snapshot.get("workload", {})
+    latest_cycle_at = pd.to_datetime(snapshot.get("system_status", {}).get("latest_cycle_at"), utc=True, errors="coerce")
+    next_run = latest_cycle_at.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(latest_cycle_at) else None
+    status = snapshot.get("competition_status", "UNKNOWN")
+    spent = float(snapshot.get("api_costs", {}).get("total") or 0.0)
+    api_budget = os.getenv("ARENA_API_BUDGET_USD")
+    remaining_budget = (float(api_budget) - spent) if api_budget else None
 
     with st.sidebar:
-        st.title("Arena Cloud")
-        st.metric("Status", snapshot.get("competition_status", "UNKNOWN"))
-        st.metric("Leader", snapshot.get("leader") or "-")
-        st.metric("BTC", fmt_money(snapshot.get("btc_price")))
-        st.caption(f"Last sync: {fmt_time(generated) if pd.notna(generated) else 'unknown'}")
+        st.title("Arena Control")
+        selected_agents = st.multiselect("Agents", options=snapshot_agent_ids, default=snapshot_agent_ids, format_func=lambda aid: agent_names.get(aid, aid))
+        chart_timeframe = st.selectbox("Chart timeframe", ["1m", "5m", "15m", "1h", "4h", "1d"], index=3)
+        auto_refresh = st.selectbox("Auto refresh", options=["Off", "10 sec", "30 sec", "60 sec"], index=0)
         if st.button("Refresh Now", width="stretch"):
             st.cache_data.clear()
             st.rerun()
+        st.divider()
+        st.caption("Date range")
+        st.date_input("Filter range", value=(datetime.now().date() - timedelta(days=7), datetime.now().date()))
+        st.divider()
+        st.metric("Status", status)
+        st.metric("Open positions", len(open_positions))
+        st.metric("API spent", f"${spent:.4f}")
+        st.metric("Uptime", "-")
+        st.caption(f"Last updated: {fmt_time(generated) if pd.notna(generated) else 'unknown'}")
+
+    if auto_refresh != "Off":
+        seconds = int(auto_refresh.split()[0])
+        st.markdown(f"<meta http-equiv='refresh' content='{seconds}'>", unsafe_allow_html=True)
 
     st.title("Crypto Paper Trading Arena")
-    st.caption("Cloud dashboard snapshot from GitHub")
+    st.caption("BTCUSDT perpetual futures paper competition")
+
+    sync_note = ""
     if age is None:
-        st.error("Snapshot timestamp is missing or invalid.")
+        sync_note = "Snapshot timestamp is missing or invalid."
     elif age > stale_critical:
-        st.error(f"Snapshot is stale: {human_duration(age)} since last successful sync.")
+        sync_note = f"Snapshot is stale: {human_duration(age)} since last successful sync."
     elif age > stale_warning:
-        st.warning(f"Snapshot is getting stale: {human_duration(age)} since last successful sync.")
+        sync_note = f"Snapshot is getting stale: {human_duration(age)} since last successful sync."
     else:
-        st.success(f"Last successful sync: {fmt_time(generated)} ({human_duration(age)} ago)")
+        sync_note = f"Last successful sync: {fmt_time(generated)} ({human_duration(age)} ago)"
+    st.markdown(
+        f"""
+        <div class="arena-banner">
+            <span class="{status_class(status)}">{status}</span>
+            <span class="muted"> | Last cycle: {fmt_time(latest_cycle_at) if pd.notna(latest_cycle_at) else 'none yet'}
+            | Next run: {fmt_time(next_run) if next_run else 'not scheduled'}
+            | Open positions: {len(open_positions)}
+            | Uptime since checkpoint: -
+            | Remaining API budget: {fmt_money(remaining_budget) if remaining_budget is not None else 'not configured'}
+            | Price: {current_price:,.2f} ({competition.get('timeframe') or chart_timeframe})</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if age is None or age > stale_critical:
+        st.error(sync_note)
+    elif age > stale_warning:
+        st.warning(sync_note)
 
-    competition = snapshot.get("competition", {})
-    top = st.columns(5)
-    top[0].metric("Competition", snapshot.get("competition_status", "UNKNOWN"))
-    top[1].metric("BTC Price", fmt_money(snapshot.get("btc_price")))
-    top[2].metric("Leader", snapshot.get("leader") or "-")
-    top[3].metric("Start", fmt_short_time(pd.to_datetime(competition.get("start_time"), utc=True, errors="coerce")))
-    top[4].metric("End", fmt_short_time(pd.to_datetime(competition.get("end_time"), utc=True, errors="coerce")))
+    banner_cols = st.columns(4)
+    banner_cols[0].metric("Current leader", snapshot.get("leader") or "-")
+    banner_cols[1].metric("Time remaining", human_duration(remaining))
+    banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
+    banner_cols[3].metric("Start / End", f"{fmt_short_time(start_dt)} -> {fmt_short_time(end_dt)}")
+    st.progress(percent_complete)
 
-    tabs = st.tabs(["Overview", "Positions", "Trades", "Equity", "Leaderboard", "Ops", "Memory"])
-    agents = snapshot.get("agents", {})
-    leaderboard = pd.DataFrame(snapshot.get("leaderboard", []))
-    open_positions = pd.DataFrame(snapshot.get("open_positions", []))
-    recent_trades = pd.DataFrame(snapshot.get("recent_trades", []))
+    tabs = st.tabs(
+        [
+            "Overview",
+            "Live Positions",
+            "Trade History",
+            "Equity Curves",
+            "Leaderboard",
+            "Rejected Signals",
+            "Raw Model Outputs",
+            "Memory & Reflections",
+            "Token & Cost",
+            "Workload Attribution",
+            "Strategy Diversity",
+            "Configuration",
+        ]
+    )
 
     with tabs[0]:
-        st.subheader("BTCUSDT Perpetual")
-        render_cloud_price_chart(snapshot)
-        st.subheader("Agent Accounts")
-        if agents:
-            cols = st.columns(len(agents))
-            for column, (agent_id, values) in zip(cols, agents.items()):
-                column.metric(agent_id, fmt_money(values.get("equity")), f"{float(values.get('roi_pct') or 0):.2f}% ROI")
-                column.caption(f"Realized {fmt_money(values.get('realized_pnl'))} - Unrealized {fmt_money(values.get('unrealized_pnl'))}")
-        workload = snapshot.get("workload", {})
-        work_cols = st.columns(3)
-        work_cols[0].metric("Local workload", f"{float(workload.get('local_pct') or 0):.1f}%")
-        work_cols[1].metric("DeepSeek", f"{float(workload.get('deepseek_pct') or 0):.1f}%")
-        work_cols[2].metric("Grok", f"{float(workload.get('grok_pct') or 0):.1f}%")
+        st.subheader("Overview")
+        st.markdown('<div class="chart-shell">', unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='chart-head'><strong>BTCUSDT Perpetual</strong><span>{chart_timeframe} | EMA 9/21/50/200 | Volume | RSI | Trade overlays</span></div>",
+            unsafe_allow_html=True,
+        )
+        render_live_chart(chart_frame, recent_trades, open_positions, selected_agents or snapshot_agent_ids)
+        st.markdown("</div>", unsafe_allow_html=True)
+        if metric_frame.empty:
+            st.info("No metrics yet. Run the competition once to populate the dashboard.")
+        else:
+            for _, row in metric_frame[metric_frame["agent_id"].isin(selected_agents or snapshot_agent_ids)].iterrows():
+                st.markdown(f"#### {row['agent']}  `{row['model']}`")
+                cols = st.columns(6)
+                cols[0].metric("Current equity", fmt_money(row["current_equity"]), fmt_pct(row["total_return_pct"]))
+                cols[1].metric("Unrealized PnL", fmt_money(row["unrealized_pnl"]))
+                cols[2].metric("Realized PnL", fmt_money(row["realized_pnl"]))
+                cols[3].metric("Max drawdown", fmt_pct(row["max_drawdown"]))
+                cols[4].metric("Win rate", fmt_pct(row["win_rate"]))
+                cols[5].metric("Sharpe", f"{row['sharpe_ratio']:.2f}")
+                cols = st.columns(6)
+                cols[0].metric("Profit factor", f"{row['profit_factor']:.2f}")
+                cols[1].metric("Rule compliance", fmt_pct(row["rule_compliance"]))
+                cols[2].metric("Rejected signals", int(row["rejected_signals"]))
+                cols[3].metric("Token usage", f"{int(row['token_usage']):,}")
+                cols[4].metric("API cost", f"${row['estimated_api_cost']:.4f}")
+                cols[5].metric("Profit / $ API", f"{row['profit_per_api_dollar']:.2f}")
 
     with tabs[1]:
-        st.subheader("Open Positions")
-        st.dataframe(open_positions, width="stretch", hide_index=True) if not open_positions.empty else st.info("No open positions in the latest snapshot.")
+        st.subheader("Live Positions")
+        if selected_agents and not open_positions.empty:
+            open_positions = open_positions[open_positions["agent_id"].isin(selected_agents)]
+        st.dataframe(open_positions, width="stretch", hide_index=True) if not open_positions.empty else st.info("No live positions.")
 
     with tabs[2]:
-        st.subheader("Recent Trades")
+        st.subheader("Trade History")
+        if selected_agents and not recent_trades.empty:
+            recent_trades = recent_trades[recent_trades["agent_id"].isin(selected_agents)]
         st.dataframe(recent_trades, width="stretch", hide_index=True) if not recent_trades.empty else st.info("No recent trades.")
         st.subheader("Trade History Summary")
         summary = pd.DataFrame.from_dict(snapshot.get("trade_history_summary", {}), orient="index").reset_index(names="agent_id")
@@ -781,23 +898,66 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     with tabs[4]:
         st.subheader("Leaderboard")
-        st.dataframe(leaderboard, width="stretch", hide_index=True) if not leaderboard.empty else st.info("No leaderboard yet.")
+        columns = ["agent_id", "current_equity", "total_return_pct", "sharpe_ratio", "max_drawdown", "rule_compliance", "profit_per_api_dollar", "score"]
+        st.dataframe(metric_frame[[column for column in columns if column in metric_frame.columns]], width="stretch", hide_index=True) if not metric_frame.empty else st.info("No leaderboard yet.")
 
     with tabs[5]:
-        st.subheader("Token Usage and API Costs")
-        token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
-        st.dataframe(token_usage, width="stretch", hide_index=True) if not token_usage.empty else st.info("No token usage yet.")
-        st.json(snapshot.get("api_costs", {}))
         st.subheader("Rejected Signals")
-        rejected = snapshot.get("rejected_signals_summary", {})
-        st.json(rejected)
-        st.subheader("Strategy Diversity")
-        st.json(snapshot.get("strategy_diversity_metrics", {}))
+        st.dataframe(rejected_recent, width="stretch", hide_index=True) if not rejected_recent.empty else st.success("No rejected signals.")
 
     with tabs[6]:
-        st.subheader("Reflections")
-        reflections = pd.DataFrame(snapshot.get("reflections_summary", {}).get("recent", []))
+        st.subheader("Raw Model Outputs")
+        st.info("Raw prompts and model outputs are not included in the cloud snapshot yet.")
+
+    with tabs[7]:
+        st.subheader("Memory & Reflections")
         st.dataframe(reflections, width="stretch", hide_index=True) if not reflections.empty else st.info("No recent reflections.")
+
+    with tabs[8]:
+        st.subheader("Token & Cost Analytics")
+        st.dataframe(token_usage, width="stretch", hide_index=True) if not token_usage.empty else st.info("No token usage yet.")
+        st.json(snapshot.get("api_costs", {}))
+
+    with tabs[9]:
+        st.subheader("Workload Attribution")
+        latest = workload.get("latest") or {}
+        kpis = st.columns(5)
+        kpis[0].metric("Local Machine", f"{float(workload.get('local_pct') or 0):.1f}%")
+        kpis[1].metric("DeepSeek", f"{float(workload.get('deepseek_pct') or 0):.1f}%")
+        kpis[2].metric("Grok", f"{float(workload.get('grok_pct') or 0):.1f}%")
+        kpis[3].metric("Total API Cost", f"${spent:.4f}")
+        kpis[4].metric("Profit / $ API", f"{float(metric_frame['profit_per_api_dollar'].mean()) if not metric_frame.empty else 0.0:.2f}")
+        st.dataframe(workload_cycles, width="stretch", hide_index=True) if not workload_cycles.empty else st.info("No workload cycles recorded in snapshot.")
+        if latest:
+            st.json(latest)
+
+    with tabs[10]:
+        st.subheader("Strategy Diversity")
+        if diversity:
+            cols = st.columns(5)
+            cols[0].metric("Action agreement", fmt_pct(diversity.get("action_agreement_rate")))
+            cols[1].metric("Direction agreement", fmt_pct(diversity.get("directional_agreement_rate")))
+            cols[2].metric("Leverage similarity", fmt_pct(diversity.get("leverage_similarity")))
+            cols[3].metric("Confidence corr.", f"{float(diversity.get('confidence_correlation') or 0):.2f}")
+            cols[4].metric("Shared ratio", fmt_pct(diversity.get("shared_ratio_applied")))
+            st.json(diversity)
+        else:
+            st.info("No diversity metrics yet.")
+
+    with tabs[11]:
+        st.subheader("Configuration")
+        st.json(
+            {
+                "models": agent_models,
+                "symbol": competition.get("symbol", settings.competition.display_symbol),
+                "chart_timeframe": chart_timeframe,
+                "poll_interval_seconds": settings.competition.poll_interval_seconds,
+                "competition_duration_days": competition.get("duration_days", settings.competition.duration_days),
+                "initial_equity": settings.accounts.initial_equity,
+                "cloud_snapshot_generated_at": snapshot.get("generated_at"),
+                "sync_note": sync_note,
+            }
+        )
 
 
 def render_cloud_price_chart(snapshot: dict[str, Any]) -> None:
@@ -850,6 +1010,56 @@ def render_cloud_price_chart(snapshot: dict[str, Any]) -> None:
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
     )
     st.plotly_chart(fig, width="stretch")
+
+
+def _snapshot_metric_frame(snapshot: dict[str, Any], snapshot_agent_ids: list[str]) -> pd.DataFrame:
+    rows = []
+    leaderboard = {str(row.get("agent_id")): row for row in snapshot.get("leaderboard", []) if isinstance(row, dict)}
+    agents = snapshot.get("agents", {})
+    usage = snapshot.get("token_usage", {})
+    rejected = snapshot.get("rejected_signals_summary", {}).get("by_agent", {})
+    for agent_id in snapshot_agent_ids:
+        account = agents.get(agent_id, {}) if isinstance(agents, dict) else {}
+        board = leaderboard.get(agent_id, {})
+        token = usage.get(agent_id, {}) if isinstance(usage, dict) else {}
+        equity = float(account.get("equity") or board.get("equity") or initial_equity)
+        realized = float(account.get("realized_pnl") or board.get("realized_pnl") or 0.0)
+        unrealized = float(account.get("unrealized_pnl") or board.get("unrealized_pnl") or 0.0)
+        total_return = float(board.get("total_return_pct") or ((equity - initial_equity) / initial_equity if initial_equity else 0.0))
+        cost = float(token.get("estimated_cost_usd") or snapshot.get("api_costs", {}).get("by_agent", {}).get(agent_id) or 0.0)
+        rows.append(
+            {
+                "agent_id": agent_id,
+                "agent": agent_names.get(agent_id, agent_id),
+                "model": agent_models.get(agent_id, ""),
+                "current_equity": equity,
+                "total_return_pct": total_return,
+                "realized_pnl": realized,
+                "unrealized_pnl": unrealized,
+                "max_drawdown": float(board.get("max_drawdown_pct") or board.get("max_drawdown") or 0.0),
+                "win_rate": float(board.get("win_rate") or 0.0),
+                "sharpe_ratio": float(board.get("sharpe") or board.get("sharpe_ratio") or 0.0),
+                "profit_factor": float(board.get("profit_factor") or 0.0),
+                "rule_compliance": float(board.get("rule_compliance") or 1.0),
+                "rejected_signals": int(rejected.get(agent_id) or board.get("rejected_signals") or 0),
+                "token_usage": int(float(token.get("input_tokens") or 0) + float(token.get("output_tokens") or 0)),
+                "requests": int(float(token.get("requests") or 0)),
+                "estimated_api_cost": cost,
+                "profit_per_api_dollar": realized / cost if cost > 0 else 0.0,
+                "score": float(board.get("score") or 0.0),
+            }
+        )
+    return pd.DataFrame(rows).sort_values("score", ascending=False) if rows else pd.DataFrame()
+
+
+def _snapshot_workload_cycles(snapshot: dict[str, Any]) -> pd.DataFrame:
+    latest = snapshot.get("workload", {}).get("latest") or {}
+    if not latest:
+        return pd.DataFrame()
+    row = dict(latest)
+    if "timestamp" not in row:
+        row["timestamp"] = snapshot.get("system_status", {}).get("latest_cycle_at") or snapshot.get("generated_at")
+    return pd.DataFrame([row])
 
 
 def _snapshot_candles(snapshot: dict[str, Any]) -> pd.DataFrame:
@@ -935,8 +1145,8 @@ current_price = float(ohlcv["close"].iloc[-1]) if not ohlcv.empty else None
 positions_view = build_position_view(positions, current_price)
 curve = equity_curve(trades, positions_view)
 metric_frame = metrics_table(trades, signals, responses, positions_view, curve)
-start_time, end_time = competition_times(prompts, responses, signals, trades)
-last_cycle = last_cycle_timestamp(prompts, responses, signals, trades)
+start_time, end_time = competition_times(health_checks, checkpoints, workload_cycles)
+last_cycle = last_cycle_timestamp(prompts, responses, signals, trades, checkpoints, workload_cycles)
 latest_checkpoint_time = pd.to_datetime(checkpoints["created_at"], utc=True, errors="coerce").max() if not checkpoints.empty and "created_at" in checkpoints.columns else pd.NaT
 system_uptime = utc_now() - latest_checkpoint_time.to_pydatetime() if pd.notna(latest_checkpoint_time) else None
 next_run = last_cycle.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(last_cycle) else None

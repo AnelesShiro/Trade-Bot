@@ -91,14 +91,8 @@ def write_dashboard_snapshot(settings: Settings, repository: ArenaRepository) ->
 
 
 def _competition_window(settings: Settings, repository: ArenaRepository) -> tuple[datetime, datetime]:
-    candidates: list[datetime] = []
-    first_snapshot = repository.first_market_snapshot()
-    if first_snapshot:
-        candidates.append(_utc(first_snapshot.created_at))
-    trades = repository.trades()
-    if trades:
-        candidates.append(_utc(trades[0].created_at))
-    start = min(candidates) if candidates else datetime.now(UTC)
+    official_start = repository.competition_start_time()
+    start = _utc(official_start) if official_start else datetime.now(UTC)
     return start, start + timedelta(days=settings.competition.duration_days)
 
 

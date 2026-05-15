@@ -73,6 +73,7 @@ class CompetitionRunner:
             self._last_cloud_push_at: float | None = None
 
     def run_once(self) -> None:
+        self.repository.ensure_competition_started("run_once")
         self._reload_runtime_config()
         self._ensure_not_killed()
         workload = WorkloadTracker()
@@ -118,9 +119,13 @@ class CompetitionRunner:
                 self.repository.latest_checkpoint(),
                 self.settings.safety.downtime_threshold_seconds,
             )
-        logger.info("starting live competition loop")
-        started_at = datetime.now(UTC)
-        ends_at = started_at.timestamp() + (self.settings.competition.duration_days * 86400)
+        official_start = self.repository.ensure_competition_started("run_live")
+        if official_start.tzinfo is None:
+            official_start = official_start.replace(tzinfo=UTC)
+        else:
+            official_start = official_start.astimezone(UTC)
+        logger.info("starting live competition loop from official start {}", official_start)
+        ends_at = official_start.timestamp() + (self.settings.competition.duration_days * 86400)
         while datetime.now(UTC).timestamp() < ends_at:
             try:
                 self._reload_runtime_config()
