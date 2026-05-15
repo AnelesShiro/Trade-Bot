@@ -443,9 +443,11 @@ def last_cycle_timestamp(*frames: pd.DataFrame) -> pd.Timestamp | pd.NaT:
     return max(timestamps) if timestamps else pd.NaT
 
 
-def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime) -> str:
+def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime, start_time: datetime | None = None) -> str:
     if not db_path.exists():
         return "ERROR"
+    if start_time and utc_now() < start_time:
+        return "SCHEDULED"
     if utc_now() >= end_time:
         return "COMPLETED"
     if pd.isna(last_cycle):
@@ -454,7 +456,7 @@ def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime) -> str:
 
 
 def status_class(status: str) -> str:
-    return {"RUNNING": "status-running", "PAUSED": "status-paused", "COMPLETED": "status-completed", "ERROR": "status-error"}.get(status, "status-paused")
+    return {"RUNNING": "status-running", "SCHEDULED": "status-completed", "PAUSED": "status-paused", "COMPLETED": "status-completed", "ERROR": "status-error"}.get(status, "status-paused")
 
 
 def build_markers(trades: pd.DataFrame, visible_agents: list[str]) -> list[dict[str, Any]]:
@@ -757,7 +759,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     workload = snapshot.get("workload", {})
     latest_cycle_at = pd.to_datetime(snapshot.get("system_status", {}).get("latest_cycle_at"), utc=True, errors="coerce")
     next_run = latest_cycle_at.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(latest_cycle_at) else None
-    status = snapshot.get("competition_status", "UNKNOWN")
+    status = "SCHEDULED" if utc_now() < start_dt else snapshot.get("competition_status", "UNKNOWN")
     spent = float(snapshot.get("api_costs", {}).get("total") or 0.0)
     api_budget = os.getenv("ARENA_API_BUDGET_USD")
     remaining_budget = (float(api_budget) - spent) if api_budget else None
@@ -1150,7 +1152,7 @@ last_cycle = last_cycle_timestamp(prompts, responses, signals, trades, checkpoin
 latest_checkpoint_time = pd.to_datetime(checkpoints["created_at"], utc=True, errors="coerce").max() if not checkpoints.empty and "created_at" in checkpoints.columns else pd.NaT
 system_uptime = utc_now() - latest_checkpoint_time.to_pydatetime() if pd.notna(latest_checkpoint_time) else None
 next_run = last_cycle.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(last_cycle) else None
-status = system_status(last_cycle, end_time)
+status = system_status(last_cycle, end_time, start_time)
 elapsed = max(timedelta(0), utc_now() - start_time)
 duration = max(timedelta(seconds=1), end_time - start_time)
 remaining = max(timedelta(0), end_time - utc_now())

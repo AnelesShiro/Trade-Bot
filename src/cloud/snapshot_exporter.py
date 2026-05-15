@@ -31,7 +31,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
     leader = leaderboard[0].agent_id if leaderboard else None
     start_time, end_time = _competition_window(settings, repository)
     latest_cycle = _latest_cycle_timestamp(repository)
-    status = _competition_status(generated_at, end_time, latest_cycle, settings.competition.poll_interval_seconds)
+    status = _competition_status(generated_at, start_time, end_time, latest_cycle, settings.competition.poll_interval_seconds)
     agents = {
         agent.id: _account_summary(repository, agent.id, settings.accounts.initial_equity, btc_price)
         for agent in settings.agents
@@ -96,7 +96,9 @@ def _competition_window(settings: Settings, repository: ArenaRepository) -> tupl
     return start, start + timedelta(days=settings.competition.duration_days)
 
 
-def _competition_status(now: datetime, end_time: datetime, latest_cycle: datetime | None, poll_interval: int) -> str:
+def _competition_status(now: datetime, start_time: datetime, end_time: datetime, latest_cycle: datetime | None, poll_interval: int) -> str:
+    if now < start_time:
+        return "SCHEDULED"
     if now >= end_time:
         return "COMPLETED"
     if not latest_cycle:
