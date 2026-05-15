@@ -40,7 +40,7 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-15T20:00:50.547365Z",
     "active_versions_file": {
-      "code_version": "ddce6a6a2e66",
+      "code_version": "3953052de75d",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -50,7 +50,7 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T20:00:50.354281Z"
+      "updated_at": "2026-05-15T20:11:33.182512Z"
     },
     "canary": {
       "enabled": false,
@@ -77,7 +77,7 @@
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "ddce6a6a2e66",
+      "code_version": "3953052de75d",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -87,24 +87,24 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T20:00:50.718449Z"
+      "updated_at": "2026-05-15T20:11:33.249512Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T20:00:49.590878Z"
+        "timestamp": "2026-05-15T20:11:32.126995Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T20:00:50.590878Z"
+        "timestamp": "2026-05-15T20:11:33.126995Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T20:00:49.590878Z"
+        "timestamp": "2026-05-15T20:11:32.126995Z"
       },
       {
         "drawdown": -0.0005,
@@ -112,7 +112,7 @@
       },
       {
         "drawdown": -0.0038673449191324837,
-        "timestamp": "2026-05-15T20:00:50.590878Z"
+        "timestamp": "2026-05-15T20:11:33.126995Z"
       }
     ]
   },
@@ -120,17 +120,17 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T20:00:49.590878Z"
+        "timestamp": "2026-05-15T20:11:32.126995Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T20:00:50.590878Z"
+        "timestamp": "2026-05-15T20:11:33.126995Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T20:00:49.590878Z"
+        "timestamp": "2026-05-15T20:11:32.126995Z"
       },
       {
         "equity": 9995.0,
@@ -138,11 +138,11 @@
       },
       {
         "equity": 9961.326550808675,
-        "timestamp": "2026-05-15T20:00:50.590878Z"
+        "timestamp": "2026-05-15T20:11:33.126995Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T20:00:50.575875Z",
+  "generated_at": "2026-05-15T20:11:33.105993Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -2420,6 +2420,774 @@
         ]
       }
     },
+    "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto Grok",
+        "btc_price": 79104.2,
+        "confidence": 3.0,
+        "cycle_number": 10,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": 2.73,
+        "id": 22,
+        "leverage": 10.0,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "xai/grok-4-1-fast",
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T03:00:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 deeper test (low 79102 > SL), RSI back to 31 oversold; support intact for potential reversal.",
+        "timestamp_local": "2026-05-16T03:00:49.800920+07:00",
+        "timestamp_utc": "2026-05-15T20:00:49.800920Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 79104.2,
+        "confidence": 1.0,
+        "cycle_number": 10,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "NO_TRADE",
+          "executed": false,
+          "reason": "non_trade_decision"
+        },
+        "expected_rr": null,
+        "id": 21,
+        "leverage": null,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "deepseek/deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,104 made a lower low at 79,012.5 on the 19:00 candle and is grinding lower. Price is well below EMA_20 (79,841) and EMA_50 (80,175). MACD has widened significantly to -407 with signal at -274, confirming bearish momentum. RSI at 30.95 is near oversold. However, the regime remains downtrend_low_vol, not strong_trend or breakout. OI is flat near 102,056 BTC. My short trigger of a volume-backed breakdown below the 78,980 swing low has not yet fired. Standing aside is correct per my trend-following strategy in a regime mismatch.",
+        "timestamp_local": "2026-05-16T03:00:29.801871+07:00",
+        "timestamp_utc": "2026-05-15T20:00:29.801871Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 3.0,
+        "cycle_number": 9,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 20,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T02:52:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 testing deeper lows (79012 > SL), RSI 35 improving, support intact; mean reversion setup persists.",
+        "timestamp_local": "2026-05-16T02:52:22.578529+07:00",
+        "timestamp_utc": "2026-05-15T19:52:22.578529Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 9,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 19,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,134 made a lower low at 79,012.5 on the 19:00 candle, approaching the key 78,980 swing low. The downtrend structure is intact (price below EMA_20 at 79,921, EMA_50 at 80,220; MACD widening bearishly to -391). RSI at 35 is neutral. Regime is still downtrend_low_vol, which does not match my preferred regimes (breakout, strong_trend). OI is declining (102,033 BTC), suggesting liquidation-driven selling rather than aggressive new shorts. My trigger is a volume-backed breakdown below 78,980; that has not yet occurred with conviction.",
+        "timestamp_local": "2026-05-16T02:52:04.797004+07:00",
+        "timestamp_utc": "2026-05-15T19:52:04.797004Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 3.0,
+        "cycle_number": 8,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 18,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T01:47:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 stable retrace, lows holding 79135 > BB low/SL, RSI oversold 32; mean reversion pending.",
+        "timestamp_local": "2026-05-16T01:47:53.696676+07:00",
+        "timestamp_utc": "2026-05-15T18:47:53.696676Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 8,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 17,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,175 remains in a downtrend (below EMA_20 at 79,998 and EMA_50 at 80,262; MACD -376). The 18:00 bearish engulfing candle rejected 79,532 and closed near low. RSI at 32.4 is bearish-neutral. Regime downtrend_low_vol mismatches my breakout/strong_trend preference. No volume-backed breakdown below the 78,980 swing low has occurred. Standing aside preserves capital.",
+        "timestamp_local": "2026-05-16T01:47:34.790037+07:00",
+        "timestamp_utc": "2026-05-15T18:47:34.790037Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 3.0,
+        "cycle_number": 7,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 16,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T01:35:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 testing support lows ~79135 (prior candle low), RSI 32 oversold, no invalidation; await mean reversion bounce.",
+        "timestamp_local": "2026-05-16T01:36:12.424925+07:00",
+        "timestamp_utc": "2026-05-15T18:36:12.424925Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 7,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 15,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,180 remains in a clear downtrend below both EMAs (EMA_20 at 79,998, EMA_50 at 80,262). The 18:00 candle rejected at 79,532 and closed at the low at 79,180, confirming seller dominance after the bounce attempt. MACD is widening (-376). RSI at 32.5 is bearish-neutral. The regime is downtrend_low_vol which is a mismatch for my trend-following strategy. My short trigger is a volume-backed breakdown below the 78,980 recent swing low, which has not fired.",
+        "timestamp_local": "2026-05-16T01:35:52.808234+07:00",
+        "timestamp_utc": "2026-05-15T18:35:52.808234Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 3.0,
+        "cycle_number": 6,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 14,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T01:32:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 retrace continues (unreal -25) but low 79163 > SL/BB low 78623, RSI 32 oversold; support holding for mean reversion bounce.",
+        "timestamp_local": "2026-05-16T01:32:43.294806+07:00",
+        "timestamp_utc": "2026-05-15T18:32:43.294806Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 6,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 13,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,170 remains in a clear downtrend: price below EMA_20 (79,997) and EMA_50 (80,262), MACD widening to -376, RSI at 32 bearish. The 18:00 candle rejected at 79,532 and closed back down, printing a bearish engulfing pattern on high volume. However, the regime is downtrend_low_vol, not strong_trend or breakout. I need a clean volume-backed breakdown below the 78,980 swing low to trigger a short. That trigger has not fired.",
+        "timestamp_local": "2026-05-16T01:32:21.082664+07:00",
+        "timestamp_utc": "2026-05-15T18:32:21.082664Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 3.0,
+        "cycle_number": 5,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 12,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T01:29:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 pullback after high 79532 (near TP1), low 79163 > SL/BB low 78640, RSI 33 oversold hold; mean reversion intact.",
+        "timestamp_local": "2026-05-16T01:29:46.596018+07:00",
+        "timestamp_utc": "2026-05-15T18:29:46.596018Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 5,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 11,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,260 remains in a downtrend (price below EMA_20 at 80,006 and EMA_50 at 80,265; MACD -369). RSI at 33.08 has recovered to neutral but price rejected at 79,532 intraday high and pulled back. The regime is still downtrend_low_vol, mismatched with my preferred regimes (breakout, strong_trend). No volume-backed breakout or EMA reclaim has occurred. Standing aside preserves capital and rule compliance.",
+        "timestamp_local": "2026-05-16T01:29:24.904073+07:00",
+        "timestamp_utc": "2026-05-15T18:29:24.904073Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 4.0,
+        "cycle_number": 4,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": 2.73,
+        "id": 10,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T00:51:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47112,\"leverage\":10",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Position 1 bounce continuing (price +31 > entry, RSI rising from oversold, vol up); mean reversion to BB mid intact.",
+        "timestamp_local": "2026-05-16T00:51:24.965841+07:00",
+        "timestamp_utc": "2026-05-15T17:51:24.965841Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 4,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 9,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": nu",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,403 remains in a downtrend (price below EMA_20 at 80,082 and EMA_50 at 80,305; MACD -352). RSI at 31.34 is recovering but still neutral-bearish. The regime is downtrend_low_vol which does not match my preferred regimes (breakout, strong_trend). No volume-backed breakout or EMA reclaim has occurred. Standing aside preserves capital and rule compliance.",
+        "timestamp_local": "2026-05-16T00:50:58.039296+07:00",
+        "timestamp_utc": "2026-05-15T17:50:58.039296Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "OPEN",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": 4.0,
+        "cycle_number": 3,
+        "decision": "PAPER_TRADE",
+        "direction": "LONG",
+        "entry_price": 79355.6,
+        "execution_result": {
+          "executed": true
+        },
+        "expected_rr": 3.04,
+        "id": 8,
+        "leverage": 10.0,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T00:31:00+07:00\",\"decision\":\"PAPER_TRADE\",\"action\":\"OPEN\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"entry\":79355.6,\"leverage\":10,\"margin_used_usdt\":1000,\"mar",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.83,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "RSI 30.6 oversold rising, price bounced from BB low 78735 (high 79421 > prior highs), volume uptick in low vol downtrend; mean reversion to BB mid confirmed starting.",
+        "timestamp_local": "2026-05-16T00:31:33.607447+07:00",
+        "timestamp_utc": "2026-05-15T17:31:33.607447Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 3,
+        "decision": "WATCHLIST",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 7,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"WATCHLIST\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": n",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC at 79,356 remains in a downtrend (below EMA_20 at 80,077 and EMA_50 at 80,303; MACD -356). RSI has recovered to 30.6 out of oversold territory, and price bounced off the BB_low area (78,735) on moderate volume (2,026 BTC). This is a minor bullish signal but insufficient for entry: price must reclaim EMA_20 to confirm a reversal, or break below BB_low with volume to confirm continuation. Regime is still downtrend_low_vol, a mismatch for my trend-following strategy. No clean trigger has appeared.",
+        "timestamp_local": "2026-05-16T00:31:00.897669+07:00",
+        "timestamp_utc": "2026-05-15T17:31:00.897669Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": null,
+        "cycle_number": 2,
+        "decision": "NO_TRADE",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 6,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"decision\":\"NO_TRADE\",\"action\":\"NONE\",\"symbol\":\"BTC\",\"direction\":\"NONE\",\"execution_type\":\"NONE\",\"data_used\":[\"market_state price=79268.8\",\"RSI=29.16 oversold\",\"BB low/mid=78719/80390\",\"regime=downtrend_low_vol\",\"no bo",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Oversold RSI near BB low intact but no reversal signal yet; selective stand-aside.",
+        "timestamp_local": "2026-05-16T00:12:25.664756+07:00",
+        "timestamp_utc": "2026-05-15T17:12:25.664756Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": 2.0,
+        "cycle_number": 2,
+        "decision": "WATCHLIST",
+        "direction": "NONE",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 4,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"WATCHLIST\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": n",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "BTC remains in a clear downtrend (price 79,269 below EMA_20 at 80,069 and EMA_50 at 80,300; MACD -363). RSI at 29.15 is oversold but no reversal confirmed. No volume surge, no breakout below BB_low (78,719), no EMA reclaim. Regime is downtrend_low_vol - a mismatch for my trend-following strategy. No clean trigger has materialized. Preserving capital and rule compliance is the correct action.",
+        "timestamp_local": "2026-05-16T00:11:26.622671+07:00",
+        "timestamp_utc": "2026-05-15T17:11:26.622671Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": []
+        }
+      }
+    ],
+    "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": null,
+        "cycle_number": 2,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 5,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T00:11:00+07:00\",\"decision\":\"NO_TRADE\",\"action\":\"NONE\",\"symbol\":\"BTC\",\"direction\":\"NONE\",\"execution_type\":\"NONE\",\"data_used\":\"market_state: price=79268.8 (+61 from prior), RSI=29.16 (still overs",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-16T00:12:02.712693+07:00",
+        "timestamp_utc": "2026-05-15T17:12:02.712693Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: 3 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7926...dle, no open positions.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nreason\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Setup intact (oversold R...ronger reversal signal.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nwatch\n  Extra inputs are not permitted [type=extra_forbidden, input_value='Close above 79363 (prior...eak <78719 invalidates.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+          ]
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": null,
+        "cycle_number": 2,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 3,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"WATCHLIST\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": n",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: Expecting ',' delimiter: line 32 column 286 (char 1190)",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-16T00:11:06.444085+07:00",
+        "timestamp_utc": "2026-05-15T17:11:06.444085Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: Expecting ',' delimiter: line 32 column 286 (char 1190)"
+          ]
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-grok",
+        "btc_price": null,
+        "confidence": null,
+        "cycle_number": 1,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 2,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T00:04:00+07:00\",\"decision\":\"PAPER_TRADE\",\"action\":\"OPEN\",\"symbol\":\"BTC\",\"instrument\":\"BTCUSDT perpetual futures\",\"position_id_or_context\":\"new\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"lev",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: 4 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7920...ositions, equity=10000.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\ninstrument\n  Extra inputs are not permitted [type=extra_forbidden, input_value='BTCUSDT perpetual futures', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='new', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nconfidence_1_to_5\n  Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-16T00:05:25.571757+07:00",
+        "timestamp_utc": "2026-05-15T17:05:25.571757Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: 4 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7920...ositions, equity=10000.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\ninstrument\n  Extra inputs are not permitted [type=extra_forbidden, input_value='BTCUSDT perpetual futures', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='new', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nconfidence_1_to_5\n  Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+          ]
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "crypto-deepseek",
+        "btc_price": null,
+        "confidence": null,
+        "cycle_number": 1,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "executed": false
+        },
+        "expected_rr": null,
+        "id": 1,
+        "leverage": null,
+        "market_regime": null,
+        "model_name": null,
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"WATCHLIST\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"entry\": null,\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": n",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: Expecting ',' delimiter: line 32 column 291 (char 1195)",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-16T00:04:36.550216+07:00",
+        "timestamp_utc": "2026-05-15T17:04:36.550216Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: Expecting ',' delimiter: line 32 column 291 (char 1195)"
+          ]
+        }
+      }
+    ],
     "rejected_signal_count": 4,
     "rejection_breakdown": {
       "PARSE_ERROR": 4
@@ -2436,7 +3204,7 @@
     "thesis_embedding_similarity": 0.04485403768845691
   },
   "sync": {
-    "generated_at": "2026-05-15T20:00:50.575875Z",
+    "generated_at": "2026-05-15T20:11:33.105993Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
