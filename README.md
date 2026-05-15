@@ -296,7 +296,7 @@ git push -u origin main
 1. Create a Render account.
 2. Connect the GitHub repository.
 3. Create a Web Service from the repository.
-4. Render uses Python `3.11.11` from `runtime.txt`. Keep `pyproject.toml` at `requires-python = ">=3.11"` so package metadata matches Render's runtime.
+4. Render uses Python `3.11.11` from the `PYTHON_VERSION` value in `render.yaml`. The repository also includes `.python-version` with `3.11.11` and `runtime.txt` with `python-3.11.11` as fallback markers. Keep `pyproject.toml` at `requires-python = ">=3.11"` so package metadata matches Render's runtime.
 5. Render uses:
    - Build command: `pip install -r requirements.txt`
    - Start command: `streamlit run src/dashboard/app.py --server.port $PORT --server.address 0.0.0.0`
@@ -398,4 +398,5 @@ Render build fails:
 
 - Verify `requirements.txt` installs locally.
 - Confirm Render is using this project directory and the checked-in `render.yaml`.
-- Confirm `runtime.txt` contains `python-3.11.11`; Render should not try to build with Python 3.13 or another default runtime.
+- Confirm `render.yaml` sets `PYTHON_VERSION=3.11.11` and `.python-version` contains `3.11.11`; Render should not try to build with Python 3.14 or another default runtime.
+- If the log path contains `.venv/lib/python3.14`, Render is ignoring the repo runtime setting. Trigger a manual deploy from the latest commit or set `PYTHON_VERSION` to `3.11.11` directly in the Render service environment.
