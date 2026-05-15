@@ -4,7 +4,7 @@ import yaml
 
 from src.competition.config_manager import ConfigManager
 from src.config import FeatureFlagSettings
-from src.cloud.snapshot_exporter import export_dashboard_snapshot
+from src.cloud.snapshot_exporter import export_dashboard_snapshot, validate_snapshot_contract
 from src.schemas import Action
 from src.trading.position_manager import PositionManager
 
@@ -59,6 +59,7 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "workload",
         "token_usage",
         "api_costs",
+        "signal_audit_summary",
         "rejected_signals_summary",
         "reflections_summary",
         "strategy_diversity_metrics",
@@ -78,3 +79,19 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "total_cycles_completed",
     ]:
         assert key in snapshot["runner"]
+    for key in [
+        "accepted_signal_count",
+        "rejected_signal_count",
+        "acceptance_rate",
+        "rejection_breakdown",
+        "latest_accepted_signal",
+        "latest_rejected_signal",
+    ]:
+        assert key in snapshot["signal_audit_summary"]
+    assert validate_snapshot_contract(snapshot) == []
+
+
+def test_snapshot_contract_rejects_missing_signal_audit() -> None:
+    errors = validate_snapshot_contract({"generated_at": "now", "runner": {}, "leaderboard": [], "rejected_signals_summary": {}, "deployment": {}})
+
+    assert any("signal_audit_summary" in error for error in errors)

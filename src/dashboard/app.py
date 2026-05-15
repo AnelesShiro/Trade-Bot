@@ -829,6 +829,8 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
     diversity = snapshot.get("strategy_diversity_metrics", {})
     workload = snapshot.get("workload", {})
+    audit_missing = "signal_audit_summary" not in snapshot
+    audit_summary = _snapshot_audit_summary(snapshot)
     latest_cycle_at = pd.to_datetime(snapshot.get("system_status", {}).get("latest_cycle_at"), utc=True, errors="coerce")
     next_run = latest_cycle_at.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(latest_cycle_at) else None
     status = "SCHEDULED" if utc_now() < start_dt else snapshot.get("competition_status", "UNKNOWN")
@@ -888,6 +890,8 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         st.error(sync_note)
     elif age > stale_warning:
         st.warning(sync_note)
+    if audit_missing:
+        st.error("Snapshot is missing the signal audit contract. Trading data is still visible, but Accepted/Rejected Signals are waiting for the next valid snapshot.")
 
     banner_cols = st.columns(4)
     banner_cols[0].metric("Current leader", snapshot.get("leader") or "-")
@@ -979,7 +983,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     with tabs[5]:
         st.subheader("Accepted Signals")
-        audit = snapshot.get("signal_audit_summary", {})
+        audit = audit_summary
         cols = st.columns(5)
         cols[0].metric("Total accepted", int(audit.get("accepted_signal_count") or 0))
         cols[1].metric("Acceptance rate", fmt_pct(audit.get("acceptance_rate")))
@@ -987,6 +991,8 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         cols[3].metric("Avg confidence", "-")
         cols[4].metric("Avg expected R:R", "-")
         latest = audit.get("latest_accepted_signal")
+        if audit_missing:
+            st.error("Signal audit summary is missing from this snapshot. The exporter now blocks malformed snapshots so this clears after the next valid sync.")
         if latest:
             st.dataframe(pd.DataFrame([latest]), width="stretch", hide_index=True)
             with st.expander("Latest accepted signal details", expanded=False):
@@ -996,12 +1002,14 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     with tabs[6]:
         st.subheader("Rejected Signals")
-        audit = snapshot.get("signal_audit_summary", {})
+        audit = audit_summary
         cols = st.columns(4)
         cols[0].metric("Total rejected", int(audit.get("rejected_signal_count") or 0))
         cols[1].metric("Rejection rate", fmt_pct(1 - float(audit.get("acceptance_rate") or 0)))
         cols[2].metric("Top rejection reasons", ", ".join(f"{k}: {v}" for k, v in (audit.get("rejection_breakdown") or {}).items()) or "-")
         cols[3].metric("Recent rejected", len(rejected_recent))
+        if audit_missing:
+            st.error("Signal audit summary is missing from this snapshot. Rejected rows below may be legacy-only.")
         st.dataframe(rejected_recent, width="stretch", hide_index=True) if not rejected_recent.empty else st.success("No rejected signals.")
         latest = audit.get("latest_rejected_signal")
         if latest:
@@ -1156,6 +1164,22 @@ def _snapshot_metric_frame(snapshot: dict[str, Any], snapshot_agent_ids: list[st
             }
         )
     return pd.DataFrame(rows).sort_values("score", ascending=False) if rows else pd.DataFrame()
+
+
+def _snapshot_audit_summary(snapshot: dict[str, Any]) -> dict[str, Any]:
+    audit = snapshot.get("signal_audit_summary")
+    if isinstance(audit, dict):
+        return audit
+    rejected_summary = snapshot.get("rejected_signals_summary", {}) if isinstance(snapshot.get("rejected_signals_summary"), dict) else {}
+    rejected_count = int(rejected_summary.get("total_recent") or 0)
+    return {
+        "accepted_signal_count": 0,
+        "rejected_signal_count": rejected_count,
+        "acceptance_rate": 0.0,
+        "rejection_breakdown": {},
+        "latest_accepted_signal": None,
+        "latest_rejected_signal": (rejected_summary.get("recent") or [None])[0],
+    }
 
 
 def _snapshot_workload_cycles(snapshot: dict[str, Any]) -> pd.DataFrame:

@@ -88,11 +88,55 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
 
 def write_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -> Path:
     snapshot = export_dashboard_snapshot(settings, repository)
+    contract_errors = validate_snapshot_contract(snapshot)
+    if contract_errors:
+        message = "dashboard snapshot contract failed: " + "; ".join(contract_errors)
+        repository.save_health_check("dashboard_snapshot_contract", "FAIL", False, message[:1000])
+        raise RuntimeError(message)
     path = settings.resolve_path(settings.cloud_dashboard.snapshot_path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(snapshot, indent=2, sort_keys=True, default=str) + "\n", encoding="utf-8")
+    repository.save_health_check("dashboard_snapshot_contract", "PASS", False, "Dashboard snapshot contract passed")
     logger.info("exported dashboard snapshot {}", path)
     return path
+
+
+def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    required_top_level = [
+        "generated_at",
+        "runner",
+        "leaderboard",
+        "signal_audit_summary",
+        "rejected_signals_summary",
+        "deployment",
+    ]
+    for key in required_top_level:
+        if key not in snapshot:
+            errors.append(f"missing top-level key {key}")
+    audit = snapshot.get("signal_audit_summary")
+    if not isinstance(audit, dict):
+        errors.append("signal_audit_summary must be an object")
+        return errors
+    required_audit = [
+        "accepted_signal_count",
+        "rejected_signal_count",
+        "acceptance_rate",
+        "rejection_breakdown",
+        "latest_accepted_signal",
+        "latest_rejected_signal",
+    ]
+    for key in required_audit:
+        if key not in audit:
+            errors.append(f"missing signal_audit_summary.{key}")
+    if not isinstance(audit.get("rejection_breakdown"), dict):
+        errors.append("signal_audit_summary.rejection_breakdown must be an object")
+    for key in ["accepted_signal_count", "rejected_signal_count"]:
+        try:
+            int(audit.get(key) or 0)
+        except (TypeError, ValueError):
+            errors.append(f"signal_audit_summary.{key} must be numeric")
+    return errors
 
 
 def _competition_window(settings: Settings, repository: ArenaRepository) -> tuple[datetime, datetime]:
