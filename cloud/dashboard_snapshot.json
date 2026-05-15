@@ -1,0 +1,191 @@
+{
+  "agents": {
+    "crypto-deepseek": {
+      "daily_pnl": 0.0,
+      "equity": 10000.0,
+      "open_margin": 0.0,
+      "open_positions": 0,
+      "open_risk": 0.0,
+      "realized_pnl": 0.0,
+      "roi_pct": 0.0,
+      "unrealized_pnl": 0.0
+    },
+    "crypto-grok": {
+      "daily_pnl": 0.0,
+      "equity": 10000.0,
+      "open_margin": 0.0,
+      "open_positions": 0,
+      "open_risk": 0.0,
+      "realized_pnl": 0.0,
+      "roi_pct": 0.0,
+      "unrealized_pnl": 0.0
+    }
+  },
+  "api_costs": {
+    "by_agent": {
+      "crypto-deepseek": 0.0,
+      "crypto-grok": 0.0
+    },
+    "total": 0.0
+  },
+  "btc_price": 0.0,
+  "competition": {
+    "duration_days": 7,
+    "end_time": "2026-05-22T12:26:10.688900Z",
+    "name": "crypto-paper-trading-arena",
+    "start_time": "2026-05-15T12:26:10.688900Z",
+    "symbol": "BTCUSDT"
+  },
+  "competition_status": "PAUSED",
+  "drawdown_curves": {
+    "crypto-deepseek": [
+      {
+        "drawdown": 0.0,
+        "timestamp": "2026-05-15T12:26:09.695419Z"
+      },
+      {
+        "drawdown": 0.0,
+        "timestamp": "2026-05-15T12:26:10.695419Z"
+      }
+    ],
+    "crypto-grok": [
+      {
+        "drawdown": 0.0,
+        "timestamp": "2026-05-15T12:26:09.695419Z"
+      },
+      {
+        "drawdown": 0.0,
+        "timestamp": "2026-05-15T12:26:10.695419Z"
+      }
+    ]
+  },
+  "equity_curves": {
+    "crypto-deepseek": [
+      {
+        "equity": 10000.0,
+        "timestamp": "2026-05-15T12:26:09.695419Z"
+      },
+      {
+        "equity": 10000.0,
+        "timestamp": "2026-05-15T12:26:10.695419Z"
+      }
+    ],
+    "crypto-grok": [
+      {
+        "equity": 10000.0,
+        "timestamp": "2026-05-15T12:26:09.695419Z"
+      },
+      {
+        "equity": 10000.0,
+        "timestamp": "2026-05-15T12:26:10.695419Z"
+      }
+    ]
+  },
+  "generated_at": "2026-05-15T12:26:10.676735Z",
+  "leader": "crypto-deepseek",
+  "leaderboard": [
+    {
+      "agent_id": "crypto-deepseek",
+      "api_cost_usd": 0.0,
+      "equity": 10000.0,
+      "max_drawdown_pct": 0.0,
+      "profit_factor": 0.0,
+      "realized_pnl": 0.0,
+      "rejected_signals": 0,
+      "rule_compliance": 1.0,
+      "score": 0.30100000000000005,
+      "sharpe": 0.0,
+      "sortino": 0.0,
+      "total_return_pct": 0.0,
+      "unrealized_pnl": 0.0,
+      "win_rate": 0.0
+    },
+    {
+      "agent_id": "crypto-grok",
+      "api_cost_usd": 0.0,
+      "equity": 10000.0,
+      "max_drawdown_pct": 0.0,
+      "profit_factor": 0.0,
+      "realized_pnl": 0.0,
+      "rejected_signals": 0,
+      "rule_compliance": 1.0,
+      "score": 0.30100000000000005,
+      "sharpe": 0.0,
+      "sortino": 0.0,
+      "total_return_pct": 0.0,
+      "unrealized_pnl": 0.0,
+      "win_rate": 0.0
+    }
+  ],
+  "open_positions": [],
+  "recent_trades": [],
+  "reflections_summary": {
+    "by_agent": {},
+    "count_recent": 0,
+    "recent": []
+  },
+  "rejected_signals_summary": {
+    "by_agent": {},
+    "recent": [],
+    "total_recent": 0
+  },
+  "strategy_diversity_metrics": {
+    "action_agreement_rate": 0.0,
+    "confidence_correlation": 0.0,
+    "convergence_warning": false,
+    "created_at": "2026-05-14T15:07:57.520581Z",
+    "directional_agreement_rate": 0.0,
+    "leverage_similarity": 0.0,
+    "shared_ratio_applied": 0.3,
+    "thesis_embedding_similarity": 0.0
+  },
+  "sync": {
+    "generated_at": "2026-05-15T12:26:10.676735Z",
+    "snapshot_path": "cloud/dashboard_snapshot.json",
+    "source": "local-sqlite"
+  },
+  "system_status": {
+    "database": "database/arena.db",
+    "latest_cycle_at": null,
+    "local_engine": "ONLINE_AT_EXPORT"
+  },
+  "token_usage": {
+    "crypto-deepseek": {
+      "estimated_cost_usd": 0.0,
+      "input_tokens": 0.0,
+      "output_tokens": 0.0,
+      "requests": 0.0
+    },
+    "crypto-grok": {
+      "estimated_cost_usd": 0.0,
+      "input_tokens": 0.0,
+      "output_tokens": 0.0,
+      "requests": 0.0
+    }
+  },
+  "trade_history_summary": {
+    "crypto-deepseek": {
+      "closed_or_fee_events": 0,
+      "losses": 0,
+      "realized_pnl": 0,
+      "trade_count": 0,
+      "win_rate": 0.0,
+      "wins": 0
+    },
+    "crypto-grok": {
+      "closed_or_fee_events": 0,
+      "losses": 0,
+      "realized_pnl": 0,
+      "trade_count": 0,
+      "win_rate": 0.0,
+      "wins": 0
+    }
+  },
+  "workload": {
+    "averages": {},
+    "deepseek_pct": 0.0,
+    "grok_pct": 0.0,
+    "latest": {},
+    "local_pct": 0.0
+  }
+}

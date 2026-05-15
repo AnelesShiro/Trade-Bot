@@ -1,0 +1,631 @@
+from __future__ import annotations
+
+import csv
+import hashlib
+import json
+import os
+import time
+from datetime import UTC, datetime
+from json import JSONDecodeError
+
+from src.cloud.git_sync import sync_dashboard_snapshot
+from src.cloud.snapshot_exporter import write_dashboard_snapshot
+from src.agents.reflection import reflect_on_day, reflect_on_trade
+from src.agents.base_agent import OpenClawAgent
+from src.agents.memory import AgentMemory
+from src.agents.shared_learning import IDENTITY_BLOCK, SHARED_LESSON_DISCLAIMER, SharedLearningManager
+from src.competition.checkpoint import build_checkpoint_payload, restore_from_checkpoint
+from src.competition.config_manager import ConfigManager
+from src.competition.evaluation import calculate_leaderboard
+from src.competition.workload import WorkloadTracker
+from src.config import Settings, load_rulebook
+from src.logger import logger
+from src.schemas import Action, MarketState
+from src.storage.models import build_session_factory, create_schema
+from src.storage.repository import ArenaRepository
+from src.storage.vector_store import LocalVectorStore
+from src.tools.backtest_pattern import backtest_pattern
+from src.tools.get_market_state import get_market_state
+from src.tools.retrieve_similar_trades import retrieve_similar_trades
+from src.tools.toolbox import ALLOWED_TOOLS, execute_local_tool
+from src.trading.execution import PaperExecutionEngine
+from src.trading.paper_account import PaperAccount
+from src.trading.position_manager import PositionManager
+from src.utils.costs import estimate_cost_usd
+from src.validation.rule_engine import RuleEngine
+from src.validation.signal_validator import validate_signal
+from src.operations.preflight import has_critical_failures, run_preflight
+
+
+class CompetitionRunner:
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
+        create_schema(settings.database_url)
+        self.repository = ArenaRepository(build_session_factory(settings.database_url))
+        self.config_manager = ConfigManager(self.repository)
+        self._apply_settings(settings)
+        self._cycle_count = 0
+
+    def _apply_settings(self, settings: Settings) -> None:
+        self.settings = settings
+        self.repository.upsert_agents(settings.agents)
+        self.memory = AgentMemory(
+            self.repository,
+            LocalVectorStore(settings.resolve_path(settings.paths.outputs_dir).parent / "data" / "vectors"),
+        )
+        self.shared_learning = SharedLearningManager(self.repository, settings)
+        self.shared_learning.ensure_storage()
+        self.position_manager = PositionManager(
+            self.repository,
+            taker_fee_rate=settings.execution.taker_fee_rate,
+            slippage_bps=settings.execution.slippage_bps,
+        )
+        self.position_manager.set_version_context(
+            self.config_manager.config_version_id,
+            self.config_manager.config_hash,
+            self.config_manager.code_version,
+        )
+        self.execution = PaperExecutionEngine(self.position_manager)
+        self.rule_engine = RuleEngine(settings.risk, settings.accounts.initial_equity)
+        self.rulebook = load_rulebook(settings)
+        self.system_prompt = settings.resolve_path("prompts/system_prompt.md").read_text(encoding="utf-8")
+        if not hasattr(self, "_last_cloud_push_at"):
+            self._last_cloud_push_at: float | None = None
+
+    def run_once(self) -> None:
+        self._reload_runtime_config()
+        self._ensure_not_killed()
+        workload = WorkloadTracker()
+        workload.local_function("market_data", "get_market_state")
+        market_state = get_market_state(self.settings)
+        snapshot_id = self.repository.save_market_snapshot(market_state)
+        logger.info("frozen market snapshot {} at {} price {}", snapshot_id, market_state.timestamp, market_state.current_price)
+        workload.database_query("position_management", details="load open positions for stop/target checks")
+        workload.local_function("risk_management", "update_stops_and_targets")
+        for trade in self.position_manager.update_stops_and_targets(market_state.current_price):
+            reflect_on_trade(self.memory, trade)
+            workload.reflection(trade.agent_id)
+        for agent in self.settings.agents:
+            self._run_agent_round(agent_id=agent.id, market_state=market_state, workload=workload)
+        workload.local_function("analytics", "persist_daily_metrics")
+        self._persist_daily_metrics(market_state, workload)
+        workload.local_function("learning", "promote_lessons")
+        promotion_result = self.shared_learning.promote_lessons()
+        workload.lesson_promotion(int(promotion_result.get("promoted", 0)))
+        workload.local_function("analytics", "analyze_diversity")
+        self.shared_learning.analyze_diversity()
+        workload.local_function("outputs", "write_outputs")
+        self._write_outputs(market_state)
+        workload.local_function("benchmark", "buy_and_hold_btc")
+        self._save_benchmark(market_state)
+        self._save_checkpoint(market_state, status="COMPLETED")
+        cycle, components = workload.finalize()
+        self.repository.save_workload_cycle(cycle, components)
+        self._cycle_count += 1
+        self._cloud_update_after_cycle()
+
+    def run_live(self, resume: bool = False) -> None:
+        if self.settings.safety.require_preflight_for_live:
+            results = run_preflight(self.settings)
+            for result in results:
+                self.repository.save_health_check(result.component, result.status, result.critical, result.message)
+            if has_critical_failures(results):
+                failed = ", ".join(result.component for result in results if not result.passed and result.critical)
+                raise RuntimeError(f"preflight-check failed; live execution blocked: {failed}")
+        if resume:
+            self._cycle_count = restore_from_checkpoint(
+                self.repository,
+                self.repository.latest_checkpoint(),
+                self.settings.safety.downtime_threshold_seconds,
+            )
+        logger.info("starting live competition loop")
+        started_at = datetime.now(UTC)
+        ends_at = started_at.timestamp() + (self.settings.competition.duration_days * 86400)
+        while datetime.now(UTC).timestamp() < ends_at:
+            try:
+                self._reload_runtime_config()
+                self.run_once()
+            except Exception as error:
+                logger.exception("live loop failed: {}", error)
+            time.sleep(self.settings.competition.poll_interval_seconds)
+        market_state = get_market_state(self.settings)
+        self._persist_daily_metrics(market_state)
+        self._write_outputs(market_state)
+        self._save_checkpoint(market_state, status="COMPLETED")
+        self._cloud_update_after_cycle()
+
+    def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
+        agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)
+        if workload:
+            workload.local_function("accounting", "account_summary", agent_id=agent_id)
+            workload.database_query("accounting", agent_id=agent_id)
+        account = PaperAccount(agent_id, self.settings.accounts.initial_equity, self.repository)
+        summary = account.summary(market_state.current_price)
+        if workload:
+            workload.memory_retrieval(agent_id=agent_id)
+        private_lessons = self.memory.retrieve_lessons(agent_id, f"{market_state.regime} BTC")
+        if workload:
+            workload.memory_retrieval(agent_id=agent_id, memory_type="shared_learning")
+        retrieved_lessons = self.shared_learning.retrieve_for_prompt(
+            agent_id,
+            f"{market_state.regime} BTC {market_state.indicators.model_dump()}",
+            private_lessons,
+        )
+        if workload:
+            workload.local_function("analytics", "retrieve_similar_trades", agent_id=agent_id)
+            workload.database_query("analytics", agent_id=agent_id)
+        similar = retrieve_similar_trades(self.repository, agent_id)
+        profile = self.shared_learning.profile(agent_id)
+        if workload:
+            workload.local_function("analytics", "backtest_pattern", agent_id=agent_id)
+        tool_context = {
+            "market_state": market_state.compact(),
+            "account_summary": summary.model_dump(mode="json"),
+            "similar_trades": similar,
+            "backtest_diagnostic": backtest_pattern(_candles_to_frame(market_state)).copy(),
+            "strategy_profile": profile.model_dump(),
+            "private_lessons": retrieved_lessons.private_lessons,
+            "shared_lessons": retrieved_lessons.shared_lessons,
+            "shared_learning": {
+                "shared_ratio_applied": retrieved_lessons.shared_ratio_applied,
+                "convergence_warning": retrieved_lessons.convergence_warning,
+                "shared_lesson_ids": retrieved_lessons.shared_lesson_ids,
+                "shared_lessons_are_advisory_only": True,
+            },
+            "feature_flags": self._feature_flags_for_agent(agent_id),
+            "version_context": {
+                "config_version_id": self.config_manager.config_version_id,
+                "config_hash": self.config_manager.config_hash,
+                "code_version": self.config_manager.code_version,
+            },
+        }
+        if workload:
+            workload.database_query("logging", agent_id=agent_id)
+        self.repository.save_tool_call(agent_id, "compose_context", {"agent_id": agent_id}, tool_context)
+        if workload:
+            workload.local_function("prompt_construction", "compose_prompt", agent_id=agent_id)
+        prompt = self._compose_prompt(agent_id, tool_context)
+        self._record_prompt_version(prompt)
+        if workload:
+            workload.database_query("logging", agent_id=agent_id)
+        prompt_id = self.repository.save_prompt(agent_id, prompt)
+        raw = self._run_agent_with_tools(OpenClawAgent(agent_settings), agent_id, prompt, prompt_id, market_state, workload)
+        input_tokens, output_tokens, estimated_cost = estimate_cost_usd(agent_settings.model, prompt, raw)
+        if workload:
+            workload.agent_tokens(agent_id, input_tokens, output_tokens, estimated_cost)
+            workload.database_query("logging", agent_id=agent_id)
+        self.repository.save_response(
+            agent_id,
+            raw,
+            prompt_id=prompt_id,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            estimated_cost_usd=estimated_cost,
+        )
+        if workload:
+            workload.local_function("validation", "prevalidate_signal", agent_id=agent_id)
+        dca_count = 0
+        signal_for_dca, _ = validate_signal(
+            raw,
+            self.rule_engine,
+            current_equity=summary.equity,
+            open_positions_count=len(summary.open_positions),
+            current_total_risk=summary.open_risk,
+            daily_pnl=summary.daily_pnl,
+        )
+        if signal_for_dca and signal_for_dca.position_id:
+            if workload:
+                workload.database_query("validation", agent_id=agent_id)
+            existing = self.repository.get_position(signal_for_dca.position_id)
+            dca_count = existing.dca_count if existing else 0
+        if workload:
+            workload.database_query("validation", agent_id=agent_id)
+        recent_stop = bool(
+            signal_for_dca
+            and signal_for_dca.action == Action.OPEN
+            and self.repository.latest_stop_loss_same_direction(agent_id, signal_for_dca.direction.value)
+        )
+        if workload:
+            workload.local_function("validation", "validate_signal", agent_id=agent_id)
+        signal, validation = validate_signal(
+            raw,
+            self.rule_engine,
+            current_equity=summary.equity,
+            open_positions_count=len(summary.open_positions),
+            current_total_risk=summary.open_risk,
+            daily_pnl=summary.daily_pnl,
+            dca_count_for_position=dca_count,
+            recent_stop_loss_same_direction=recent_stop,
+        )
+        if workload:
+            workload.database_query("logging", agent_id=agent_id)
+        self.repository.save_signal(agent_id, signal, validation, raw)
+        if workload:
+            workload.local_function("outputs", "append_signal_output", agent_id=agent_id)
+        self._append_signal_output(agent_id, raw, validation.accepted, validation.reasons)
+        if self._is_warmup_cycle():
+            logger.info("warm-up mode active; skipping paper execution for {}", agent_id)
+            self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")
+            return
+        if signal and validation.accepted and signal.decision.value in {"PAPER_TRADE", "POSITION_UPDATE"}:
+            if workload:
+                workload.local_function("paper_execution", "execute_signal", agent_id=agent_id)
+                workload.database_query("paper_execution", agent_id=agent_id)
+            position_id = self.execution.execute(signal, market_state.current_price)
+            if position_id and signal.action in {Action.REDUCE, Action.CUT, Action.CLOSE}:
+                if workload:
+                    workload.database_query("reflection", agent_id=agent_id)
+                trade = self.repository.latest_trade_for_position(position_id)
+                if trade and trade.exit_price is not None:
+                    reflect_on_trade(self.memory, trade)
+                    if workload:
+                        workload.reflection(agent_id)
+
+    def _run_agent_with_tools(
+        self,
+        agent: OpenClawAgent,
+        agent_id: str,
+        prompt: str,
+        prompt_id: int,
+        market_state: MarketState,
+        workload: WorkloadTracker | None = None,
+    ) -> str:
+        started = time.perf_counter()
+        raw = self._call_agent(agent, prompt)
+        if workload:
+            workload.agent_latency(agent_id, time.perf_counter() - started)
+        for step in range(2):
+            request = _parse_tool_request(raw)
+            if not request:
+                return raw
+            if workload:
+                workload.agent_tool_requests(agent_id, len(request))
+                workload.database_query("logging", agent_id=agent_id)
+            self.repository.save_response(agent_id, raw, prompt_id=prompt_id)
+            results = []
+            for item in request:
+                tool_name = str(item.get("tool", ""))
+                arguments = item.get("arguments") if isinstance(item.get("arguments"), dict) else {}
+                try:
+                    result = execute_local_tool(
+                        tool_name,
+                        arguments,
+                        self.settings,
+                        self.repository,
+                        market_state,
+                        agent_id,
+                    )
+                except Exception as error:
+                    result = {"error": str(error)}
+                if workload:
+                    workload.local_tool(tool_name, agent_id=agent_id, step=step)
+                    workload.database_query("logging", agent_id=agent_id)
+                self.repository.save_tool_call(agent_id, tool_name, arguments, result)
+                results.append({"tool": tool_name, "arguments": arguments, "result": result})
+            followup = (
+                prompt
+                + "\n\nLOCAL TOOL RESULTS:\n"
+                + json.dumps(results, indent=2, default=str)
+                + "\n\nReturn the final strict AgentSignal JSON now. Do not request more tools unless essential."
+            )
+            followup_prompt_id = self.repository.save_prompt(agent_id, followup)
+            if workload:
+                workload.database_query("logging", agent_id=agent_id)
+            started = time.perf_counter()
+            raw = self._call_agent(agent, followup)
+            if workload:
+                workload.agent_latency(agent_id, time.perf_counter() - started)
+                workload.database_query("logging", agent_id=agent_id)
+            self.repository.save_response(agent_id, raw, prompt_id=followup_prompt_id)
+        return raw
+
+    def _compose_prompt(self, agent_id: str, context: dict) -> str:
+        schema_hint = {
+            "agent": agent_id,
+            "decision": "NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE",
+            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD",
+            "symbol": "BTC",
+            "direction": "NONE|LONG|SHORT",
+            "execution_type": "NONE|MARKET|LIMIT|CONDITIONAL",
+                "required_for_trades": [
+                "entry",
+                "leverage",
+                "margin_used_usdt",
+                "stop_loss",
+                "take_profit_1",
+                "take_profit_2",
+                "account_risk_usdt",
+                "thesis",
+                "invalidation",
+                "counterargument",
+                "data_used",
+                ],
+            "optional_tool_request_format": {
+                "tool_requests": [
+                    {
+                        "tool": sorted(ALLOWED_TOOLS)[0],
+                        "arguments": {},
+                    }
+                ]
+            },
+                "available_local_tools": sorted(ALLOWED_TOOLS),
+                "feature_flags": self._feature_flags_for_agent(agent_id),
+        }
+        profile = self.shared_learning.profile(agent_id)
+        shared_context = context.get("shared_learning", {})
+        convergence_note = (
+            "ANTI-CONVERGENCE MODE: action agreement is elevated. Weight private lessons more heavily and be stricter with shared lessons."
+            if shared_context.get("convergence_warning")
+            else "Diversity status: normal. Maintain your own strategy identity."
+        )
+        return "\n\n".join(
+            [
+                self.system_prompt,
+                "RULEBOOK:\n" + self.rulebook,
+                "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
+                "PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(context.get("private_lessons", []), indent=2, default=str),
+                "SHARED LESSONS (advisory, max 30% unless anti-convergence reduces it):\n"
+                + SHARED_LESSON_DISCLAIMER
+                + "\n"
+                + json.dumps(context.get("shared_lessons", []), indent=2, default=str),
+                "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, indent=2),
+                "CURRENT CONTEXT:\n" + json.dumps(context, indent=2, default=str),
+            ]
+        )
+
+    def _record_prompt_version(self, prompt: str) -> None:
+        self.repository.save_prompt_version(
+            prompt_hash=_sha256(prompt),
+            system_prompt_hash=_sha256(self.system_prompt),
+            rulebook_hash=_sha256(self.rulebook),
+            prompt_preview=prompt[:1000],
+        )
+
+    def _reload_runtime_config(self) -> None:
+        current = self.config_manager.process_pending_commands(self.settings)
+        if self.settings.hot_reload.enabled and self.settings.hot_reload.auto_detect_changes:
+            current = self.config_manager.reload_if_changed(current)
+        if current is not self.settings:
+            self._apply_settings(current)
+            logger.info("active config {} code {}", self.config_manager.config_hash, self.config_manager.code_version)
+
+    def _feature_flags_for_agent(self, agent_id: str) -> dict[str, bool]:
+        return {name: self.settings.feature_enabled(name, agent_id) for name in self.settings.feature_flags}
+
+    def _cloud_update_after_cycle(self) -> None:
+        if not self.settings.cloud_dashboard.enabled:
+            return
+        try:
+            write_dashboard_snapshot(self.settings, self.repository)
+            if not (self.settings.cloud_dashboard.git_auto_push and self.settings.cloud_dashboard.push_after_each_cycle):
+                return
+            now = time.time()
+            min_interval = self.settings.cloud_dashboard.min_push_interval_seconds
+            if self._last_cloud_push_at and now - self._last_cloud_push_at < min_interval:
+                self.repository.save_health_check("cloud_git_sync", "PASS", False, "Skipped push; minimum interval not reached")
+                return
+            result = sync_dashboard_snapshot(self.settings, self.repository)
+            if result.pushed:
+                self._last_cloud_push_at = now
+        except Exception as error:
+            logger.exception("cloud dashboard update failed without stopping trading: {}", error)
+            self.repository.save_health_check("cloud_dashboard", "FAIL", False, str(error)[:1000])
+
+    def _call_agent(self, agent: OpenClawAgent, prompt: str) -> str:
+        try:
+            return agent.run(
+                prompt,
+                timeout_seconds=self.settings.api.timeout_seconds,
+                max_retries=self.settings.api.max_retries,
+                backoff_initial_seconds=self.settings.api.backoff_initial_seconds,
+                backoff_multiplier=self.settings.api.backoff_multiplier,
+            )
+        except TypeError as error:
+            if "unexpected keyword" not in str(error):
+                raise
+            return agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+
+    def _is_warmup_cycle(self) -> bool:
+        return self._cycle_count < self.settings.safety.warmup_cycles or os.getenv("ARENA_WARMUP_MODE", "").lower() in {"1", "true", "yes"}
+
+    def _ensure_not_killed(self) -> None:
+        kill_file = self.settings.resolve_path(self.settings.safety.kill_switch_file)
+        env_kill = os.getenv("ARENA_KILL_SWITCH", "").lower() in {"1", "true", "yes"}
+        if env_kill or kill_file.exists():
+            self.repository.save_health_check("global_kill_switch", "FAIL", True, "Kill switch is active")
+            raise RuntimeError("global kill switch is active; competition cycle aborted")
+
+    def _save_benchmark(self, market_state: MarketState) -> None:
+        first = self.repository.first_market_snapshot()
+        start_price = first.current_price if first else market_state.current_price
+        self.repository.save_benchmark(
+            "buy_and_hold_btc",
+            start_price=start_price,
+            current_price=market_state.current_price,
+            payload={
+                "description": "Benchmark assumes buying BTC at the first recorded market snapshot and holding.",
+                "snapshot_symbol": market_state.symbol,
+            },
+        )
+
+    def _save_checkpoint(self, market_state: MarketState, status: str) -> None:
+        payload = build_checkpoint_payload(
+            self.repository,
+            [agent.id for agent in self.settings.agents],
+            self.settings.accounts.initial_equity,
+            market_state.current_price,
+            self._cycle_count + 1,
+        )
+        payload["config_version"] = {
+            "id": self.config_manager.config_version_id,
+            "hash": self.config_manager.config_hash,
+            "code_version": self.config_manager.code_version,
+        }
+        checkpoint_id = self.repository.save_checkpoint(self._cycle_count + 1, status, payload)
+        self.repository.save_health_check("checkpoint", "PASS", False, f"Saved checkpoint {checkpoint_id} for cycle {self._cycle_count + 1}")
+
+    def _persist_daily_metrics(self, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
+        rows = calculate_leaderboard(
+            self.repository,
+            [agent.id for agent in self.settings.agents],
+            self.settings.accounts.initial_equity,
+            market_state.current_price,
+        )
+        for row in rows:
+            self.repository.save_daily_metric(
+                row.agent_id,
+                equity=row.equity,
+                realized_pnl=row.realized_pnl,
+                unrealized_pnl=row.unrealized_pnl,
+                max_drawdown=row.max_drawdown_pct,
+            )
+            reflect_on_day(self.memory, row.agent_id, row.equity, row.realized_pnl, row.unrealized_pnl)
+            if workload:
+                workload.reflection(row.agent_id)
+
+    def _append_signal_output(self, agent_id: str, raw: str, accepted: bool, reasons: list[str]) -> None:
+        path = self.settings.resolve_path(self.settings.paths.signals)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a", encoding="utf-8") as handle:
+            handle.write(f"\n\n## {datetime.now(UTC).isoformat()} - {agent_id}\n\n")
+            handle.write(f"Validation: {'ACCEPTED' if accepted else 'REJECTED'}\n\n")
+            if reasons:
+                handle.write("Reasons:\n")
+                for reason in reasons:
+                    handle.write(f"- {reason}\n")
+                handle.write("\n")
+            handle.write("```json\n")
+            handle.write(raw)
+            handle.write("\n```\n")
+
+    def _write_outputs(self, market_state: MarketState) -> None:
+        self._write_ledger()
+        self._write_evaluation(market_state)
+
+    def _write_ledger(self) -> None:
+        path = self.settings.resolve_path(self.settings.paths.ledger)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        trades = self.repository.trades()
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(
+                [
+                    "trade_id",
+                    "agent_id",
+                    "position_id",
+                    "opened_at",
+                    "closed_at",
+                    "symbol",
+                    "direction",
+                    "action",
+                    "status",
+                    "leverage",
+                    "margin",
+                    "notional",
+                    "entry",
+                    "average_entry",
+                    "stop_loss",
+                    "take_profit_1",
+                    "take_profit_2",
+                    "exit_price",
+                    "realized_pnl",
+                    "unrealized_pnl",
+                    "config_version_id",
+                    "config_hash",
+                    "code_version",
+                    "notes",
+                ]
+            )
+            positions = {position.id: position for position in self.repository.all_positions()}
+            for trade in trades:
+                position = positions.get(trade.position_id)
+                writer.writerow(
+                    [
+                        trade.id,
+                        trade.agent_id,
+                        trade.position_id,
+                        position.opened_at.isoformat() if position else "",
+                        position.closed_at.isoformat() if position and position.closed_at else "",
+                        position.symbol if position else "BTC",
+                        trade.direction,
+                        trade.action,
+                        position.status if position else "",
+                        trade.leverage,
+                        trade.margin,
+                        trade.notional,
+                        trade.entry,
+                        position.average_entry if position else "",
+                        position.stop_loss if position else "",
+                        position.take_profit_1 if position else "",
+                        position.take_profit_2 if position else "",
+                        trade.exit_price or "",
+                        trade.realized_pnl,
+                        "",
+                        trade.config_version_id or "",
+                        trade.config_hash,
+                        trade.code_version,
+                        trade.notes,
+                    ]
+                )
+
+    def _write_evaluation(self, market_state: MarketState) -> None:
+        rows = calculate_leaderboard(
+            self.repository,
+            [agent.id for agent in self.settings.agents],
+            self.settings.accounts.initial_equity,
+            market_state.current_price,
+        )
+        path = self.settings.resolve_path(self.settings.paths.evaluation)
+        with path.open("w", encoding="utf-8") as handle:
+            handle.write("# Evaluation\n\n")
+            handle.write(f"Updated: {datetime.now(UTC).isoformat()}\n\n")
+            handle.write("| Agent | Equity | Return % | Sharpe | Max DD % | Rejected | Score |\n")
+            handle.write("| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n")
+            for row in rows:
+                handle.write(
+                    f"| {row.agent_id} | {row.equity:.2f} | {row.total_return_pct*100:.2f} | "
+                    f"{row.sharpe:.2f} | {row.max_drawdown_pct*100:.2f} | {row.rejected_signals} | {row.score:.3f} |\n"
+                )
+        if rows:
+            self.repository.save_competition_result(
+                rows[0].agent_id,
+                {"updated_at": datetime.now(UTC).isoformat(), "rows": [row.model_dump() for row in rows]},
+            )
+
+
+def _candles_to_frame(market_state: MarketState):
+    import pandas as pd
+
+    return pd.DataFrame([c.model_dump() for c in market_state.candles])
+
+
+def _parse_tool_request(raw: str) -> list[dict] | None:
+    try:
+        payload = json.loads(_extract_json_object(raw))
+    except (JSONDecodeError, ValueError):
+        return None
+    requests = payload.get("tool_requests") if isinstance(payload, dict) else None
+    if not isinstance(requests, list):
+        return None
+    parsed = [item for item in requests if isinstance(item, dict) and "tool" in item]
+    return parsed or None
+
+
+def _extract_json_object(raw: str) -> str:
+    cleaned = raw.strip()
+    if cleaned.startswith("```"):
+        import re
+
+        cleaned = re.sub(r"^```(?:json)?", "", cleaned).strip()
+        cleaned = re.sub(r"```$", "", cleaned).strip()
+    if cleaned.startswith("{"):
+        return cleaned
+    start = cleaned.find("{")
+    end = cleaned.rfind("}")
+    if start < 0 or end <= start:
+        raise ValueError("no JSON object found")
+    return cleaned[start : end + 1]
+
+
+def _sha256(value: str) -> str:
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()

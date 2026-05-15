@@ -1,0 +1,102 @@
+competition:
+  name: crypto-paper-trading-arena
+  duration_days: 7
+  poll_interval_seconds: 3600
+  event_cooldown_seconds: 1800
+  symbol: BTC/USDT:USDT
+  display_symbol: BTCUSDT
+  timeframe: 1h
+  ohlcv_limit: 240
+
+accounts:
+  initial_equity: 10000.0
+  quote_currency: USDT
+
+risk:
+  max_leverage: 10.0
+  max_margin_per_action_pct: 0.10
+  max_total_account_risk_pct: 0.02
+  max_open_positions: 3
+  max_dca_per_position: 2
+  daily_loss_limit_pct: 0.03
+  min_rr_tp1: 1.5
+  min_rr_tp2: 2.0
+
+market:
+  exchange: binanceusdm
+  sandbox: false
+  fetch_funding: true
+  fetch_open_interest: true
+
+shared_learning:
+  enabled: true
+  shared_ratio: 0.30
+  private_ratio: 0.70
+  min_sample_size: 10
+  min_win_rate: 0.60
+  min_profit_factor: 1.5
+  compatibility_threshold: 0.50
+  agreement_threshold: 0.85
+  reduced_shared_ratio: 0.10
+
+api:
+  timeout_seconds: 600
+  max_retries: 3
+  backoff_initial_seconds: 1.0
+  backoff_multiplier: 2.0
+
+execution:
+  taker_fee_rate: 0.0005
+  slippage_bps: 2.0
+
+safety:
+  warmup_cycles: 0
+  kill_switch_file: KILL_SWITCH
+  require_preflight_for_live: true
+  minimum_free_disk_mb: 500
+  downtime_threshold_seconds: 60
+
+hot_reload:
+  enabled: true
+  auto_detect_changes: true
+  check_interval_seconds: 5
+  rollback_backups_to_keep: 10
+
+cloud_dashboard:
+  enabled: true
+  snapshot_path: cloud/dashboard_snapshot.json
+  git_auto_push: true
+  git_branch: main
+  push_after_each_cycle: true
+  min_push_interval_seconds: 300
+  render_enabled: true
+  stale_warning_minutes: 15
+  stale_critical_minutes: 60
+
+feature_flags:
+  canary_prompt_context:
+    enabled: false
+    agents: []
+  experimental_risk_model:
+    enabled: false
+    agents:
+      - crypto-deepseek
+
+agents:
+  - id: crypto-deepseek
+    name: Crypto DeepSeek
+    model: deepseek/deepseek-v4-flash
+    session_id: crypto-deepseek
+  - id: crypto-grok
+    name: Crypto Grok
+    model: xai/grok-4-1-fast
+    session_id: crypto-grok
+
+paths:
+  database: database/arena.db
+  rulebook: config/rulebook.md
+  outputs_dir: outputs
+  signals: outputs/SIGNALS.md
+  ledger: outputs/LEDGER.csv
+  evaluation: outputs/EVALUATION.md
+  logs_dir: logs

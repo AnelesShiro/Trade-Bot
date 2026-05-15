@@ -1,0 +1,1375 @@
+from __future__ import annotations
+
+import json
+import math
+import os
+import sqlite3
+import sys
+from datetime import UTC, datetime, timedelta
+from pathlib import Path
+from statistics import mean, pstdev
+from typing import Any
+from zoneinfo import ZoneInfo
+
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
+import streamlit as st
+from plotly.subplots import make_subplots
+
+try:
+    from streamlit_lightweight_charts import renderLightweightCharts
+except Exception:
+    renderLightweightCharts = None
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from src.config import load_settings  # noqa: E402
+from src.market.indicators import ema, rsi  # noqa: E402
+
+
+st.set_page_config(
+    page_title="Crypto Paper Trading Arena",
+    page_icon="BTC",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
+settings = load_settings()
+LOCAL_TZ = ZoneInfo(os.getenv("ARENA_DISPLAY_TIMEZONE", "Asia/Bangkok"))
+db_path = settings.resolve_path(settings.paths.database)
+cloud_snapshot_path = settings.resolve_path(settings.cloud_dashboard.snapshot_path)
+signals_path = settings.resolve_path(settings.paths.signals)
+ledger_path = settings.resolve_path(settings.paths.ledger)
+evaluation_path = settings.resolve_path(settings.paths.evaluation)
+rulebook_path = settings.resolve_path(settings.paths.rulebook)
+initial_equity = float(settings.accounts.initial_equity)
+agent_ids = [agent.id for agent in settings.agents]
+agent_names = {agent.id: agent.name for agent in settings.agents}
+agent_models = {agent.id: agent.model for agent in settings.agents}
+
+CSS = """
+<style>
+    .block-container { padding-top: 1.2rem; padding-bottom: 2rem; max-width: 100%; }
+    [data-testid="stMetricValue"] { font-size: 1.55rem; }
+    .arena-banner {
+        border: 1px solid rgba(148, 163, 184, .25);
+        border-radius: 8px;
+        padding: 14px 16px;
+        background: rgba(15, 23, 42, .18);
+        margin-bottom: 12px;
+    }
+    .chart-shell {
+        border: 1px solid rgba(148, 163, 184, .25);
+        border-radius: 8px;
+        padding: 8px;
+        background: #05070a;
+        margin: 8px 0 16px 0;
+    }
+    .chart-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 4px 4px 10px 4px;
+        color: #94a3b8;
+        font-size: .9rem;
+    }
+    .status-running { color: #22c55e; font-weight: 700; }
+    .status-paused { color: #f59e0b; font-weight: 700; }
+    .status-completed { color: #38bdf8; font-weight: 700; }
+    .status-error { color: #ef4444; font-weight: 700; }
+    .positive { color: #22c55e; font-weight: 700; }
+    .negative { color: #ef4444; font-weight: 700; }
+    .muted { color: #94a3b8; }
+    .small-note { font-size: .86rem; color: #94a3b8; }
+    div[data-testid="stDataFrame"] { border-radius: 8px; overflow: hidden; }
+</style>
+"""
+st.markdown(CSS, unsafe_allow_html=True)
+
+
+def utc_now() -> datetime:
+    return datetime.now(UTC)
+
+
+def fmt_time(value: datetime | pd.Timestamp | None, include_tz: bool = True) -> str:
+    if value is None or pd.isna(value):
+        return "none yet"
+    ts = value.to_pydatetime() if isinstance(value, pd.Timestamp) else value
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=UTC)
+    local = ts.astimezone(LOCAL_TZ)
+    suffix = f" {LOCAL_TZ.key}" if include_tz and hasattr(LOCAL_TZ, "key") else ""
+    return local.strftime("%Y-%m-%d %H:%M:%S") + suffix
+
+
+def fmt_short_time(value: datetime | pd.Timestamp | None) -> str:
+    if value is None or pd.isna(value):
+        return "-"
+    ts = value.to_pydatetime() if isinstance(value, pd.Timestamp) else value
+    if ts.tzinfo is None:
+        ts = ts.replace(tzinfo=UTC)
+    return ts.astimezone(LOCAL_TZ).strftime("%m-%d %H:%M")
+
+
+def fmt_money(value: float | int | None) -> str:
+    return f"{float(value or 0):,.2f} USDT"
+
+
+def fmt_pct(value: float | int | None) -> str:
+    return f"{float(value or 0) * 100:.2f}%"
+
+
+def human_duration(delta: timedelta | pd.Timedelta | None) -> str:
+    if delta is None or pd.isna(delta):
+        return "-"
+    seconds = max(0, int(delta.total_seconds()))
+    days, rem = divmod(seconds, 86400)
+    hours, rem = divmod(rem, 3600)
+    minutes, _ = divmod(rem, 60)
+    if days:
+        return f"{days}d {hours}h"
+    if hours:
+        return f"{hours}h {minutes}m"
+    return f"{minutes}m"
+
+
+@st.cache_data(ttl=3)
+def read_table(name: str, database: str) -> pd.DataFrame:
+    path = Path(database)
+    if not path.exists():
+        return pd.DataFrame()
+    with sqlite3.connect(path) as connection:
+        try:
+            frame = pd.read_sql_query(f"select * from {name}", connection)
+        except Exception:
+            return pd.DataFrame()
+    for column in frame.columns:
+        if column.endswith("_at") or column in {"created_at", "opened_at", "closed_at", "day"}:
+            parsed = pd.to_datetime(frame[column], utc=True, errors="coerce")
+            if parsed.notna().any():
+                frame[column] = parsed
+    return frame
+
+
+@st.cache_data(ttl=5)
+def read_text(path_value: str) -> str:
+    path = Path(path_value)
+    return path.read_text(encoding="utf-8", errors="replace") if path.exists() else ""
+
+
+@st.cache_data(ttl=5)
+def read_csv(path_value: str) -> pd.DataFrame:
+    path = Path(path_value)
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return pd.read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
+def queue_control_command(database: str, command: str, payload: dict[str, Any] | None = None) -> int:
+    path = Path(database)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with sqlite3.connect(path) as connection:
+        connection.execute(
+            """
+            create table if not exists control_commands (
+                id integer primary key autoincrement,
+                created_at datetime,
+                command varchar,
+                status varchar default 'PENDING',
+                payload_json text default '{}',
+                result_json text default '{}',
+                processed_at datetime
+            )
+            """
+        )
+        cursor = connection.execute(
+            "insert into control_commands (created_at, command, status, payload_json) values (?, ?, 'PENDING', ?)",
+            (utc_now().isoformat(), command, json.dumps(payload or {})),
+        )
+        connection.commit()
+        return int(cursor.lastrowid)
+
+
+@st.cache_data(ttl=25)
+def fetch_ohlcv(timeframe: str, limit: int = 900) -> pd.DataFrame:
+    cache_dir = PROJECT_ROOT / "data" / "processed"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_path = cache_dir / f"btcusdt_{timeframe}.csv"
+    try:
+        import ccxt
+
+        exchange_cls = getattr(ccxt, settings.market.exchange)
+        exchange = exchange_cls({"enableRateLimit": True})
+        rows = exchange.fetch_ohlcv(settings.competition.symbol, timeframe=timeframe, limit=limit)
+        frame = pd.DataFrame(rows, columns=["timestamp", "open", "high", "low", "close", "volume"])
+        frame["timestamp"] = pd.to_datetime(frame["timestamp"], unit="ms", utc=True)
+        frame.to_csv(cache_path, index=False)
+        return frame
+    except Exception:
+        if cache_path.exists():
+            frame = pd.read_csv(cache_path)
+            frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+            return frame.dropna(subset=["timestamp"])
+        return pd.DataFrame(columns=["timestamp", "open", "high", "low", "close", "volume"])
+
+
+def safe_json(value: Any, fallback: Any) -> Any:
+    try:
+        return json.loads(value) if value not in (None, "") else fallback
+    except Exception:
+        return fallback
+
+
+def signal_payloads(signals: pd.DataFrame) -> pd.DataFrame:
+    if signals.empty or "payload_json" not in signals.columns:
+        return signals.copy()
+    rows = []
+    for record in signals.to_dict("records"):
+        payload = safe_json(record.get("payload_json"), {})
+        if isinstance(payload, dict):
+            record.update({f"payload_{key}": value for key, value in payload.items()})
+        rows.append(record)
+    return pd.DataFrame(rows)
+
+
+def position_unrealized(row: pd.Series, price: float | None) -> float:
+    if price is None or pd.isna(price):
+        return 0.0
+    entry = float(row.get("average_entry") or 0)
+    notional = float(row.get("notional") or 0)
+    if entry <= 0 or notional <= 0:
+        return 0.0
+    if str(row.get("direction", "")).upper() == "SHORT":
+        return notional * ((entry - price) / entry)
+    return notional * ((price - entry) / entry)
+
+
+def position_risk_pct(row: pd.Series) -> float:
+    entry = float(row.get("average_entry") or 0)
+    stop = float(row.get("stop_loss") or 0)
+    notional = float(row.get("notional") or 0)
+    return abs(notional * ((entry - stop) / entry)) / initial_equity if entry and stop and notional else 0.0
+
+
+def liquidation_estimate(row: pd.Series) -> float:
+    entry = float(row.get("average_entry") or 0)
+    leverage = float(row.get("leverage") or 1)
+    if entry <= 0 or leverage <= 0:
+        return 0.0
+    buffer = 1 / leverage
+    return entry * (1 - buffer) if str(row.get("direction", "")).upper() == "LONG" else entry * (1 + buffer)
+
+
+def build_position_view(positions: pd.DataFrame, current_price: float | None) -> pd.DataFrame:
+    if positions.empty:
+        return pd.DataFrame()
+    frame = positions.copy()
+    frame["current_price"] = current_price
+    frame["unrealized_pnl"] = frame.apply(lambda row: position_unrealized(row, current_price), axis=1)
+    frame["risk_pct"] = frame.apply(position_risk_pct, axis=1)
+    frame["liq_estimate"] = frame.apply(liquidation_estimate, axis=1)
+    now = pd.Timestamp(utc_now())
+    frame["holding_time"] = frame["opened_at"].apply(lambda value: human_duration(now - value if pd.notna(value) else None))
+    return frame
+
+
+def equity_curve(trades: pd.DataFrame, positions_view: pd.DataFrame) -> pd.DataFrame:
+    rows = []
+    for agent_id in agent_ids:
+        rows.append({"agent_id": agent_id, "timestamp": pd.Timestamp(utc_now()) - pd.Timedelta(seconds=1), "equity": initial_equity})
+        running = initial_equity
+        if not trades.empty:
+            for _, trade in trades[trades["agent_id"] == agent_id].sort_values("created_at").iterrows():
+                running += float(trade.get("realized_pnl") or 0)
+                rows.append({"agent_id": agent_id, "timestamp": trade.get("created_at"), "equity": running})
+        if not positions_view.empty:
+            unrealized = float(
+                positions_view[
+                    (positions_view["agent_id"] == agent_id) & (positions_view["status"].isin(["OPEN", "PARTIAL"]))
+                ]["unrealized_pnl"].sum()
+            )
+            rows.append({"agent_id": agent_id, "timestamp": pd.Timestamp(utc_now()), "equity": running + unrealized})
+    frame = pd.DataFrame(rows)
+    frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+    return frame.dropna(subset=["timestamp"]).sort_values(["agent_id", "timestamp"])
+
+
+def drawdown_curve(curve: pd.DataFrame) -> pd.DataFrame:
+    frames = []
+    for agent_id, group in curve.groupby("agent_id"):
+        group = group.sort_values("timestamp").copy()
+        group["peak"] = group["equity"].cummax()
+        group["drawdown"] = (group["equity"] - group["peak"]) / group["peak"]
+        frames.append(group[["agent_id", "timestamp", "drawdown"]])
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
+
+
+def daily_returns(curve: pd.DataFrame) -> pd.DataFrame:
+    if curve.empty:
+        return pd.DataFrame()
+    frame = curve.copy()
+    frame["day"] = frame["timestamp"].dt.date
+    daily = frame.sort_values("timestamp").groupby(["agent_id", "day"], as_index=False).tail(1)
+    daily["daily_return"] = daily.groupby("agent_id")["equity"].pct_change().fillna(0)
+    return daily[["agent_id", "day", "daily_return"]]
+
+
+def api_usage(responses: pd.DataFrame) -> pd.DataFrame:
+    if responses.empty:
+        return pd.DataFrame(columns=["agent_id", "requests", "input_tokens", "output_tokens", "total_tokens", "estimated_cost_usd"])
+    frame = responses.copy()
+    for column in ["input_tokens", "output_tokens", "estimated_cost_usd"]:
+        frame[column] = pd.to_numeric(frame.get(column, 0), errors="coerce").fillna(0)
+    grouped = frame.groupby("agent_id", as_index=False).agg(
+        requests=("id", "count"),
+        input_tokens=("input_tokens", "sum"),
+        output_tokens=("output_tokens", "sum"),
+        estimated_cost_usd=("estimated_cost_usd", "sum"),
+    )
+    grouped["total_tokens"] = grouped["input_tokens"] + grouped["output_tokens"]
+    return grouped
+
+
+def metrics_table(trades: pd.DataFrame, signals: pd.DataFrame, responses: pd.DataFrame, positions_view: pd.DataFrame, curve: pd.DataFrame) -> pd.DataFrame:
+    usage = api_usage(responses).set_index("agent_id") if not responses.empty else pd.DataFrame()
+    dd = drawdown_curve(curve)
+    rows = []
+    for agent_id in agent_ids:
+        pnls = []
+        if not trades.empty:
+            pnls = [float(v) for v in pd.to_numeric(trades[trades["agent_id"] == agent_id]["realized_pnl"], errors="coerce").fillna(0) if v != 0]
+        realized = sum(pnls)
+        unrealized = 0.0
+        if not positions_view.empty:
+            unrealized = float(
+                positions_view[
+                    (positions_view["agent_id"] == agent_id) & (positions_view["status"].isin(["OPEN", "PARTIAL"]))
+                ]["unrealized_pnl"].sum()
+            )
+        equity = initial_equity + realized + unrealized
+        wins = [p for p in pnls if p > 0]
+        losses = [abs(p) for p in pnls if p < 0]
+        returns = [p / initial_equity for p in pnls]
+        sharpe = mean(returns) / pstdev(returns) if len(returns) > 1 and pstdev(returns) else 0.0
+        sortino = 0.0
+        downside = [r for r in returns if r < 0]
+        if returns and not downside:
+            sortino = float(mean(returns) > 0)
+        elif len(downside) > 1 and pstdev(downside):
+            sortino = mean(returns) / pstdev(downside)
+        max_dd = abs(float(dd[dd["agent_id"] == agent_id]["drawdown"].min())) if not dd.empty and not dd[dd["agent_id"] == agent_id].empty else 0.0
+        rejected = 0
+        total_signals = 0
+        if not signals.empty:
+            agent_signals = signals[signals["agent_id"] == agent_id]
+            total_signals = len(agent_signals)
+            rejected = int((pd.to_numeric(agent_signals["accepted"], errors="coerce").fillna(0) == 0).sum())
+        compliance = 1 - (rejected / total_signals) if total_signals else 1.0
+        cost = float(usage.loc[agent_id, "estimated_cost_usd"]) if not usage.empty and agent_id in usage.index else 0.0
+        tokens = int(usage.loc[agent_id, "total_tokens"]) if not usage.empty and agent_id in usage.index else 0
+        requests = int(usage.loc[agent_id, "requests"]) if not usage.empty and agent_id in usage.index else 0
+        profit_per_cost = realized / cost if cost > 0 else 0.0
+        score = (
+            0.40 * max(0, min(1, (equity - initial_equity) / initial_equity / 0.10))
+            + 0.20 * max(0, min(1, sharpe / 2 if math.isfinite(sharpe) else 0))
+            + 0.20 * max(0, min(1, 1 - max_dd / 0.10))
+            + 0.10 * compliance
+            + 0.10 * (max(0, min(1, profit_per_cost / 100)) if cost else 1)
+        )
+        rows.append(
+            {
+                "agent_id": agent_id,
+                "agent": agent_names.get(agent_id, agent_id),
+                "model": agent_models.get(agent_id, ""),
+                "current_equity": equity,
+                "total_return_pct": (equity - initial_equity) / initial_equity,
+                "realized_pnl": realized,
+                "unrealized_pnl": unrealized,
+                "max_drawdown": max_dd,
+                "win_rate": len(wins) / len(pnls) if pnls else 0.0,
+                "sharpe_ratio": sharpe,
+                "sortino_ratio": sortino,
+                "profit_factor": sum(wins) / sum(losses) if losses else float(sum(wins) > 0),
+                "rule_compliance": compliance,
+                "rejected_signals": rejected,
+                "token_usage": tokens,
+                "requests": requests,
+                "estimated_api_cost": cost,
+                "profit_per_api_dollar": profit_per_cost,
+                "score": score,
+            }
+        )
+    return pd.DataFrame(rows).sort_values("score", ascending=False)
+
+
+def competition_times(prompts: pd.DataFrame, responses: pd.DataFrame, signals: pd.DataFrame, trades: pd.DataFrame) -> tuple[datetime, datetime]:
+    candidates = []
+    for frame in [prompts, responses, signals, trades]:
+        if not frame.empty and "created_at" in frame.columns:
+            candidates.extend(pd.to_datetime(frame["created_at"], utc=True, errors="coerce").dropna().tolist())
+    start = min(candidates).to_pydatetime() if candidates else utc_now()
+    return start, start + timedelta(days=float(settings.competition.duration_days))
+
+
+def last_cycle_timestamp(*frames: pd.DataFrame) -> pd.Timestamp | pd.NaT:
+    timestamps = []
+    for frame in frames:
+        if not frame.empty and "created_at" in frame.columns:
+            timestamps.extend(pd.to_datetime(frame["created_at"], utc=True, errors="coerce").dropna().tolist())
+    return max(timestamps) if timestamps else pd.NaT
+
+
+def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime) -> str:
+    if not db_path.exists():
+        return "ERROR"
+    if utc_now() >= end_time:
+        return "COMPLETED"
+    if pd.isna(last_cycle):
+        return "PAUSED"
+    return "RUNNING" if (utc_now() - last_cycle.to_pydatetime()).total_seconds() <= settings.competition.poll_interval_seconds * 2.5 else "PAUSED"
+
+
+def status_class(status: str) -> str:
+    return {"RUNNING": "status-running", "PAUSED": "status-paused", "COMPLETED": "status-completed", "ERROR": "status-error"}.get(status, "status-paused")
+
+
+def build_markers(trades: pd.DataFrame, visible_agents: list[str]) -> list[dict[str, Any]]:
+    if trades.empty:
+        return []
+    markers = []
+    for _, trade in trades[trades["agent_id"].isin(visible_agents)].iterrows():
+        agent = str(trade.get("agent_id"))
+        is_deepseek = "deepseek" in agent
+        color = "#3b82f6" if is_deepseek else "#00c076"
+        prefix = "D" if is_deepseek else "G"
+        action = str(trade.get("action", "")).upper()
+        direction = str(trade.get("direction", "")).upper()
+        ts = trade.get("created_at")
+        if pd.isna(ts):
+            continue
+        notes = str(trade.get("notes", ""))
+        pnl = float(trade.get("realized_pnl") or 0)
+        if "OPEN" in action or action in {"ADD", "DCA"}:
+            shape = "arrowUp" if direction == "LONG" else "arrowDown"
+            position = "belowBar" if direction == "LONG" else "aboveBar"
+            text = f"{prefix} LONG" if direction == "LONG" else f"{prefix} SHORT"
+        elif "stop_loss" in notes:
+            shape, position, text = "cross", "belowBar", f"{prefix} SL"
+        elif "take_profit_1" in notes:
+            shape, position, text = "circle", "aboveBar", f"{prefix} TP1"
+        elif "take_profit_2" in notes or pnl > 0:
+            shape, position, text = "circle", "aboveBar", f"{prefix} TP"
+        else:
+            shape, position, text = "circle", "aboveBar", f"{prefix} EXIT"
+        markers.append({"time": int(pd.Timestamp(ts).timestamp()), "position": position, "color": color, "shape": shape, "text": text})
+    return markers
+
+
+def chart_price_lines(positions_view: pd.DataFrame) -> list[dict[str, Any]]:
+    if positions_view.empty:
+        return []
+    lines = []
+    for _, position in positions_view[positions_view["status"].isin(["OPEN", "PARTIAL"])].iterrows():
+        prefix = "D" if "deepseek" in str(position.get("agent_id")) else "G"
+        pnl = float(position.get("unrealized_pnl") or 0)
+        lines.extend(
+            [
+                {"price": float(position["average_entry"]), "color": "#e5e7eb", "lineWidth": 1, "axisLabelVisible": True, "title": f"{prefix} ENTRY PnL {pnl:.2f}"},
+                {"price": float(position["stop_loss"]), "color": "#ef4444", "lineWidth": 2, "axisLabelVisible": True, "title": f"{prefix} SL"},
+                {"price": float(position["take_profit_1"]), "color": "#22c55e", "lineWidth": 1, "axisLabelVisible": True, "title": f"{prefix} TP1"},
+                {"price": float(position["take_profit_2"]), "color": "#22c55e", "lineWidth": 1, "lineStyle": 2, "axisLabelVisible": True, "title": f"{prefix} TP2"},
+                {"price": float(position["liq_estimate"]), "color": "#f59e0b", "lineWidth": 1, "lineStyle": 1, "axisLabelVisible": True, "title": f"{prefix} LIQ est"},
+            ]
+        )
+    return lines
+
+
+def render_live_chart(ohlcv: pd.DataFrame, trades: pd.DataFrame, positions_view: pd.DataFrame, visible_agents: list[str]) -> None:
+    if ohlcv.empty:
+        st.warning("No BTCUSDT candles available from CCXT or cache.")
+        return
+    frame = ohlcv.tail(900).copy()
+    frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+    frame = frame.dropna(subset=["timestamp", "open", "high", "low", "close"])
+    if frame.empty:
+        st.warning("BTCUSDT candle data is present but could not be parsed.")
+        return
+    frame["ema9"] = ema(frame["close"], 9)
+    frame["ema21"] = ema(frame["close"], 21)
+    frame["ema50"] = ema(frame["close"], 50)
+    frame["ema200"] = ema(frame["close"], 200)
+    frame["rsi"] = rsi(frame["close"], 14).fillna(50)
+    price_lines = chart_price_lines(positions_view)
+
+    fig = make_subplots(
+        rows=3,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.025,
+        row_heights=[0.70, 0.16, 0.14],
+        specs=[[{"secondary_y": False}], [{"secondary_y": False}], [{"secondary_y": False}]],
+    )
+    fig.add_trace(
+        go.Candlestick(
+            x=frame["timestamp"],
+            open=frame["open"],
+            high=frame["high"],
+            low=frame["low"],
+            close=frame["close"],
+            increasing=dict(line=dict(color="#22c55e"), fillcolor="#22c55e"),
+            decreasing=dict(line=dict(color="#ef4444"), fillcolor="#ef4444"),
+            name="BTCUSDT Perpetual",
+        ),
+        row=1,
+        col=1,
+    )
+    for label, color in [("ema9", "#f59e0b"), ("ema21", "#38bdf8"), ("ema50", "#a855f7"), ("ema200", "#e5e7eb")]:
+        fig.add_trace(
+            go.Scatter(x=frame["timestamp"], y=frame[label], mode="lines", line=dict(color=color, width=1.25), name=label.upper()),
+            row=1,
+            col=1,
+        )
+
+    chart_trades = trades.copy()
+    if not chart_trades.empty and "agent_id" in chart_trades.columns:
+        chart_trades = chart_trades[chart_trades["agent_id"].isin(visible_agents)]
+    for _, trade in chart_trades.iterrows():
+        ts = pd.to_datetime(trade.get("created_at"), utc=True, errors="coerce")
+        if pd.isna(ts):
+            continue
+        price = float(trade.get("entry") or trade.get("exit") or 0)
+        if price <= 0:
+            continue
+        agent = str(trade.get("agent_id", ""))
+        is_deepseek = "deepseek" in agent
+        color = "#3b82f6" if is_deepseek else "#00c076"
+        prefix = "D" if is_deepseek else "G"
+        direction = str(trade.get("direction", "")).upper()
+        action = str(trade.get("action", "")).upper()
+        notes = str(trade.get("notes", "")).lower()
+        symbol = "triangle-up" if direction == "LONG" else "triangle-down"
+        label = f"{prefix} LONG" if direction == "LONG" else f"{prefix} SHORT"
+        if action in {"CLOSE", "CUT", "REDUCE"} or "take_profit" in notes or "stop_loss" in notes:
+            symbol = "x" if "stop_loss" in notes else "circle"
+            label = f"{prefix} SL" if "stop_loss" in notes else f"{prefix} TP"
+        fig.add_trace(
+            go.Scatter(
+                x=[ts],
+                y=[price],
+                mode="markers+text",
+                marker=dict(color=color, size=12, symbol=symbol, line=dict(color="#e5e7eb", width=1)),
+                text=[label],
+                textposition="top center" if symbol != "triangle-up" else "bottom center",
+                textfont=dict(color=color, size=11),
+                name=label,
+                showlegend=False,
+                hovertemplate=f"{label}<br>%{{x}}<br>%{{y:,.2f}}<extra></extra>",
+            ),
+            row=1,
+            col=1,
+        )
+
+    for line in price_lines:
+        fig.add_hline(
+            y=line["price"],
+            row=1,
+            col=1,
+            line_color=line["color"],
+            line_width=line.get("lineWidth", 1),
+            line_dash="dash" if line.get("lineStyle") else "solid",
+            annotation_text=line["title"],
+            annotation_position="right",
+            annotation_font_color=line["color"],
+        )
+
+    volume_colors = [
+        "rgba(34, 197, 94, 0.40)" if close >= open_ else "rgba(239, 68, 68, 0.40)"
+        for open_, close in zip(frame["open"], frame["close"], strict=False)
+    ]
+    fig.add_trace(go.Bar(x=frame["timestamp"], y=frame["volume"], marker_color=volume_colors, name="Volume"), row=2, col=1)
+    fig.add_trace(go.Scatter(x=frame["timestamp"], y=frame["rsi"], mode="lines", line=dict(color="#22c55e", width=1.25), name="RSI 14"), row=3, col=1)
+    fig.add_hline(y=70, row=3, col=1, line_color="#ef4444", line_width=1, line_dash="dot")
+    fig.add_hline(y=30, row=3, col=1, line_color="#22c55e", line_width=1, line_dash="dot")
+    fig.update_layout(
+        template="plotly_dark",
+        height=860,
+        margin=dict(l=0, r=0, t=8, b=0),
+        xaxis_rangeslider_visible=False,
+        paper_bgcolor="#05070a",
+        plot_bgcolor="#05070a",
+        hovermode="x unified",
+        legend=dict(orientation="h", yanchor="bottom", y=1.01, xanchor="right", x=1, bgcolor="rgba(5,7,10,.65)"),
+    )
+    fig.update_xaxes(showgrid=True, gridcolor="#10161d", zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor="#10161d", zeroline=False, side="right")
+    fig.update_yaxes(title_text="BTCUSDT", row=1, col=1)
+    fig.update_yaxes(title_text="Volume", row=2, col=1)
+    fig.update_yaxes(title_text="RSI", row=3, col=1, range=[0, 100])
+    st.plotly_chart(fig, width="stretch")
+
+
+def r_multiple(trade: pd.Series, positions_frame: pd.DataFrame, signals: pd.DataFrame) -> float:
+    pnl = float(trade.get("realized_pnl") or 0)
+    entry = float(trade.get("entry") or 0)
+    notional = float(trade.get("notional") or 0)
+    stop = find_signal_field(signals, str(trade.get("position_id")), "stop_loss", entry)
+    risk = abs(notional * ((entry - stop) / entry)) if entry and notional else 0.0
+    return pnl / risk if risk else 0.0
+
+
+def find_signal_field(signals: pd.DataFrame, position_id: str, field: str, default: float) -> float:
+    payloads = signal_payloads(signals)
+    if payloads.empty or f"payload_{field}" not in payloads.columns:
+        return float(default)
+    ids = payloads.get("payload_position_id", pd.Series(dtype=str)).astype(str)
+    match = payloads[ids == str(position_id)]
+    if match.empty:
+        return float(default)
+    value = pd.to_numeric(pd.Series([match.iloc[-1].get(f"payload_{field}")]), errors="coerce").iloc[0]
+    return float(value) if pd.notna(value) else float(default)
+
+
+def trade_holding_time(trade: pd.Series, positions_frame: pd.DataFrame) -> str:
+    pos_id = trade.get("position_id")
+    if positions_frame.empty or not pos_id:
+        return "-"
+    match = positions_frame[positions_frame["id"] == pos_id]
+    if match.empty:
+        return "-"
+    opened = match.iloc[0].get("opened_at")
+    closed = match.iloc[0].get("closed_at")
+    end = closed if pd.notna(closed) else trade.get("created_at")
+    return human_duration(end - opened if pd.notna(opened) and pd.notna(end) else None)
+
+
+def notifications(signals: pd.DataFrame, trades: pd.DataFrame, positions: pd.DataFrame, metric_frame: pd.DataFrame) -> list[str]:
+    notes = []
+    if not trades.empty:
+        latest = trades.sort_values("created_at", ascending=False).head(5)
+        for _, trade in latest.iterrows():
+            action = str(trade.get("action", ""))
+            pnl = float(trade.get("realized_pnl") or 0)
+            if action:
+                notes.append(f"{trade.get('agent_id')} {action} {trade.get('direction')} at {trade.get('entry')}")
+            if pnl > 0:
+                notes.append(f"{trade.get('agent_id')} realized profit {fmt_money(pnl)}")
+            if pnl < 0:
+                notes.append(f"{trade.get('agent_id')} realized loss {fmt_money(pnl)}")
+    if not signals.empty:
+        rejected = signals[pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 0]
+        if not rejected.empty:
+            row = rejected.sort_values("created_at", ascending=False).iloc[0]
+            notes.append(f"Latest rejected signal: {row.get('agent_id')} {row.get('decision')}/{row.get('action')}")
+    if not metric_frame.empty:
+        for _, row in metric_frame.iterrows():
+            if float(row.get("total_return_pct") or 0) <= -float(settings.risk.daily_loss_limit_pct):
+                notes.append(f"{row.get('agent_id')} is near or beyond daily loss limit threshold.")
+    if not positions.empty:
+        closed = positions[positions["status"].astype(str).str.upper() == "CLOSED"]
+        if not closed.empty:
+            row = closed.sort_values("closed_at", ascending=False).iloc[0]
+            notes.append(f"Position closed: {row.get('agent_id')} {row.get('id')}")
+    return notes[:8]
+
+
+def download_frame(label: str, frame: pd.DataFrame, filename: str) -> None:
+    st.download_button(label, frame.to_csv(index=False).encode("utf-8") if not frame.empty else b"", filename, "text/csv", disabled=frame.empty)
+
+
+def download_text(label: str, text: str, filename: str) -> None:
+    st.download_button(label, text.encode("utf-8"), filename, "text/markdown", disabled=not bool(text.strip()))
+
+
+@st.cache_data(ttl=10)
+def read_snapshot(path_value: str) -> dict[str, Any]:
+    path = Path(path_value)
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+
+def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
+    generated = pd.to_datetime(snapshot.get("generated_at"), utc=True, errors="coerce")
+    age = utc_now() - generated.to_pydatetime() if pd.notna(generated) else None
+    stale_warning = timedelta(minutes=settings.cloud_dashboard.stale_warning_minutes)
+    stale_critical = timedelta(minutes=settings.cloud_dashboard.stale_critical_minutes)
+
+    with st.sidebar:
+        st.title("Arena Cloud")
+        st.metric("Status", snapshot.get("competition_status", "UNKNOWN"))
+        st.metric("Leader", snapshot.get("leader") or "-")
+        st.metric("BTC", fmt_money(snapshot.get("btc_price")))
+        st.caption(f"Last sync: {fmt_time(generated) if pd.notna(generated) else 'unknown'}")
+        if st.button("Refresh Now", width="stretch"):
+            st.cache_data.clear()
+            st.rerun()
+
+    st.title("Crypto Paper Trading Arena")
+    st.caption("Cloud dashboard snapshot from GitHub")
+    if age is None:
+        st.error("Snapshot timestamp is missing or invalid.")
+    elif age > stale_critical:
+        st.error(f"Snapshot is stale: {human_duration(age)} since last successful sync.")
+    elif age > stale_warning:
+        st.warning(f"Snapshot is getting stale: {human_duration(age)} since last successful sync.")
+    else:
+        st.success(f"Last successful sync: {fmt_time(generated)} ({human_duration(age)} ago)")
+
+    competition = snapshot.get("competition", {})
+    top = st.columns(5)
+    top[0].metric("Competition", snapshot.get("competition_status", "UNKNOWN"))
+    top[1].metric("BTC Price", fmt_money(snapshot.get("btc_price")))
+    top[2].metric("Leader", snapshot.get("leader") or "-")
+    top[3].metric("Start", fmt_short_time(pd.to_datetime(competition.get("start_time"), utc=True, errors="coerce")))
+    top[4].metric("End", fmt_short_time(pd.to_datetime(competition.get("end_time"), utc=True, errors="coerce")))
+
+    tabs = st.tabs(["Overview", "Positions", "Trades", "Equity", "Leaderboard", "Ops", "Memory"])
+    agents = snapshot.get("agents", {})
+    leaderboard = pd.DataFrame(snapshot.get("leaderboard", []))
+    open_positions = pd.DataFrame(snapshot.get("open_positions", []))
+    recent_trades = pd.DataFrame(snapshot.get("recent_trades", []))
+
+    with tabs[0]:
+        st.subheader("Agent Accounts")
+        if agents:
+            cols = st.columns(len(agents))
+            for column, (agent_id, values) in zip(cols, agents.items()):
+                column.metric(agent_id, fmt_money(values.get("equity")), f"{float(values.get('roi_pct') or 0):.2f}% ROI")
+                column.caption(f"Realized {fmt_money(values.get('realized_pnl'))} · Unrealized {fmt_money(values.get('unrealized_pnl'))}")
+        workload = snapshot.get("workload", {})
+        work_cols = st.columns(3)
+        work_cols[0].metric("Local workload", f"{float(workload.get('local_pct') or 0):.1f}%")
+        work_cols[1].metric("DeepSeek", f"{float(workload.get('deepseek_pct') or 0):.1f}%")
+        work_cols[2].metric("Grok", f"{float(workload.get('grok_pct') or 0):.1f}%")
+
+    with tabs[1]:
+        st.subheader("Open Positions")
+        st.dataframe(open_positions, width="stretch", hide_index=True) if not open_positions.empty else st.info("No open positions in the latest snapshot.")
+
+    with tabs[2]:
+        st.subheader("Recent Trades")
+        st.dataframe(recent_trades, width="stretch", hide_index=True) if not recent_trades.empty else st.info("No recent trades.")
+        st.subheader("Trade History Summary")
+        summary = pd.DataFrame.from_dict(snapshot.get("trade_history_summary", {}), orient="index").reset_index(names="agent_id")
+        st.dataframe(summary, width="stretch", hide_index=True) if not summary.empty else st.info("No trade summary yet.")
+
+    with tabs[3]:
+        st.subheader("Equity Curves")
+        equity_rows = _flatten_snapshot_series(snapshot.get("equity_curves", {}), "equity")
+        if equity_rows.empty:
+            st.info("No equity curve data yet.")
+        else:
+            st.plotly_chart(px.line(equity_rows, x="timestamp", y="equity", color="agent_id", template="plotly_dark"), width="stretch")
+        drawdown_rows = _flatten_snapshot_series(snapshot.get("drawdown_curves", {}), "drawdown")
+        if not drawdown_rows.empty:
+            fig = px.area(drawdown_rows, x="timestamp", y="drawdown", color="agent_id", template="plotly_dark")
+            fig.update_yaxes(tickformat=".1%")
+            st.plotly_chart(fig, width="stretch")
+
+    with tabs[4]:
+        st.subheader("Leaderboard")
+        st.dataframe(leaderboard, width="stretch", hide_index=True) if not leaderboard.empty else st.info("No leaderboard yet.")
+
+    with tabs[5]:
+        st.subheader("Token Usage and API Costs")
+        token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
+        st.dataframe(token_usage, width="stretch", hide_index=True) if not token_usage.empty else st.info("No token usage yet.")
+        st.json(snapshot.get("api_costs", {}))
+        st.subheader("Rejected Signals")
+        rejected = snapshot.get("rejected_signals_summary", {})
+        st.json(rejected)
+        st.subheader("Strategy Diversity")
+        st.json(snapshot.get("strategy_diversity_metrics", {}))
+
+    with tabs[6]:
+        st.subheader("Reflections")
+        reflections = pd.DataFrame(snapshot.get("reflections_summary", {}).get("recent", []))
+        st.dataframe(reflections, width="stretch", hide_index=True) if not reflections.empty else st.info("No recent reflections.")
+
+
+def _flatten_snapshot_series(series: dict[str, list[dict[str, Any]]], value_column: str) -> pd.DataFrame:
+    rows = []
+    for agent_id, points in series.items():
+        for point in points:
+            rows.append({"agent_id": agent_id, "timestamp": point.get("timestamp"), value_column: point.get(value_column)})
+    frame = pd.DataFrame(rows)
+    if not frame.empty:
+        frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+    return frame
+
+
+snapshot_payload = read_snapshot(str(cloud_snapshot_path))
+if snapshot_payload:
+    render_cloud_snapshot_dashboard(snapshot_payload)
+    st.stop()
+
+
+with st.sidebar:
+    st.title("Arena Control")
+    selected_agents = st.multiselect("Agents", options=agent_ids, default=agent_ids, format_func=lambda aid: agent_names.get(aid, aid))
+    chart_timeframe = st.selectbox("Chart timeframe", ["1m", "5m", "15m", "1h", "4h", "1d"], index=3)
+    auto_refresh = st.selectbox("Auto refresh", options=["Off", "10 sec", "30 sec", "60 sec"], index=0)
+    if st.button("Refresh Now", width="stretch"):
+        st.cache_data.clear()
+        st.rerun()
+    st.divider()
+    st.caption("Date range")
+    date_range = st.date_input("Filter range", value=(datetime.now().date() - timedelta(days=7), datetime.now().date()))
+
+if auto_refresh != "Off":
+    seconds = int(auto_refresh.split()[0])
+    st.markdown(f"<meta http-equiv='refresh' content='{seconds}'>", unsafe_allow_html=True)
+
+prompts = read_table("prompts", str(db_path))
+tool_calls = read_table("tool_calls", str(db_path))
+responses = read_table("responses", str(db_path))
+signals = read_table("signals", str(db_path))
+positions = read_table("positions", str(db_path))
+trades = read_table("trades", str(db_path))
+reflections = read_table("reflections", str(db_path))
+lessons = read_table("lessons", str(db_path))
+shared_lessons = read_table("shared_lessons", str(db_path))
+strategy_profiles = read_table("strategy_profiles", str(db_path))
+diversity_metrics = read_table("diversity_metrics", str(db_path))
+lesson_promotions = read_table("lesson_promotions", str(db_path))
+workload_cycles = read_table("workload_cycles", str(db_path))
+workload_components = read_table("workload_components", str(db_path))
+health_checks = read_table("health_checks", str(db_path))
+benchmarks = read_table("benchmarks", str(db_path))
+prompt_versions = read_table("prompt_versions", str(db_path))
+config_versions = read_table("config_versions", str(db_path))
+control_commands = read_table("control_commands", str(db_path))
+checkpoints = read_table("checkpoints", str(db_path))
+downtime_events = read_table("downtime_events", str(db_path))
+ledger = read_csv(str(ledger_path))
+signals_md = read_text(str(signals_path))
+evaluation_md = read_text(str(evaluation_path))
+rulebook_md = read_text(str(rulebook_path))
+ohlcv = fetch_ohlcv(chart_timeframe)
+current_price = float(ohlcv["close"].iloc[-1]) if not ohlcv.empty else None
+positions_view = build_position_view(positions, current_price)
+curve = equity_curve(trades, positions_view)
+metric_frame = metrics_table(trades, signals, responses, positions_view, curve)
+start_time, end_time = competition_times(prompts, responses, signals, trades)
+last_cycle = last_cycle_timestamp(prompts, responses, signals, trades)
+latest_checkpoint_time = pd.to_datetime(checkpoints["created_at"], utc=True, errors="coerce").max() if not checkpoints.empty and "created_at" in checkpoints.columns else pd.NaT
+system_uptime = utc_now() - latest_checkpoint_time.to_pydatetime() if pd.notna(latest_checkpoint_time) else None
+next_run = last_cycle.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(last_cycle) else None
+status = system_status(last_cycle, end_time)
+elapsed = max(timedelta(0), utc_now() - start_time)
+duration = max(timedelta(seconds=1), end_time - start_time)
+remaining = max(timedelta(0), end_time - utc_now())
+percent_complete = min(1.0, elapsed.total_seconds() / duration.total_seconds())
+open_count = 0 if positions_view.empty else int(positions_view["status"].isin(["OPEN", "PARTIAL"]).sum())
+api_budget = os.getenv("ARENA_API_BUDGET_USD")
+spent = float(metric_frame["estimated_api_cost"].sum()) if not metric_frame.empty else 0.0
+remaining_budget = (float(api_budget) - spent) if api_budget else None
+
+with st.sidebar:
+    st.divider()
+    st.metric("Status", status)
+    st.metric("Open positions", open_count)
+    st.metric("API spent", f"${spent:.4f}")
+    st.metric("Uptime", human_duration(system_uptime) if system_uptime else "-")
+    st.caption(f"Last updated: {fmt_time(utc_now())}")
+
+st.title("Crypto Paper Trading Arena")
+st.caption("BTCUSDT perpetual futures paper competition")
+st.markdown(
+    f"""
+    <div class="arena-banner">
+        <span class="{status_class(status)}">{status}</span>
+        <span class="muted"> | Last cycle: {fmt_time(last_cycle) if pd.notna(last_cycle) else 'none yet'}
+        | Next run: {fmt_time(next_run) if next_run else 'not scheduled'}
+        | Open positions: {open_count}
+        | Uptime since checkpoint: {human_duration(system_uptime) if system_uptime else '-'}
+        | Remaining API budget: {f'${remaining_budget:.2f}' if remaining_budget is not None else 'not configured'}
+        | Price: {f'{current_price:,.2f}' if current_price else 'unavailable'} ({chart_timeframe})</span>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
+banner_cols = st.columns(4)
+leader = metric_frame.iloc[0]["agent_id"] if not metric_frame.empty else "-"
+banner_cols[0].metric("Current leader", leader)
+banner_cols[1].metric("Time remaining", human_duration(remaining))
+banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
+banner_cols[3].metric("Start / End", f"{fmt_short_time(start_time)} -> {fmt_short_time(end_time)}")
+st.progress(percent_complete)
+
+alerts = notifications(signals, trades, positions, metric_frame)
+if alerts:
+    with st.expander("Notifications", expanded=True):
+        for note in alerts:
+            st.warning(note)
+
+tabs = st.tabs(
+    [
+        "Overview",
+        "Live Positions",
+        "Trade History",
+        "Equity Curves",
+        "Leaderboard",
+        "Rejected Signals",
+        "Raw Model Outputs",
+        "Memory & Reflections",
+        "Token & Cost",
+        "Workload Attribution",
+        "Strategy Diversity",
+        "Configuration",
+    ]
+)
+
+with tabs[0]:
+    st.subheader("Overview")
+    st.markdown('<div class="chart-shell">', unsafe_allow_html=True)
+    st.markdown(
+        f"<div class='chart-head'><strong>BTCUSDT Perpetual</strong><span>{chart_timeframe} | EMA 9/21/50/200 | Volume | RSI | Trade overlays</span></div>",
+        unsafe_allow_html=True,
+    )
+    render_live_chart(ohlcv, trades, positions_view, selected_agents or agent_ids)
+    st.markdown("</div>", unsafe_allow_html=True)
+    if metric_frame.empty:
+        st.info("No metrics yet. Run the competition once to populate the dashboard.")
+    else:
+        for _, row in metric_frame[metric_frame["agent_id"].isin(selected_agents or agent_ids)].iterrows():
+            st.markdown(f"#### {row['agent']}  `{row['model']}`")
+            cols = st.columns(6)
+            cols[0].metric("Current equity", fmt_money(row["current_equity"]), fmt_pct(row["total_return_pct"]))
+            cols[1].metric("Unrealized PnL", fmt_money(row["unrealized_pnl"]))
+            cols[2].metric("Realized PnL", fmt_money(row["realized_pnl"]))
+            cols[3].metric("Max drawdown", fmt_pct(row["max_drawdown"]))
+            cols[4].metric("Win rate", fmt_pct(row["win_rate"]))
+            cols[5].metric("Sharpe", f"{row['sharpe_ratio']:.2f}")
+            cols = st.columns(6)
+            cols[0].metric("Profit factor", f"{row['profit_factor']:.2f}")
+            cols[1].metric("Rule compliance", fmt_pct(row["rule_compliance"]))
+            cols[2].metric("Rejected signals", int(row["rejected_signals"]))
+            cols[3].metric("Token usage", f"{int(row['token_usage']):,}")
+            cols[4].metric("API cost", f"${row['estimated_api_cost']:.4f}")
+            cols[5].metric("Profit / $ API", f"{row['profit_per_api_dollar']:.2f}")
+
+with tabs[1]:
+    st.subheader("Live Positions")
+    open_positions = positions_view[positions_view["status"].isin(["OPEN", "PARTIAL"])] if not positions_view.empty else pd.DataFrame()
+    if selected_agents and not open_positions.empty:
+        open_positions = open_positions[open_positions["agent_id"].isin(selected_agents)]
+    if open_positions.empty:
+        st.info("No live positions.")
+    else:
+        display = open_positions.rename(columns={"id": "position_id", "take_profit_1": "tp1", "take_profit_2": "tp2", "margin": "margin_used", "notional": "notional_exposure"})
+        columns = ["position_id", "agent_id", "direction", "average_entry", "current_price", "stop_loss", "tp1", "tp2", "leverage", "margin_used", "notional_exposure", "unrealized_pnl", "risk_pct", "liq_estimate", "holding_time"]
+        st.dataframe(display[[column for column in columns if column in display.columns]], width="stretch", hide_index=True)
+
+with tabs[2]:
+    st.subheader("Trade History")
+    filtered = trades.copy()
+    if not filtered.empty:
+        if selected_agents:
+            filtered = filtered[filtered["agent_id"].isin(selected_agents)]
+        directions = sorted([value for value in filtered.get("direction", pd.Series(dtype=str)).dropna().unique()])
+        cols = st.columns(3)
+        selected_direction = cols[0].selectbox("Direction", ["All"] + directions)
+        selected_outcome = cols[1].selectbox("Outcome", ["All", "Win", "Loss", "Breakeven"])
+        export_scope = cols[2].selectbox("Export scope", ["Filtered", "All"])
+        if selected_direction != "All":
+            filtered = filtered[filtered["direction"] == selected_direction]
+        pnl_values = pd.to_numeric(filtered["realized_pnl"], errors="coerce").fillna(0)
+        if selected_outcome == "Win":
+            filtered = filtered[pnl_values > 0]
+        elif selected_outcome == "Loss":
+            filtered = filtered[pnl_values < 0]
+        elif selected_outcome == "Breakeven":
+            filtered = filtered[pnl_values == 0]
+        if isinstance(date_range, tuple) and len(date_range) == 2 and "created_at" in filtered.columns:
+            created = pd.to_datetime(filtered["created_at"], utc=True, errors="coerce")
+            filtered = filtered[(created.dt.date >= date_range[0]) & (created.dt.date <= date_range[1])]
+    if filtered.empty:
+        st.info("No trades match the current filters.")
+    else:
+        display = filtered.copy()
+        display["outcome"] = pd.to_numeric(display["realized_pnl"], errors="coerce").fillna(0).map(lambda pnl: "Win" if pnl > 0 else "Loss" if pnl < 0 else "Open/Flat")
+        display["r_multiple"] = display.apply(lambda row: r_multiple(row, positions, signals), axis=1)
+        display["holding_time"] = display.apply(lambda row: trade_holding_time(row, positions), axis=1)
+        st.dataframe(display, width="stretch", hide_index=True)
+        download_frame("Download trades CSV", filtered if export_scope == "Filtered" else trades, "trades.csv")
+        download_frame("Download ledger CSV", ledger, "LEDGER.csv")
+
+with tabs[3]:
+    st.subheader("Equity Curves")
+    if curve.empty:
+        st.info("No equity data yet.")
+    else:
+        chart_curve = curve[curve["agent_id"].isin(selected_agents)] if selected_agents else curve
+        st.plotly_chart(px.line(chart_curve, x="timestamp", y="equity", color="agent_id", title="Equity over time", template="plotly_dark"), width="stretch")
+        dd = drawdown_curve(chart_curve)
+        if not dd.empty:
+            fig_dd = px.area(dd, x="timestamp", y="drawdown", color="agent_id", title="Drawdown over time", template="plotly_dark")
+            fig_dd.update_yaxes(tickformat=".1%")
+            st.plotly_chart(fig_dd, width="stretch")
+        daily = daily_returns(chart_curve)
+        if not daily.empty:
+            fig_daily = px.bar(daily, x="day", y="daily_return", color="agent_id", barmode="group", title="Daily returns", template="plotly_dark")
+            fig_daily.update_yaxes(tickformat=".2%")
+            st.plotly_chart(fig_daily, width="stretch")
+
+with tabs[4]:
+    st.subheader("Leaderboard")
+    if metric_frame.empty:
+        st.info("No leaderboard yet.")
+    else:
+        columns = ["agent_id", "current_equity", "total_return_pct", "sharpe_ratio", "max_drawdown", "rule_compliance", "profit_per_api_dollar", "score"]
+        st.dataframe(metric_frame[columns], width="stretch", hide_index=True)
+        score_fig = go.Figure()
+        for component, weight in [("return", 0.40), ("sharpe", 0.20), ("drawdown", 0.20), ("compliance", 0.10), ("api", 0.10)]:
+            values = []
+            for _, row in metric_frame.iterrows():
+                if component == "return":
+                    values.append(weight * max(0, min(1, row["total_return_pct"] / 0.10)))
+                elif component == "sharpe":
+                    values.append(weight * max(0, min(1, row["sharpe_ratio"] / 2 if math.isfinite(row["sharpe_ratio"]) else 0)))
+                elif component == "drawdown":
+                    values.append(weight * max(0, min(1, 1 - row["max_drawdown"] / 0.10)))
+                elif component == "compliance":
+                    values.append(weight * max(0, min(1, row["rule_compliance"])))
+                else:
+                    values.append(weight * max(0, min(1, row["profit_per_api_dollar"] / 100 if row["profit_per_api_dollar"] > 0 else 1)))
+            score_fig.add_trace(go.Bar(name=component, x=metric_frame["agent_id"], y=values))
+        score_fig.update_layout(barmode="stack", title="Weighted score breakdown", yaxis_title="Score", template="plotly_dark")
+        st.plotly_chart(score_fig, width="stretch")
+
+with tabs[5]:
+    st.subheader("Rejected Signals")
+    if signals.empty:
+        st.info("No signals logged yet.")
+    else:
+        rejected = signals[pd.to_numeric(signals["accepted"], errors="coerce").fillna(0) == 0].copy()
+        if selected_agents and not rejected.empty:
+            rejected = rejected[rejected["agent_id"].isin(selected_agents)]
+        if rejected.empty:
+            st.success("No rejected signals.")
+        else:
+            rejected["rejection_reasons"] = rejected["reasons_json"].apply(lambda value: "; ".join(safe_json(value, [])))
+            st.dataframe(rejected[["created_at", "agent_id", "decision", "action", "rejection_reasons", "raw_response"]], width="stretch", hide_index=True)
+            download_frame("Download rejected signals", rejected, "rejected_signals.csv")
+            download_text("Download SIGNALS.md", signals_md, "SIGNALS.md")
+
+with tabs[6]:
+    st.subheader("Raw Model Outputs")
+    if responses.empty and prompts.empty and tool_calls.empty:
+        st.info("No model outputs logged yet.")
+    else:
+        response_view = responses.copy()
+        if selected_agents and not response_view.empty:
+            response_view = response_view[response_view["agent_id"].isin(selected_agents)]
+        joined = response_view.merge(prompts[["id", "prompt"]] if not prompts.empty else pd.DataFrame(columns=["id", "prompt"]), left_on="prompt_id", right_on="id", how="left", suffixes=("", "_prompt"))
+        st.dataframe(joined[[column for column in ["created_at", "agent_id", "prompt_id", "prompt", "raw_response", "input_tokens", "output_tokens", "estimated_cost_usd"] if column in joined.columns]], width="stretch", hide_index=True)
+        st.markdown("#### Tool Calls")
+        st.dataframe(tool_calls[tool_calls["agent_id"].isin(selected_agents)] if selected_agents and not tool_calls.empty else tool_calls, width="stretch", hide_index=True) if not tool_calls.empty else st.info("No tool calls logged.")
+        st.markdown("#### Validation Results")
+        st.dataframe(signals[["created_at", "agent_id", "decision", "action", "accepted", "reasons_json"]], width="stretch", hide_index=True) if not signals.empty else st.info("No validation records.")
+
+with tabs[7]:
+    st.subheader("Memory & Reflections")
+    cols = st.columns(2)
+    with cols[0]:
+        st.markdown("#### Recent reflections")
+        if reflections.empty:
+            st.info("No reflections yet.")
+        else:
+            view = reflections[reflections["agent_id"].isin(selected_agents)] if selected_agents else reflections
+            st.dataframe(view.sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            download_frame("Download reflections", view, "reflections.csv")
+    with cols[1]:
+        st.markdown("#### Lessons learned")
+        if lessons.empty:
+            st.info("No lessons yet.")
+        else:
+            view = lessons[lessons["agent_id"].isin(selected_agents)] if selected_agents else lessons
+            st.dataframe(view.sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            download_frame("Download lessons", view, "lessons.csv")
+    st.markdown("#### Best and worst setups")
+    if trades.empty:
+        st.info("No setup statistics yet.")
+    else:
+        setup = trades.copy()
+        setup["realized_pnl"] = pd.to_numeric(setup["realized_pnl"], errors="coerce").fillna(0)
+        if selected_agents:
+            setup = setup[setup["agent_id"].isin(selected_agents)]
+        left, right = st.columns(2)
+        left.dataframe(setup.sort_values("realized_pnl", ascending=False).head(5), width="stretch", hide_index=True)
+        right.dataframe(setup.sort_values("realized_pnl", ascending=True).head(5), width="stretch", hide_index=True)
+    st.markdown("#### Regime statistics")
+    expanded = signal_payloads(signals)
+    if expanded.empty or "payload_data_used" not in expanded.columns:
+        st.info("No regime statistics available yet.")
+    else:
+        st.dataframe(expanded[["created_at", "agent_id", "payload_data_used"]].tail(50), width="stretch", hide_index=True)
+
+with tabs[8]:
+    st.subheader("Token & Cost Analytics")
+    usage = api_usage(responses)
+    if usage.empty:
+        st.info("No token usage logged yet.")
+    else:
+        st.dataframe(usage, width="stretch", hide_index=True)
+        daily_usage = responses.copy()
+        daily_usage["day"] = pd.to_datetime(daily_usage["created_at"], utc=True, errors="coerce").dt.date
+        for column in ["input_tokens", "output_tokens", "estimated_cost_usd"]:
+            daily_usage[column] = pd.to_numeric(daily_usage[column], errors="coerce").fillna(0)
+        grouped = daily_usage.groupby(["agent_id", "day"], as_index=False).agg(requests=("id", "count"), tokens=("input_tokens", "sum"), output_tokens=("output_tokens", "sum"), cost=("estimated_cost_usd", "sum"))
+        grouped["tokens"] = grouped["tokens"] + grouped["output_tokens"]
+        st.plotly_chart(px.bar(grouped, x="day", y="requests", color="agent_id", barmode="group", title="Requests per day", template="plotly_dark"), width="stretch")
+        st.plotly_chart(px.bar(grouped, x="day", y="tokens", color="agent_id", barmode="group", title="Tokens per day", template="plotly_dark"), width="stretch")
+        st.plotly_chart(px.line(grouped, x="day", y="cost", color="agent_id", markers=True, title="Estimated API cost", template="plotly_dark"), width="stretch")
+        per_trade = metric_frame[["agent_id", "requests", "token_usage", "estimated_api_cost", "profit_per_api_dollar"]].copy()
+        trade_counts = trades.groupby("agent_id").size().rename("trade_count") if not trades.empty else pd.Series(dtype=int)
+        per_trade["trade_count"] = per_trade["agent_id"].map(trade_counts).fillna(0).astype(int)
+        per_trade["cost_per_trade"] = per_trade.apply(lambda row: row["estimated_api_cost"] / row["trade_count"] if row["trade_count"] else 0, axis=1)
+        st.dataframe(per_trade, width="stretch", hide_index=True)
+
+with tabs[9]:
+    st.subheader("Workload Attribution")
+    if workload_cycles.empty:
+        st.info("No workload cycles recorded yet. Run `python -m src.cli run-once` or `python -m src.cli analyze-workload` after a cycle.")
+    else:
+        cycles = workload_cycles.copy()
+        cycles["timestamp"] = pd.to_datetime(cycles["timestamp"], utc=True, errors="coerce")
+        cycles = cycles.sort_values("timestamp", ascending=False)
+        latest = cycles.iloc[0]
+        total_api_cost = float(cycles["deepseek_cost_usd"].sum() + cycles["grok_cost_usd"].sum())
+        profit_per_cost = float(metric_frame["profit_per_api_dollar"].replace([float("inf"), -float("inf")], 0).mean()) if not metric_frame.empty else 0.0
+        kpis = st.columns(5)
+        kpis[0].metric("Local Machine", f"{float(latest['local_workload_pct']):.1f}%")
+        kpis[1].metric("DeepSeek", f"{float(latest['deepseek_workload_pct']):.1f}%")
+        kpis[2].metric("Grok", f"{float(latest['grok_workload_pct']):.1f}%")
+        kpis[3].metric("Total API Cost", f"${total_api_cost:.4f}")
+        kpis[4].metric("Profit / $ API", f"{profit_per_cost:.2f}")
+        st.info(
+            "The local machine is currently performing "
+            f"{float(latest['local_workload_pct']):.1f}% of the total workload. "
+            f"DeepSeek contributes {float(latest['deepseek_workload_pct']):.1f}% and "
+            f"Grok contributes {float(latest['grok_workload_pct']):.1f}%."
+        )
+
+        split = pd.DataFrame(
+            [
+                {"component": "Local Machine", "workload_pct": float(latest["local_workload_pct"])},
+                {"component": "DeepSeek", "workload_pct": float(latest["deepseek_workload_pct"])},
+                {"component": "Grok", "workload_pct": float(latest["grok_workload_pct"])},
+            ]
+        )
+        chart_cols = st.columns(2)
+        chart_cols[0].plotly_chart(px.pie(split, names="component", values="workload_pct", hole=0.55, title="Current workload split", template="plotly_dark"), width="stretch")
+        trend = cycles.sort_values("timestamp")
+        trend_long = trend.melt(
+            id_vars=["timestamp"],
+            value_vars=["local_workload_pct", "deepseek_workload_pct", "grok_workload_pct"],
+            var_name="component",
+            value_name="workload_pct",
+        )
+        chart_cols[1].plotly_chart(px.line(trend_long, x="timestamp", y="workload_pct", color="component", markers=True, title="Historical workload percentages", template="plotly_dark"), width="stretch")
+
+        token_trend = trend[["timestamp", "deepseek_tokens", "grok_tokens"]].melt(id_vars=["timestamp"], var_name="agent", value_name="tokens")
+        latency_trend = trend[["timestamp", "local_wall_time_seconds", "deepseek_latency_seconds", "grok_latency_seconds"]].melt(id_vars=["timestamp"], var_name="component", value_name="seconds")
+        cost_trend = trend[["timestamp", "deepseek_cost_usd", "grok_cost_usd"]].melt(id_vars=["timestamp"], var_name="agent", value_name="cost_usd")
+        st.plotly_chart(px.bar(token_trend, x="timestamp", y="tokens", color="agent", barmode="group", title="Token usage trends", template="plotly_dark"), width="stretch")
+        st.plotly_chart(px.line(latency_trend, x="timestamp", y="seconds", color="component", markers=True, title="Latency trends", template="plotly_dark"), width="stretch")
+        st.plotly_chart(px.line(cost_trend, x="timestamp", y="cost_usd", color="agent", markers=True, title="API cost trends", template="plotly_dark"), width="stretch")
+
+        st.markdown("#### Per-cycle breakdown")
+        display_cols = [
+            "timestamp",
+            "local_workload_pct",
+            "deepseek_workload_pct",
+            "grok_workload_pct",
+            "local_wall_time_seconds",
+            "deepseek_latency_seconds",
+            "grok_latency_seconds",
+            "deepseek_tokens",
+            "grok_tokens",
+            "deepseek_cost_usd",
+            "grok_cost_usd",
+        ]
+        st.dataframe(cycles[[column for column in display_cols if column in cycles.columns]], width="stretch", hide_index=True)
+        download_frame("Download workload cycles CSV", cycles, "workload_cycles.csv")
+
+        st.markdown("#### Per-category breakdown")
+        if workload_components.empty:
+            st.info("No workload component rows yet.")
+        else:
+            components = workload_components.copy()
+            components["timestamp"] = pd.to_datetime(components["timestamp"], utc=True, errors="coerce")
+            category_summary = components.groupby(["owner", "category", "metric_name"], as_index=False)["metric_value"].sum().sort_values("metric_value", ascending=False)
+            st.dataframe(category_summary, width="stretch", hide_index=True)
+            st.markdown("#### Top most expensive tasks")
+            expensive = components[components["metric_name"].isin(["latency_seconds", "api_cost_usd"])].sort_values("metric_value", ascending=False).head(20)
+            st.dataframe(expensive, width="stretch", hide_index=True)
+            download_frame("Download workload components CSV", components, "workload_components.csv")
+
+with tabs[10]:
+    st.subheader("Strategy Diversity")
+    if diversity_metrics.empty:
+        st.info("No diversity metrics yet. Run `python -m src.cli analyze-diversity` or a competition cycle.")
+    else:
+        latest = diversity_metrics.sort_values("created_at", ascending=False).iloc[0]
+        cols = st.columns(5)
+        cols[0].metric("Action agreement", fmt_pct(latest.get("action_agreement_rate")))
+        cols[1].metric("Direction agreement", fmt_pct(latest.get("directional_agreement_rate")))
+        cols[2].metric("Leverage similarity", fmt_pct(latest.get("leverage_similarity")))
+        cols[3].metric("Confidence corr.", f"{float(latest.get('confidence_correlation') or 0):.2f}")
+        cols[4].metric("Shared ratio", fmt_pct(latest.get("shared_ratio_applied")))
+        if int(latest.get("convergence_warning") or 0):
+            st.error("Convergence warning: shared lessons are reduced and private memory should dominate.")
+        else:
+            st.success("Strategy diversity is within the configured threshold.")
+        st.dataframe(diversity_metrics.sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+
+    st.markdown("#### Strategy Profiles")
+    if strategy_profiles.empty:
+        st.info("No profiles stored yet.")
+    else:
+        profile_rows = []
+        for _, row in strategy_profiles.iterrows():
+            payload = safe_json(row.get("profile_json"), {})
+            profile_rows.append({"agent_id": row.get("agent_id"), **payload})
+        st.dataframe(pd.DataFrame(profile_rows), width="stretch", hide_index=True)
+
+    st.markdown("#### Shared Knowledge Base")
+    if shared_lessons.empty:
+        st.info("No promoted shared lessons yet.")
+    else:
+        st.dataframe(shared_lessons.sort_values("promoted_at", ascending=False), width="stretch", hide_index=True)
+        download_frame("Download shared lessons CSV", shared_lessons, "shared_lessons.csv")
+
+    st.markdown("#### Unique Private Lessons")
+    if lessons.empty:
+        st.info("No private lessons recorded yet.")
+    else:
+        for agent_id in selected_agents or agent_ids:
+            agent_lessons = lessons[lessons["agent_id"] == agent_id].sort_values("created_at", ascending=False).head(8)
+            with st.expander(agent_names.get(agent_id, agent_id), expanded=False):
+                if agent_lessons.empty:
+                    st.caption("No lessons yet.")
+                else:
+                    for _, row in agent_lessons.iterrows():
+                        st.write(f"- {row.get('content')}")
+
+    st.markdown("#### Lesson Promotion Audit")
+    if lesson_promotions.empty:
+        st.info("No promotion attempts recorded yet.")
+    else:
+        st.dataframe(lesson_promotions.sort_values("created_at", ascending=False).head(200), width="stretch", hide_index=True)
+
+with tabs[11]:
+    st.subheader("Configuration")
+    config_cols = st.columns(2)
+    with config_cols[0]:
+        st.markdown("#### Active settings")
+        st.json(
+            {
+                "models": agent_models,
+                "symbol": settings.competition.display_symbol,
+                "chart_timeframe": chart_timeframe,
+                "poll_interval_seconds": settings.competition.poll_interval_seconds,
+                "competition_duration_days": settings.competition.duration_days,
+                "initial_equity": settings.accounts.initial_equity,
+                "risk": settings.risk.model_dump(),
+                "market": settings.market.model_dump(),
+                "shared_learning": settings.shared_learning.model_dump(),
+                "hot_reload": settings.hot_reload.model_dump(),
+                "feature_flags": {name: flag.model_dump() for name, flag in settings.feature_flags.items()},
+            }
+        )
+    with config_cols[1]:
+        st.markdown("#### Runtime controls")
+        control_cols = st.columns(2)
+        with control_cols[0]:
+            if st.button("Reload Config", width="stretch"):
+                command_id = queue_control_command(str(db_path), "reload-config", {"source": "dashboard"})
+                st.success(f"Queued reload command {command_id}.")
+                st.cache_data.clear()
+        with control_cols[1]:
+            if st.button("Rollback Config", width="stretch"):
+                command_id = queue_control_command(str(db_path), "rollback-config", {"source": "dashboard"})
+                st.warning(f"Queued rollback command {command_id}.")
+                st.cache_data.clear()
+        latest_config = config_versions.sort_values("created_at", ascending=False).iloc[0] if not config_versions.empty else None
+        if latest_config is not None:
+            st.caption(f"Active config: {str(latest_config.get('version_hash', ''))[:12]} · code: {latest_config.get('code_version', '')}")
+        pending = control_commands[control_commands["status"] == "PENDING"] if not control_commands.empty and "status" in control_commands.columns else pd.DataFrame()
+        if not pending.empty:
+            st.caption(f"Pending control commands: {len(pending)}")
+        st.markdown("#### Rulebook summary")
+        st.markdown(
+            f"""
+            - Paper trading only, no exchange API keys, no real orders.
+            - BTCUSDT perpetual futures only.
+            - Starting equity: {fmt_money(initial_equity)} per agent.
+            - Maximum leverage: {settings.risk.max_leverage:g}x.
+            - Max margin per OPEN/ADD/DCA: {settings.risk.max_margin_per_action_pct * 100:.1f}% equity.
+            - Max total account risk: {settings.risk.max_total_account_risk_pct * 100:.1f}% equity.
+            - Max open positions: {settings.risk.max_open_positions}.
+            - Max DCA per position: {settings.risk.max_dca_per_position}.
+            - Daily loss limit: {settings.risk.daily_loss_limit_pct * 100:.1f}%.
+            - TP1 RR >= {settings.risk.min_rr_tp1:g}; TP2 RR >= {settings.risk.min_rr_tp2:g}.
+            """
+        )
+    with st.expander("Full rulebook"):
+        st.markdown(rulebook_md or "Rulebook file is empty or missing.")
+    with st.expander("Evaluation report"):
+        st.markdown(evaluation_md or "No evaluation report yet.")
+    with st.expander("Health checks"):
+        if health_checks.empty:
+            st.info("No health checks recorded yet.")
+        else:
+            st.dataframe(health_checks.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Crash-safe checkpoints"):
+        if checkpoints.empty:
+            st.info("No checkpoints recorded yet.")
+        else:
+            st.dataframe(checkpoints.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Downtime history"):
+        if downtime_events.empty:
+            st.info("No downtime events recorded yet.")
+        else:
+            st.dataframe(downtime_events.sort_values("ended_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Buy-and-hold benchmark"):
+        if benchmarks.empty:
+            st.info("No benchmark records yet.")
+        else:
+            st.dataframe(benchmarks.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Prompt versions"):
+        if prompt_versions.empty:
+            st.info("No prompt versions recorded yet.")
+        else:
+            st.dataframe(prompt_versions.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Configuration versions"):
+        if config_versions.empty:
+            st.info("No config versions recorded yet.")
+        else:
+            st.dataframe(config_versions.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    with st.expander("Control commands"):
+        if control_commands.empty:
+            st.info("No control commands recorded yet.")
+        else:
+            st.dataframe(control_commands.sort_values("created_at", ascending=False).head(50), width="stretch", hide_index=True)
+    export_cols = st.columns(3)
+    with export_cols[0]:
+        download_text("Download evaluation", evaluation_md, "EVALUATION.md")
+    with export_cols[1]:
+        download_text("Download rulebook", rulebook_md, "rulebook.md")
+    with export_cols[2]:
+        download_frame("Download metrics CSV", metric_frame, "arena_metrics.csv")
