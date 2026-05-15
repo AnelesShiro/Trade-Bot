@@ -10,7 +10,7 @@ from typing import Any
 from uuid import uuid4
 
 from src.competition.config_manager import detect_code_version
-from src.config import PROJECT_ROOT, Settings, load_settings, settings_hash
+from src.config import PROJECT_ROOT, Settings, load_settings, safe_canary, safe_features, settings_hash
 from src.storage.repository import ArenaRepository
 
 
@@ -283,8 +283,8 @@ class LiveUpdateManager:
                 "cycle_number": latest_checkpoint.get("cycle_number"),
                 "status": latest_checkpoint.get("status"),
             },
-            "features": self.settings.features.model_dump(),
-            "canary": self.settings.canary.model_dump(),
+            "features": safe_features(self.settings).model_dump(),
+            "canary": safe_canary(self.settings).model_dump(),
         }
 
     def audit(self, status: str, event_type: str, message: str, payload: dict[str, Any] | None = None) -> None:

@@ -18,7 +18,7 @@ from src.competition.checkpoint import build_checkpoint_payload, restore_from_ch
 from src.competition.config_manager import ConfigManager
 from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import WorkloadTracker
-from src.config import Settings, load_rulebook
+from src.config import Settings, load_rulebook, safe_canary, safe_features
 from src.logger import logger
 from src.schemas import Action, AgentSignal, MarketState
 from src.market.data_feed import MarketDataFeed
@@ -228,7 +228,7 @@ class CompetitionRunner:
     def _sleep_with_position_monitor(self, total_seconds: int | float) -> None:
         remaining = max(0.0, float(total_seconds))
         interval = max(1.0, float(self.settings.safety.position_monitor_interval_seconds))
-        if not (self.settings.safety.position_monitor_enabled and self.settings.features.event_driven_tp_sl):
+        if not (self.settings.safety.position_monitor_enabled and safe_features(self.settings).event_driven_tp_sl):
             time.sleep(remaining)
             return
         while remaining > 0:
@@ -629,7 +629,8 @@ class CompetitionRunner:
         )
 
     def _system_prompt_for_agent(self, agent_id: str) -> str:
-        if not self.settings.canary.enabled or agent_id not in set(self.settings.canary.target_agents):
+        canary = safe_canary(self.settings)
+        if not canary.enabled or agent_id not in set(canary.target_agents):
             return self.system_prompt
         versions = self.update_manager.deployment_state().get("active_versions_file", {})
         canary = versions.get("canary_prompts", {}) if isinstance(versions, dict) else {}
@@ -650,18 +651,20 @@ class CompetitionRunner:
             current = self.config_manager.reload_if_changed(current)
         if current is not self.settings:
             self._apply_settings(current)
-            self.update_manager = LiveUpdateManager(current, self.repository)
+            self.update_manager = LiveUpdateManager(current, self.repository, project_root=self.project_root)
             self.update_manager.ensure_storage()
             logger.info("active config {} code {}", self.config_manager.config_hash, self.config_manager.code_version)
 
     def _feature_flags_for_agent(self, agent_id: str) -> dict[str, bool]:
         flags = {name: self.settings.feature_enabled(name, agent_id) for name in self.settings.feature_flags}
-        flags.update(self.settings.features.model_dump())
-        flags["canary_target"] = self.settings.canary.enabled and agent_id in set(self.settings.canary.target_agents)
+        features = safe_features(self.settings)
+        canary = safe_canary(self.settings)
+        flags.update(features.model_dump())
+        flags["canary_target"] = canary.enabled and agent_id in set(canary.target_agents)
         return flags
 
     def _cloud_update_after_cycle(self) -> None:
-        if not (self.settings.cloud_dashboard.enabled and self.settings.features.cloud_sync):
+        if not (self.settings.cloud_dashboard.enabled and safe_features(self.settings).cloud_sync):
             return
         try:
             write_dashboard_snapshot(self.settings, self.repository)

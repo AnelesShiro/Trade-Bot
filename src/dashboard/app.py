@@ -27,7 +27,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.config import load_settings  # noqa: E402
+from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
 from src.market.indicators import ema, rsi  # noqa: E402
 from src.operations.update_manager import LiveUpdateManager  # noqa: E402
@@ -1650,8 +1650,8 @@ with tabs[11]:
                 "market": settings.market.model_dump(),
                 "shared_learning": settings.shared_learning.model_dump(),
                 "hot_reload": settings.hot_reload.model_dump(),
-                "features": settings.features.model_dump(),
-                "canary": settings.canary.model_dump(),
+                "features": safe_features(settings).model_dump(),
+                "canary": safe_canary(settings).model_dump(),
                 "feature_flags": {name: flag.model_dump() for name, flag in settings.feature_flags.items()},
             }
         )

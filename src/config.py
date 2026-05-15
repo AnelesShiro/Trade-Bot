@@ -201,3 +201,13 @@ def settings_hash(path: str | Path | None = None) -> str:
 def load_rulebook(settings: Settings | None = None) -> str:
     current = settings or load_settings()
     return current.resolve_path(current.paths.rulebook).read_text(encoding="utf-8")
+
+
+def safe_features(settings: Settings) -> FeaturesSettings:
+    features = getattr(settings, "features", None)
+    return features if isinstance(features, FeaturesSettings) else FeaturesSettings()
+
+
+def safe_canary(settings: Settings) -> CanarySettings:
+    canary = getattr(settings, "canary", None)
+    return canary if isinstance(canary, CanarySettings) else CanarySettings()
