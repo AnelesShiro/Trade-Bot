@@ -20,7 +20,7 @@ from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import WorkloadTracker
 from src.config import Settings, load_rulebook
 from src.logger import logger
-from src.schemas import Action, MarketState
+from src.schemas import Action, AgentSignal, MarketState
 from src.storage.models import build_session_factory, create_schema
 from src.storage.repository import ArenaRepository
 from src.storage.vector_store import LocalVectorStore
@@ -38,6 +38,7 @@ from src.operations.preflight import has_critical_failures, run_preflight
 
 
 MAX_OPENCLAW_MESSAGE_CHARS = 24000
+MAX_SIGNAL_REPAIR_ATTEMPTS = int(os.getenv("ARENA_SIGNAL_REPAIR_ATTEMPTS", "5"))
 
 
 class CompetitionRunner:
@@ -197,19 +198,92 @@ class CompetitionRunner:
         if workload:
             workload.database_query("logging", agent_id=agent_id)
         prompt_id = self.repository.save_prompt(agent_id, prompt)
-        raw = self._run_agent_with_tools(OpenClawAgent(agent_settings), agent_id, prompt, prompt_id, market_state, workload)
-        input_tokens, output_tokens, estimated_cost = estimate_cost_usd(agent_settings.model, prompt, raw)
-        if workload:
-            workload.agent_tokens(agent_id, input_tokens, output_tokens, estimated_cost)
-            workload.database_query("logging", agent_id=agent_id)
-        self.repository.save_response(
-            agent_id,
-            raw,
+        signal, validation, raw = self._run_until_valid_signal(
+            agent_settings=agent_settings,
+            agent_id=agent_id,
+            prompt=prompt,
             prompt_id=prompt_id,
-            input_tokens=input_tokens,
-            output_tokens=output_tokens,
-            estimated_cost_usd=estimated_cost,
+            market_state=market_state,
+            summary=summary,
+            workload=workload,
         )
+        if self._is_warmup_cycle():
+            logger.info("warm-up mode active; skipping paper execution for {}", agent_id)
+            self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")
+            return
+        if signal and validation.accepted and signal.decision.value in {"PAPER_TRADE", "POSITION_UPDATE"}:
+            if workload:
+                workload.local_function("paper_execution", "execute_signal", agent_id=agent_id)
+                workload.database_query("paper_execution", agent_id=agent_id)
+            position_id = self.execution.execute(signal, market_state.current_price)
+            if position_id and signal.action in {Action.REDUCE, Action.CUT, Action.CLOSE}:
+                if workload:
+                    workload.database_query("reflection", agent_id=agent_id)
+                trade = self.repository.latest_trade_for_position(position_id)
+                if trade and trade.exit_price is not None:
+                    reflect_on_trade(self.memory, trade)
+                    if workload:
+                        workload.reflection(agent_id)
+
+    def _run_until_valid_signal(
+        self,
+        agent_settings,
+        agent_id: str,
+        prompt: str,
+        prompt_id: int,
+        market_state: MarketState,
+        summary,
+        workload: WorkloadTracker | None,
+    ):
+        agent = OpenClawAgent(agent_settings)
+        active_prompt = prompt
+        active_prompt_id = prompt_id
+        raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+        for attempt in range(MAX_SIGNAL_REPAIR_ATTEMPTS + 1):
+            input_tokens, output_tokens, estimated_cost = estimate_cost_usd(agent_settings.model, active_prompt, raw)
+            if workload:
+                workload.agent_tokens(agent_id, input_tokens, output_tokens, estimated_cost)
+                workload.database_query("logging", agent_id=agent_id)
+            self.repository.save_response(
+                agent_id,
+                raw,
+                prompt_id=active_prompt_id,
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                estimated_cost_usd=estimated_cost,
+            )
+            signal, validation = self._validate_raw_signal(agent_id, raw, summary, workload)
+            if workload:
+                workload.database_query("logging", agent_id=agent_id)
+            self.repository.save_signal(agent_id, signal, validation, raw)
+            if workload:
+                workload.local_function("outputs", "append_signal_output", agent_id=agent_id)
+            self._append_signal_output(agent_id, raw, validation.accepted, validation.reasons)
+            if validation.accepted:
+                if attempt:
+                    self.repository.save_health_check(
+                        "signal_repair",
+                        "PASS",
+                        False,
+                        f"{agent_id} produced accepted signal after {attempt} repair attempt(s)",
+                    )
+                return signal, validation, raw
+            if attempt >= MAX_SIGNAL_REPAIR_ATTEMPTS:
+                self.repository.save_health_check(
+                    "signal_repair",
+                    "FAIL",
+                    False,
+                    f"{agent_id} still rejected after {MAX_SIGNAL_REPAIR_ATTEMPTS} repair attempt(s): {'; '.join(validation.reasons)[:500]}",
+                )
+                return signal, validation, raw
+            active_prompt = self._compose_repair_prompt(agent_id, raw, validation.reasons, attempt + 1)
+            active_prompt_id = self.repository.save_prompt(agent_id, active_prompt)
+            if workload:
+                workload.local_function("prompt_construction", "compose_repair_prompt", agent_id=agent_id)
+                workload.database_query("logging", agent_id=agent_id)
+            raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+
+    def _validate_raw_signal(self, agent_id: str, raw: str, summary, workload: WorkloadTracker | None):
         if workload:
             workload.local_function("validation", "prevalidate_signal", agent_id=agent_id)
         dca_count = 0
@@ -235,7 +309,7 @@ class CompetitionRunner:
         )
         if workload:
             workload.local_function("validation", "validate_signal", agent_id=agent_id)
-        signal, validation = validate_signal(
+        return validate_signal(
             raw,
             self.rule_engine,
             current_equity=summary.equity,
@@ -245,29 +319,44 @@ class CompetitionRunner:
             dca_count_for_position=dca_count,
             recent_stop_loss_same_direction=recent_stop,
         )
-        if workload:
-            workload.database_query("logging", agent_id=agent_id)
-        self.repository.save_signal(agent_id, signal, validation, raw)
-        if workload:
-            workload.local_function("outputs", "append_signal_output", agent_id=agent_id)
-        self._append_signal_output(agent_id, raw, validation.accepted, validation.reasons)
-        if self._is_warmup_cycle():
-            logger.info("warm-up mode active; skipping paper execution for {}", agent_id)
-            self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")
-            return
-        if signal and validation.accepted and signal.decision.value in {"PAPER_TRADE", "POSITION_UPDATE"}:
-            if workload:
-                workload.local_function("paper_execution", "execute_signal", agent_id=agent_id)
-                workload.database_query("paper_execution", agent_id=agent_id)
-            position_id = self.execution.execute(signal, market_state.current_price)
-            if position_id and signal.action in {Action.REDUCE, Action.CUT, Action.CLOSE}:
-                if workload:
-                    workload.database_query("reflection", agent_id=agent_id)
-                trade = self.repository.latest_trade_for_position(position_id)
-                if trade and trade.exit_price is not None:
-                    reflect_on_trade(self.memory, trade)
-                    if workload:
-                        workload.reflection(agent_id)
+
+    def _compose_repair_prompt(self, agent_id: str, rejected_raw: str, reasons: list[str], attempt: int) -> str:
+        schema_hint = {
+            "agent": agent_id,
+            "decision": "NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE",
+            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD",
+            "symbol": "BTC",
+            "direction": "NONE|LONG|SHORT",
+            "execution_type": "NONE|MARKET|LIMIT|CONDITIONAL",
+            "data_used": ["list", "of", "strings"],
+            "allowed_fields_only": sorted(AgentSignal.model_fields),
+        }
+        no_trade_example = {
+            "agent": agent_id,
+            "decision": "NO_TRADE",
+            "action": "NONE",
+            "symbol": "BTC",
+            "direction": "NONE",
+            "execution_type": "NONE",
+            "thesis": "No compliant setup after validation feedback.",
+            "invalidation": "A compliant setup appears with valid risk/reward and complete data.",
+            "counterargument": "Standing aside may miss a move, but avoids invalid execution.",
+            "data_used": ["validation_feedback", "previous_context"],
+        }
+        prompt = "\n\n".join(
+            [
+                f"Your previous response for {agent_id} was REJECTED by the paper-trading validator.",
+                f"Repair attempt {attempt} of {MAX_SIGNAL_REPAIR_ATTEMPTS}.",
+                "Return exactly one JSON object only. No markdown, no prose.",
+                "Fix every validation issue. Do not include extra fields. data_used must be a JSON list, not a string.",
+                "If you cannot produce a compliant PAPER_TRADE or POSITION_UPDATE, return a compliant NO_TRADE JSON instead.",
+                "VALIDATION REASONS:\n" + json.dumps(reasons, separators=(",", ":"), default=str),
+                "STRICT SCHEMA HINT:\n" + json.dumps(schema_hint, separators=(",", ":"), default=str),
+                "SAFE ACCEPTED FALLBACK EXAMPLE:\n" + json.dumps(no_trade_example, separators=(",", ":")),
+                "REJECTED RESPONSE TO FIX:\n" + _truncate_text(rejected_raw, 4500),
+            ]
+        )
+        return prompt[:MAX_OPENCLAW_MESSAGE_CHARS]
 
     def _run_agent_with_tools(
         self,
@@ -663,6 +752,10 @@ def _compact_json_value(value, list_limit: int, string_limit: int):
     if isinstance(value, str) and len(value) > string_limit:
         return value[:string_limit] + f"... [truncated {len(value) - string_limit} chars]"
     return value
+
+
+def _truncate_text(value: str, limit: int) -> str:
+    return value if len(value) <= limit else value[:limit] + f"... [truncated {len(value) - limit} chars]"
 
 
 def _parse_tool_request(raw: str) -> list[dict] | None:

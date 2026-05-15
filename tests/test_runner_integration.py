@@ -97,3 +97,29 @@ def test_runner_run_once_with_tool_request(monkeypatch, tmp_path, test_settings)
     assert round(cycle.local_workload_pct + cycle.deepseek_workload_pct + cycle.grok_workload_pct, 6) == 100.0
     assert test_settings.resolve_path(test_settings.paths.ledger).exists()
     assert test_settings.resolve_path(test_settings.paths.evaluation).exists()
+
+
+def test_runner_repairs_rejected_signal(monkeypatch, test_settings) -> None:
+    monkeypatch.delenv("ARENA_DATABASE_URL", raising=False)
+    test_settings.resolve_path(test_settings.paths.rulebook).write_text("Paper trading only.", encoding="utf-8")
+    monkeypatch.setattr(runner_module, "get_market_state", lambda settings: market_state())
+
+    calls: dict[str, int] = {}
+
+    def fake_run(self, prompt: str, timeout_seconds: int = 600) -> str:
+        calls[self.settings.id] = calls.get(self.settings.id, 0) + 1
+        if self.settings.id == "crypto-deepseek" and calls[self.settings.id] == 1:
+            return '{"agent":"crypto-deepseek","decision":"PAPER_TRADE","action":"OPEN","symbol":"BTC","instrument":"bad-extra","direction":"LONG","execution_type":"MARKET","data_used":"string"}'
+        if self.settings.id == "crypto-deepseek":
+            assert "REJECTED" in prompt
+            return '{"agent":"crypto-deepseek","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"validation repair fallback","invalidation":"valid setup appears","counterargument":"may miss a move","data_used":["validation_feedback"]}'
+        return '{"agent":"crypto-grok","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"stand aside","invalidation":"setup improves","counterargument":"could miss move","data_used":["market_state"]}'
+
+    monkeypatch.setattr(runner_module.OpenClawAgent, "run", fake_run)
+
+    runner = CompetitionRunner(test_settings)
+    runner.run_once()
+
+    assert calls["crypto-deepseek"] == 2
+    assert runner.repository.rejected_signal_count("crypto-deepseek") == 1
+    assert runner.repository.response_usage("crypto-deepseek")["requests"] == 2
