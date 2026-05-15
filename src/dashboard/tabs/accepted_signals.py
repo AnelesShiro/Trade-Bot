@@ -33,8 +33,9 @@ def render_accepted_signals_tab(database: str, agent_ids: list[str], default_dat
         st.info("No accepted signals match the current filters.")
         return
     rows["executed"] = rows["execution_result_json"].apply(lambda value: "Yes" if _safe_json(value, {}).get("executed") else "No")
+    rows["timestamp_utc7"] = rows.apply(lambda row: _fmt_local(row.get("timestamp_local") or row.get("timestamp_utc") or row.get("created_at")), axis=1)
     display_columns = [
-        "timestamp_utc",
+        "timestamp_utc7",
         "cycle_number",
         "agent_name",
         "direction",
@@ -134,7 +135,7 @@ def _where(filters: dict[str, Any], status: str) -> tuple[str, list[Any]]:
         params.extend([cycle_low, cycle_high])
     dates = filters.get("dates")
     if isinstance(dates, tuple) and len(dates) == 2:
-        clauses.append("date(coalesce(timestamp_utc, created_at)) between date(?) and date(?)")
+        clauses.append("substr(coalesce(timestamp_local, timestamp_utc, created_at), 1, 10) between ? and ?")
         params.extend([_date_iso(dates[0]), _date_iso(dates[1])])
     search = str(filters.get("search") or "").strip()
     if search:
@@ -157,7 +158,7 @@ def _filter_meta(database: str) -> dict[str, Any]:
 
 def _details(rows: pd.DataFrame, accepted: bool) -> None:
     for _, row in rows.head(20).iterrows():
-        label = f"{row.get('timestamp_utc') or row.get('created_at')} | {row.get('agent_name') or row.get('agent_id')} | {row.get('decision')}/{row.get('action')}"
+        label = f"{_fmt_local(row.get('timestamp_local') or row.get('timestamp_utc') or row.get('created_at'))} | {row.get('agent_name') or row.get('agent_id')} | {row.get('decision')}/{row.get('action')}"
         with st.expander(label, expanded=False):
             if accepted:
                 st.write(row.get("thesis") or "No thesis captured.")
@@ -186,3 +187,10 @@ def _safe_json(value: Any, fallback: Any) -> Any:
         return json.loads(value or "")
     except Exception:
         return fallback
+
+
+def _fmt_local(value: Any) -> str:
+    parsed = pd.to_datetime(value, utc=True, errors="coerce")
+    if pd.isna(parsed):
+        return "-"
+    return parsed.tz_convert("Asia/Bangkok").strftime("%Y-%m-%d %H:%M:%S UTC+7")

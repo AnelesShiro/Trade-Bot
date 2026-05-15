@@ -32,8 +32,9 @@ def render_rejected_signals_tab(database: str, agent_ids: list[str], default_dat
         st.success("No rejected signals match the current filters.")
         return
     rows["raw_snippet"] = rows.apply(lambda row: str(row.get("raw_model_output") or row.get("raw_response") or "")[:220], axis=1)
+    rows["timestamp_utc7"] = rows.apply(lambda row: _fmt_local(row.get("timestamp_local") or row.get("timestamp_utc") or row.get("created_at")), axis=1)
     display_columns = [
-        "timestamp_utc",
+        "timestamp_utc7",
         "cycle_number",
         "agent_name",
         "rejection_reason_code",
@@ -131,7 +132,7 @@ def _where(filters: dict[str, Any]) -> tuple[str, list[Any]]:
         params.extend([cycle_low, cycle_high])
     dates = filters.get("dates")
     if isinstance(dates, tuple) and len(dates) == 2:
-        clauses.append("date(coalesce(timestamp_utc, created_at)) between date(?) and date(?)")
+        clauses.append("substr(coalesce(timestamp_local, timestamp_utc, created_at), 1, 10) between ? and ?")
         params.extend([_date_iso(dates[0]), _date_iso(dates[1])])
     search = str(filters.get("search") or "").strip()
     if search:
@@ -155,7 +156,7 @@ def _filter_meta(database: str) -> dict[str, Any]:
 
 def _details(rows: pd.DataFrame) -> None:
     for _, row in rows.head(20).iterrows():
-        label = f"{row.get('timestamp_utc') or row.get('created_at')} | {row.get('agent_name') or row.get('agent_id')} | {row.get('rejection_reason_code') or 'REJECTED'}"
+        label = f"{_fmt_local(row.get('timestamp_local') or row.get('timestamp_utc') or row.get('created_at'))} | {row.get('agent_name') or row.get('agent_id')} | {row.get('rejection_reason_code') or 'REJECTED'}"
         with st.expander(label, expanded=False):
             st.write(row.get("rejection_reason_message") or "No rejection message captured.")
             st.json(_safe_json(row.get("validation_details_json"), {}))
@@ -178,3 +179,10 @@ def _safe_json(value: Any, fallback: Any) -> Any:
         return json.loads(value or "")
     except Exception:
         return fallback
+
+
+def _fmt_local(value: Any) -> str:
+    parsed = pd.to_datetime(value, utc=True, errors="coerce")
+    if pd.isna(parsed):
+        return "-"
+    return parsed.tz_convert("Asia/Bangkok").strftime("%Y-%m-%d %H:%M:%S UTC+7")

@@ -5,7 +5,7 @@ import hashlib
 import json
 import os
 import time
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta, timezone
 from json import JSONDecodeError
 
 from src.cloud.git_sync import sync_dashboard_snapshot
@@ -883,7 +883,7 @@ class CompetitionRunner:
         path = self.settings.resolve_path(self.settings.paths.signals)
         path.parent.mkdir(parents=True, exist_ok=True)
         with path.open("a", encoding="utf-8") as handle:
-            handle.write(f"\n\n## {datetime.now(UTC).isoformat()} - {agent_id}\n\n")
+            handle.write(f"\n\n## {_now_utc7_iso()} - {agent_id}\n\n")
             handle.write(f"Validation: {'ACCEPTED' if accepted else 'REJECTED'}\n\n")
             if reasons:
                 handle.write("Reasons:\n")
@@ -974,7 +974,7 @@ class CompetitionRunner:
         path = self.settings.resolve_path(self.settings.paths.evaluation)
         with path.open("w", encoding="utf-8") as handle:
             handle.write("# Evaluation\n\n")
-            handle.write(f"Updated: {datetime.now(UTC).isoformat()}\n\n")
+            handle.write(f"Updated: {_now_utc7_iso()}\n\n")
             handle.write("| Agent | Equity | Return % | Sharpe | Max DD % | Rejected | Score |\n")
             handle.write("| --- | ---: | ---: | ---: | ---: | ---: | ---: |\n")
             for row in rows:
@@ -1072,3 +1072,7 @@ def _extract_json_object(raw: str) -> str:
 
 def _sha256(value: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
+
+
+def _now_utc7_iso() -> str:
+    return datetime.now(UTC).astimezone(timezone(timedelta(hours=7))).isoformat()

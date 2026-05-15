@@ -70,6 +70,7 @@ def _signal_to_dict(row: SignalRecord) -> dict[str, Any]:
     return {
         "id": row.id,
         "timestamp_utc": row.timestamp_utc or _iso(row.created_at),
+        "timestamp_local": row.timestamp_local,
         "cycle_number": row.cycle_number,
         "agent_name": row.agent_name or row.agent_id,
         "model_name": row.model_name,

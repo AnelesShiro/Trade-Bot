@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta, timezone
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, create_engine, text
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
@@ -447,11 +447,20 @@ def _backfill_signal_audit_columns(connection) -> None:
             """
             SELECT id, agent_id, created_at, decision, action, accepted, reasons_json, payload_json, raw_response
             FROM signals
-            WHERE signal_status IS NULL OR raw_model_output IS NULL OR direction IS NULL
+            WHERE signal_status IS NULL
+               OR raw_model_output IS NULL
+               OR direction IS NULL
+               OR cycle_number IS NULL
+               OR timestamp_local IS NULL
+               OR timestamp_local = timestamp_utc
             LIMIT 5000
             """
         )
     ).mappings().all()
+    checkpoints = [
+        (_parse_db_datetime(row["created_at"]), int(row["cycle_number"] or 0))
+        for row in connection.execute(text("SELECT created_at, cycle_number FROM checkpoints ORDER BY created_at ASC")).mappings().all()
+    ]
     for row in rows:
         try:
             payload = json.loads(row["payload_json"] or "{}")
@@ -464,13 +473,18 @@ def _backfill_signal_audit_columns(connection) -> None:
         accepted = int(row["accepted"] or 0) == 1
         status = "ACCEPTED" if accepted else "REJECTED"
         rejection_message = "; ".join(str(reason) for reason in reasons)[:2000] if reasons else None
+        created_at = _parse_db_datetime(row["created_at"])
+        cycle_number = _cycle_for_signal(created_at, checkpoints)
+        timestamp_utc = _utc_iso(created_at)
+        timestamp_local = _local_iso(created_at)
         connection.execute(
             text(
                 """
                 UPDATE signals
                 SET
-                    timestamp_utc = coalesce(timestamp_utc, :timestamp_utc),
-                    timestamp_local = coalesce(timestamp_local, :timestamp_local),
+                    timestamp_utc = :timestamp_utc,
+                    timestamp_local = :timestamp_local,
+                    cycle_number = coalesce(cycle_number, :cycle_number),
                     agent_name = coalesce(agent_name, :agent_name),
                     signal_status = coalesce(signal_status, :signal_status),
                     rejection_reason_code = coalesce(rejection_reason_code, :rejection_reason_code),
@@ -497,8 +511,9 @@ def _backfill_signal_audit_columns(connection) -> None:
             ),
             {
                 "id": row["id"],
-                "timestamp_utc": row["created_at"],
-                "timestamp_local": row["created_at"],
+                "timestamp_utc": timestamp_utc,
+                "timestamp_local": timestamp_local,
+                "cycle_number": cycle_number,
                 "agent_name": row["agent_id"],
                 "signal_status": status,
                 "rejection_reason_code": None if accepted else _legacy_rejection_code(reasons),
@@ -541,3 +556,26 @@ def _legacy_rejection_code(reasons: list[str]) -> str:
     if "risk" in text_value or "margin" in text_value:
         return "RISK_LIMIT_EXCEEDED"
     return "RULEBOOK_VIOLATION"
+
+
+def _parse_db_datetime(value) -> datetime:
+    if isinstance(value, datetime):
+        parsed = value
+    else:
+        parsed = datetime.fromisoformat(str(value).replace("Z", "+00:00"))
+    return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
+
+
+def _cycle_for_signal(created_at: datetime, checkpoints: list[tuple[datetime, int]]) -> int | None:
+    for checkpoint_time, cycle_number in checkpoints:
+        if created_at <= checkpoint_time:
+            return cycle_number
+    return checkpoints[-1][1] if checkpoints else None
+
+
+def _utc_iso(value: datetime) -> str:
+    return value.astimezone(UTC).isoformat().replace("+00:00", "Z")
+
+
+def _local_iso(value: datetime) -> str:
+    return value.astimezone(timezone(timedelta(hours=7))).isoformat()

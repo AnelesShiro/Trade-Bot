@@ -40,7 +40,7 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-15T18:47:54.277906Z",
     "active_versions_file": {
-      "code_version": "5fb815c7d8e6",
+      "code_version": "04cd3affa20a",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -50,7 +50,7 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T19:07:05.567501Z"
+      "updated_at": "2026-05-15T19:16:40.171284Z"
     },
     "canary": {
       "enabled": false,
@@ -85,7 +85,7 @@
       }
     ],
     "versions": {
-      "code_version": "5fb815c7d8e6",
+      "code_version": "04cd3affa20a",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -95,24 +95,24 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-15T19:09:21.769296Z"
+      "updated_at": "2026-05-15T19:17:02.973870Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T19:09:20.643569Z"
+        "timestamp": "2026-05-15T19:17:01.854880Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T19:09:21.643569Z"
+        "timestamp": "2026-05-15T19:17:02.854880Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T19:09:20.643569Z"
+        "timestamp": "2026-05-15T19:17:01.854880Z"
       },
       {
         "drawdown": -0.0005,
@@ -120,7 +120,7 @@
       },
       {
         "drawdown": -0.0029740768594689144,
-        "timestamp": "2026-05-15T19:09:21.643569Z"
+        "timestamp": "2026-05-15T19:17:02.854880Z"
       }
     ]
   },
@@ -128,17 +128,17 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T19:09:20.643569Z"
+        "timestamp": "2026-05-15T19:17:01.854880Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T19:09:21.643569Z"
+        "timestamp": "2026-05-15T19:17:02.854880Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T19:09:20.643569Z"
+        "timestamp": "2026-05-15T19:17:01.854880Z"
       },
       {
         "equity": 9995.0,
@@ -146,11 +146,11 @@
       },
       {
         "equity": 9970.25923140531,
-        "timestamp": "2026-05-15T19:09:21.643569Z"
+        "timestamp": "2026-05-15T19:17:02.854880Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T19:09:21.619949Z",
+  "generated_at": "2026-05-15T19:17:02.835762Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -2339,7 +2339,7 @@
       "agent_name": "crypto-grok",
       "btc_price": null,
       "confidence": 3.0,
-      "cycle_number": null,
+      "cycle_number": 8,
       "decision": "POSITION_UPDATE",
       "direction": "LONG",
       "entry_price": null,
@@ -2361,7 +2361,8 @@
       "take_profit_1": 80394.0,
       "take_profit_2": 81200.0,
       "thesis": "Pos1 stable retrace, lows holding 79135 > BB low/SL, RSI oversold 32; mean reversion pending.",
-      "timestamp_utc": "2026-05-15 18:47:53.696676",
+      "timestamp_local": "2026-05-16T01:47:53.696676+07:00",
+      "timestamp_utc": "2026-05-15T18:47:53.696676Z",
       "validation_details": {
         "accepted": true,
         "reasons": []
@@ -2372,7 +2373,7 @@
       "agent_name": "crypto-grok",
       "btc_price": null,
       "confidence": null,
-      "cycle_number": null,
+      "cycle_number": 2,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -2394,7 +2395,8 @@
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_utc": "2026-05-15 17:12:02.712693",
+      "timestamp_local": "2026-05-16T00:12:02.712693+07:00",
+      "timestamp_utc": "2026-05-15T17:12:02.712693Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
@@ -2418,7 +2420,7 @@
     "thesis_embedding_similarity": 0.04627459307221656
   },
   "sync": {
-    "generated_at": "2026-05-15T19:09:21.619949Z",
+    "generated_at": "2026-05-15T19:17:02.835762Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },

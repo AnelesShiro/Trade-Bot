@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Any
 
 from src.schemas import AgentSignal, ValidationResult
@@ -43,14 +43,16 @@ def signal_audit_metadata(
     api_cost_usd: float,
     latency_ms: int | None,
 ) -> dict[str, Any]:
-    timestamp_utc = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    now = datetime.now(UTC)
+    timestamp_utc = now.isoformat().replace("+00:00", "Z")
+    timestamp_local = now.astimezone(timezone(timedelta(hours=7))).isoformat()
     payload = signal.model_dump(mode="json") if signal else {}
     reasons = validation.reasons or []
     status = "ACCEPTED" if validation.accepted else "REJECTED"
     code = None if validation.accepted else rejection_code(reasons, signal)
     return {
         "timestamp_utc": timestamp_utc,
-        "timestamp_local": timestamp_utc,
+        "timestamp_local": timestamp_local,
         "cycle_number": cycle_number,
         "competition_time_pct": competition_time_pct,
         "agent_name": agent_name,

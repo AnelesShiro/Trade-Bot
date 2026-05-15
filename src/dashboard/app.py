@@ -156,10 +156,10 @@ def read_table(name: str, database: str) -> pd.DataFrame:
         except Exception:
             return pd.DataFrame()
     for column in frame.columns:
-        if column.endswith("_at") or column in {"created_at", "opened_at", "closed_at", "day"}:
+        if column.endswith("_at") or column in {"created_at", "opened_at", "closed_at", "timestamp", "timestamp_utc", "timestamp_local", "day"}:
             parsed = pd.to_datetime(frame[column], utc=True, errors="coerce")
             if parsed.notna().any():
-                frame[column] = parsed
+                frame[column] = parsed.dt.tz_convert(LOCAL_TZ)
     return frame
 
 
