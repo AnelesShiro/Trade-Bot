@@ -111,12 +111,7 @@ class CompetitionRunner:
 
     def run_live(self, resume: bool = False) -> None:
         if self.settings.safety.require_preflight_for_live:
-            results = run_preflight(self.settings)
-            for result in results:
-                self.repository.save_health_check(result.component, result.status, result.critical, result.message)
-            if has_critical_failures(results):
-                failed = ", ".join(result.component for result in results if not result.passed and result.critical)
-                raise RuntimeError(f"preflight-check failed; live execution blocked: {failed}")
+            self._wait_for_live_preflight()
         if resume:
             self._cycle_count = restore_from_checkpoint(
                 self.repository,
@@ -142,6 +137,20 @@ class CompetitionRunner:
         self._write_outputs(market_state)
         self._save_checkpoint(market_state, status="COMPLETED")
         self._cloud_update_after_cycle()
+
+    def _wait_for_live_preflight(self) -> None:
+        while True:
+            results = run_preflight(self.settings)
+            for result in results:
+                self.repository.save_health_check(result.component, result.status, result.critical, result.message)
+            if not has_critical_failures(results):
+                return
+            failed = [result.component for result in results if not result.passed and result.critical]
+            if failed != ["market_data_feed"]:
+                raise RuntimeError(f"preflight-check failed; live execution blocked: {', '.join(failed)}")
+            retry_seconds = min(60, max(5, self.settings.competition.poll_interval_seconds))
+            logger.warning("market data preflight failed; retrying live startup in {}s", retry_seconds)
+            time.sleep(retry_seconds)
 
     def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)

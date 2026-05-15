@@ -4,6 +4,7 @@ import importlib.util
 import os
 import shutil
 import socket
+import time
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -59,14 +60,21 @@ def _check_database(settings: Settings) -> CheckResult:
 
 
 def _check_market_data(settings: Settings) -> CheckResult:
-    try:
-        feed = MarketDataFeed(settings.market)
-        frame = feed.fetch_ohlcv(settings.competition.symbol, settings.competition.timeframe, min(5, settings.competition.ohlcv_limit))
-        if frame.empty:
-            return CheckResult("market_data_feed", "FAIL", True, "OHLCV frame is empty")
-        return CheckResult("market_data_feed", "PASS", True, f"Fetched {len(frame)} candles")
-    except Exception as error:
-        return CheckResult("market_data_feed", "FAIL", True, str(error))
+    last_error = ""
+    for attempt in range(1, 4):
+        try:
+            feed = MarketDataFeed(settings.market)
+            frame = feed.fetch_ohlcv(settings.competition.symbol, settings.competition.timeframe, min(5, settings.competition.ohlcv_limit))
+            if frame.empty:
+                last_error = "OHLCV frame is empty"
+            else:
+                suffix = f" after {attempt} attempts" if attempt > 1 else ""
+                return CheckResult("market_data_feed", "PASS", True, f"Fetched {len(frame)} candles{suffix}")
+        except Exception as error:
+            last_error = str(error)
+        if attempt < 3:
+            time.sleep(2.0 * attempt)
+    return CheckResult("market_data_feed", "FAIL", True, f"{last_error} after 3 attempts")
 
 
 def _check_rulebook(settings: Settings) -> CheckResult:
