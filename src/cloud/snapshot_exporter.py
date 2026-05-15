@@ -5,6 +5,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
 from sqlalchemy import select
 
 from src.competition.evaluation import calculate_leaderboard
@@ -18,7 +19,8 @@ from src.trading.paper_account import PaperAccount
 
 def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -> dict[str, Any]:
     latest_snapshot = repository.latest_market_snapshot()
-    btc_price = float(latest_snapshot.current_price) if latest_snapshot else 0.0
+    market = _market_payload(settings, latest_snapshot)
+    btc_price = float(latest_snapshot.current_price) if latest_snapshot else float(market.get("current_price") or 0.0)
     generated_at = datetime.now(UTC)
     leaderboard = calculate_leaderboard(
         repository,
@@ -61,7 +63,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         },
         "leader": leader,
         "btc_price": btc_price,
-        "market": _market_payload(latest_snapshot),
+        "market": market,
         "agents": agents,
         "open_positions": open_positions,
         "recent_trades": recent_trades,
@@ -130,22 +132,58 @@ def _account_summary(repository: ArenaRepository, agent_id: str, initial_equity:
     }
 
 
-def _market_payload(snapshot: Any) -> dict[str, Any]:
+def _market_payload(settings: Settings, snapshot: Any) -> dict[str, Any]:
+    cached = _read_cached_candles(settings)
     if not snapshot:
-        return {"candles": []}
+        return {
+            "symbol": settings.competition.display_symbol,
+            "timeframe": settings.competition.timeframe,
+            "candles": cached,
+            "current_price": float(cached[-1]["close"]) if cached else 0.0,
+        }
     payload = _safe_json(snapshot.payload_json, {})
     candles = payload.get("candles") if isinstance(payload, dict) else []
     if not isinstance(candles, list):
         candles = []
+    merged = candles[-500:] if candles else cached
+    current_price = snapshot.current_price if snapshot.current_price else (float(merged[-1]["close"]) if merged else 0.0)
     return {
         "symbol": snapshot.symbol,
         "timestamp": _iso(snapshot.timestamp),
-        "current_price": snapshot.current_price,
+        "current_price": current_price,
         "timeframe": payload.get("timeframe") if isinstance(payload, dict) else None,
         "regime": payload.get("regime") if isinstance(payload, dict) else None,
         "indicators": payload.get("indicators", {}) if isinstance(payload, dict) else {},
-        "candles": candles[-500:],
+        "candles": merged,
     }
+
+
+def _read_cached_candles(settings: Settings, limit: int = 500) -> list[dict[str, Any]]:
+    path = settings.resolve_path(f"data/processed/btcusdt_{settings.competition.timeframe}.csv")
+    if not path.exists():
+        return []
+    try:
+        frame = pd.read_csv(path)
+    except Exception:
+        return []
+    required = {"timestamp", "open", "high", "low", "close", "volume"}
+    if not required.issubset(frame.columns):
+        return []
+    frame["timestamp"] = pd.to_datetime(frame["timestamp"], utc=True, errors="coerce")
+    for column in ["open", "high", "low", "close", "volume"]:
+        frame[column] = pd.to_numeric(frame[column], errors="coerce")
+    frame = frame.dropna(subset=["timestamp", "open", "high", "low", "close", "volume"]).tail(limit)
+    return [
+        {
+            "timestamp": row.timestamp.isoformat().replace("+00:00", "Z"),
+            "open": float(row.open),
+            "high": float(row.high),
+            "low": float(row.low),
+            "close": float(row.close),
+            "volume": float(row.volume),
+        }
+        for row in frame.itertuples(index=False)
+    ]
 
 
 def _position_payload(position: Any, btc_price: float) -> dict[str, Any]:
