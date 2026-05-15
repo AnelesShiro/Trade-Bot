@@ -809,7 +809,13 @@ def _flatten_snapshot_series(series: dict[str, list[dict[str, Any]]], value_colu
     return frame
 
 
-snapshot_payload = read_snapshot(str(cloud_snapshot_path))
+dashboard_mode = os.getenv("ARENA_DASHBOARD_MODE", "auto").lower()
+render_runtime = bool(os.getenv("RENDER") or os.getenv("RENDER_SERVICE_ID"))
+use_snapshot_dashboard = dashboard_mode == "cloud" or (
+    dashboard_mode == "auto" and (render_runtime or not db_path.exists())
+)
+
+snapshot_payload = read_snapshot(str(cloud_snapshot_path)) if use_snapshot_dashboard else {}
 if snapshot_payload:
     render_cloud_snapshot_dashboard(snapshot_payload)
     st.stop()
