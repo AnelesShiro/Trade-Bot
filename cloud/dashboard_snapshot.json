@@ -23,12 +23,12 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.0,
-      "crypto-grok": 0.0
+      "crypto-deepseek": 0.0005322800000000001,
+      "crypto-grok": 0.0007176
     },
-    "total": 0.0
+    "total": 0.00124988
   },
-  "btc_price": 79214.1,
+  "btc_price": 79207.1,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -36,26 +36,26 @@
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT"
   },
-  "competition_status": "SCHEDULED",
+  "competition_status": "RUNNING",
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T16:59:28.483769Z"
+        "timestamp": "2026-05-15T17:05:25.088198Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T16:59:29.483769Z"
+        "timestamp": "2026-05-15T17:05:26.088198Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T16:59:28.483769Z"
+        "timestamp": "2026-05-15T17:05:25.088198Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-15T16:59:29.483769Z"
+        "timestamp": "2026-05-15T17:05:26.088198Z"
       }
     ]
   },
@@ -63,37 +63,37 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T16:59:28.483769Z"
+        "timestamp": "2026-05-15T17:05:25.088198Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T16:59:29.483769Z"
+        "timestamp": "2026-05-15T17:05:26.088198Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T16:59:28.483769Z"
+        "timestamp": "2026-05-15T17:05:25.088198Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-15T16:59:29.483769Z"
+        "timestamp": "2026-05-15T17:05:26.088198Z"
       }
     ]
   },
-  "generated_at": "2026-05-15T16:59:29.465141Z",
+  "generated_at": "2026-05-15T17:05:26.076170Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.0,
+      "api_cost_usd": 0.0005322800000000001,
       "equity": 10000.0,
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 0,
-      "rule_compliance": 1.0,
-      "score": 0.30100000000000005,
+      "rejected_signals": 1,
+      "rule_compliance": 0.5,
+      "score": 0.25,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -102,14 +102,14 @@
     },
     {
       "agent_id": "crypto-grok",
-      "api_cost_usd": 0.0,
+      "api_cost_usd": 0.0007176,
       "equity": 10000.0,
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 0,
-      "rule_compliance": 1.0,
-      "score": 0.30100000000000005,
+      "rejected_signals": 1,
+      "rule_compliance": 0.5,
+      "score": 0.25,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -119,14 +119,6 @@
   ],
   "market": {
     "candles": [
-      {
-        "close": 81223.6,
-        "high": 81420.0,
-        "low": 81133.3,
-        "open": 81250.6,
-        "timestamp": "2026-05-05T17:00:00Z",
-        "volume": 3484.672
-      },
       {
         "close": 81463.6,
         "high": 81577.4,
@@ -2032,75 +2024,119 @@
         "volume": 6193.98
       },
       {
-        "close": 79214.1,
-        "high": 79284.2,
+        "close": 79264.7,
+        "high": 79363.7,
         "low": 79098.7,
         "open": 79118.1,
         "timestamp": "2026-05-15T16:00:00Z",
-        "volume": 2065.868
+        "volume": 3964.471
+      },
+      {
+        "close": 79207.1,
+        "high": 79264.7,
+        "low": 79201.1,
+        "open": 79264.7,
+        "timestamp": "2026-05-15T17:00:00Z",
+        "volume": 201.506
       }
     ],
-    "current_price": 79214.1,
+    "current_price": 79207.1,
     "indicators": {
-      "atr_14": 483.27857142857,
-      "bb_high": 82135.62030686167,
-      "bb_low": 78847.46969313832,
-      "bb_mid": 80491.545,
-      "ema_20": 80148.4108984471,
-      "ema_50": 80340.0510040395,
-      "macd": -342.37589232987375,
-      "macd_signal": -114.33279044543566,
-      "rsi_14": 26.684427442676082
+      "atr_14": 463.5714285714265,
+      "bb_high": 82066.58979623676,
+      "bb_low": 78707.07020376324,
+      "bb_mid": 80386.83,
+      "ema_20": 80063.12233216398,
+      "ema_50": 80297.54428450049,
+      "macd": -368.2841315356927,
+      "macd_signal": -164.47722680642926,
+      "rsi_14": 28.693141811012595
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-15T16:28:28.454639Z"
+    "timestamp": "2026-05-15T17:03:58.372700Z"
   },
   "open_positions": [],
   "recent_trades": [],
   "reflections_summary": {
-    "by_agent": {},
-    "count_recent": 0,
-    "recent": []
+    "by_agent": {
+      "crypto-deepseek": 1,
+      "crypto-grok": 1
+    },
+    "count_recent": 2,
+    "recent": [
+      {
+        "agent_id": "crypto-grok",
+        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T17:05:25.996724Z"
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-15T17:05:25.783656Z"
+      }
+    ]
   },
   "rejected_signals_summary": {
-    "by_agent": {},
-    "recent": [],
-    "total_recent": 0
+    "by_agent": {
+      "crypto-deepseek": 1,
+      "crypto-grok": 1
+    },
+    "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-grok",
+        "created_at": "2026-05-15T17:05:25.571757Z",
+        "decision": "PARSE_ERROR",
+        "reasons": [
+          "parse/schema error: 4 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7920...ositions, equity=10000.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\ninstrument\n  Extra inputs are not permitted [type=extra_forbidden, input_value='BTCUSDT perpetual futures', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='new', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden\nconfidence_1_to_5\n  Extra inputs are not permitted [type=extra_forbidden, input_value=3, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+        ]
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-15T17:04:36.550216Z",
+        "decision": "PARSE_ERROR",
+        "reasons": [
+          "parse/schema error: Expecting ',' delimiter: line 32 column 291 (char 1195)"
+        ]
+      }
+    ],
+    "total_recent": 2
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.0,
+    "action_agreement_rate": 1.0,
     "confidence_correlation": 0.0,
-    "convergence_warning": false,
-    "created_at": "2026-05-14T15:07:57.520581Z",
-    "directional_agreement_rate": 0.0,
-    "leverage_similarity": 0.0,
-    "shared_ratio_applied": 0.3,
+    "convergence_warning": true,
+    "created_at": "2026-05-15T17:05:26.017334Z",
+    "directional_agreement_rate": 1.0,
+    "leverage_similarity": 1.0,
+    "shared_ratio_applied": 0.1,
     "thesis_embedding_similarity": 0.0
   },
   "sync": {
-    "generated_at": "2026-05-15T16:59:29.465141Z",
+    "generated_at": "2026-05-15T17:05:26.076170Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-15T16:28:28.459672Z",
+    "latest_cycle_at": "2026-05-15T17:05:26.049785Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.0,
-      "input_tokens": 0.0,
-      "output_tokens": 0.0,
-      "requests": 0.0
+      "estimated_cost_usd": 0.0005322800000000001,
+      "input_tokens": 2604.0,
+      "output_tokens": 599.0,
+      "requests": 1.0
     },
     "crypto-grok": {
-      "estimated_cost_usd": 0.0,
-      "input_tokens": 0.0,
-      "output_tokens": 0.0,
-      "requests": 0.0
+      "estimated_cost_usd": 0.0007176,
+      "input_tokens": 2603.0,
+      "output_tokens": 394.0,
+      "requests": 1.0
     }
   },
   "trade_history_summary": {
@@ -2122,10 +2158,42 @@
     }
   },
   "workload": {
-    "averages": {},
-    "deepseek_pct": 0.0,
-    "grok_pct": 0.0,
-    "latest": {},
-    "local_pct": 0.0
+    "averages": {
+      "deepseek_workload_pct": 36.329408058903006,
+      "grok_workload_pct": 40.40753203257354,
+      "local_workload_pct": 23.263059908523466,
+      "total_api_cost_usd": 0.00124988
+    },
+    "deepseek_pct": 36.329408058903006,
+    "grok_pct": 40.40753203257354,
+    "latest": {
+      "api_cost_usd": 0.00124988,
+      "deepseek_tokens": 3203,
+      "deepseek_workload_pct": 36.329408058903006,
+      "grok_tokens": 2997,
+      "grok_workload_pct": 40.40753203257354,
+      "local_workload_pct": 23.263059908523466,
+      "payload": {
+        "deepseek_api_cost_usd": 0.0005322800000000001,
+        "deepseek_input_tokens": 2604,
+        "deepseek_lessons_generated": 1,
+        "deepseek_output_tokens": 599,
+        "deepseek_reflections_generated": 1,
+        "deepseek_tool_requests": 0,
+        "grok_api_cost_usd": 0.0007176,
+        "grok_input_tokens": 2603,
+        "grok_lessons_generated": 1,
+        "grok_output_tokens": 394,
+        "grok_reflections_generated": 1,
+        "grok_tool_requests": 0,
+        "local_database_queries": 15,
+        "local_functions_executed": 21,
+        "local_memory_retrievals": 4,
+        "local_tool_calls": 0,
+        "total_wall_time_seconds": 88.90222620000714
+      },
+      "timestamp": "2026-05-15T17:05:26.057628"
+    },
+    "local_pct": 23.263059908523466
   }
 }
