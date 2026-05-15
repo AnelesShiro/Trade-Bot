@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass
+from pathlib import Path
 
 from src.config import AgentSettings
 from src.logger import logger
@@ -23,7 +25,7 @@ class OpenClawAgent:
         backoff_multiplier: float = 2.0,
     ) -> str:
         command = [
-            self.openclaw_bin,
+            *_openclaw_command_prefix(self.openclaw_bin),
             "agent",
             "--agent",
             self.settings.id,
@@ -47,3 +49,15 @@ class OpenClawAgent:
                 time.sleep(delay)
                 delay *= backoff_multiplier
         raise RuntimeError(last_error or f"OpenClaw agent {self.settings.id} failed after {max_retries} attempts")
+
+
+def _openclaw_command_prefix(openclaw_bin: str) -> list[str]:
+    executable = os.getenv("OPENCLAW_BIN", openclaw_bin)
+    resolved = shutil.which(executable) or executable
+    path = Path(resolved)
+    if path.name.lower() == "openclaw.cmd":
+        module_path = path.parent / "node_modules" / "openclaw" / "openclaw.mjs"
+        node = shutil.which("node")
+        if module_path.exists() and node:
+            return [node, str(module_path)]
+    return [resolved]

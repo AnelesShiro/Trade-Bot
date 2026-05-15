@@ -37,6 +37,9 @@ from src.validation.signal_validator import validate_signal
 from src.operations.preflight import has_critical_failures, run_preflight
 
 
+MAX_OPENCLAW_MESSAGE_CHARS = 24000
+
+
 class CompetitionRunner:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
@@ -325,6 +328,7 @@ class CompetitionRunner:
         return raw
 
     def _compose_prompt(self, agent_id: str, context: dict) -> str:
+        context = _compact_prompt_context(context)
         schema_hint = {
             "agent": agent_id,
             "decision": "NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE",
@@ -363,20 +367,34 @@ class CompetitionRunner:
             if shared_context.get("convergence_warning")
             else "Diversity status: normal. Maintain your own strategy identity."
         )
-        return "\n\n".join(
+        prompt = "\n\n".join(
             [
                 self.system_prompt,
                 "RULEBOOK:\n" + self.rulebook,
                 "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
-                "PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(context.get("private_lessons", []), indent=2, default=str),
+                "PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(context.get("private_lessons", []), separators=(",", ":"), default=str),
                 "SHARED LESSONS (advisory, max 30% unless anti-convergence reduces it):\n"
                 + SHARED_LESSON_DISCLAIMER
                 + "\n"
-                + json.dumps(context.get("shared_lessons", []), indent=2, default=str),
-                "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, indent=2),
-                "CURRENT CONTEXT:\n" + json.dumps(context, indent=2, default=str),
+                + json.dumps(context.get("shared_lessons", []), separators=(",", ":"), default=str),
+                "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, separators=(",", ":")),
+                "CURRENT CONTEXT:\n" + json.dumps(context, separators=(",", ":"), default=str),
             ]
         )
+        if len(prompt) <= MAX_OPENCLAW_MESSAGE_CHARS:
+            return prompt
+        minimal_context = _minimal_prompt_context(context)
+        prompt = "\n\n".join(
+            [
+                self.system_prompt,
+                "RULEBOOK:\n" + self.rulebook,
+                "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
+                "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, separators=(",", ":")),
+                "CURRENT CONTEXT:\n" + json.dumps(minimal_context, separators=(",", ":"), default=str),
+                "Context was compressed to fit the local OpenClaw CLI message limit. Use available_local_tools if more market detail is essential.",
+            ]
+        )
+        return prompt[:MAX_OPENCLAW_MESSAGE_CHARS]
 
     def _record_prompt_version(self, prompt: str) -> None:
         self.repository.save_prompt_version(
@@ -602,6 +620,49 @@ def _candles_to_frame(market_state: MarketState):
     import pandas as pd
 
     return pd.DataFrame([c.model_dump() for c in market_state.candles])
+
+
+def _compact_prompt_context(context: dict) -> dict:
+    compact = dict(context)
+    market = dict(compact.get("market_state") or {})
+    candles = market.get("recent_candles")
+    if isinstance(candles, list):
+        market["recent_candles"] = candles[-3:]
+    compact["market_state"] = market
+    compact["similar_trades"] = _compact_json_value(compact.get("similar_trades", []), list_limit=5, string_limit=700)
+    compact["private_lessons"] = _compact_json_value(compact.get("private_lessons", []), list_limit=5, string_limit=700)
+    compact["shared_lessons"] = _compact_json_value(compact.get("shared_lessons", []), list_limit=5, string_limit=700)
+    compact["backtest_diagnostic"] = _compact_json_value(compact.get("backtest_diagnostic", {}), list_limit=5, string_limit=700)
+    return _compact_json_value(compact, list_limit=10, string_limit=1200)
+
+
+def _minimal_prompt_context(context: dict) -> dict:
+    keys = [
+        "market_state",
+        "account_summary",
+        "backtest_diagnostic",
+        "strategy_profile",
+        "shared_learning",
+        "feature_flags",
+        "version_context",
+    ]
+    minimal = {key: context.get(key) for key in keys if key in context}
+    minimal["private_lessons"] = _compact_json_value(context.get("private_lessons", []), list_limit=2, string_limit=400)
+    minimal["shared_lessons"] = _compact_json_value(context.get("shared_lessons", []), list_limit=2, string_limit=400)
+    return _compact_json_value(minimal, list_limit=5, string_limit=700)
+
+
+def _compact_json_value(value, list_limit: int, string_limit: int):
+    if isinstance(value, dict):
+        return {str(key): _compact_json_value(item, list_limit, string_limit) for key, item in value.items()}
+    if isinstance(value, list):
+        items = [_compact_json_value(item, list_limit, string_limit) for item in value[:list_limit]]
+        if len(value) > list_limit:
+            items.append({"truncated_items": len(value) - list_limit})
+        return items
+    if isinstance(value, str) and len(value) > string_limit:
+        return value[:string_limit] + f"... [truncated {len(value) - string_limit} chars]"
+    return value
 
 
 def _parse_tool_request(raw: str) -> list[dict] | None:
