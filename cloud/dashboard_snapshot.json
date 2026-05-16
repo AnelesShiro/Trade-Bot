@@ -1,34 +1,34 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": 0.0,
-      "equity": 10000.0,
-      "open_margin": 0.0,
-      "open_positions": 0,
-      "open_risk": 0.0,
-      "realized_pnl": 0.0,
-      "roi_pct": 0.0,
-      "unrealized_pnl": 0.0
+      "daily_pnl": -6.937068221597859,
+      "equity": 9993.062931778402,
+      "open_margin": 1000.0,
+      "open_positions": 1,
+      "open_risk": 25.433187694970155,
+      "realized_pnl": -5.0,
+      "roi_pct": -0.06937068221597656,
+      "unrealized_pnl": -1.937068221597859
     },
     "crypto-grok": {
-      "daily_pnl": -40.02333779598453,
-      "equity": 9954.976662204015,
+      "daily_pnl": -51.27423169273393,
+      "equity": 9943.725768307266,
       "open_margin": 1000.0,
       "open_positions": 1,
       "open_risk": 84.59854788187299,
       "realized_pnl": -5.0,
-      "roi_pct": -0.45023337795984847,
-      "unrealized_pnl": -40.02333779598453
+      "roi_pct": -0.5627423169273424,
+      "unrealized_pnl": -51.27423169273393
     }
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.010545500000000001,
-      "crypto-grok": 0.014245800000000001
+      "crypto-deepseek": 0.01153488,
+      "crypto-grok": 0.0150226
     },
-    "total": 0.024791300000000002
+    "total": 0.02655748
   },
-  "btc_price": 79053.8,
+  "btc_price": 78964.5,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -38,9 +38,9 @@
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-05-16T03:46:28.669393Z",
+    "active_checkpoint_timestamp": "2026-05-16T04:51:50.300150Z",
     "active_versions_file": {
-      "code_version": "34f2f5fa164e",
+      "code_version": "dac44a7f0139",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -50,7 +50,7 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-16T02:41:48.947861Z"
+      "updated_at": "2026-05-16T03:46:31.355337Z"
     },
     "canary": {
       "enabled": false,
@@ -71,13 +71,13 @@
       "update_id": null
     },
     "latest_checkpoint": {
-      "cycle_number": 18,
-      "id": 18,
+      "cycle_number": 19,
+      "id": 19,
       "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "34f2f5fa164e",
+      "code_version": "dac44a7f0139",
       "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
       "rulebook": {
         "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
@@ -87,32 +87,36 @@
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-16T03:46:28.884804Z"
+      "updated_at": "2026-05-16T04:51:50.471491Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-16T03:46:27.710485Z"
+        "timestamp": "2026-05-16T04:51:49.344524Z"
       },
       {
-        "drawdown": 0.0,
-        "timestamp": "2026-05-16T03:46:28.710485Z"
+        "drawdown": -0.0005,
+        "timestamp": "2026-05-16T04:51:27.530424Z"
+      },
+      {
+        "drawdown": -0.0006937068221597656,
+        "timestamp": "2026-05-16T04:51:50.344524Z"
       }
     ],
     "crypto-grok": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-16T03:46:27.710485Z"
+        "timestamp": "2026-05-16T04:51:49.344524Z"
       },
       {
         "drawdown": -0.0005,
         "timestamp": "2026-05-15T17:31:33.617469Z"
       },
       {
-        "drawdown": -0.004502333779598485,
-        "timestamp": "2026-05-16T03:46:28.710485Z"
+        "drawdown": -0.005627423169273425,
+        "timestamp": "2026-05-16T04:51:50.344524Z"
       }
     ]
   },
@@ -120,51 +124,39 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-16T03:46:27.710485Z"
+        "timestamp": "2026-05-16T04:51:49.344524Z"
       },
       {
-        "equity": 10000.0,
-        "timestamp": "2026-05-16T03:46:28.710485Z"
+        "equity": 9995.0,
+        "timestamp": "2026-05-16T04:51:27.530424Z"
+      },
+      {
+        "equity": 9993.062931778402,
+        "timestamp": "2026-05-16T04:51:50.344524Z"
       }
     ],
     "crypto-grok": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-16T03:46:27.710485Z"
+        "timestamp": "2026-05-16T04:51:49.344524Z"
       },
       {
         "equity": 9995.0,
         "timestamp": "2026-05-15T17:31:33.617469Z"
       },
       {
-        "equity": 9954.976662204015,
-        "timestamp": "2026-05-16T03:46:28.710485Z"
+        "equity": 9943.725768307266,
+        "timestamp": "2026-05-16T04:51:50.344524Z"
       }
     ]
   },
-  "generated_at": "2026-05-16T03:46:28.696730Z",
-  "leader": "crypto-deepseek",
+  "generated_at": "2026-05-16T04:51:50.330015Z",
+  "leader": "crypto-grok",
   "leaderboard": [
     {
-      "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.010545500000000001,
-      "equity": 10000.0,
-      "max_drawdown_pct": 0.0,
-      "profit_factor": 0.0,
-      "realized_pnl": 0.0,
-      "rejected_signals": 3,
-      "rule_compliance": 0.25,
-      "score": 0.225,
-      "sharpe": 0.0,
-      "sortino": 0.0,
-      "total_return_pct": 0.0,
-      "unrealized_pnl": 0.0,
-      "win_rate": 0.0
-    },
-    {
       "agent_id": "crypto-grok",
-      "api_cost_usd": 0.014245800000000001,
-      "equity": 9954.976662204015,
+      "api_cost_usd": 0.0150226,
+      "equity": 9943.725768307266,
       "max_drawdown_pct": 0.0005,
       "profit_factor": 0.0,
       "realized_pnl": -5.0,
@@ -173,21 +165,29 @@
       "score": 0.224,
       "sharpe": 0.0,
       "sortino": 0.0,
-      "total_return_pct": -0.004502333779598485,
-      "unrealized_pnl": -40.02333779598453,
+      "total_return_pct": -0.005627423169273425,
+      "unrealized_pnl": -51.27423169273393,
+      "win_rate": 0.0
+    },
+    {
+      "agent_id": "crypto-deepseek",
+      "api_cost_usd": 0.01153488,
+      "equity": 9993.062931778402,
+      "max_drawdown_pct": 0.0005,
+      "profit_factor": 0.0,
+      "realized_pnl": -5.0,
+      "rejected_signals": 4,
+      "rule_compliance": 0.19999999999999996,
+      "score": 0.219,
+      "sharpe": 0.0,
+      "sortino": 0.0,
+      "total_return_pct": -0.0006937068221597656,
+      "unrealized_pnl": -1.937068221597859,
       "win_rate": 0.0
     }
   ],
   "market": {
     "candles": [
-      {
-        "close": 81285.1,
-        "high": 81599.0,
-        "low": 81223.6,
-        "open": 81535.9,
-        "timestamp": "2026-05-06T04:00:00Z",
-        "volume": 3240.989
-      },
       {
         "close": 81277.8,
         "high": 81307.3,
@@ -2093,30 +2093,38 @@
         "volume": 1461.703
       },
       {
-        "close": 79053.8,
+        "close": 79041.7,
         "high": 79153.7,
-        "low": 79028.6,
+        "low": 79017.6,
         "open": 79113.9,
         "timestamp": "2026-05-16T03:00:00Z",
-        "volume": 940.224
+        "volume": 1343.056
+      },
+      {
+        "close": 78964.5,
+        "high": 79096.8,
+        "low": 78811.0,
+        "open": 79041.7,
+        "timestamp": "2026-05-16T04:00:00Z",
+        "volume": 2857.38
       }
     ],
-    "current_price": 79053.8,
+    "current_price": 78964.5,
     "indicators": {
-      "atr_14": 264.4214285714271,
-      "bb_high": 80762.16458142601,
-      "bb_low": 78157.345418574,
-      "bb_mid": 79459.755,
-      "ema_20": 79451.7430957567,
-      "ema_50": 79903.8855188823,
-      "macd": -367.3324746542203,
-      "macd_signal": -369.66522770241147,
-      "rsi_14": 60.99716637430838
+      "atr_14": 234.52857142856996,
+      "bb_high": 80578.91814453276,
+      "bb_low": 78175.20185546727,
+      "bb_mid": 79377.06000000001,
+      "ema_20": 79404.29636101316,
+      "ema_50": 79866.59047571954,
+      "macd": -361.45163948612753,
+      "macd_signal": -368.1769487173559,
+      "rsi_14": 43.378298125052844
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-16T03:45:33.054351Z"
+    "timestamp": "2026-05-16T04:50:32.646724Z"
   },
   "open_positions": [
     {
@@ -2136,7 +2144,26 @@
       "symbol": "BTC",
       "take_profit_1": 80394.0,
       "take_profit_2": 81200.0,
-      "unrealized_pnl": -40.02333779598453
+      "unrealized_pnl": -51.27423169273393
+    },
+    {
+      "agent_id": "crypto-deepseek",
+      "average_entry": 78949.207,
+      "closed_at": null,
+      "dca_count": 0,
+      "direction": "SHORT",
+      "id": "DS-SHORT-001",
+      "leverage": 10.0,
+      "margin": 1000.0,
+      "notional": 10000.0,
+      "opened_at": "2026-05-16T04:51:27.525422Z",
+      "realized_pnl": 0.0,
+      "status": "OPEN",
+      "stop_loss": 79150.0,
+      "symbol": "BTC",
+      "take_profit_1": 78300.0,
+      "take_profit_2": 77800.0,
+      "unrealized_pnl": -1.937068221597859
     }
   ],
   "recent_trades": [
@@ -2157,15 +2184,43 @@
       "notional": 10000.0,
       "position_id": "1",
       "realized_pnl": -5.0
+    },
+    {
+      "action": "OPEN",
+      "agent_id": "crypto-deepseek",
+      "code_version": "0e3c1f0e4a09",
+      "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
+      "config_version_id": 12,
+      "created_at": "2026-05-16T04:51:27.530424Z",
+      "direction": "SHORT",
+      "entry": 78949.207,
+      "exit_price": null,
+      "id": "trade-crypto-deepseek-22485e9170",
+      "leverage": 10.0,
+      "margin": 1000.0,
+      "notes": "KEY LEVELS BROKEN: 78,861 support violated on elevated volume. SHORT opened at 78,965 MARKET. SL 79,150 (above broken support). TP1 78,300 (BB_low area), TP2 77,800. Account risk 23.4 USDT / 0.23%. This is the breakdown setup I have been waiting for since monitoring began ~11 hours ago.; fee=5.0000; slippage_bps=2",
+      "notional": 10000.0,
+      "position_id": "DS-SHORT-001",
+      "realized_pnl": -5.0
     }
   ],
   "reflections_summary": {
     "by_agent": {
-      "crypto-deepseek": 18,
-      "crypto-grok": 18
+      "crypto-deepseek": 19,
+      "crypto-grok": 19
     },
-    "count_recent": 36,
+    "count_recent": 38,
     "recent": [
+      {
+        "agent_id": "crypto-deepseek",
+        "content": "Daily review: equity=9993.06, realized_pnl=-5.00, unrealized_pnl=-1.94. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-16T04:51:49.911608Z"
+      },
+      {
+        "agent_id": "crypto-grok",
+        "content": "Daily review: equity=9943.73, realized_pnl=-5.00, unrealized_pnl=-51.27. Keep valid setups only and preserve rule compliance.",
+        "created_at": "2026-05-16T04:51:49.729106Z"
+      },
       {
         "agent_id": "crypto-grok",
         "content": "Daily review: equity=9954.98, realized_pnl=-5.00, unrealized_pnl=-40.02. Keep valid setups only and preserve rule compliance.",
@@ -2255,25 +2310,29 @@
         "agent_id": "crypto-deepseek",
         "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
         "created_at": "2026-05-15T20:00:49.984466Z"
-      },
-      {
-        "agent_id": "crypto-grok",
-        "content": "Daily review: equity=9965.07, realized_pnl=-5.00, unrealized_pnl=-29.93. Keep valid setups only and preserve rule compliance.",
-        "created_at": "2026-05-15T19:52:22.940223Z"
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "content": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
-        "created_at": "2026-05-15T19:52:22.760180Z"
       }
     ]
   },
   "rejected_signals_summary": {
     "by_agent": {
-      "crypto-deepseek": 3,
+      "crypto-deepseek": 4,
       "crypto-grok": 3
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-05-16T04:51:07.937656Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "reasons": [
+          "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+        ],
+        "rejection_code": "PARSE_ERROR"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-grok",
@@ -2359,27 +2418,27 @@
         "rejection_code": "PARSE_ERROR"
       }
     ],
-    "total_recent": 6
+    "total_recent": 7
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 18,
-    "last_cycle_duration_seconds": 56.96617849999893,
-    "last_cycle_started_at": "2026-05-16T03:45:31.537159Z",
-    "next_cycle_at": "2026-05-16T04:46:28.503337Z",
+    "cycle_number": 19,
+    "last_cycle_duration_seconds": 78.95523919999687,
+    "last_cycle_started_at": "2026-05-16T04:50:31.178139Z",
+    "next_cycle_at": "2026-05-16T05:51:50.133378Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 18
+    "total_cycles_completed": 19
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.85,
-    "accepted_signal_count": 34,
+    "acceptance_rate": 0.8372093023255814,
+    "accepted_signal_count": 36,
     "latest_accepted_signal": {
       "action": "HOLD",
       "agent_name": "Crypto Grok",
-      "btc_price": 79053.8,
+      "btc_price": 78964.5,
       "confidence": 2.0,
-      "cycle_number": 18,
+      "cycle_number": 19,
       "decision": "POSITION_UPDATE",
       "direction": "LONG",
       "entry_price": null,
@@ -2390,12 +2449,12 @@
         "position_id": null
       },
       "expected_rr": 2.73,
-      "id": 40,
+      "id": 43,
       "leverage": 10.0,
       "market_regime": "downtrend_low_vol",
       "model_name": "xai/grok-4-1-fast",
       "notional_usdt": 10000.0,
-      "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T10:46:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47,\"leverage\":10,\"m",
+      "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T11:51:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47,\"leverage\":10,\"m",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
       "risk_pct": 0.85,
@@ -2403,9 +2462,9 @@
       "stop_loss": 78700.0,
       "take_profit_1": 80394.0,
       "take_profit_2": 81200.0,
-      "thesis": "Pos1 support holding (low 79029), RSI 61 rebound; thesis intact but momentum shift observed.",
-      "timestamp_local": "2026-05-16T10:46:27.916292+07:00",
-      "timestamp_utc": "2026-05-16T03:46:27.916292Z",
+      "thesis": "Pos1 testing lower (low 78811), RSI 43 rebound fading; support intact above SL.",
+      "timestamp_local": "2026-05-16T11:51:49.539075+07:00",
+      "timestamp_utc": "2026-05-16T04:51:49.539075Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -2414,10 +2473,10 @@
     },
     "latest_rejected_signal": {
       "action": "NONE",
-      "agent_name": "Crypto Grok",
-      "btc_price": 79152.0,
+      "agent_name": "Crypto DeepSeek",
+      "btc_price": 78964.5,
       "confidence": null,
-      "cycle_number": 12,
+      "cycle_number": 19,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -2427,31 +2486,107 @@
         "reason": "not evaluated yet"
       },
       "expected_rr": null,
-      "id": 27,
+      "id": 41,
       "leverage": null,
       "market_regime": "downtrend_low_vol",
-      "model_name": "xai/grok-4-1-fast",
+      "model_name": "deepseek/deepseek-v4-flash",
       "notional_usdt": null,
-      "raw_snippet": "{\n  \"agent\": \"crypto-grok\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"LONG\",\n  \"execution_type\": \"NONE\",\n  \"entry\": 79371.47,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000.0,\n  \"margin_used_perce",
+      "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"PAPER_TRADE\",\n  \"action\": \"OPEN\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"MARKET\",\n  \"entry\": 78965,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_percent",
       "rejection_reason_code": "PARSE_ERROR",
-      "rejection_reason_message": "parse/schema error: 2 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7915..., open position context', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='1', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+      "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
       "risk_pct": null,
       "signal_status": "REJECTED",
       "stop_loss": null,
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-05-16T04:17:45.927305+07:00",
-      "timestamp_utc": "2026-05-15T21:17:45.927305Z",
+      "timestamp_local": "2026-05-16T11:51:07.937656+07:00",
+      "timestamp_utc": "2026-05-16T04:51:07.937656Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
-          "parse/schema error: 2 validation errors for AgentSignal\ndata_used\n  Input should be a valid list [type=list_type, input_value='market_state: price=7915..., open position context', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/list_type\nposition_id_or_context\n  Extra inputs are not permitted [type=extra_forbidden, input_value='1', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+          "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
         ],
         "rejection_code": "PARSE_ERROR"
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto Grok",
+        "btc_price": 78964.5,
+        "confidence": 2.0,
+        "cycle_number": 19,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": 2.73,
+        "id": 43,
+        "leverage": 10.0,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "xai/grok-4-1-fast",
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\"agent\":\"crypto-grok\",\"timestamp\":\"2026-05-16T11:51:00+07:00\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"MARKET\",\"position_id\":\"1\",\"average_entry_after_action\":79371.47,\"leverage\":10,\"m",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.85,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 78700.0,
+        "take_profit_1": 80394.0,
+        "take_profit_2": 81200.0,
+        "thesis": "Pos1 testing lower (low 78811), RSI 43 rebound fading; support intact above SL.",
+        "timestamp_local": "2026-05-16T11:51:49.539075+07:00",
+        "timestamp_utc": "2026-05-16T04:51:49.539075Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
+      {
+        "action": "OPEN",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 78964.5,
+        "confidence": 3.0,
+        "cycle_number": 19,
+        "decision": "PAPER_TRADE",
+        "direction": "SHORT",
+        "entry_price": 78965.0,
+        "execution_result": {
+          "action": "OPEN",
+          "decision": "PAPER_TRADE",
+          "executed": true,
+          "position_id": "DS-SHORT-001"
+        },
+        "expected_rr": 6.3,
+        "id": 42,
+        "leverage": 10.0,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "deepseek/deepseek-v4-flash",
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"PAPER_TRADE\",\n  \"action\": \"OPEN\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"MARKET\",\n  \"entry\": 78965,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_percent",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.23,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 79150.0,
+        "take_profit_1": 78300.0,
+        "take_profit_2": 77800.0,
+        "thesis": "BTC broke below the key 78,861 support level on the 04:00 UTC candle with a low of 78,811 and the highest volume in hours (2,857 BTC vs recent ~1,300 average), confirming seller dominance and long liquidation acceleration. Price remains well below EMA_20 (79,404) and EMA_50 (79,867). MACD is bearish at -361. RSI at 43 has room to decline further toward oversold. This is the clean volume-backed breakdown trigger I have been monitoring across multiple decision cycles. Next support targets are BB_low (78,175) and 77,800 round number.",
+        "timestamp_local": "2026-05-16T11:51:27.514425+07:00",
+        "timestamp_utc": "2026-05-16T04:51:27.514425Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "HOLD",
         "agent_name": "Crypto Grok",
@@ -3684,6 +3819,45 @@
     "recent_rejected_signals": [
       {
         "action": "NONE",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 78964.5,
+        "confidence": null,
+        "cycle_number": 19,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "executed": false,
+          "position_id": null,
+          "reason": "not evaluated yet"
+        },
+        "expected_rr": null,
+        "id": 41,
+        "leverage": null,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "deepseek/deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"PAPER_TRADE\",\n  \"action\": \"OPEN\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"MARKET\",\n  \"entry\": 78965,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_percent",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-16T11:51:07.937656+07:00",
+        "timestamp_utc": "2026-05-16T04:51:07.937656Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: 1 validation error for AgentSignal\nliquidation_risk_Note\n  Extra inputs are not permitted [type=extra_forbidden, input_value='10x leverage short liqui...0. No liquidation risk.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+          ],
+          "rejection_code": "PARSE_ERROR"
+        }
+      },
+      {
+        "action": "NONE",
         "agent_name": "Crypto Grok",
         "btc_price": 79152.0,
         "confidence": null,
@@ -3905,51 +4079,51 @@
         }
       }
     ],
-    "rejected_signal_count": 6,
+    "rejected_signal_count": 7,
     "rejection_breakdown": {
-      "PARSE_ERROR": 6
+      "PARSE_ERROR": 7
     }
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.2,
-    "confidence_correlation": 0.7479217694251697,
+    "action_agreement_rate": 0.19047619047619047,
+    "confidence_correlation": 0.7061878726163595,
     "convergence_warning": false,
-    "created_at": "2026-05-16T03:46:28.439616Z",
-    "directional_agreement_rate": 0.2,
-    "leverage_similarity": 0.2,
+    "created_at": "2026-05-16T04:51:50.069584Z",
+    "directional_agreement_rate": 0.19047619047619047,
+    "leverage_similarity": 0.19047619047619047,
     "shared_ratio_applied": 0.3,
-    "thesis_embedding_similarity": 0.04166568585771713
+    "thesis_embedding_similarity": 0.039681605578778215
   },
   "sync": {
-    "generated_at": "2026-05-16T03:46:28.696730Z",
+    "generated_at": "2026-05-16T04:51:50.330015Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-16T03:46:28.503337Z",
+    "latest_cycle_at": "2026-05-16T04:51:50.133378Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.010545500000000001,
-      "input_tokens": 50925.0,
-      "output_tokens": 12200.0,
-      "requests": 20.0
+      "estimated_cost_usd": 0.01153488,
+      "input_tokens": 54964.0,
+      "output_tokens": 13714.0,
+      "requests": 22.0
     },
     "crypto-grok": {
-      "estimated_cost_usd": 0.014245800000000001,
-      "input_tokens": 55734.0,
-      "output_tokens": 6198.0,
-      "requests": 20.0
+      "estimated_cost_usd": 0.0150226,
+      "input_tokens": 58843.0,
+      "output_tokens": 6508.0,
+      "requests": 21.0
     }
   },
   "trade_history_summary": {
     "crypto-deepseek": {
-      "closed_or_fee_events": 0,
-      "losses": 0,
-      "realized_pnl": 0,
-      "trade_count": 0,
+      "closed_or_fee_events": 1,
+      "losses": 1,
+      "realized_pnl": -5.0,
+      "trade_count": 1,
       "win_rate": 0.0,
       "wins": 0
     },
@@ -3964,41 +4138,41 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 37.92682620498242,
-      "grok_workload_pct": 37.89341893207101,
-      "local_workload_pct": 24.179754862946574,
-      "total_api_cost_usd": 0.024791300000000002
+      "deepseek_workload_pct": 38.53715331997177,
+      "grok_workload_pct": 37.315947293202406,
+      "local_workload_pct": 24.146899386825837,
+      "total_api_cost_usd": 0.02655748
     },
-    "deepseek_pct": 36.21440499017266,
-    "grok_pct": 39.75987789945061,
+    "deepseek_pct": 49.523041389780104,
+    "grok_pct": 26.92145779356736,
     "latest": {
-      "api_cost_usd": 0.00135844,
-      "deepseek_tokens": 3435,
-      "deepseek_workload_pct": 36.21440499017266,
-      "grok_tokens": 3421,
-      "grok_workload_pct": 39.75987789945061,
-      "local_workload_pct": 24.025717110376743,
+      "api_cost_usd": 0.0017661800000000002,
+      "deepseek_tokens": 5553,
+      "deepseek_workload_pct": 49.523041389780104,
+      "grok_tokens": 3419,
+      "grok_workload_pct": 26.92145779356736,
+      "local_workload_pct": 23.555500816652547,
       "payload": {
-        "deepseek_api_cost_usd": 0.00057974,
-        "deepseek_input_tokens": 2729,
+        "deepseek_api_cost_usd": 0.0009893800000000002,
+        "deepseek_input_tokens": 4039,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 706,
+        "deepseek_output_tokens": 1514,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
-        "grok_api_cost_usd": 0.0007787,
-        "grok_input_tokens": 3106,
+        "grok_api_cost_usd": 0.0007768,
+        "grok_input_tokens": 3109,
         "grok_lessons_generated": 1,
-        "grok_output_tokens": 315,
+        "grok_output_tokens": 310,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 17,
-        "local_functions_executed": 22,
+        "local_database_queries": 23,
+        "local_functions_executed": 27,
         "local_memory_retrievals": 4,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 56.96617849999893
+        "total_wall_time_seconds": 78.95523919999687
       },
-      "timestamp": "2026-05-16T03:46:28.681618"
+      "timestamp": "2026-05-16T04:51:50.311906"
     },
-    "local_pct": 24.025717110376743
+    "local_pct": 23.555500816652547
   }
 }
