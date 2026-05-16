@@ -193,16 +193,24 @@ class ArenaRepository:
             stmt = select(TradeRecord).where(TradeRecord.position_id == position_id)
             return any(note in (trade.notes or "") for trade in session.scalars(stmt))
 
-    def latest_stop_loss_same_direction(self, agent_id: str, direction: str) -> bool:
+    def latest_stop_loss_same_direction(self, agent_id: str, direction: str, since: datetime | None = None) -> bool:
+        if since and since.tzinfo is not None:
+            since = since.astimezone(UTC).replace(tzinfo=None)
         with self.session_factory() as session:
             stmt = (
                 select(TradeRecord)
-                .where(TradeRecord.agent_id == agent_id)
+                .where(
+                    TradeRecord.agent_id == agent_id,
+                    TradeRecord.direction == direction,
+                    TradeRecord.notes.contains("stop_loss"),
+                )
                 .order_by(TradeRecord.created_at.desc())
                 .limit(1)
             )
+            if since:
+                stmt = stmt.where(TradeRecord.created_at > since)
             trade = session.scalars(stmt).first()
-            return bool(trade and trade.direction == direction and "stop_loss" in (trade.notes or ""))
+            return bool(trade)
 
     def add_or_update_position(self, position: PositionRecord) -> None:
         with self.session_factory() as session, session.begin():

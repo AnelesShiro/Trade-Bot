@@ -522,10 +522,15 @@ class CompetitionRunner:
             dca_count = existing.dca_count if existing else 0
         if workload:
             workload.database_query("validation", agent_id=agent_id)
+        latest_checkpoint = self.repository.latest_checkpoint()
         recent_stop = bool(
             signal_for_dca
             and signal_for_dca.action == Action.OPEN
-            and self.repository.latest_stop_loss_same_direction(agent_id, signal_for_dca.direction.value)
+            and self.repository.latest_stop_loss_same_direction(
+                agent_id,
+                signal_for_dca.direction.value,
+                since=latest_checkpoint.created_at if latest_checkpoint else None,
+            )
         )
         if workload:
             workload.local_function("validation", "validate_signal", agent_id=agent_id)
