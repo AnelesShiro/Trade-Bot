@@ -144,6 +144,16 @@ def _risk_automation_payload(settings: Settings, repository: ArenaRepository) ->
         }
         for row in repository.failover_events(limit=50)
     ]
+    notifications = [
+        {
+            "created_at": row.created_at.isoformat() if row.created_at else None,
+            "agent_id": row.agent_id,
+            "event_type": row.event_type,
+            "severity": row.severity,
+            "message": row.message,
+        }
+        for row in repository.risk_notifications(limit=50)
+    ]
     active_models = {}
     for agent in settings.agents:
         state = repository.get_agent_failover_state(agent.id)
@@ -159,6 +169,7 @@ def _risk_automation_payload(settings: Settings, repository: ArenaRepository) ->
         "active_cooldown_count": len(cooldowns),
         "position_risk": trailing,
         "failover_events": failover_events,
+        "notifications": notifications,
         "active_models": active_models,
     }
 

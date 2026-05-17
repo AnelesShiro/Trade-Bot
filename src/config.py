@@ -154,6 +154,8 @@ class CooldownSettings(BaseModel):
     pause_hours_after_losses: float = 6.0
     daily_loss_pct: float = 0.05
     pause_hours_daily: float = 24.0
+    weekly_drawdown_pct: float = 0.10
+    pause_hours_weekly: float = 24.0
     rejection_rate_threshold: float = 0.80
     api_failure_threshold: int = 5
 

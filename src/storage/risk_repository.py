@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from uuid import uuid4
 
 from sqlalchemy import func, select
@@ -12,6 +12,7 @@ from src.storage.models import (
     CooldownStateRecord,
     PendingOrderRecord,
     PositionRiskStateRecord,
+    RiskNotificationRecord,
     SignalRecord,
     TradeRecord,
 )
@@ -134,16 +135,19 @@ class RiskAutomationRepositoryMixin:
             return list(session.scalars(stmt))
 
     def upsert_cooldown(self, agent_id: str, reason: str, ends_at: datetime, metadata: dict | None = None) -> None:
+        is_new = False
         with self.session_factory() as session, session.begin():
             record = session.get(CooldownStateRecord, agent_id)
             payload = json.dumps(metadata or {}, default=str)
             if record:
+                is_new = not bool(record.active)
                 record.active = 1
                 record.reason = reason
                 record.started_at = datetime.now(UTC)
                 record.ends_at = ends_at
                 record.metadata_json = payload
             else:
+                is_new = True
                 session.add(
                     CooldownStateRecord(
                         agent_id=agent_id,
@@ -153,14 +157,33 @@ class RiskAutomationRepositoryMixin:
                         metadata_json=payload,
                     )
                 )
+        if is_new:
+            self.save_risk_notification(
+                agent_id,
+                "COOLDOWN_STARTED",
+                f"Cooldown started: {reason}; ends at {ends_at.isoformat()}",
+                severity="WARN",
+                payload={"reason": reason, "ends_at": ends_at.isoformat(), **(metadata or {})},
+            )
 
     def clear_cooldown(self, agent_id: str) -> bool:
+        reason = ""
         with self.session_factory() as session, session.begin():
             record = session.get(CooldownStateRecord, agent_id)
             if not record:
                 return False
+            was_active = bool(record.active)
+            reason = record.reason
             record.active = 0
-            return True
+        if was_active:
+            self.save_risk_notification(
+                agent_id,
+                "COOLDOWN_ENDED",
+                f"Cooldown ended: {reason}",
+                severity="INFO",
+                payload={"reason": reason},
+            )
+        return True
 
     def consecutive_losses(self, agent_id: str, count: int) -> int:
         with self.session_factory() as session:
@@ -204,6 +227,16 @@ class RiskAutomationRepositoryMixin:
             )
         return sum(1 for row in rows if not row.success)
 
+    def weekly_pnl(self, agent_id: str, days: int = 7) -> float:
+        since = datetime.now(UTC) - timedelta(days=days)
+        with self.session_factory() as session:
+            rows = list(
+                session.scalars(
+                    select(TradeRecord).where(TradeRecord.agent_id == agent_id, TradeRecord.created_at >= since)
+                )
+            )
+        return float(sum(row.realized_pnl for row in rows))
+
     def save_failover_event(
         self,
         agent_id: str,
@@ -227,10 +260,49 @@ class RiskAutomationRepositoryMixin:
                     message=message[:4000],
                 )
             )
+        severity = "WARN" if event_type == "FAILOVER" else "INFO"
+        self.save_risk_notification(
+            agent_id,
+            f"API_{event_type}",
+            f"{event_type}: {from_provider}/{from_model} -> {to_provider}/{to_model}",
+            severity=severity,
+            payload={
+                "from_provider": from_provider,
+                "from_model": from_model,
+                "to_provider": to_provider,
+                "to_model": to_model,
+                "message": message[:1000],
+            },
+        )
 
     def failover_events(self, limit: int = 100) -> list[ApiFailoverEventRecord]:
         with self.session_factory() as session:
             stmt = select(ApiFailoverEventRecord).order_by(ApiFailoverEventRecord.created_at.desc()).limit(limit)
+            return list(session.scalars(stmt))
+
+    def save_risk_notification(
+        self,
+        agent_id: str,
+        event_type: str,
+        message: str,
+        *,
+        severity: str = "INFO",
+        payload: dict | None = None,
+    ) -> None:
+        with self.session_factory() as session, session.begin():
+            session.add(
+                RiskNotificationRecord(
+                    agent_id=agent_id,
+                    event_type=event_type,
+                    severity=severity,
+                    message=message[:4000],
+                    payload_json=json.dumps(payload or {}, default=str),
+                )
+            )
+
+    def risk_notifications(self, limit: int = 100) -> list[RiskNotificationRecord]:
+        with self.session_factory() as session:
+            stmt = select(RiskNotificationRecord).order_by(RiskNotificationRecord.created_at.desc()).limit(limit)
             return list(session.scalars(stmt))
 
     def get_agent_failover_state(self, agent_id: str) -> AgentFailoverStateRecord | None:
@@ -248,6 +320,7 @@ class RiskAutomationRepositoryMixin:
         using_fallback: bool,
         primary_available: bool,
         fallback_index: int,
+        last_retest_at: datetime | None = None,
     ) -> None:
         with self.session_factory() as session, session.begin():
             record = session.get(AgentFailoverStateRecord, agent_id)
@@ -261,6 +334,8 @@ class RiskAutomationRepositoryMixin:
                 "fallback_index": fallback_index,
                 "updated_at": datetime.now(UTC),
             }
+            if last_retest_at is not None:
+                payload["last_retest_at"] = last_retest_at
             if record:
                 for key, value in payload.items():
                     setattr(record, key, value)
@@ -281,5 +356,3 @@ class RiskAutomationRepositoryMixin:
             return int(
                 session.scalar(select(func.count()).select_from(CooldownStateRecord).where(CooldownStateRecord.active == 1)) or 0
             )
-
-

@@ -425,3 +425,33 @@ Entry template:
 - Notes:
   - Per-agent API failover remains disabled in `config/settings.yaml`; this patch hardens it for future enablement without enabling silent fallback.
   - Runtime `outputs/*` files remain dirty and are intentionally not part of this code change.
+
+## 2026-05-18 - Completed Risk Automation Coverage
+
+- User request (Vietnamese): Update the missing parts so bots can use all Professional Trade Management / Risk Automation features fully and reliably.
+- What changed:
+  - Enabled explicit per-agent API failover in `config/settings.yaml`: `crypto-deepseek` can fail over to Qwen, and `crypto-qwen` can fail over to DeepSeek.
+  - Kept strict model locking intact: `LLM_ALLOW_FALLBACK=false`; failover uses logged active routes and verifies the actual response model against the active route's exact model.
+  - `python -m src.cli init` now syncs OpenClaw auth and base URLs for both primary routes and fallback chains, so an agent can authenticate to its configured fallback provider.
+  - Runner now applies the active failover route before each agent request and uses fallback route settings for the retry/audit path.
+  - Failover primary retest now probes the real primary route, restores the fallback route afterward when needed, and records failed retest timestamps to avoid rapid repeated probes.
+  - Failover events now preserve the original primary provider/model even if a fallback route later fails over again.
+  - Added weekly drawdown cooldown support (`weekly_drawdown_pct`, `pause_hours_weekly`).
+  - Added local `risk_notifications` table and notifications for cooldown start/end plus API failover/restore events.
+  - Added CLI `list-risk-notifications`.
+  - Dashboard and snapshot now expose risk notifications; Overview shows latest notifications.
+  - Added missing SHORT step-based trailing stop support.
+  - Updated `PROJECT_BOOTSTRAP.md`, `PROJECT_CONTEXT.md`, `TODO.md`, `AGENTS.md`, and `docs/MODEL_GOVERNANCE.md` so future sessions read the correct current state.
+- Verification so far:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py -q` -> 12 passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 61 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile ...` on modified modules -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+  - `.\.venv\Scripts\python.exe -m src.cli init` -> completed; active locked models printed as DeepSeek `deepseek-v4-flash` and Qwen `qwen3-max-2026-01-23`, both `fallback_allowed=False`.
+  - `.\.venv\Scripts\python.exe -m src.cli show-failover-status` -> both active agents on primary routes, no active fallback.
+  - `.\.venv\Scripts\python.exe -m src.cli list-risk-notifications --limit 5` -> no current notifications.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+- Notes:
+  - Trading behavior for normal signals remains unchanged. New features are local/additive and only activate through config or optional signal fields.
+  - Runtime `outputs/*` and generated snapshot files are live-generated and should not be reverted or committed unless explicitly requested.

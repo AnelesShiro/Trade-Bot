@@ -8,8 +8,8 @@
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
 - Latest verified live cycle/checkpoint: cycle `50` completed. Recent API audit shows both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`; there were no active open positions at the latest check.
-- Local **risk automation** is enabled (`config/settings.yaml` → `risk_automation`). Conditional orders, trailing stop, break-even, time exit, and cooldowns run locally with **no extra LLM calls**. Legacy `OPEN`/`MARKET` signals are unchanged unless the agent sends `PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
-- **API failover** infrastructure is present and global `risk_automation.api_failover.enabled` is true, but active agents still have `agents.*.api_failover.enabled: false`. It is separate from `LLM_ALLOW_FALLBACK` and must not be treated as silent model switching.
+- Local **risk automation** is enabled (`config/settings.yaml` -> `risk_automation`). Conditional orders, trailing stop, break-even, time exit, cooldowns, and explicit API failover run locally with **no extra LLM calls** except the intentional one-request retry after failover. Legacy `OPEN`/`MARKET` signals are unchanged unless the agent sends `PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
+- **API failover** is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, primary retests, and `risk_notifications`. It is separate from `LLM_ALLOW_FALLBACK`; silent model switching remains impossible.
 - Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
@@ -98,7 +98,7 @@
   - `src/trading/execution.py`, `paper_account.py`, `position_manager.py`, `pnl.py`: paper execution and accounting.
   - `src/trading/risk_automation/`: local conditional-order and position risk engine (triggers, trailing stop, break-even, time exit, cooldown evaluation).
   - `src/agents/api_failover.py`: explicit logged provider failover (not silent `LLM_ALLOW_FALLBACK`).
-  - `src/storage/risk_repository.py`: persistence mixin for `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`.
+  - `src/storage/risk_repository.py`: persistence mixin for `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications`.
   - `src/storage/repository.py`: SQLite persistence for core arena state.
   - `src/storage/signal_repository.py`: accepted/rejected signal audit persistence.
   - `src/competition/runner.py`: main competition loop, cycle orchestration, provider error handling, checkpoint/export/sync.
@@ -121,7 +121,7 @@
   - SQLite and output files are updated.
   - Checkpoint is written after each completed cycle.
   - Before SL/TP checks each cycle (and on the position monitor interval), `RiskAutomationEngine` evaluates pending triggers and position risk state using the same market price/RSI snapshot.
-  - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models).
+  - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models, risk notifications).
   - Optional Git sync commits and pushes snapshot to GitHub for Render.
 
 # Design Principles
@@ -401,9 +401,10 @@
   - `action: PLACE_TRIGGER` with `trigger_order` (`trigger` tree with `price` / `rsi_14`, AND/OR, `expires_at`, `execution_signal`).
   - `position_risk` on `OPEN` for `trailing_stop`, `break_even`, `time_exit`.
 - Defaults: `trailing_stop.apply_by_default`, `break_even.apply_by_default`, `time_exit.apply_by_default` are **false** so existing competition behavior is unchanged.
-- Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally.
-- SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state` (created by `create_schema` / live runner startup).
-- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models.
+- Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally. Triggers include consecutive losses, daily loss, weekly drawdown, rejection rate, and API instability.
+- API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.
+- SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications` (created by `create_schema` / live runner startup).
+- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications.
 - Tests: `tests/test_risk_automation.py`.
 
 # Deployment Information

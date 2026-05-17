@@ -65,11 +65,12 @@ The Grok/xAI credit spike was caused by a provider-side model redirect from a re
 
 `LLM_ALLOW_FALLBACK` must remain `false`. That flag blocks **silent** provider-side redirects.
 
-Separate optional infrastructure failover is configured per agent under `agents.<id>.api_failover`:
+Separate explicit infrastructure failover is configured per agent under `agents.<id>.api_failover`.
+Active agents currently use checked-in DeepSeek <-> Qwen fallback chains:
 
 ```yaml
 api_failover:
-  enabled: false
+  enabled: true
   retest_interval_seconds: 3600
   fallback_chain:
     - provider: deepseek
@@ -83,6 +84,8 @@ When `enabled: true` and a billing/auth/rate-limit/timeout error occurs:
 1. The runner records an `api_failover_events` row.
 2. OpenClaw agent routing switches to the next `fallback_chain` entry (logged).
 3. The current request retries once.
-4. `show-failover-status` and dashboard tab **API Failover Events** show active routes.
+4. The response model is still verified against the active route's exact model.
+5. `show-failover-status`, `list-risk-notifications`, and dashboard tab **API Failover Events** show active routes and notifications.
+6. The primary route is periodically retested and restored only after a successful probe.
 
-Failover does **not** change prompts, rulebook, or strategy. Re-enable only after updating `fallback_chain` and running `python -m src.cli init` if provider routes change.
+Failover does **not** change prompts, rulebook, or strategy. After changing any primary or fallback provider/model/base URL/auth env, run `python -m src.cli init` so OpenClaw routing and auth profiles match `config/settings.yaml`.

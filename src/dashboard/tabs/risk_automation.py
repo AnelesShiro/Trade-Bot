@@ -22,6 +22,10 @@ def render_risk_automation_tab(db_path: Path, positions: pd.DataFrame) -> None:
             "SELECT agent_id, reason, started_at, ends_at FROM cooldown_state WHERE active = 1",
             connection,
         )
+        notifications = pd.read_sql_query(
+            "SELECT created_at, agent_id, event_type, severity, message FROM risk_notifications ORDER BY created_at DESC LIMIT 100",
+            connection,
+        )
     if not risk.empty and not positions.empty:
         risk = risk.merge(positions[["id", "agent_id", "status", "stop_loss"]], left_on="position_id", right_on="id", how="left")
     if risk.empty:
@@ -37,6 +41,11 @@ def render_risk_automation_tab(db_path: Path, positions: pd.DataFrame) -> None:
         st.success("No active entry cooldowns.")
     else:
         st.dataframe(cooldowns, width="stretch", hide_index=True)
+    st.subheader("Risk Notifications")
+    if notifications.empty:
+        st.info("No risk automation notifications yet.")
+    else:
+        st.dataframe(notifications, width="stretch", hide_index=True)
 
 
 def _short_json(value: str) -> str:

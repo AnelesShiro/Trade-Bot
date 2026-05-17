@@ -26,7 +26,16 @@ class CooldownManager:
             return False
         return True
 
-    def evaluate_after_cycle(self, agent_id: str, *, equity: float, daily_pnl: float, rejection_rate: float, api_failures: int) -> None:
+    def evaluate_after_cycle(
+        self,
+        agent_id: str,
+        *,
+        equity: float,
+        daily_pnl: float,
+        weekly_pnl: float,
+        rejection_rate: float,
+        api_failures: int,
+    ) -> None:
         if not self.settings.enabled:
             return
         if self.blocks_new_entries(agent_id):
@@ -41,6 +50,9 @@ class CooldownManager:
         if reason is None and self.settings.daily_loss_pct and daily_pnl <= -(equity * self.settings.daily_loss_pct):
             reason = f"daily drawdown >= {self.settings.daily_loss_pct:.1%}"
             hours = self.settings.pause_hours_daily or self.settings.pause_hours_after_losses
+        if reason is None and self.settings.weekly_drawdown_pct and weekly_pnl <= -(equity * self.settings.weekly_drawdown_pct):
+            reason = f"weekly drawdown >= {self.settings.weekly_drawdown_pct:.1%}"
+            hours = self.settings.pause_hours_weekly or self.settings.pause_hours_daily or self.settings.pause_hours_after_losses
         if reason is None and self.settings.rejection_rate_threshold and rejection_rate >= self.settings.rejection_rate_threshold:
             reason = f"rejection rate {rejection_rate:.1%}"
             hours = self.settings.pause_hours_after_losses

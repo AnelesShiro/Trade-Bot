@@ -36,7 +36,7 @@ def init() -> None:
     runner = CompetitionRunner(settings)
     _sync_openclaw_agent_registry(settings)
     synced_base_urls = _sync_openclaw_provider_base_urls(settings)
-    synced_auth = _sync_openclaw_auth_from_env()
+    synced_auth = _sync_openclaw_auth_from_env(settings)
     if synced_auth or synced_base_urls:
         _restart_openclaw_gateway()
     for relative in [settings.paths.signals, settings.paths.ledger, settings.paths.evaluation]:
@@ -497,6 +497,26 @@ def show_failover_status() -> None:
     typer.echo(json.dumps(payload, indent=2))
 
 
+@app.command("list-risk-notifications")
+def list_risk_notifications(limit: int = typer.Option(50, "--limit")) -> None:
+    """List recent risk automation notifications."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    rows = repository.risk_notifications(limit=limit)
+    payload = [
+        {
+            "created_at": str(row.created_at),
+            "agent_id": row.agent_id,
+            "event_type": row.event_type,
+            "severity": row.severity,
+            "message": row.message,
+        }
+        for row in rows
+    ]
+    typer.echo(json.dumps(payload, indent=2))
+
+
 @app.command()
 def dashboard(port: int = 8501) -> None:
     """Launch the Streamlit dashboard."""
@@ -504,38 +524,51 @@ def dashboard(port: int = 8501) -> None:
     subprocess.run([sys.executable, "-m", "streamlit", "run", str(app_path), "--server.port", str(port)], check=False)
 
 
-def _sync_openclaw_auth_from_env() -> bool:
+def _sync_openclaw_auth_from_env(settings) -> bool:
     """Write provider tokens from .env into the per-agent OpenClaw auth stores.
 
     This avoids interactive paste flows and keeps init usable in unattended
     setups. Existing profiles are replaced only for the two competition agents.
     """
-    profiles = [
-        ("crypto-deepseek", "deepseek", "deepseek:manual", os.getenv("DEEPSEEK_API_KEY")),
-        ("crypto-qwen", "qwen", "qwen:manual", os.getenv("QWEN_API_KEY")),
-    ]
+    profiles_by_agent: dict[str, dict[str, tuple[str, str]]] = {}
+    for agent in settings.agents:
+        provider = agent.provider
+        key_name = agent.llm.LLM_API_KEY
+        if key_name and os.getenv(key_name):
+            profiles_by_agent.setdefault(agent.id, {})[provider] = (f"{provider}:manual", os.getenv(key_name) or "")
+        for route in agent.api_failover.fallback_chain:
+            if route.LLM_API_KEY and os.getenv(route.LLM_API_KEY):
+                profiles_by_agent.setdefault(agent.id, {})[route.provider] = (
+                    f"{route.provider}:failover",
+                    os.getenv(route.LLM_API_KEY) or "",
+                )
     wrote_any = False
-    for agent_id, provider, profile_id, token in profiles:
-        if not token:
+    for agent_id, provider_profiles in profiles_by_agent.items():
+        if not provider_profiles:
             continue
         agent_dir = Path.home() / ".openclaw" / "agents" / agent_id / "agent"
         agent_dir.mkdir(parents=True, exist_ok=True)
+        profiles_payload = {}
+        order_payload = {}
+        last_good_payload = {}
+        for provider, (profile_id, token) in provider_profiles.items():
+            profiles_payload[profile_id] = {
+                "type": "token",
+                "provider": provider,
+                "token": token,
+            }
+            order_payload[provider] = [profile_id]
+            last_good_payload[provider] = profile_id
         payload = {
             "version": 1,
-            "profiles": {
-                profile_id: {
-                    "type": "token",
-                    "provider": provider,
-                    "token": token,
-                }
-            },
-            "order": {provider: [profile_id]},
-            "lastGood": {provider: profile_id},
+            "profiles": profiles_payload,
+            "order": order_payload,
+            "lastGood": last_good_payload,
         }
         state = {
             "version": 1,
-            "order": {provider: [profile_id]},
-            "lastGood": {provider: profile_id},
+            "order": order_payload,
+            "lastGood": last_good_payload,
         }
         (agent_dir / "auth-profiles.json").write_text(json.dumps(payload, indent=2), encoding="utf-8")
         (agent_dir / "auth-state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
@@ -551,18 +584,21 @@ def _sync_openclaw_provider_base_urls(settings) -> bool:
     """
     provider_updates: dict[str, dict[str, Any]] = {}
     for agent in settings.agents:
-        base_url = agent.llm.LLM_BASE_URL.strip()
-        if not base_url:
-            continue
-        provider = agent.llm.LLM_PROVIDER.strip()
-        model = agent.llm.LLM_MODEL.strip()
-        if not provider or not model:
-            continue
-        provider_updates[provider] = {
-            "baseUrl": base_url,
-            "api": "openai-completions",
-            "models": [{"id": model, "name": model}],
-        }
+        routes = [(agent.llm.LLM_PROVIDER, agent.llm.LLM_MODEL, agent.llm.LLM_BASE_URL)]
+        routes.extend((route.provider, route.model, route.LLM_BASE_URL) for route in agent.api_failover.fallback_chain)
+        for provider_raw, model_raw, base_url_raw in routes:
+            base_url = str(base_url_raw or "").strip()
+            if not base_url:
+                continue
+            provider = str(provider_raw or "").strip()
+            model = str(model_raw or "").strip()
+            if not provider or not model:
+                continue
+            provider_updates[provider] = {
+                "baseUrl": base_url,
+                "api": "openai-completions",
+                "models": [{"id": model, "name": model}],
+            }
     if not provider_updates:
         return False
 

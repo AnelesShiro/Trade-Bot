@@ -25,5 +25,5 @@ Do this proactively. The user should not need to ask for project context.
 - Legacy `crypto-grok` data is retained for history/audit only.
 - Latest verified checkpoint: cycle `50` completed; recent cycles `48`-`50` show successful DeepSeek and Qwen API requests.
 - Qwen model routing, OpenClaw registration, and provider auth are fixed (Standard Global DashScope URL). See `PROJECT_BOOTSTRAP.md` if auth regresses.
-- Local risk automation is enabled; see `PROJECT_CONTEXT.md` → Risk Automation.
+- Local risk automation and explicit API failover are enabled; see `PROJECT_CONTEXT.md` -> Risk Automation.
 - Model locking uses OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides.

@@ -77,6 +77,8 @@ risk_automation:
     pause_hours_after_losses: 6.0
     daily_loss_pct: 0.05
     pause_hours_daily: 24.0
+    weekly_drawdown_pct: 0.10
+    pause_hours_weekly: 24.0
     rejection_rate_threshold: 0.80
     api_failure_threshold: 5
   api_failover:
@@ -139,9 +141,13 @@ agents:
       LLM_API_KEY: DEEPSEEK_API_KEY
       LLM_ALLOW_FALLBACK: false
     api_failover:
-      enabled: false
+      enabled: true
       retest_interval_seconds: 3600
-      fallback_chain: []
+      fallback_chain:
+        - provider: qwen
+          model: qwen3-max-2026-01-23
+          LLM_BASE_URL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
+          LLM_API_KEY: QWEN_API_KEY
   - id: crypto-qwen
     name: Crypto Qwen
     session_id: crypto-qwen
@@ -152,7 +158,7 @@ agents:
       LLM_API_KEY: QWEN_API_KEY
       LLM_ALLOW_FALLBACK: false
     api_failover:
-      enabled: false
+      enabled: true
       retest_interval_seconds: 3600
       fallback_chain:
         - provider: deepseek

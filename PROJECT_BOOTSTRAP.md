@@ -15,7 +15,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
 - Qwen base URL source of truth: `LLM_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
-- API failover infrastructure exists and global failover is enabled, but active agents still have `api_failover.enabled: false`; do not treat it as silent model fallback.
+- API failover is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, and risk notifications. This is separate from `LLM_ALLOW_FALLBACK`; silent model fallback remains impossible.
 
 ## Operating Rules
 
@@ -39,7 +39,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Config source of truth: `config/settings.yaml` agent `llm` blocks.
 - `LLM_ALLOW_FALLBACK` must remain `false`.
 - Runtime calls do not use per-request `--model`; this OpenClaw Gateway rejects model overrides.
-- `python -m src.cli init` registers OpenClaw agents with provider/model routing and syncs configured `LLM_BASE_URL` into OpenClaw `models.providers`.
+- `python -m src.cli init` registers OpenClaw agents with provider/model routing, syncs primary and fallback provider base URLs, and writes each agent's primary/fallback auth profiles from `.env`.
 - After each OpenClaw call, code verifies actual response model equals `LLM_MODEL`.
 
 ## Fast Checks

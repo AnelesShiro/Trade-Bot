@@ -1370,6 +1370,7 @@ st.markdown(
 pending_orders_count = 0
 active_cooldown_count = 0
 active_fallback_models = 0
+risk_notification_rows: list[tuple[str, str, str, str]] = []
 try:
     with sqlite3.connect(str(db_path)) as _conn:
         pending_orders_count = int(
@@ -1381,6 +1382,9 @@ try:
         active_fallback_models = int(
             _conn.execute("SELECT COUNT(*) FROM agent_failover_state WHERE using_fallback = 1").fetchone()[0]
         )
+        risk_notification_rows = _conn.execute(
+            "SELECT severity, agent_id, event_type, message FROM risk_notifications ORDER BY created_at DESC LIMIT 5"
+        ).fetchall()
 except Exception:
     pass
 
@@ -1396,6 +1400,8 @@ banner_cols[6].metric("Start / End", f"{fmt_short_time(start_time)} -> {fmt_shor
 st.progress(percent_complete)
 
 alerts = notifications(signals, trades, positions, metric_frame)
+for severity, agent_id, event_type, message in risk_notification_rows:
+    alerts.insert(0, f"{severity}: {agent_id} {event_type} - {message}")
 if alerts:
     with st.expander("Notifications", expanded=True):
         for note in alerts:

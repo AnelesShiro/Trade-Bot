@@ -46,6 +46,11 @@ def apply_trailing_stop(
         candidate = new_sl
         if config.mode == "percent" and config.distance_pct:
             candidate = current_price * (1 + config.distance_pct)
+        elif config.mode == "step" and config.step_pct:
+            anchor = float(state.get("last_trail_anchor") or position.average_entry)
+            if current_price <= anchor * (1 - config.step_pct):
+                candidate = current_price * (1 + (config.distance_pct or config.step_pct))
+                state["last_trail_anchor"] = current_price
         elif config.mode == "atr" and config.atr_multiple:
             atr = float(state.get("atr_14") or 0)
             if atr > 0:

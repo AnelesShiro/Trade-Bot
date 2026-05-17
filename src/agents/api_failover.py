@@ -97,6 +97,10 @@ class ApiFailoverManager:
             return None
         state = self.repository.get_agent_failover_state(agent.id)
         current_index = state.fallback_index if state else -1
+        primary_provider = state.primary_provider if state else agent.provider
+        primary_model = state.primary_model if state else agent.model
+        from_provider = state.active_provider if state and state.using_fallback else agent.provider
+        from_model = state.active_model if state and state.using_fallback else agent.model
         next_index = current_index + 1
         if next_index >= len(chain):
             logger.warning("no more failover routes for {}", agent.id)
@@ -106,8 +110,8 @@ class ApiFailoverManager:
             agent.id,
             active_provider=route.provider,
             active_model=route.model,
-            primary_provider=agent.provider,
-            primary_model=agent.model,
+            primary_provider=primary_provider,
+            primary_model=primary_model,
             using_fallback=True,
             primary_available=False,
             fallback_index=next_index,
@@ -115,8 +119,8 @@ class ApiFailoverManager:
         self.repository.save_failover_event(
             agent.id,
             "FAILOVER",
-            from_provider=agent.provider,
-            from_model=agent.model,
+            from_provider=from_provider,
+            from_model=from_model,
             to_provider=route.provider,
             to_model=route.model,
             message=error_message[:1000],
@@ -134,7 +138,18 @@ class ApiFailoverManager:
         interval = max(60, agent.api_failover.retest_interval_seconds)
         if last and (datetime.now(UTC) - (last if last.tzinfo else last.replace(tzinfo=UTC))).total_seconds() < interval:
             return False
-        if not self._probe_primary(agent):
+        if not self._probe_primary(agent, state):
+            self.repository.upsert_agent_failover_state(
+                agent.id,
+                active_provider=state.active_provider,
+                active_model=state.active_model,
+                primary_provider=agent.provider,
+                primary_model=agent.model,
+                using_fallback=True,
+                primary_available=False,
+                fallback_index=state.fallback_index,
+                last_retest_at=datetime.now(UTC),
+            )
             return False
         self.repository.upsert_agent_failover_state(
             agent.id,
@@ -158,12 +173,12 @@ class ApiFailoverManager:
         self._apply_openclaw_route(agent.id, agent.provider, agent.model, agent.llm.LLM_BASE_URL)
         return True
 
-    def _probe_primary(self, agent: AgentSettings) -> bool:
+    def _probe_primary(self, agent: AgentSettings, current_state=None) -> bool:
         key_name = agent.llm.LLM_API_KEY
         if key_name and not os.getenv(key_name):
             return False
         binary = os.getenv("OPENCLAW_BIN", "openclaw")
-        model = agent.model if "/" in agent.model else f"{agent.provider}/{agent.model}"
+        self._apply_openclaw_route(agent.id, agent.provider, agent.model, agent.llm.LLM_BASE_URL)
         try:
             completed = subprocess.run(
                 [binary, "agent", "--agent", agent.id, "--session-id", f"{agent.id}-failover-probe", "--message", "Return exactly OK.", "--timeout", "60"],
@@ -177,6 +192,19 @@ class ApiFailoverManager:
             return completed.returncode == 0 and "OK" in (completed.stdout or "")
         except Exception:
             return False
+        finally:
+            if current_state and getattr(current_state, "using_fallback", 0):
+                base_url = ""
+                for route in agent.api_failover.fallback_chain:
+                    if route.provider == current_state.active_provider and route.model == current_state.active_model:
+                        base_url = route.LLM_BASE_URL
+                        break
+                self._apply_openclaw_route(
+                    agent.id,
+                    current_state.active_provider,
+                    current_state.active_model,
+                    base_url,
+                )
 
     def _apply_openclaw_route(self, agent_id: str, provider: str, model: str, base_url: str) -> None:
         binary = os.getenv("OPENCLAW_BIN", "openclaw")

@@ -4,7 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 
-from src.config import RiskAutomationSettings
+from src.config import ApiFailoverAgentSettings, FailoverRouteSettings
 from src.schemas import Action, AgentSignal, Decision, Direction
 from src.storage.models import PositionRecord, create_schema
 from src.storage.repository import ArenaRepository
@@ -53,6 +53,27 @@ def test_trailing_stop_only_tightens_long() -> None:
     new_sl, state = apply_trailing_stop(position, 105000, config, {})
     assert new_sl > position.stop_loss
     assert state["trailing_active"] is True
+
+
+def test_step_trailing_stop_tightens_short() -> None:
+    position = PositionRecord(
+        id="p1",
+        agent_id="crypto-deepseek",
+        symbol="BTC",
+        direction="SHORT",
+        status="OPEN",
+        leverage=10,
+        margin=1000,
+        notional=10000,
+        average_entry=100000,
+        stop_loss=101000,
+        take_profit_1=95000,
+        take_profit_2=90000,
+    )
+    config = TrailingStopConfig(enabled=True, mode="step", step_pct=0.01, distance_pct=0.01)
+    new_sl, state = apply_trailing_stop(position, 98000, config, {})
+    assert new_sl < position.stop_loss
+    assert state["last_trail_anchor"] == 98000
 
 
 def test_break_even_once() -> None:
@@ -173,6 +194,22 @@ def test_cooldown_blocks(repository: ArenaRepository, test_settings) -> None:
     manager = CooldownManager(repository, test_settings.risk_automation.cooldown)
     manager.start("crypto-deepseek", "test", 1)
     assert manager.blocks_new_entries("crypto-deepseek")
+    assert repository.risk_notifications(limit=1)[0].event_type == "COOLDOWN_STARTED"
+
+
+def test_weekly_drawdown_starts_cooldown(repository: ArenaRepository, test_settings) -> None:
+    manager = CooldownManager(repository, test_settings.risk_automation.cooldown)
+    manager.evaluate_after_cycle(
+        "crypto-deepseek",
+        equity=10000,
+        daily_pnl=0,
+        weekly_pnl=-1200,
+        rejection_rate=0,
+        api_failures=0,
+    )
+    state = repository.active_cooldown("crypto-deepseek")
+    assert state is not None
+    assert "weekly drawdown" in state.reason
 
 
 def test_failover_error_detection(test_settings, repository) -> None:
@@ -196,3 +233,32 @@ def test_failover_route_settings_update_model_lock(test_settings, repository) ->
     assert fallback_agent.provider == "deepseek"
     assert fallback_agent.model == "deepseek-v4-flash"
     assert fallback_agent.llm.LLM_ALLOW_FALLBACK is False
+
+
+def test_failover_preserves_primary_when_fallback_fails(test_settings, repository, monkeypatch) -> None:
+    manager = ApiFailoverManager(test_settings, repository)
+    agent = test_settings.agents[0].model_copy(
+        update={
+            "api_failover": ApiFailoverAgentSettings(
+                enabled=True,
+                fallback_chain=[
+                    FailoverRouteSettings(provider="qwen", model="qwen3-max-2026-01-23", LLM_API_KEY="QWEN_API_KEY"),
+                    FailoverRouteSettings(provider="deepseek-backup", model="deepseek-chat", LLM_API_KEY="DEEPSEEK_API_KEY"),
+                ],
+            )
+        }
+    )
+    monkeypatch.setattr(manager, "_apply_openclaw_route", lambda *args, **kwargs: None)
+
+    first_route = manager.handle_failure(agent, "billing error 402")
+    second_agent = manager.settings_for_route(agent, first_route)
+    second_route = manager.handle_failure(second_agent, "timeout")
+
+    state = repository.get_agent_failover_state(agent.id)
+    events = repository.failover_events(limit=2)
+    assert second_route is not None
+    assert state.primary_provider == "deepseek"
+    assert state.primary_model == "deepseek-v4-flash"
+    assert state.active_provider == "deepseek-backup"
+    assert events[0].from_provider == "qwen"
+    assert events[0].to_provider == "deepseek-backup"

@@ -451,6 +451,18 @@ class ApiFailoverEventRecord(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
 
 
+class RiskNotificationRecord(Base):
+    __tablename__ = "risk_notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
+    agent_id: Mapped[str] = mapped_column(String, index=True)
+    event_type: Mapped[str] = mapped_column(String, index=True)
+    severity: Mapped[str] = mapped_column(String, default="INFO")
+    message: Mapped[str] = mapped_column(Text, default="")
+    payload_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
 class AgentFailoverStateRecord(Base):
     __tablename__ = "agent_failover_state"
 

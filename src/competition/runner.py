@@ -317,6 +317,8 @@ class CompetitionRunner:
     def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)
         self.failover_manager.maybe_restore_primary(agent_settings)
+        active_route = self.failover_manager.active_route(agent_settings)
+        effective_agent_settings = self.failover_manager.settings_for_route(agent_settings, active_route)
         if self.risk_engine.enabled and self.risk_engine.blocks_new_entries(agent_id):
             self.repository.save_health_check("cooldown", "PASS", False, f"{agent_id} entry cooldown active; skipped LLM cycle")
             return
@@ -376,7 +378,7 @@ class CompetitionRunner:
         prompt_id = self.repository.save_prompt(agent_id, prompt)
         try:
             signal, validation, raw, signal_record_id = self._run_until_valid_signal(
-                agent_settings=agent_settings,
+                agent_settings=effective_agent_settings,
                 agent_id=agent_id,
                 prompt=prompt,
                 prompt_id=prompt_id,

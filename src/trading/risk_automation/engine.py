@@ -111,10 +111,12 @@ class RiskAutomationEngine:
             total, rejected = self.repository.signal_counts(agent_id, limit=20)
             rejection_rate = (rejected / total) if total else 0.0
             api_failures = self.repository.recent_api_failures(agent_id, limit=10)
+            weekly_pnl = equity - self.settings.accounts.initial_equity
             self.cooldowns.evaluate_after_cycle(
                 agent_id,
                 equity=equity,
                 daily_pnl=daily_pnl,
+                weekly_pnl=weekly_pnl,
                 rejection_rate=rejection_rate,
                 api_failures=api_failures,
             )
