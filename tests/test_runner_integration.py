@@ -126,6 +126,28 @@ def test_runner_repairs_rejected_signal(monkeypatch, test_settings) -> None:
     assert runner.repository.response_usage("crypto-deepseek")["requests"] == 2
 
 
+def test_runner_completes_cycle_when_one_agent_call_fails(monkeypatch, test_settings) -> None:
+    monkeypatch.delenv("ARENA_DATABASE_URL", raising=False)
+    test_settings.cloud_dashboard.enabled = False
+    test_settings.resolve_path(test_settings.paths.rulebook).write_text("Paper trading only.", encoding="utf-8")
+    monkeypatch.setattr(runner_module, "get_market_state", lambda settings: market_state())
+
+    def fake_run(self, prompt: str, timeout_seconds: int = 600) -> str:
+        if self.settings.id == "crypto-grok":
+            raise RuntimeError("GatewayClientRequestError: billing error")
+        return '{"agent":"crypto-deepseek","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"stand aside","invalidation":"setup improves","counterargument":"could miss move","data_used":["market_state"]}'
+
+    monkeypatch.setattr(runner_module.OpenClawAgent, "run", fake_run)
+
+    runner = CompetitionRunner(test_settings)
+    runner.run_once()
+
+    checkpoint = runner.repository.latest_checkpoint()
+    assert checkpoint is not None
+    assert checkpoint.status == "COMPLETED"
+    assert runner.repository.rejected_signal_count("crypto-grok") == 1
+
+
 def test_position_monitor_auto_closes_between_cycles(monkeypatch, test_settings) -> None:
     monkeypatch.delenv("ARENA_DATABASE_URL", raising=False)
     test_settings.cloud_dashboard.enabled = False

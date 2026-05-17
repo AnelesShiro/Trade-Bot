@@ -98,6 +98,8 @@ def signal_audit_metadata(
 
 def rejection_code(reasons: list[str], signal: AgentSignal | None) -> str:
     text = " ".join(reasons).lower()
+    if "agent_runtime_error" in text or "gatewayclientrequesterror" in text or "billing error" in text or "openclaw exited" in text:
+        return "INTERNAL_ERROR"
     if signal is None:
         if "invalid json" in text or "jsondecode" in text or "json decode" in text:
             return "INVALID_JSON"

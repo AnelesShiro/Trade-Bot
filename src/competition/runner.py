@@ -20,7 +20,7 @@ from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import WorkloadTracker
 from src.config import Settings, load_rulebook, safe_canary, safe_features
 from src.logger import logger
-from src.schemas import Action, AgentSignal, MarketState
+from src.schemas import Action, AgentSignal, MarketState, ValidationResult
 from src.market.data_feed import MarketDataFeed
 from src.storage.models import build_session_factory, create_schema
 from src.storage.repository import ArenaRepository
@@ -334,15 +334,48 @@ class CompetitionRunner:
         if workload:
             workload.database_query("logging", agent_id=agent_id)
         prompt_id = self.repository.save_prompt(agent_id, prompt)
-        signal, validation, raw, signal_record_id = self._run_until_valid_signal(
-            agent_settings=agent_settings,
-            agent_id=agent_id,
-            prompt=prompt,
-            prompt_id=prompt_id,
-            market_state=market_state,
-            summary=summary,
-            workload=workload,
-        )
+        try:
+            signal, validation, raw, signal_record_id = self._run_until_valid_signal(
+                agent_settings=agent_settings,
+                agent_id=agent_id,
+                prompt=prompt,
+                prompt_id=prompt_id,
+                market_state=market_state,
+                summary=summary,
+                workload=workload,
+            )
+        except Exception as error:
+            raw = f"AGENT_RUNTIME_ERROR: {error}"
+            validation = ValidationResult(accepted=False, reasons=[raw])
+            logger.error("agent {} failed without stopping cycle: {}", agent_id, error)
+            self.repository.save_health_check("agent_call", "FAIL", False, f"{agent_id}: {error}"[:1000])
+            signal_record_id = self._save_signal_audit(
+                agent_settings=agent_settings,
+                agent_id=agent_id,
+                signal=None,
+                validation=validation,
+                raw=raw,
+                market_state=market_state,
+                active_prompt=prompt,
+                input_tokens=0,
+                output_tokens=0,
+                estimated_cost=0.0,
+                latency_ms=None,
+            )
+            if workload:
+                workload.database_query("logging", agent_id=agent_id)
+                workload.local_function("outputs", "append_signal_output", agent_id=agent_id)
+            self._append_signal_output(agent_id, raw, False, validation.reasons)
+            self._record_signal_execution(
+                signal_record_id,
+                {
+                    "executed": False,
+                    "reason": "agent_runtime_error",
+                    "decision": "AGENT_RUNTIME_ERROR",
+                    "action": "NONE",
+                },
+            )
+            return
         if self._is_warmup_cycle():
             logger.info("warm-up mode active; skipping paper execution for {}", agent_id)
             self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")

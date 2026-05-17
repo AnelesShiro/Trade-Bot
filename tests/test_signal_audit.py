@@ -69,3 +69,4 @@ def test_rejection_code_mapping() -> None:
     assert rejection_code(["leverage must be <= 10x"], signal=object()) == "LEVERAGE_LIMIT_EXCEEDED"
     assert rejection_code(["max simultaneous open positions reached"], signal=object()) == "POSITION_LIMIT_EXCEEDED"
     assert rejection_code(["parse/schema error: no JSON object found"], signal=None) == "PARSE_ERROR"
+    assert rejection_code(["AGENT_RUNTIME_ERROR: GatewayClientRequestError: billing error"], signal=None) == "INTERNAL_ERROR"
