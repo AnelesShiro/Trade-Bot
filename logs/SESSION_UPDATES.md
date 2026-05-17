@@ -211,3 +211,21 @@ Entry template:
   - Documentation-only change; no code tests required.
 - Notes / follow-ups:
   - Keep `PROJECT_BOOTSTRAP.md` short. Move long details to `PROJECT_CONTEXT.md` or `logs/SESSION_UPDATES.md`.
+
+## 2026-05-17 22:35 Asia/Bangkok - Added Automatic Codex Startup Instructions
+
+- User request: Make new sessions read project context automatically instead of requiring the user to ask.
+- What changed:
+  - Added repo-level `AGENTS.md` with mandatory Codex startup instructions.
+  - Added parent workspace `AGENTS.md` pointing to `crypto-paper-trading-arena/PROJECT_BOOTSTRAP.md` so sessions that start from `d:\Project\OpenClaw` still know what to read first.
+  - Updated `PROJECT_BOOTSTRAP.md` and `PROJECT_CONTEXT.md` to mention the automatic startup instruction flow.
+- Files touched:
+  - `AGENTS.md`
+  - `PROJECT_BOOTSTRAP.md`
+  - `PROJECT_CONTEXT.md`
+  - `logs/SESSION_UPDATES.md`
+  - `..\AGENTS.md` outside the repo, for workspace-level startup discovery.
+- Verification:
+  - Documentation/instruction change only; no code tests required.
+- Notes / follow-ups:
+  - The repo-level `AGENTS.md` is committed. The parent workspace `AGENTS.md` is outside this git repo and exists locally for Codex startup discovery.

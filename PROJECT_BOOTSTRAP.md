@@ -1,6 +1,6 @@
 # Project Bootstrap
 
-Read this file first in every new Codex session. It is the low-token entry point; read `PROJECT_CONTEXT.md` only when deeper architecture/context is needed, then read the latest entries at the bottom of `logs/SESSION_UPDATES.md`.
+Read this file first in every new Codex session. `AGENTS.md` in this repo and in the parent workspace instruct Codex to do this proactively so the user should not need to ask. This is the low-token entry point; read `PROJECT_CONTEXT.md` only when deeper architecture/context is needed, then read the latest entries at the bottom of `logs/SESSION_UPDATES.md`.
 
 ## Current State
 

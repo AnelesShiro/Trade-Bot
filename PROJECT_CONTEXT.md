@@ -3,6 +3,7 @@
 ## Quick Context For New Sessions
 
 - Lowest-token entry point: read `PROJECT_BOOTSTRAP.md` first.
+- Startup automation: `AGENTS.md` instructs Codex sessions to read `PROJECT_BOOTSTRAP.md` proactively without waiting for the user to ask.
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
@@ -281,6 +282,7 @@
 # Prompt Conventions
 
 - Standard instructions when modifying the project:
+  - Follow `AGENTS.md` startup instructions automatically when a new Codex session opens this project/workspace.
   - Read `PROJECT_BOOTSTRAP.md` first for the shortest current-state briefing.
   - Read `PROJECT_CONTEXT.md` next only when deeper architecture, constraints, or conventions are needed.
   - Read the last 2-4 entries of `logs/SESSION_UPDATES.md` after `PROJECT_CONTEXT.md` to catch recent decisions without wasting tokens.
