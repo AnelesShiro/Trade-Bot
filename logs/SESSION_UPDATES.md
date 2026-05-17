@@ -229,3 +229,30 @@ Entry template:
   - Documentation/instruction change only; no code tests required.
 - Notes / follow-ups:
   - The repo-level `AGENTS.md` is committed. The parent workspace `AGENTS.md` is outside this git repo and exists locally for Codex startup discovery.
+
+## 2026-05-17 22:40 Asia/Bangkok - Verified New Qwen Standard Global API Key
+
+- User request: Test a new Qwen3 Max API key against `https://dashscope-intl.aliyuncs.com/compatible-mode/v1` and confirm it works.
+- Finding:
+  - Direct DashScope OpenAI-compatible test passed for model `qwen3-max-2026-01-23`; provider returned the exact same model and a minimal `OK` response.
+  - Initial OpenClaw smoke still failed with HTTP 401 even though the key was valid directly.
+  - Root cause: OpenClaw `qwen` needed to use the Standard Global DashScope endpoint. The key is a Standard Global key, not a Coding Plan endpoint credential.
+- What changed:
+  - Updated local `.env` with the new `QWEN_API_KEY` value. `.env` remains untracked and must not be committed.
+  - Configured OpenClaw local provider config for `qwen` with base URL `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
+  - Set `config/settings.yaml` Qwen `LLM_BASE_URL` to that Standard Global DashScope URL.
+  - Updated `src.cli init` so it syncs configured `LLM_BASE_URL` values into OpenClaw `models.providers`, preventing future init runs from losing the Qwen endpoint override.
+  - Updated `PROJECT_BOOTSTRAP.md` and `PROJECT_CONTEXT.md` to mark Qwen provider auth/base URL routing as resolved.
+- Verification:
+  - Direct provider request -> passed, actual model `qwen3-max-2026-01-23`.
+  - `openclaw agent --agent crypto-qwen --session-id crypto-qwen-smoke-baseurl --message "Return exactly OK." --timeout 120` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli init` -> completed with locked DeepSeek/Qwen models.
+  - `openclaw agent --agent crypto-qwen --session-id crypto-qwen-smoke-init-sync --message "Return exactly OK." --timeout 120` -> passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\cli.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_base_agent.py tests/test_runner_integration.py tests/test_workload.py -q` -> 13 passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 49 passed.
+- Notes / follow-ups:
+  - Do not log or commit the Qwen key.
+  - The live runner has not been restarted in this task; the next live call should use the fixed OpenClaw Qwen endpoint after gateway restart/init.

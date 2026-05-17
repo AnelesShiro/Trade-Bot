@@ -35,8 +35,9 @@ def init() -> None:
     create_schema(settings.database_url)
     runner = CompetitionRunner(settings)
     _sync_openclaw_agent_registry(settings)
+    synced_base_urls = _sync_openclaw_provider_base_urls(settings)
     synced_auth = _sync_openclaw_auth_from_env()
-    if synced_auth:
+    if synced_auth or synced_base_urls:
         _restart_openclaw_gateway()
     for relative in [settings.paths.signals, settings.paths.ledger, settings.paths.evaluation]:
         path = settings.resolve_path(relative)
@@ -472,6 +473,55 @@ def _sync_openclaw_auth_from_env() -> bool:
         (agent_dir / "auth-state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
         wrote_any = True
     return wrote_any
+
+
+def _sync_openclaw_provider_base_urls(settings) -> bool:
+    """Sync configured provider base URLs into OpenClaw's provider config.
+
+    OpenClaw's agent registry stores the locked provider/model route, while
+    custom endpoints such as Qwen Standard Global live under models.providers.
+    """
+    provider_updates: dict[str, dict[str, Any]] = {}
+    for agent in settings.agents:
+        base_url = agent.llm.LLM_BASE_URL.strip()
+        if not base_url:
+            continue
+        provider = agent.llm.LLM_PROVIDER.strip()
+        model = agent.llm.LLM_MODEL.strip()
+        if not provider or not model:
+            continue
+        provider_updates[provider] = {
+            "baseUrl": base_url,
+            "api": "openai-completions",
+            "models": [{"id": model, "name": model}],
+        }
+    if not provider_updates:
+        return False
+
+    config_path = Path.home() / ".openclaw" / "openclaw.json"
+    if config_path.exists():
+        try:
+            payload = json.loads(config_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            return False
+    else:
+        payload = {}
+
+    models = payload.setdefault("models", {})
+    models["mode"] = "merge"
+    providers = models.setdefault("providers", {})
+    changed = False
+    for provider, update in provider_updates.items():
+        current = providers.get(provider)
+        if current != update:
+            providers[provider] = update
+            changed = True
+    if not changed:
+        return False
+
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    config_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    return True
 
 
 def _sync_openclaw_agent_registry(settings) -> None:

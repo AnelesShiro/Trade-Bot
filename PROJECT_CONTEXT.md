@@ -7,11 +7,11 @@
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
-- Latest verified live cycle: cycle `46` completed. DeepSeek succeeded; Qwen failed non-fatally because the supplied Qwen credential is rejected by the provider (`Provider qwen has auth issue`).
-- Qwen model routing and OpenClaw agent registration are fixed. Remaining Qwen blocker is provider auth/key validity, not project config, agent id, or model routing.
+- Latest verified live cycle: cycle `46` completed. DeepSeek succeeded; Qwen was later verified with a new Standard Global DashScope key.
+- Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
-- `python -m src.cli init` syncs DB agents, OpenClaw agent registry, and OpenClaw auth profiles from `.env`.
+- `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
 - Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
 - Use `.venv\Scripts\python.exe` for validation and tests.
 

@@ -9,9 +9,9 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Legacy `crypto-grok` data remains in SQLite for history/audit only. Do not merge it into Qwen.
 - Latest verified live cycle: `46` completed.
 - DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
-- Qwen routing/registration works, but Qwen provider auth currently fails: `Provider qwen has auth issue`.
+- Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
-- Remaining blocker for Qwen: replace/repair `QWEN_API_KEY`, then run init and smoke test.
+- Qwen base URL source of truth: `LLM_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 
 ## Operating Rules
 
@@ -35,7 +35,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Config source of truth: `config/settings.yaml` agent `llm` blocks.
 - `LLM_ALLOW_FALLBACK` must remain `false`.
 - Runtime calls do not use per-request `--model`; this OpenClaw Gateway rejects model overrides.
-- `python -m src.cli init` registers OpenClaw agents with provider/model routing.
+- `python -m src.cli init` registers OpenClaw agents with provider/model routing and syncs configured `LLM_BASE_URL` into OpenClaw `models.providers`.
 - After each OpenClaw call, code verifies actual response model equals `LLM_MODEL`.
 
 ## Fast Checks
