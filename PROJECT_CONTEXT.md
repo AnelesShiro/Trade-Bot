@@ -1,5 +1,18 @@
 # Project Overview
 
+## Quick Context For New Sessions
+
+- Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
+- Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
+- Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
+- Latest verified live cycle: cycle `46` completed. DeepSeek succeeded; Qwen failed non-fatally because the supplied Qwen credential is rejected by the provider (`Provider qwen has auth issue`).
+- Qwen model routing and OpenClaw agent registration are fixed. Remaining Qwen blocker is provider auth/key validity, not project config, agent id, or model routing.
+- Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
+- `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
+- `python -m src.cli init` syncs DB agents, OpenClaw agent registry, and OpenClaw auth profiles from `.env`.
+- Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
+- Use `.venv\Scripts\python.exe` for validation and tests.
+
 - Project name: `crypto-paper-trading-arena`
 - Purpose: Production-oriented paper trading competition platform for two OpenClaw AI agents trading BTCUSDT perpetual futures in paper mode only.
 - Core features:
@@ -188,7 +201,7 @@
   - Snapshot contract validation.
   - Accepted and rejected signal history support in snapshots.
   - Workload attribution across Local Machine, DeepSeek, and the active challenger slot. The DB columns still use legacy `grok_*` names, but `crypto-qwen` maps into that second-agent workload slot.
-  - Strict model governance: OpenClaw requests pass `--model <LLM_MODEL>`, verify actual response model, and fail on mismatch.
+  - Strict model governance: OpenClaw agents are registered with the locked provider/model pair, runtime responses verify actual model, and mismatches fail.
 - Bugs fixed:
   - Dashboard timestamp was shown in UTC; changed to local Asia/Bangkok display where relevant.
   - Initial OKX-style dashboard attempt regressed layout; direction corrected to additive chart only.
@@ -208,7 +221,7 @@
 # Known Issues
 
 - Current problems:
-  - `.env` must contain `QWEN_API_KEY` before the live runner can call `crypto-qwen`.
+  - `crypto-qwen` currently fails provider auth with `Provider qwen has auth issue`. The project config and OpenClaw agent registration are fixed; replace/repair the Qwen provider credential before expecting Qwen signals.
   - Cloud dashboard can become stale if the local runner is offline, Git sync fails, or Render deployment lags.
   - Runtime output files may be modified continuously by live runner.
 - Edge cases:
@@ -225,7 +238,7 @@
 # Pending Tasks
 
 - High priority:
-  - Add `QWEN_API_KEY` to local `.env` and run `python -m src.cli init` before live Qwen calls.
+  - Replace/repair the Qwen provider credential, then run `.\.venv\Scripts\python.exe -m src.cli init` and a small Qwen smoke call.
   - Keep checking dashboard snapshot contract after schema changes.
   - Ensure accepted/rejected signal tabs keep using recent signal lists, not only latest signal.
   - Validate live runner after restarts with `run-live --resume`.
@@ -267,8 +280,8 @@
 # Prompt Conventions
 
 - Standard instructions when modifying the project:
-  - Read `PROJECT_CONTEXT.md` first.
-  - Read `logs/SESSION_UPDATES.md` after `PROJECT_CONTEXT.md` to catch recent conversation history and decisions.
+  - Read `PROJECT_CONTEXT.md` first, especially `Quick Context For New Sessions`.
+  - Read the last 2-4 entries of `logs/SESSION_UPDATES.md` after `PROJECT_CONTEXT.md` to catch recent decisions without wasting tokens.
   - Prefer minimal, precise, production-ready changes.
   - Preserve existing UI/UX, architecture, and performance characteristics unless explicitly requested.
   - Verify behavior with focused tests.
@@ -334,6 +347,7 @@
   - `python -m src.cli init` registers each OpenClaw agent with the configured provider/model pair.
   - Runtime calls use the locked OpenClaw agent model because this Gateway rejects per-request model overrides.
   - Actual provider response model must match `LLM_MODEL`.
+  - `LLM_MODEL` should be the exact provider response model id, not necessarily the OpenClaw registry's provider-qualified `provider/model` string.
   - If a provider redirects to a different model, the request fails with: `Configured model '<LLM_MODEL>' is unavailable. Automatic model switching is disabled.`
   - `LLM_ALLOW_FALLBACK` must remain `false`.
 - Stop-loss cooldown scope:
@@ -444,13 +458,14 @@
 
 # Session Continuation Prompt
 
-Read `PROJECT_CONTEXT.md` and `logs/SESSION_UPDATES.md`; treat them together as the complete project memory and source of truth. Continue development without changing existing UI/UX, architecture, or performance characteristics unless explicitly requested. Append meaningful session updates back to `logs/SESSION_UPDATES.md`.
+Read `PROJECT_CONTEXT.md`, starting with `Quick Context For New Sessions`, then read the latest entries at the bottom of `logs/SESSION_UPDATES.md`; treat them together as the complete project memory and source of truth. Continue development without changing existing UI/UX, architecture, or performance characteristics unless explicitly requested. Append meaningful session updates back to `logs/SESSION_UPDATES.md`.
 
 Reusable prompt for future Codex sessions:
 
 ```text
 Read PROJECT_CONTEXT.md first.
-Then read logs/SESSION_UPDATES.md for recent chat/update history.
+Start with the Quick Context For New Sessions section.
+Then read only the latest relevant entries at the bottom of logs/SESSION_UPDATES.md unless deeper history is needed.
 If additional details are needed, read the full shared ChatGPT conversation:
 <PASTE_SHARED_LINK_HERE>
 

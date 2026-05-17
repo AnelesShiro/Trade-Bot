@@ -177,3 +177,21 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m pytest tests/test_base_agent.py tests/test_runner_integration.py tests/test_workload.py -q` -> 13 passed.
   - `.\.venv\Scripts\python.exe -m pytest -q` -> 49 passed.
   - Live cycle 46 checkpoint: `COMPLETED`.
+
+## 2026-05-17 22:15 Asia/Bangkok - Optimized Project Memory For Low-Token Session Handoff
+
+- User request: Record the latest discussion/work and update `PROJECT_CONTEXT.md` plus `logs/SESSION_UPDATES.md` so new sessions can understand project context quickly with minimal token cost.
+- What changed:
+  - Added `Quick Context For New Sessions` near the top of `PROJECT_CONTEXT.md`.
+  - Clarified that the Windows live runner often appears as `.venv` parent + base Python child and that this is one runner process tree, not necessarily duplicate cycles.
+  - Updated model-lock documentation in `PROJECT_CONTEXT.md`: OpenClaw registry carries provider/model routing; runtime calls do not use `--model`; responses are still verified against exact `LLM_MODEL`.
+  - Recorded current operational truth: cycle 46 completed; DeepSeek succeeded; Qwen registration/model routing are fixed; Qwen remains blocked by provider auth/key rejection.
+  - Updated future-session reading protocol: read `PROJECT_CONTEXT.md` quick context first, then only the latest relevant entries from the bottom of this file unless deeper history is needed.
+- Files touched:
+  - `PROJECT_CONTEXT.md`
+  - `logs/SESSION_UPDATES.md`
+- Verification:
+  - Documentation-only change; no code tests required.
+- Notes / follow-ups:
+  - Do not log or commit provider API keys.
+  - Next technical blocker is replacing/repairing the Qwen provider credential, then running `.\.venv\Scripts\python.exe -m src.cli init` and a Qwen smoke call.
