@@ -2,6 +2,7 @@
 
 ## Quick Context For New Sessions
 
+- Lowest-token entry point: read `PROJECT_BOOTSTRAP.md` first.
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
@@ -280,7 +281,8 @@
 # Prompt Conventions
 
 - Standard instructions when modifying the project:
-  - Read `PROJECT_CONTEXT.md` first, especially `Quick Context For New Sessions`.
+  - Read `PROJECT_BOOTSTRAP.md` first for the shortest current-state briefing.
+  - Read `PROJECT_CONTEXT.md` next only when deeper architecture, constraints, or conventions are needed.
   - Read the last 2-4 entries of `logs/SESSION_UPDATES.md` after `PROJECT_CONTEXT.md` to catch recent decisions without wasting tokens.
   - Prefer minimal, precise, production-ready changes.
   - Preserve existing UI/UX, architecture, and performance characteristics unless explicitly requested.
@@ -458,18 +460,18 @@
 
 # Session Continuation Prompt
 
-Read `PROJECT_CONTEXT.md`, starting with `Quick Context For New Sessions`, then read the latest entries at the bottom of `logs/SESSION_UPDATES.md`; treat them together as the complete project memory and source of truth. Continue development without changing existing UI/UX, architecture, or performance characteristics unless explicitly requested. Append meaningful session updates back to `logs/SESSION_UPDATES.md`.
+Read `PROJECT_BOOTSTRAP.md` first. If more context is needed, read `PROJECT_CONTEXT.md`, starting with `Quick Context For New Sessions`, then read the latest entries at the bottom of `logs/SESSION_UPDATES.md`; treat them together as the complete project memory and source of truth. Continue development without changing existing UI/UX, architecture, or performance characteristics unless explicitly requested. Append meaningful session updates back to `logs/SESSION_UPDATES.md`.
 
 Reusable prompt for future Codex sessions:
 
 ```text
-Read PROJECT_CONTEXT.md first.
-Start with the Quick Context For New Sessions section.
+Read PROJECT_BOOTSTRAP.md first.
+If more context is needed, read PROJECT_CONTEXT.md starting with the Quick Context For New Sessions section.
 Then read only the latest relevant entries at the bottom of logs/SESSION_UPDATES.md unless deeper history is needed.
 If additional details are needed, read the full shared ChatGPT conversation:
 <PASTE_SHARED_LINK_HERE>
 
-Treat PROJECT_CONTEXT.md, logs/SESSION_UPDATES.md, and the shared conversation as the source of truth.
+Treat PROJECT_BOOTSTRAP.md, PROJECT_CONTEXT.md, logs/SESSION_UPDATES.md, and the shared conversation as the source of truth.
 Continue development without changing existing UI/UX unless explicitly requested.
 Focus on minimal, precise, production-ready changes only.
 At the end of every meaningful task, append a concise update to logs/SESSION_UPDATES.md.

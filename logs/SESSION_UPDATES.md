@@ -195,3 +195,19 @@ Entry template:
 - Notes / follow-ups:
   - Do not log or commit provider API keys.
   - Next technical blocker is replacing/repairing the Qwen provider credential, then running `.\.venv\Scripts\python.exe -m src.cli init` and a Qwen smoke call.
+
+## 2026-05-17 22:25 Asia/Bangkok - Added Ultra-Short Bootstrap Context
+
+- User request: Ensure every new session can understand project context as quickly as possible with minimal token use.
+- What changed:
+  - Added `PROJECT_BOOTSTRAP.md` as the first file future sessions should read.
+  - Kept `PROJECT_BOOTSTRAP.md` intentionally compact: current state, active agents, known Qwen auth blocker, live-runner process note, model governance, fast checks, and what to read next.
+  - Updated `PROJECT_CONTEXT.md` continuation protocol to point new sessions to `PROJECT_BOOTSTRAP.md` before the full context file.
+- Files touched:
+  - `PROJECT_BOOTSTRAP.md`
+  - `PROJECT_CONTEXT.md`
+  - `logs/SESSION_UPDATES.md`
+- Verification:
+  - Documentation-only change; no code tests required.
+- Notes / follow-ups:
+  - Keep `PROJECT_BOOTSTRAP.md` short. Move long details to `PROJECT_CONTEXT.md` or `logs/SESSION_UPDATES.md`.
