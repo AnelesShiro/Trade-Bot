@@ -11,7 +11,7 @@ Each agent must define:
 ```yaml
 llm:
   LLM_PROVIDER: qwen
-  LLM_MODEL: qwen/qwen3-max-2026-01-23
+  LLM_MODEL: qwen3-max-2026-01-23
   LLM_BASE_URL: ""
   LLM_API_KEY: QWEN_API_KEY
   LLM_ALLOW_FALLBACK: false
@@ -25,7 +25,8 @@ llm:
 
 For every request, the runner:
 
-- Sends OpenClaw the exact configured model with `--model <LLM_MODEL>`.
+- Ensures `python -m src.cli init` registers the OpenClaw agent with the configured provider/model pair.
+- Calls the locked OpenClaw agent without fallback or alternate model selection.
 - Reads the recorded OpenClaw response model from the session file.
 - Fails the request if the actual response model differs from `LLM_MODEL`.
 - Logs configured model, actual model, token estimate, and estimated cost.

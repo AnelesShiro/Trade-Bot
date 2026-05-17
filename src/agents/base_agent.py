@@ -58,8 +58,6 @@ class OpenClawAgent:
             self.settings.id,
             "--session-id",
             self.settings.session_id,
-            "--model",
-            self.settings.model,
             "--message",
             prompt,
         ]

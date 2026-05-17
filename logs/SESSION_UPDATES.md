@@ -153,3 +153,27 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> failed only on critical missing `QWEN_API_KEY`; database, market data, rulebook, prompts, dashboard import, directories, disk, and dependencies passed.
   - After dashboard active-agent filter: `.\.venv\Scripts\python.exe -m py_compile src/dashboard/app.py` -> passed; `.\.venv\Scripts\python.exe -m pytest tests/test_runner_integration.py tests/test_workload.py -q` -> 6 passed.
   - Final full regression: `.\.venv\Scripts\python.exe -m pytest -q` -> 49 passed.
+
+## 2026-05-17 22:05 Asia/Bangkok - Clarified Runner Process Pair and Fixed OpenClaw Registry Flow
+
+- User request: Explain why there appeared to be a "double cycle" and use the safer operational path.
+- Finding: The two visible `run-live --resume` process rows are a Windows `.venv\Scripts\python.exe` parent process plus a Python base-interpreter child process. This is one live runner process tree, not two independent competition loops.
+- Operational action: Stopped stale runner process tree and restarted one fresh live runner from `.venv`.
+- Issue found during restart: `run-live --resume` immediately runs one cycle on process start. Cycle 45 completed after restart. It did not duplicate an existing checkpoint.
+- Issue found in cycle 45:
+  - DeepSeek failed because OpenClaw Gateway rejected per-request `--model` overrides.
+  - Qwen failed because `crypto-qwen` existed on disk but was not registered in `openclaw agents list`.
+- Fix:
+  - Registered `crypto-qwen` with `openclaw agents add crypto-qwen --model qwen/qwen3-max-2026-01-23`.
+  - Removed per-request `--model` override from `OpenClawAgent`; model governance now relies on OpenClaw agent registry plus post-response strict actual-model verification.
+  - Updated `python -m src.cli init` to register missing OpenClaw agents from `config/settings.yaml`.
+  - Set `LLM_MODEL` back to exact provider response ids: `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
+- Current operational state:
+  - DeepSeek smoke passed with configured/actual model `deepseek-v4-flash`.
+  - Qwen model routing works, but provider auth fails with `Provider qwen has auth issue`, meaning the supplied Qwen key is invalid/expired or not accepted by the provider account.
+  - Cycle 46 completed: DeepSeek succeeded, Qwen failed non-fatally, checkpoint and snapshot were written.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_base_agent.py tests/test_runner_integration.py tests/test_workload.py -q` -> 13 passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 49 passed.
+  - Live cycle 46 checkpoint: `COMPLETED`.

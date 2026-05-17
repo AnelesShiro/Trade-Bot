@@ -42,7 +42,7 @@ def test_settings(tmp_path) -> Settings:
                 session_id="crypto-qwen",
                 llm=LlmLockSettings(
                     LLM_PROVIDER="qwen",
-                    LLM_MODEL="qwen/qwen3-max-2026-01-23",
+                    LLM_MODEL="qwen3-max-2026-01-23",
                     LLM_ALLOW_FALLBACK=False,
                 ),
             ),

@@ -331,7 +331,8 @@
 - Provider failure isolation:
   - If Qwen, legacy Grok/xAI, or DeepSeek provider fails, the runner should continue the cycle lifecycle and record the failure.
 - Strict model locking:
-  - Every OpenClaw request must send exactly the configured `LLM_MODEL`.
+  - `python -m src.cli init` registers each OpenClaw agent with the configured provider/model pair.
+  - Runtime calls use the locked OpenClaw agent model because this Gateway rejects per-request model overrides.
   - Actual provider response model must match `LLM_MODEL`.
   - If a provider redirects to a different model, the request fails with: `Configured model '<LLM_MODEL>' is unavailable. Automatic model switching is disabled.`
   - `LLM_ALLOW_FALLBACK` must remain `false`.

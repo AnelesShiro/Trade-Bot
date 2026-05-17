@@ -34,6 +34,7 @@ def init() -> None:
     setup_logging(settings.resolve_path(settings.paths.logs_dir))
     create_schema(settings.database_url)
     runner = CompetitionRunner(settings)
+    _sync_openclaw_agent_registry(settings)
     synced_auth = _sync_openclaw_auth_from_env()
     if synced_auth:
         _restart_openclaw_gateway()
@@ -471,6 +472,39 @@ def _sync_openclaw_auth_from_env() -> bool:
         (agent_dir / "auth-state.json").write_text(json.dumps(state, indent=2), encoding="utf-8")
         wrote_any = True
     return wrote_any
+
+
+def _sync_openclaw_agent_registry(settings) -> None:
+    """Ensure OpenClaw knows every configured competition agent.
+
+    The Gateway rejects per-request model overrides for this caller, so the
+    OpenClaw agent registry must carry the locked model id before live runs.
+    """
+    binary = os.getenv("OPENCLAW_BIN", "openclaw")
+    existing = subprocess.run([binary, "agents", "list"], capture_output=True, text=True, check=False)
+    listed = existing.stdout or ""
+    for agent in settings.agents:
+        if f"- {agent.id}" in listed:
+            continue
+        openclaw_model = agent.model if "/" in agent.model else f"{agent.provider}/{agent.model}"
+        subprocess.run(
+            [
+                binary,
+                "agents",
+                "add",
+                agent.id,
+                "--model",
+                openclaw_model,
+                "--workspace",
+                str(Path.home() / ".openclaw" / "workspaces" / agent.id),
+                "--agent-dir",
+                str(Path.home() / ".openclaw" / "agents" / agent.id / "agent"),
+                "--non-interactive",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
 
 
 def _restart_openclaw_gateway() -> None:

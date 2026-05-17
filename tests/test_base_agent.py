@@ -60,7 +60,6 @@ def test_openclaw_agent_decodes_output_with_replacement(monkeypatch, tmp_path) -
     assert agent.run("prompt", max_retries=1) == "ok"
     assert seen_kwargs["encoding"] == "utf-8"
     assert seen_kwargs["errors"] == "replace"
-    assert "--model" in seen_kwargs["args"] if "args" in seen_kwargs else True
 
 
 def test_openclaw_agent_reports_retry_count(monkeypatch, tmp_path) -> None:
@@ -87,7 +86,7 @@ def test_openclaw_agent_reports_retry_count(monkeypatch, tmp_path) -> None:
     assert result.actual_model == "grok-test"
 
 
-def test_openclaw_agent_sends_exact_configured_model(monkeypatch, tmp_path) -> None:
+def test_openclaw_agent_does_not_use_gateway_model_override(monkeypatch, tmp_path) -> None:
     seen_command = {}
 
     def fake_run(*args, **kwargs):
@@ -100,7 +99,7 @@ def test_openclaw_agent_sends_exact_configured_model(monkeypatch, tmp_path) -> N
     agent = make_agent(model="exact-model")
 
     assert agent.run("prompt", max_retries=1) == "ok"
-    assert seen_command["command"][seen_command["command"].index("--model") + 1] == "exact-model"
+    assert "--model" not in seen_command["command"]
 
 
 def test_openclaw_agent_model_mismatch_throws(monkeypatch, tmp_path) -> None:

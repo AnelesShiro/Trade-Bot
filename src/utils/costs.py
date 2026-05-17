@@ -3,6 +3,7 @@ from __future__ import annotations
 
 MODEL_PRICES_PER_MILLION: dict[str, tuple[float, float]] = {
     "deepseek-v4-flash": (0.14, 0.28),
+    "deepseek/deepseek-v4-flash": (0.14, 0.28),
     "qwen/qwen3-max-2026-01-23": (0.78, 3.90),
     "qwen3-max-2026-01-23": (0.78, 3.90),
 }
