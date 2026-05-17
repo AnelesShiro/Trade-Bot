@@ -256,3 +256,25 @@ Entry template:
 - Notes / follow-ups:
   - Do not log or commit the Qwen key.
   - The live runner has not been restarted in this task; the next live call should use the fixed OpenClaw Qwen endpoint after gateway restart/init.
+
+## 2026-05-17 22:45 Asia/Bangkok - Competition Health Check After Qwen Fix
+
+- User request: Check whether the competition is still OK, identify current cycle, confirm Grok is ignored, confirm DeepSeek still competes normally, host the local dashboard, and push code.
+- Findings:
+  - Active config agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains in DB history only.
+  - Latest checkpoint is cycle `46` with status `COMPLETED` at `2026-05-17 15:02:39 UTC`; the next scheduled decision cycle is cycle `47`.
+  - Live runner is active as one Windows process tree: `.venv\Scripts\python.exe` parent plus base Python child.
+  - Local dashboard is already hosted on port `8501` and responds HTTP `200`.
+  - DeepSeek health smoke passed with `OK`; DeepSeek is still competing normally.
+  - Qwen health smoke passed with `OK`; the fixed Qwen endpoint/key path is ready for the next cycle.
+  - Active open position: `crypto-deepseek` short `DS-SHORT-003`, entry `77979.401`, SL `78200`, TP1 `77000`, TP2 `76500`.
+  - Legacy `crypto-grok` has no open position and is not part of active config.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> passed all critical checks.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 49 passed.
+  - `openclaw agent --agent crypto-deepseek --session-id crypto-deepseek-health-check --message "Return exactly OK." --timeout 120` -> passed.
+  - `openclaw agent --agent crypto-qwen --session-id crypto-qwen-health-check --message "Return exactly OK." --timeout 120` -> passed.
+- Notes / follow-ups:
+  - Recent `api_requests` still show Qwen auth failure on cycle 46 because that cycle happened before the endpoint fix. Health smoke after the fix is successful.
+  - `outputs/EVALUATION.md`, `outputs/LEDGER.csv`, and `outputs/SIGNALS.md` remain dirty runtime files and were intentionally not committed.
