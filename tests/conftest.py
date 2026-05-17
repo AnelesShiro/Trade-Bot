@@ -4,7 +4,7 @@ from collections.abc import Iterator
 
 import pytest
 
-from src.config import AgentSettings, CloudDashboardSettings, CompetitionSettings, MarketSettings, PathSettings, RiskSettings, Settings, AccountSettings
+from src.config import AgentSettings, CloudDashboardSettings, CompetitionSettings, LlmLockSettings, MarketSettings, PathSettings, RiskSettings, Settings, AccountSettings
 from src.storage.models import create_schema, build_session_factory
 from src.storage.repository import ArenaRepository
 
@@ -29,14 +29,22 @@ def test_settings(tmp_path) -> Settings:
             AgentSettings(
                 id="crypto-deepseek",
                 name="Crypto DeepSeek",
-                model="deepseek/deepseek-v4-flash",
                 session_id="crypto-deepseek",
+                llm=LlmLockSettings(
+                    LLM_PROVIDER="deepseek",
+                    LLM_MODEL="deepseek-v4-flash",
+                    LLM_ALLOW_FALLBACK=False,
+                ),
             ),
             AgentSettings(
-                id="crypto-grok",
-                name="Crypto Grok",
-                model="xai/grok-4-1-fast",
-                session_id="crypto-grok",
+                id="crypto-qwen",
+                name="Crypto Qwen",
+                session_id="crypto-qwen",
+                llm=LlmLockSettings(
+                    LLM_PROVIDER="qwen",
+                    LLM_MODEL="qwen/qwen3-max-2026-01-23",
+                    LLM_ALLOW_FALLBACK=False,
+                ),
             ),
         ],
         paths=PathSettings(

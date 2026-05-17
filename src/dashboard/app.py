@@ -57,6 +57,9 @@ initial_equity = float(settings.accounts.initial_equity)
 agent_ids = [agent.id for agent in settings.agents]
 agent_names = {agent.id: agent.name for agent in settings.agents}
 agent_models = {agent.id: agent.model for agent in settings.agents}
+challenger_agent_id = agent_ids[1] if len(agent_ids) > 1 else (agent_ids[0] if agent_ids else "")
+challenger_label = agent_names.get(challenger_agent_id, "Challenger")
+challenger_short_label = challenger_label.replace("Crypto ", "") or "Challenger"
 
 CSS = """
 <style>
@@ -913,6 +916,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
             "Raw Model Outputs",
             "Memory & Reflections",
             "Token & Cost",
+            "API Cost Audit",
             "Workload Attribution",
             "Strategy Diversity",
             "Configuration",
@@ -1063,19 +1067,23 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         st.json(snapshot.get("api_costs", {}))
 
     with tabs[10]:
+        st.subheader("API Cost Audit")
+        st.info("Request-level API audit is available on the local dashboard after `api_requests` rows are recorded in SQLite.")
+
+    with tabs[11]:
         st.subheader("Workload Attribution")
         latest = workload.get("latest") or {}
         kpis = st.columns(5)
         kpis[0].metric("Local Machine", f"{float(workload.get('local_pct') or 0):.1f}%")
         kpis[1].metric("DeepSeek", f"{float(workload.get('deepseek_pct') or 0):.1f}%")
-        kpis[2].metric("Grok", f"{float(workload.get('grok_pct') or 0):.1f}%")
+        kpis[2].metric(challenger_short_label, f"{float(workload.get('grok_pct') or 0):.1f}%")
         kpis[3].metric("Total API Cost", f"${spent:.4f}")
         kpis[4].metric("Profit / $ API", f"{float(metric_frame['profit_per_api_dollar'].mean()) if not metric_frame.empty else 0.0:.2f}")
         st.dataframe(workload_cycles, width="stretch", hide_index=True) if not workload_cycles.empty else st.info("No workload cycles recorded in snapshot.")
         if latest:
             st.json(latest)
 
-    with tabs[11]:
+    with tabs[12]:
         st.subheader("Strategy Diversity")
         if diversity:
             cols = st.columns(5)
@@ -1088,7 +1096,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         else:
             st.info("No diversity metrics yet.")
 
-    with tabs[12]:
+    with tabs[13]:
         st.subheader("Configuration")
         st.markdown("#### Deployment & Versions")
         render_deployment_panel(snapshot.get("deployment", {}))
@@ -1294,6 +1302,7 @@ diversity_metrics = read_table("diversity_metrics", str(db_path))
 lesson_promotions = read_table("lesson_promotions", str(db_path))
 workload_cycles = read_table("workload_cycles", str(db_path))
 workload_components = read_table("workload_components", str(db_path))
+api_requests = read_table("api_requests", str(db_path))
 health_checks = read_table("health_checks", str(db_path))
 benchmarks = read_table("benchmarks", str(db_path))
 prompt_versions = read_table("prompt_versions", str(db_path))
@@ -1302,6 +1311,10 @@ control_commands = read_table("control_commands", str(db_path))
 checkpoints = read_table("checkpoints", str(db_path))
 downtime_events = read_table("downtime_events", str(db_path))
 ledger = read_csv(str(ledger_path))
+for frame_name in ["prompts", "tool_calls", "responses", "signals", "positions", "trades", "reflections", "lessons"]:
+    frame = globals()[frame_name]
+    if not frame.empty and "agent_id" in frame.columns:
+        globals()[frame_name] = frame[frame["agent_id"].isin(agent_ids)].copy()
 signals_md = read_text(str(signals_path))
 evaluation_md = read_text(str(evaluation_path))
 rulebook_md = read_text(str(rulebook_path))
@@ -1388,6 +1401,7 @@ tabs = st.tabs(
         "Raw Model Outputs",
         "Memory & Reflections",
         "Token & Cost",
+        "API Cost Audit",
         "Workload Attribution",
         "Strategy Diversity",
         "Configuration",
@@ -1594,6 +1608,137 @@ with tabs[9]:
         st.dataframe(per_trade, width="stretch", hide_index=True)
 
 with tabs[10]:
+    st.subheader("API Cost Audit")
+    if api_requests.empty:
+        st.info("No request-level API audit rows recorded yet. New rows will appear after the next agent call.")
+    else:
+        audit = api_requests.copy()
+        if selected_agents and "agent_name" in audit.columns:
+            audit = audit[audit["agent_name"].isin(selected_agents)]
+        for column in [
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "reasoning_tokens",
+            "server_tool_calls",
+            "server_tool_cost_usd",
+            "token_cost_usd",
+            "total_cost_usd",
+            "latency_ms",
+            "retry_count",
+            "prompt_characters",
+            "response_characters",
+            "memory_size_characters",
+            "private_lessons_count",
+            "shared_lessons_count",
+            "recent_trades_included",
+            "reflection_characters",
+            "local_tool_invocation_count",
+            "cost_delta_usd",
+        ]:
+            if column in audit.columns:
+                audit[column] = pd.to_numeric(audit[column], errors="coerce").fillna(0)
+        summary = audit.groupby("agent_name", as_index=False).agg(
+            requests=("id", "count"),
+            total_cost_usd=("total_cost_usd", "sum"),
+            avg_prompt_tokens=("prompt_tokens", "mean"),
+            avg_completion_tokens=("completion_tokens", "mean"),
+            max_request_cost_usd=("total_cost_usd", "max"),
+            retries=("retry_count", "sum"),
+            avg_prompt_characters=("prompt_characters", "mean"),
+        )
+        cols = st.columns(5)
+        cols[0].metric("Audit Rows", f"{len(audit):,}")
+        cols[1].metric("Total Cost", f"${float(audit['total_cost_usd'].sum()):.4f}")
+        challenger_mask = (
+            audit["agent_name"].astype(str).eq(challenger_agent_id)
+            | audit["agent_name"].astype(str).str.contains("qwen|grok", case=False, na=False)
+        )
+        cols[2].metric(f"{challenger_short_label} Cost", f"${float(audit[challenger_mask]['total_cost_usd'].sum()):.4f}")
+        cols[3].metric("Retries", f"{int(audit['retry_count'].sum())}")
+        cols[4].metric("Anomalies", f"{int(audit['anomaly_flags_json'].astype(str).ne('[]').sum())}" if "anomaly_flags_json" in audit.columns else "0")
+
+        st.markdown("#### Agent comparison")
+        st.dataframe(summary, width="stretch", hide_index=True)
+
+        diagnosis = []
+        grok_rows = audit[challenger_mask]
+        deepseek_rows = audit[audit["agent_name"].astype(str).str.contains("deepseek", case=False, na=False)]
+        grok_cost = float(grok_rows["total_cost_usd"].sum()) if not grok_rows.empty else 0.0
+        deepseek_cost = float(deepseek_rows["total_cost_usd"].sum()) if not deepseek_rows.empty else 0.0
+        if deepseek_cost and grok_cost > deepseek_cost * 3:
+            diagnosis.append(f"{challenger_short_label} audit cost is {grok_cost / deepseek_cost:.1f}x DeepSeek.")
+        if not grok_rows.empty and "anomaly_flags_json" in grok_rows.columns:
+            grok_flags = " ".join(grok_rows["anomaly_flags_json"].astype(str).tolist())
+            if "prompt_size_gt_2x_previous" in grok_flags:
+                diagnosis.append(f"{challenger_short_label} prompt size more than doubled between adjacent requests.")
+            if "tokens_gt_3x_previous" in grok_flags:
+                diagnosis.append(f"{challenger_short_label} token count exceeded 3x its previous request.")
+            if "cost_gt_3x_previous" in grok_flags:
+                diagnosis.append(f"{challenger_short_label} request cost exceeded 3x its previous request.")
+            if "retry_count_gt_0" in grok_flags:
+                diagnosis.append(f"{challenger_short_label} had retries, which can multiply provider-side spend.")
+            if "server_tool_cost_gt_0" in grok_flags:
+                diagnosis.append(f"{challenger_short_label} has recorded server-side tool cost.")
+        if not diagnosis:
+            diagnosis.append("No local audit anomaly has been recorded yet; compare provider billing for hidden reasoning or server-side charges.")
+        st.markdown("#### Root cause diagnosis")
+        for item in diagnosis:
+            st.write(f"- {item}")
+
+        timeline = audit.sort_values("timestamp") if "timestamp" in audit.columns else audit
+        st.plotly_chart(px.line(timeline, x="timestamp", y="total_cost_usd", color="agent_name", markers=True, title="Cost spike timeline", template="plotly_dark"), width="stretch")
+        st.plotly_chart(px.line(timeline, x="timestamp", y="prompt_characters", color="agent_name", markers=True, title="Prompt size timeline", template="plotly_dark"), width="stretch")
+
+        retry_stats = audit.groupby(["agent_name", "request_type"], as_index=False).agg(requests=("id", "count"), retries=("retry_count", "sum"), avg_latency_ms=("latency_ms", "mean"))
+        st.markdown("#### Retry statistics")
+        st.dataframe(retry_stats, width="stretch", hide_index=True)
+
+        st.markdown("#### Top most expensive requests")
+        display_cols = [
+            "timestamp",
+            "cycle_number",
+            "agent_name",
+            "model_name",
+            "actual_model_name",
+            "request_type",
+            "prompt_tokens",
+            "completion_tokens",
+            "total_tokens",
+            "total_cost_usd",
+            "retry_count",
+            "prompt_characters",
+            "response_characters",
+            "private_lessons_count",
+            "shared_lessons_count",
+            "recent_trades_included",
+            "local_tool_invocation_count",
+            "anomaly_flags_json",
+            "error_message",
+        ]
+        st.dataframe(audit.sort_values("total_cost_usd", ascending=False)[[column for column in display_cols if column in audit.columns]].head(50), width="stretch", hide_index=True)
+
+        st.markdown("#### Cost breakdown by component")
+        breakdown_rows = []
+        if "cost_breakdown_json" in audit.columns:
+            for _, row in audit.iterrows():
+                payload = safe_json(row.get("cost_breakdown_json"), {})
+                if isinstance(payload, dict):
+                    for key, value in payload.items():
+                        breakdown_rows.append({"agent_name": row.get("agent_name"), "component": key, "cost_usd": float(value or 0)})
+        if breakdown_rows:
+            breakdown = pd.DataFrame(breakdown_rows)
+            breakdown_summary = breakdown.groupby(["agent_name", "component"], as_index=False)["cost_usd"].sum().sort_values("cost_usd", ascending=False)
+            st.dataframe(breakdown_summary, width="stretch", hide_index=True)
+            st.plotly_chart(px.bar(breakdown_summary, x="component", y="cost_usd", color="agent_name", barmode="group", title="Cost breakdown by component", template="plotly_dark"), width="stretch")
+        else:
+            st.info("No component cost breakdown rows yet.")
+
+        st.markdown("#### Per-request table")
+        st.dataframe(audit[[column for column in display_cols + ["prompt_hash", "response_hash"] if column in audit.columns]].sort_values("timestamp", ascending=False), width="stretch", hide_index=True)
+        download_frame("Download API request audit CSV", audit, "api_requests.csv")
+
+with tabs[11]:
     st.subheader("Workload Attribution")
     if workload_cycles.empty:
         st.info("No workload cycles recorded yet. Run `python -m src.cli run-once` or `python -m src.cli analyze-workload` after a cycle.")
@@ -1607,21 +1752,21 @@ with tabs[10]:
         kpis = st.columns(5)
         kpis[0].metric("Local Machine", f"{float(latest['local_workload_pct']):.1f}%")
         kpis[1].metric("DeepSeek", f"{float(latest['deepseek_workload_pct']):.1f}%")
-        kpis[2].metric("Grok", f"{float(latest['grok_workload_pct']):.1f}%")
+        kpis[2].metric(challenger_short_label, f"{float(latest['grok_workload_pct']):.1f}%")
         kpis[3].metric("Total API Cost", f"${total_api_cost:.4f}")
         kpis[4].metric("Profit / $ API", f"{profit_per_cost:.2f}")
         st.info(
             "The local machine is currently performing "
             f"{float(latest['local_workload_pct']):.1f}% of the total workload. "
             f"DeepSeek contributes {float(latest['deepseek_workload_pct']):.1f}% and "
-            f"Grok contributes {float(latest['grok_workload_pct']):.1f}%."
+            f"{challenger_short_label} contributes {float(latest['grok_workload_pct']):.1f}%."
         )
 
         split = pd.DataFrame(
             [
                 {"component": "Local Machine", "workload_pct": float(latest["local_workload_pct"])},
                 {"component": "DeepSeek", "workload_pct": float(latest["deepseek_workload_pct"])},
-                {"component": "Grok", "workload_pct": float(latest["grok_workload_pct"])},
+                {"component": challenger_short_label, "workload_pct": float(latest["grok_workload_pct"])},
             ]
         )
         chart_cols = st.columns(2)
@@ -1633,11 +1778,27 @@ with tabs[10]:
             var_name="component",
             value_name="workload_pct",
         )
+        trend_long["component"] = trend_long["component"].replace(
+            {
+                "local_workload_pct": "Local Machine",
+                "deepseek_workload_pct": "DeepSeek",
+                "grok_workload_pct": challenger_short_label,
+            }
+        )
         chart_cols[1].plotly_chart(px.line(trend_long, x="timestamp", y="workload_pct", color="component", markers=True, title="Historical workload percentages", template="plotly_dark"), width="stretch")
 
         token_trend = trend[["timestamp", "deepseek_tokens", "grok_tokens"]].melt(id_vars=["timestamp"], var_name="agent", value_name="tokens")
         latency_trend = trend[["timestamp", "local_wall_time_seconds", "deepseek_latency_seconds", "grok_latency_seconds"]].melt(id_vars=["timestamp"], var_name="component", value_name="seconds")
         cost_trend = trend[["timestamp", "deepseek_cost_usd", "grok_cost_usd"]].melt(id_vars=["timestamp"], var_name="agent", value_name="cost_usd")
+        token_trend["agent"] = token_trend["agent"].replace({"deepseek_tokens": "DeepSeek", "grok_tokens": challenger_short_label})
+        latency_trend["component"] = latency_trend["component"].replace(
+            {
+                "local_wall_time_seconds": "Local Machine",
+                "deepseek_latency_seconds": "DeepSeek",
+                "grok_latency_seconds": challenger_short_label,
+            }
+        )
+        cost_trend["agent"] = cost_trend["agent"].replace({"deepseek_cost_usd": "DeepSeek", "grok_cost_usd": challenger_short_label})
         st.plotly_chart(px.bar(token_trend, x="timestamp", y="tokens", color="agent", barmode="group", title="Token usage trends", template="plotly_dark"), width="stretch")
         st.plotly_chart(px.line(latency_trend, x="timestamp", y="seconds", color="component", markers=True, title="Latency trends", template="plotly_dark"), width="stretch")
         st.plotly_chart(px.line(cost_trend, x="timestamp", y="cost_usd", color="agent", markers=True, title="API cost trends", template="plotly_dark"), width="stretch")
@@ -1672,7 +1833,7 @@ with tabs[10]:
             st.dataframe(expensive, width="stretch", hide_index=True)
             download_frame("Download workload components CSV", components, "workload_components.csv")
 
-with tabs[11]:
+with tabs[12]:
     st.subheader("Strategy Diversity")
     if diversity_metrics.empty:
         st.info("No diversity metrics yet. Run `python -m src.cli analyze-diversity` or a competition cycle.")
@@ -1726,7 +1887,7 @@ with tabs[11]:
     else:
         st.dataframe(lesson_promotions.sort_values("created_at", ascending=False).head(200), width="stretch", hide_index=True)
 
-with tabs[12]:
+with tabs[13]:
     st.subheader("Configuration")
     st.markdown("#### Deployment & Versions")
     render_deployment_panel(deployment_state)

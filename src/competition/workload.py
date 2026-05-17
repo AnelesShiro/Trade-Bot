@@ -11,6 +11,7 @@ from src.storage.repository import ArenaRepository
 AGENT_ALIASES = {
     "crypto-deepseek": "deepseek",
     "crypto-grok": "grok",
+    "crypto-qwen": "grok",
 }
 
 
@@ -247,4 +248,8 @@ def _decision_share(
 
 
 def _agent_key(agent_id: str) -> str:
-    return AGENT_ALIASES.get(agent_id, "deepseek" if "deepseek" in agent_id else "grok" if "grok" in agent_id else agent_id)
+    lowered = agent_id.lower()
+    return AGENT_ALIASES.get(
+        agent_id,
+        "deepseek" if "deepseek" in lowered else "grok" if "grok" in lowered or "qwen" in lowered else agent_id,
+    )

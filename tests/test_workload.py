@@ -29,8 +29,8 @@ def test_workload_tracker_persists_summary(repository) -> None:
     tracker.memory_retrieval()
     tracker.agent_latency("crypto-deepseek", 0.1)
     tracker.agent_tokens("crypto-deepseek", 100, 50, 0.01)
-    tracker.agent_latency("crypto-grok", 0.2)
-    tracker.agent_tokens("crypto-grok", 120, 60, 0.02)
+    tracker.agent_latency("crypto-qwen", 0.2)
+    tracker.agent_tokens("crypto-qwen", 120, 60, 0.02)
     cycle, components = tracker.finalize()
 
     repository.save_workload_cycle(cycle, components)

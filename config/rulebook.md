@@ -2,8 +2,10 @@
 
 This arena compares two OpenClaw crypto agents:
 
-- `crypto-deepseek` using `deepseek/deepseek-v4-flash`
-- `crypto-grok` using `xai/grok-4-1-fast`
+- `crypto-deepseek`
+- `crypto-qwen`
+
+The exact provider/model for each agent is locked in `config/settings.yaml` under the agent `llm` block.
 
 ---
 
@@ -46,7 +48,7 @@ This arena compares two OpenClaw crypto agents:
 Run both agents from the same market state and as close together in time as possible.
 
 1. Ask `crypto-deepseek` for a signal.
-2. Ask `crypto-grok` for a signal.
+2. Ask `crypto-qwen` for a signal.
 3. Paste both raw outputs into `SIGNALS.md`.
 4. Accept only signals that follow this rulebook.
 5. Record accepted paper trades in `LEDGER.csv`.

@@ -1,0 +1,61 @@
+# Model Governance
+
+This project uses strict model locking for every OpenClaw agent request.
+
+## Source of Truth
+
+The only source of truth for agent LLM configuration is `config/settings.yaml`.
+
+Each agent must define:
+
+```yaml
+llm:
+  LLM_PROVIDER: qwen
+  LLM_MODEL: qwen/qwen3-max-2026-01-23
+  LLM_BASE_URL: ""
+  LLM_API_KEY: QWEN_API_KEY
+  LLM_ALLOW_FALLBACK: false
+```
+
+`LLM_MODEL` must be the exact model id returned by the provider response. Aliases such as `auto`, `default`, `latest`, or `best` are rejected at startup.
+
+`LLM_ALLOW_FALLBACK` must remain `false`. Startup validation fails if fallback is enabled.
+
+## Runtime Enforcement
+
+For every request, the runner:
+
+- Sends OpenClaw the exact configured model with `--model <LLM_MODEL>`.
+- Reads the recorded OpenClaw response model from the session file.
+- Fails the request if the actual response model differs from `LLM_MODEL`.
+- Logs configured model, actual model, token estimate, and estimated cost.
+
+If a provider redirects a retired model to a newer model, the request fails with:
+
+```text
+Configured model '<LLM_MODEL>' is unavailable. Automatic model switching is disabled.
+```
+
+The competition runner treats this as an agent provider failure and continues the rest of the cycle according to the existing non-fatal provider failure policy.
+
+## Changing Models Intentionally
+
+To change a model intentionally:
+
+1. Edit only `config/settings.yaml`.
+2. Update the target agent's `llm.LLM_MODEL` to the exact provider/model id.
+3. Confirm `llm.LLM_ALLOW_FALLBACK: false`.
+4. Run:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.cli validate-update
+.\.venv\Scripts\python.exe -m pytest tests/test_base_agent.py -q
+```
+
+5. Restart or queue a safe config reload according to the normal live update process.
+
+Do not change prompts, rulebook, dashboard UI, or strategy logic just to change a model.
+
+## Why This Exists
+
+The Grok/xAI credit spike was caused by a provider-side model redirect from a retired `grok-4-1-fast` slug to a higher-priced model while OpenClaw kept a persistent session history. Strict model locking prevents silent redirects from being accepted as normal successful requests.

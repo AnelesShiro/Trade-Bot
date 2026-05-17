@@ -13,6 +13,7 @@ from src.config import AgentSettings
 from src.schemas import AgentSignal, ValidationResult
 from src.storage.models import (
     AgentRecord,
+    ApiRequestRecord,
     BenchmarkRecord,
     CheckpointRecord,
     CompetitionResultRecord,
@@ -94,6 +95,88 @@ class ArenaRepository:
                     estimated_cost_usd=estimated_cost_usd,
                 )
             )
+
+    def save_api_request(self, payload: dict[str, Any]) -> int | None:
+        with self.session_factory() as session, session.begin():
+            previous = session.scalars(
+                select(ApiRequestRecord)
+                .where(ApiRequestRecord.agent_name == str(payload["agent_name"]))
+                .order_by(ApiRequestRecord.timestamp.desc(), ApiRequestRecord.id.desc())
+                .limit(1)
+            ).first()
+            prompt_chars = int(payload.get("prompt_characters") or 0)
+            response_chars = int(payload.get("response_characters") or 0)
+            total_tokens = int(payload.get("total_tokens") or 0)
+            total_cost = float(payload.get("total_cost_usd") or 0.0)
+            flags: list[str] = []
+            prompt_ratio = None
+            response_ratio = None
+            cost_delta = None
+            if previous:
+                if previous.prompt_characters:
+                    prompt_ratio = prompt_chars / previous.prompt_characters
+                if previous.response_characters:
+                    response_ratio = response_chars / previous.response_characters
+                cost_delta = total_cost - float(previous.total_cost_usd or 0.0)
+                if previous.total_cost_usd and total_cost > float(previous.total_cost_usd) * 3:
+                    flags.append("cost_gt_3x_previous")
+                if previous.total_tokens and total_tokens > int(previous.total_tokens) * 3:
+                    flags.append("tokens_gt_3x_previous")
+                if previous.prompt_characters and prompt_chars > int(previous.prompt_characters) * 2:
+                    flags.append("prompt_size_gt_2x_previous")
+            if int(payload.get("retry_count") or 0) > 0:
+                flags.append("retry_count_gt_0")
+            if float(payload.get("server_tool_cost_usd") or 0.0) > 0:
+                flags.append("server_tool_cost_gt_0")
+            record = ApiRequestRecord(
+                timestamp=payload.get("timestamp") or datetime.now(UTC),
+                cycle_number=payload.get("cycle_number"),
+                agent_name=str(payload["agent_name"]),
+                model_name=str(payload.get("model_name") or ""),
+                actual_model_name=payload.get("actual_model_name"),
+                request_type=str(payload.get("request_type") or "unknown"),
+                prompt_tokens=int(payload.get("prompt_tokens") or 0),
+                completion_tokens=int(payload.get("completion_tokens") or 0),
+                total_tokens=total_tokens,
+                reasoning_tokens=int(payload.get("reasoning_tokens") or 0),
+                server_tool_calls=int(payload.get("server_tool_calls") or 0),
+                server_tool_cost_usd=float(payload.get("server_tool_cost_usd") or 0.0),
+                token_cost_usd=float(payload.get("token_cost_usd") or 0.0),
+                total_cost_usd=total_cost,
+                latency_ms=int(payload.get("latency_ms") or 0),
+                retry_count=int(payload.get("retry_count") or 0),
+                prompt_characters=prompt_chars,
+                response_characters=response_chars,
+                prompt_hash=str(payload.get("prompt_hash") or ""),
+                response_hash=str(payload.get("response_hash") or ""),
+                prompt_version=payload.get("prompt_version"),
+                rulebook_version=payload.get("rulebook_version"),
+                config_version=payload.get("config_version"),
+                success=int(bool(payload.get("success", True))),
+                error_message=payload.get("error_message"),
+                prompt_size_ratio=prompt_ratio,
+                response_size_ratio=response_ratio,
+                memory_size_characters=int(payload.get("memory_size_characters") or 0),
+                private_lessons_count=int(payload.get("private_lessons_count") or 0),
+                shared_lessons_count=int(payload.get("shared_lessons_count") or 0),
+                recent_trades_included=int(payload.get("recent_trades_included") or 0),
+                reflection_characters=int(payload.get("reflection_characters") or 0),
+                local_tool_invocation_count=int(payload.get("local_tool_invocation_count") or 0),
+                cost_delta_usd=cost_delta,
+                anomaly_flags_json=json.dumps(flags),
+                cost_breakdown_json=json.dumps(payload.get("cost_breakdown") or {}, default=str),
+            )
+            session.add(record)
+            session.flush()
+            return int(record.id)
+
+    def api_requests(self, limit: int = 1000, agent_name: str | None = None) -> list[ApiRequestRecord]:
+        with self.session_factory() as session:
+            stmt = select(ApiRequestRecord).order_by(ApiRequestRecord.timestamp.desc(), ApiRequestRecord.id.desc())
+            if agent_name:
+                stmt = stmt.where(ApiRequestRecord.agent_name == agent_name)
+            stmt = stmt.limit(limit)
+            return list(session.scalars(stmt))
 
     def save_signal(
         self,

@@ -10,23 +10,23 @@
       "roi_pct": 0.9114333228151371,
       "unrealized_pnl": 0.0
     },
-    "crypto-grok": {
-      "daily_pnl": -54.61701754845655,
-      "equity": 9843.813564882657,
-      "open_margin": 984.0,
-      "open_positions": 1,
-      "open_risk": 22.39729995855971,
-      "realized_pnl": -157.81294138046405,
-      "roi_pct": -1.5618643511734263,
-      "unrealized_pnl": 1.6265062631216585
+    "crypto-qwen": {
+      "daily_pnl": 0.0,
+      "equity": 10000.0,
+      "open_margin": 0.0,
+      "open_positions": 0,
+      "open_risk": 0.0,
+      "realized_pnl": 0.0,
+      "roi_pct": 0.0,
+      "unrealized_pnl": 0.0
     }
   },
   "api_costs": {
     "by_agent": {
       "crypto-deepseek": 0.029225140000000004,
-      "crypto-grok": 0.0331687
+      "crypto-qwen": 0.0
     },
-    "total": 0.062393840000000006
+    "total": 0.029225140000000004
   },
   "btc_price": 78040.5,
   "competition": {
@@ -40,17 +40,17 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-17T08:58:51.008688Z",
     "active_versions_file": {
-      "code_version": "370e37218f22",
-      "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
+      "code_version": "d76e35b421e6",
+      "config_version": "56476eaa57301a9d9d18ce3a8ca7c398f3cfda2ee4a4828396fdf5e25a8b92df",
       "rulebook": {
-        "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
+        "hash": "2867c744ff118675156d3bb8e5afbbc42abe47b8570515b5666a02dcdc0f87dc",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-17T08:58:50.844342Z"
+      "updated_at": "2026-05-17T09:42:37.921133Z"
     },
     "canary": {
       "enabled": false,
@@ -77,24 +77,24 @@
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "370e37218f22",
-      "config_version": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
+      "code_version": "d76e35b421e6",
+      "config_version": "56476eaa57301a9d9d18ce3a8ca7c398f3cfda2ee4a4828396fdf5e25a8b92df",
       "rulebook": {
-        "hash": "b91430d9a19b1a8c129c3b421b5df1df3159462fb8ed4bd375e50fb445ec8f65",
+        "hash": "2867c744ff118675156d3bb8e5afbbc42abe47b8570515b5666a02dcdc0f87dc",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
         "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-17T08:58:51.232934Z"
+      "updated_at": "2026-05-17T09:42:37.990514Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-17T08:58:50.068057Z"
+        "timestamp": "2026-05-17T09:42:36.847032Z"
       },
       {
         "drawdown": -0.0005,
@@ -118,37 +118,17 @@
       },
       {
         "drawdown": -0.0011820040039024152,
-        "timestamp": "2026-05-17T08:58:51.068057Z"
+        "timestamp": "2026-05-17T09:42:37.847032Z"
       }
     ],
-    "crypto-grok": [
+    "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-17T08:58:50.068057Z"
+        "timestamp": "2026-05-17T09:42:36.847032Z"
       },
       {
-        "drawdown": -0.0005,
-        "timestamp": "2026-05-15T17:31:33.617469Z"
-      },
-      {
-        "drawdown": -0.009661941756888517,
-        "timestamp": "2026-05-16T06:43:39.450587Z"
-      },
-      {
-        "drawdown": -0.010156941756888591,
-        "timestamp": "2026-05-16T16:01:34.981090Z"
-      },
-      {
-        "drawdown": -0.015289294138046352,
-        "timestamp": "2026-05-17T00:58:52.926006Z"
-      },
-      {
-        "drawdown": -0.01578129413804636,
-        "timestamp": "2026-05-17T03:53:22.646997Z"
-      },
-      {
-        "drawdown": -0.015618643511734262,
-        "timestamp": "2026-05-17T08:58:51.068057Z"
+        "drawdown": 0.0,
+        "timestamp": "2026-05-17T09:42:37.847032Z"
       }
     ]
   },
@@ -156,7 +136,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-17T08:58:50.068057Z"
+        "timestamp": "2026-05-17T09:42:36.847032Z"
       },
       {
         "equity": 9995.0,
@@ -180,41 +160,21 @@
       },
       {
         "equity": 10091.143332281514,
-        "timestamp": "2026-05-17T08:58:51.068057Z"
+        "timestamp": "2026-05-17T09:42:37.847032Z"
       }
     ],
-    "crypto-grok": [
+    "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-17T08:58:50.068057Z"
+        "timestamp": "2026-05-17T09:42:36.847032Z"
       },
       {
-        "equity": 9995.0,
-        "timestamp": "2026-05-15T17:31:33.617469Z"
-      },
-      {
-        "equity": 9903.380582431115,
-        "timestamp": "2026-05-16T06:43:39.450587Z"
-      },
-      {
-        "equity": 9898.430582431114,
-        "timestamp": "2026-05-16T16:01:34.981090Z"
-      },
-      {
-        "equity": 9847.107058619536,
-        "timestamp": "2026-05-17T00:58:52.926006Z"
-      },
-      {
-        "equity": 9842.187058619536,
-        "timestamp": "2026-05-17T03:53:22.646997Z"
-      },
-      {
-        "equity": 9843.813564882657,
-        "timestamp": "2026-05-17T08:58:51.068057Z"
+        "equity": 10000.0,
+        "timestamp": "2026-05-17T09:42:37.847032Z"
       }
     ]
   },
-  "generated_at": "2026-05-17T08:58:51.047951Z",
+  "generated_at": "2026-05-17T09:42:37.820805Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -234,19 +194,19 @@
       "win_rate": 0.4
     },
     {
-      "agent_id": "crypto-grok",
-      "api_cost_usd": 0.0331687,
-      "equity": 9843.813564882657,
-      "max_drawdown_pct": 0.01578129413804636,
+      "agent_id": "crypto-qwen",
+      "api_cost_usd": 0.0,
+      "equity": 10000.0,
+      "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
-      "realized_pnl": -157.81294138046405,
-      "rejected_signals": 13,
-      "rule_compliance": 0.2777777777777778,
-      "score": 0.19621518950168507,
-      "sharpe": -0.9020868376922807,
-      "sortino": -0.9020868376922807,
-      "total_return_pct": -0.015618643511734262,
-      "unrealized_pnl": 1.6265062631216585,
+      "realized_pnl": 0.0,
+      "rejected_signals": 0,
+      "rule_compliance": 1.0,
+      "score": 0.30100000000000005,
+      "sharpe": 0.0,
+      "sortino": 0.0,
+      "total_return_pct": 0.0,
+      "unrealized_pnl": 0.0,
       "win_rate": 0.0
     }
   ],
@@ -2190,46 +2150,8 @@
     "timeframe": "1h",
     "timestamp": "2026-05-17T08:57:23.112486Z"
   },
-  "open_positions": [
-    {
-      "agent_id": "crypto-grok",
-      "average_entry": 78027.6024,
-      "closed_at": null,
-      "dca_count": 0,
-      "direction": "LONG",
-      "id": "3",
-      "leverage": 10.0,
-      "margin": 984.0,
-      "notional": 9840.0,
-      "opened_at": "2026-05-17T03:53:22.642997Z",
-      "realized_pnl": 0.0,
-      "status": "OPEN",
-      "stop_loss": 77850.0,
-      "symbol": "BTC",
-      "take_profit_1": 78300.0,
-      "take_profit_2": 78500.0,
-      "unrealized_pnl": 1.6265062631216585
-    }
-  ],
+  "open_positions": [],
   "recent_trades": [
-    {
-      "action": "OPEN",
-      "agent_id": "crypto-grok",
-      "code_version": "981fc3757f7e",
-      "config_hash": "68fe0ad7cd3dc190a67a5c5c6fe7c77449d82efce5d76c1d9afecd61aecc840b",
-      "config_version_id": 5,
-      "created_at": "2026-05-15T17:31:33.617469Z",
-      "direction": "LONG",
-      "entry": 79371.47112,
-      "exit_price": null,
-      "id": "trade-crypto-grok-69cada11ff",
-      "leverage": 10.0,
-      "margin": 1000.0,
-      "notes": "Mean reversion long on bounce confirmation.; fee=5.0000; slippage_bps=2",
-      "notional": 10000.0,
-      "position_id": "1",
-      "realized_pnl": -5.0
-    },
     {
       "action": "OPEN",
       "agent_id": "crypto-deepseek",
@@ -2247,24 +2169,6 @@
       "notional": 10000.0,
       "position_id": "DS-SHORT-001",
       "realized_pnl": -5.0
-    },
-    {
-      "action": "AUTO_CLOSE",
-      "agent_id": "crypto-grok",
-      "code_version": "0e3c1f0e4a09",
-      "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
-      "config_version_id": 12,
-      "created_at": "2026-05-16T06:43:39.450587Z",
-      "direction": "LONG",
-      "entry": 79371.47112,
-      "exit_price": 78683.96006,
-      "id": "trade-crypto-grok-4012ceb644",
-      "leverage": 10.0,
-      "margin": 1000.0,
-      "notes": "stop_loss; fee=5.0000; slippage_bps=2",
-      "notional": 10000.0,
-      "position_id": "1",
-      "realized_pnl": -91.61941756888584
     },
     {
       "action": "AUTO_REDUCE",
@@ -2304,42 +2208,6 @@
     },
     {
       "action": "OPEN",
-      "agent_id": "crypto-grok",
-      "code_version": "2b90204a0c64",
-      "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
-      "config_version_id": 13,
-      "created_at": "2026-05-16T16:01:34.981090Z",
-      "direction": "LONG",
-      "entry": 78200.637,
-      "exit_price": null,
-      "id": "trade-crypto-grok-382a1a0b2b",
-      "leverage": 10.0,
-      "margin": 990.0,
-      "notes": "New mean reversion long post-cooldown.; fee=4.9500; slippage_bps=2",
-      "notional": 9900.0,
-      "position_id": "2",
-      "realized_pnl": -4.95
-    },
-    {
-      "action": "AUTO_CLOSE",
-      "agent_id": "crypto-grok",
-      "code_version": "2b90204a0c64",
-      "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
-      "config_version_id": 13,
-      "created_at": "2026-05-17T00:58:52.926006Z",
-      "direction": "LONG",
-      "entry": 78200.637,
-      "exit_price": 77834.33002,
-      "id": "trade-crypto-grok-7662609189",
-      "leverage": 10.0,
-      "margin": 990.0,
-      "notes": "stop_loss; fee=4.9500; slippage_bps=2",
-      "notional": 9900.0,
-      "position_id": "2",
-      "realized_pnl": -51.323523811578205
-    },
-    {
-      "action": "OPEN",
       "agent_id": "crypto-deepseek",
       "code_version": "2b90204a0c64",
       "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
@@ -2355,24 +2223,6 @@
       "notional": 10000.0,
       "position_id": "DS-SHORT-002",
       "realized_pnl": -5.0
-    },
-    {
-      "action": "OPEN",
-      "agent_id": "crypto-grok",
-      "code_version": "2b90204a0c64",
-      "config_hash": "f8c2495c29795a192d9727cdc2b912aeeddd7b0e5b5b2714ff0c81140776d5d2",
-      "config_version_id": 13,
-      "created_at": "2026-05-17T03:53:22.646997Z",
-      "direction": "LONG",
-      "entry": 78027.6024,
-      "exit_price": null,
-      "id": "trade-crypto-grok-9b3ad60f43",
-      "leverage": 10.0,
-      "margin": 984.0,
-      "notes": "New mean reversion long post-cooldown.; fee=4.9200; slippage_bps=2",
-      "notional": 9840.0,
-      "position_id": "3",
-      "realized_pnl": -4.92
     },
     {
       "action": "CLOSE",
@@ -6776,7 +6626,7 @@
     "thesis_embedding_similarity": 0.027096703994647173
   },
   "sync": {
-    "generated_at": "2026-05-17T08:58:51.047951Z",
+    "generated_at": "2026-05-17T09:42:37.820805Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
@@ -6792,11 +6642,11 @@
       "output_tokens": 32769.0,
       "requests": 51.0
     },
-    "crypto-grok": {
-      "estimated_cost_usd": 0.0331687,
-      "input_tokens": 132606.0,
-      "output_tokens": 13295.0,
-      "requests": 50.0
+    "crypto-qwen": {
+      "estimated_cost_usd": 0.0,
+      "input_tokens": 0.0,
+      "output_tokens": 0.0,
+      "requests": 0.0
     }
   },
   "trade_history_summary": {
@@ -6808,11 +6658,11 @@
       "win_rate": 0.4,
       "wins": 2
     },
-    "crypto-grok": {
-      "closed_or_fee_events": 5,
-      "losses": 5,
-      "realized_pnl": -157.81294138046405,
-      "trade_count": 5,
+    "crypto-qwen": {
+      "closed_or_fee_events": 0,
+      "losses": 0,
+      "realized_pnl": 0,
+      "trade_count": 0,
       "win_rate": 0.0,
       "wins": 0
     }

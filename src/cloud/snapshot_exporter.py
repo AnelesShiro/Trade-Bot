@@ -38,8 +38,13 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         agent.id: _account_summary(repository, agent.id, settings.accounts.initial_equity, btc_price)
         for agent in settings.agents
     }
-    open_positions = [_position_payload(position, btc_price) for position in repository.open_positions()]
-    recent_trades = [_trade_payload(trade) for trade in repository.trades()[-50:]]
+    active_agent_ids = [agent.id for agent in settings.agents]
+    open_positions = [
+        _position_payload(position, btc_price)
+        for position in repository.open_positions()
+        if position.agent_id in active_agent_ids
+    ]
+    recent_trades = [_trade_payload(trade) for trade in repository.trades() if trade.agent_id in active_agent_ids][-50:]
     trade_history = _trade_history_summary(repository, [agent.id for agent in settings.agents])
     equity_curves = _equity_curves(repository, [agent.id for agent in settings.agents], settings.accounts.initial_equity, btc_price)
     drawdown_curves = _drawdown_curves(equity_curves)

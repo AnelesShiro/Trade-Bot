@@ -14,7 +14,7 @@ Market State + Indicators + Regime + Funding/OI
 Prompt Composer ---- Private Agent Memory
       |                         |
       v                         v
-OpenClaw crypto-deepseek   OpenClaw crypto-grok
+OpenClaw crypto-deepseek   OpenClaw crypto-qwen
       |                         |
       v                         v
 Strict JSON Signal       Strict JSON Signal
@@ -72,12 +72,12 @@ Copy-Item .env.example .env
 OpenClaw agent API keys are normally stored in OpenClaw itself. This project calls:
 
 - `openclaw agent --agent crypto-deepseek ...`
-- `openclaw agent --agent crypto-grok ...`
+- `openclaw agent --agent crypto-qwen ...`
 
-If you set `DEEPSEEK_API_KEY` and `XAI_API_KEY` in `.env`, `python -m src.cli init` writes them into the matching OpenClaw per-agent auth profiles:
+If you set `DEEPSEEK_API_KEY` and `QWEN_API_KEY` in `.env`, `python -m src.cli init` writes them into the matching OpenClaw per-agent auth profiles:
 
 - `crypto-deepseek` -> `deepseek:manual`
-- `crypto-grok` -> `xai:manual`
+- `crypto-qwen` -> `qwen:manual`
 
 If `openclaw` is not in PATH, set:
 
@@ -86,6 +86,8 @@ OPENCLAW_BIN=C:\path\to\openclaw.cmd
 ```
 
 Main settings are in [config/settings.yaml](config/settings.yaml).
+
+Model selection is strictly locked in `config/settings.yaml` under each agent's `llm` block. See [docs/MODEL_GOVERNANCE.md](docs/MODEL_GOVERNANCE.md) before changing providers or models.
 
 ## Run
 
@@ -252,7 +254,7 @@ The Streamlit dashboard shows:
 - estimated token usage and API cost
 - reflections and lessons
 - strategy diversity
-- workload attribution across local code, DeepSeek, and Grok
+- workload attribution across local code, DeepSeek, and Qwen
 
 ## Local Tool Loop
 
@@ -273,7 +275,7 @@ The runner executes approved local tools against the same shared market state, l
 
 The arena records workload metrics for every competition cycle in SQLite tables:
 
-- `workload_cycles`: normalized percentage split for Local Machine, DeepSeek, and Grok
+- `workload_cycles`: normalized percentage split for Local Machine, DeepSeek, and the challenger agent
 - `workload_components`: per-category rows for local tools, validation, database writes, agent latency, token use, cost, reflections, lessons, promotion, and diversity analysis
 
 The local machine normally performs most deterministic work: market data retrieval, indicator calculations, regime detection, local tool execution, vector and SQL retrieval, validation, risk checks, paper execution, database writes, evaluation, lesson promotion, diversity analysis, and dashboard generation. The agents focus on strategic reasoning: reading the prompt, deciding whether to request tools, producing a JSON signal, and generating lessons through reflection.
@@ -287,7 +289,7 @@ The dashboard tab **Workload Attribution** shows:
 - API cost trends
 - per-cycle and per-category breakdowns
 
-The composite workload score is normalized so Local Machine + DeepSeek + Grok always sums to 100%:
+The composite workload score is normalized so Local Machine + DeepSeek + challenger always sums to 100%:
 
 ```text
 workload_score =
@@ -298,7 +300,7 @@ workload_score =
 + 0.05 * lesson_share
 ```
 
-Decision share starts from the architecture prior: local deterministic infrastructure 85%, DeepSeek 7.5%, Grok 7.5%, then adjusts for tool requests and local deterministic work. A healthy run should usually show Local Machine around 80-95%, with agents concentrated in high-value reasoning.
+Decision share starts from the architecture prior: local deterministic infrastructure 85%, DeepSeek 7.5%, challenger 7.5%, then adjusts for tool requests and local deterministic work. A healthy run should usually show Local Machine around 80-95%, with agents concentrated in high-value reasoning.
 
 Use:
 
@@ -412,7 +414,7 @@ The test suite covers PnL, signal parsing, validation, paper execution, tools, r
 OpenClaw call fails:
 
 - Run `openclaw agents list`.
-- Confirm `crypto-deepseek` and `crypto-grok` exist.
+- Confirm `crypto-deepseek` and `crypto-qwen` exist.
 - Confirm their provider auth profiles are configured.
 
 No market data:

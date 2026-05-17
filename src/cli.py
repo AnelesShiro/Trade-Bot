@@ -19,6 +19,7 @@ from src.logger import setup_logging
 from src.storage.models import build_session_factory, create_schema
 from src.storage.repository import ArenaRepository
 from src.agents.shared_learning import SharedLearningManager
+from src.competition.api_cost_audit import summarize_api_costs
 from src.competition.workload import summarize_workload
 from src.operations.preflight import has_critical_failures, run_preflight
 from src.operations.update_manager import LiveUpdateManager, create_versioned_file
@@ -364,10 +365,66 @@ def workload_report(limit: int = 50) -> None:
         "Workload Attribution\n"
         f"- Local Machine: {latest['local_workload_pct']:.1f}%\n"
         f"- DeepSeek: {latest['deepseek_workload_pct']:.1f}%\n"
-        f"- Grok: {latest['grok_workload_pct']:.1f}%\n"
+        f"- Challenger: {latest['grok_workload_pct']:.1f}%\n"
         f"- API cost this cycle: ${latest['api_cost_usd']:.6f}\n"
-        f"- Tokens this cycle: DeepSeek {latest['deepseek_tokens']}, Grok {latest['grok_tokens']}"
+        f"- Tokens this cycle: DeepSeek {latest['deepseek_tokens']}, Challenger {latest['grok_tokens']}"
     )
+
+
+@app.command("audit-api-costs")
+def audit_api_costs(limit: int = 1000) -> None:
+    """Print the raw API request cost audit summary."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    typer.echo(json.dumps(summarize_api_costs(repository, limit=limit), indent=2, default=str))
+
+
+@app.command("analyze-grok-spike")
+def analyze_grok_spike(limit: int = 1000) -> None:
+    """Diagnose legacy Grok/Qwen challenger API cost anomalies from audit rows."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    summary = summarize_api_costs(repository, limit=limit)
+    typer.echo("Challenger Cost Spike Diagnosis")
+    for finding in summary.get("diagnosis", []):
+        typer.echo(f"- {finding}")
+    rows = {
+        key: value
+        for key, value in (summary.get("by_agent") or {}).items()
+        if "grok" in key.lower() or "qwen" in key.lower()
+    }
+    if rows:
+        typer.echo(json.dumps(rows, indent=2, default=str))
+
+
+@app.command("analyze-qwen-spike")
+def analyze_qwen_spike(limit: int = 1000) -> None:
+    """Diagnose Qwen challenger API cost anomalies from recorded request-level audit rows."""
+    analyze_grok_spike(limit=limit)
+
+
+@app.command("compare-agent-costs")
+def compare_agent_costs(limit: int = 1000) -> None:
+    """Compare active agent request counts, tokens, retries, and cost."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    summary = summarize_api_costs(repository, limit=limit)
+    rows = summary.get("by_agent") or {}
+    if not rows:
+        typer.echo("No API request audit rows recorded yet.")
+        return
+    typer.echo("| Agent | Requests | Avg prompt tokens | Avg completion tokens | Avg cost | Max request cost | Retries | Prompt growth |")
+    typer.echo("| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for agent_id, row in rows.items():
+        typer.echo(
+            f"| {agent_id} | {int(row['request_count'])} | "
+            f"{float(row['average_prompt_tokens']):.1f} | {float(row['average_completion_tokens']):.1f} | "
+            f"${float(row['average_total_cost_usd']):.6f} | ${float(row['max_single_request_cost_usd']):.6f} | "
+            f"{int(row['retry_count'])} | {float(row['prompt_growth_ratio']):.2f}x |"
+        )
 
 
 @app.command()
@@ -385,7 +442,7 @@ def _sync_openclaw_auth_from_env() -> bool:
     """
     profiles = [
         ("crypto-deepseek", "deepseek", "deepseek:manual", os.getenv("DEEPSEEK_API_KEY")),
-        ("crypto-grok", "xai", "xai:manual", os.getenv("XAI_API_KEY")),
+        ("crypto-qwen", "qwen", "qwen:manual", os.getenv("QWEN_API_KEY")),
     ]
     wrote_any = False
     for agent_id, provider, profile_id, token in profiles:

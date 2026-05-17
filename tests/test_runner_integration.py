@@ -81,8 +81,8 @@ def test_runner_run_once_with_tool_request(monkeypatch, tmp_path, test_settings)
         calls[self.settings.id] = calls.get(self.settings.id, 0) + 1
         if self.settings.id == "crypto-deepseek" and calls[self.settings.id] == 1:
             return '{"tool_requests":[{"tool":"get_indicators","arguments":{}}]}'
-        if self.settings.id == "crypto-grok":
-            return '{"agent":"crypto-grok","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE"}'
+        if self.settings.id == "crypto-qwen":
+            return '{"agent":"crypto-qwen","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE"}'
         return final_signal(self.settings.id)
 
     monkeypatch.setattr(runner_module.OpenClawAgent, "run", fake_run)
@@ -92,7 +92,7 @@ def test_runner_run_once_with_tool_request(monkeypatch, tmp_path, test_settings)
 
     assert runner.repository.get_position("crypto-deepseek-p1") is not None
     assert runner.repository.response_usage("crypto-deepseek")["requests"] >= 2
-    assert runner.repository.response_usage("crypto-grok")["requests"] >= 1
+    assert runner.repository.response_usage("crypto-qwen")["requests"] >= 1
     assert len(runner.repository.workload_cycles()) == 1
     cycle = runner.repository.workload_cycles()[0]
     assert round(cycle.local_workload_pct + cycle.deepseek_workload_pct + cycle.grok_workload_pct, 6) == 100.0
@@ -114,7 +114,7 @@ def test_runner_repairs_rejected_signal(monkeypatch, test_settings) -> None:
         if self.settings.id == "crypto-deepseek":
             assert "REJECTED" in prompt
             return '{"agent":"crypto-deepseek","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"validation repair fallback","invalidation":"valid setup appears","counterargument":"may miss a move","data_used":["validation_feedback"]}'
-        return '{"agent":"crypto-grok","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"stand aside","invalidation":"setup improves","counterargument":"could miss move","data_used":["market_state"]}'
+        return '{"agent":"crypto-qwen","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"stand aside","invalidation":"setup improves","counterargument":"could miss move","data_used":["market_state"]}'
 
     monkeypatch.setattr(runner_module.OpenClawAgent, "run", fake_run)
 
@@ -133,7 +133,7 @@ def test_runner_completes_cycle_when_one_agent_call_fails(monkeypatch, test_sett
     monkeypatch.setattr(runner_module, "get_market_state", lambda settings: market_state())
 
     def fake_run(self, prompt: str, timeout_seconds: int = 600) -> str:
-        if self.settings.id == "crypto-grok":
+        if self.settings.id == "crypto-qwen":
             raise RuntimeError("GatewayClientRequestError: billing error")
         return '{"agent":"crypto-deepseek","decision":"NO_TRADE","action":"NONE","symbol":"BTC","direction":"NONE","execution_type":"NONE","thesis":"stand aside","invalidation":"setup improves","counterargument":"could miss move","data_used":["market_state"]}'
 
@@ -145,7 +145,7 @@ def test_runner_completes_cycle_when_one_agent_call_fails(monkeypatch, test_sett
     checkpoint = runner.repository.latest_checkpoint()
     assert checkpoint is not None
     assert checkpoint.status == "COMPLETED"
-    assert runner.repository.rejected_signal_count("crypto-grok") == 1
+    assert runner.repository.rejected_signal_count("crypto-qwen") == 1
 
 
 def test_position_monitor_auto_closes_between_cycles(monkeypatch, test_settings) -> None:

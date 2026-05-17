@@ -35,7 +35,7 @@ def test_signal_audit_persists_extended_metadata(repository) -> None:
     validation = ValidationResult(accepted=True)
     metadata = signal_audit_metadata(
         agent_name="Crypto DeepSeek",
-        model_name="deepseek/deepseek-v4-flash",
+        model_name="deepseek-v4-flash",
         cycle_number=12,
         competition_time_pct=0.25,
         market_regime="downtrend_low_vol",

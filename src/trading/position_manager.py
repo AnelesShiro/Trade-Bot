@@ -9,10 +9,17 @@ from src.trading.pnl import calculate_pnl
 
 
 class PositionManager:
-    def __init__(self, repository: ArenaRepository, taker_fee_rate: float = 0.0, slippage_bps: float = 0.0) -> None:
+    def __init__(
+        self,
+        repository: ArenaRepository,
+        taker_fee_rate: float = 0.0,
+        slippage_bps: float = 0.0,
+        active_agent_ids: set[str] | None = None,
+    ) -> None:
         self.repository = repository
         self.taker_fee_rate = taker_fee_rate
         self.slippage_bps = slippage_bps
+        self.active_agent_ids = active_agent_ids
         self.config_version_id: int | None = None
         self.config_hash = ""
         self.code_version = ""
@@ -36,6 +43,8 @@ class PositionManager:
     def update_stops_and_targets(self, current_price: float) -> list[TradeRecord]:
         exit_trades: list[TradeRecord] = []
         for position in self.repository.open_positions():
+            if self.active_agent_ids is not None and position.agent_id not in self.active_agent_ids:
+                continue
             hit_tp1 = (
                 not self.repository.has_trade_note(position.id, "take_profit_1")
                 and (

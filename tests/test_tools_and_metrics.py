@@ -96,7 +96,7 @@ def test_leaderboard_uses_response_cost(repository) -> None:
 
 
 def test_cost_estimator() -> None:
-    input_tokens, output_tokens, cost = estimate_cost_usd("deepseek/deepseek-v4-flash", "a" * 400, "b" * 200)
+    input_tokens, output_tokens, cost = estimate_cost_usd("deepseek-v4-flash", "a" * 400, "b" * 200)
     assert input_tokens == 100
     assert output_tokens == 50
     assert cost > 0

@@ -8,17 +8,43 @@ from typing import Any
 
 import yaml
 from dotenv import load_dotenv
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
+class LlmLockSettings(BaseModel):
+    LLM_PROVIDER: str
+    LLM_MODEL: str
+    LLM_BASE_URL: str = ""
+    LLM_API_KEY: str = ""
+    LLM_ALLOW_FALLBACK: bool = False
+
+    @model_validator(mode="after")
+    def validate_model_lock(self) -> "LlmLockSettings":
+        if not self.LLM_MODEL or not self.LLM_MODEL.strip():
+            raise ValueError("LLM_MODEL is required for strict model locking")
+        if self.LLM_MODEL.strip().lower() in {"auto", "default", "latest", "best"}:
+            raise ValueError("LLM_MODEL must be an exact model id, not an alias")
+        if self.LLM_ALLOW_FALLBACK:
+            raise ValueError("LLM_ALLOW_FALLBACK must be false; automatic model switching is disabled")
+        return self
+
+
 class AgentSettings(BaseModel):
     id: str
     name: str
-    model: str
     session_id: str
+    llm: LlmLockSettings
+
+    @property
+    def model(self) -> str:
+        return self.llm.LLM_MODEL
+
+    @property
+    def provider(self) -> str:
+        return self.llm.LLM_PROVIDER
 
 
 class CompetitionSettings(BaseModel):

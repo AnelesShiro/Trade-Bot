@@ -75,6 +75,14 @@ DEFAULT_PROFILES = {
         aggressiveness="selective",
         confidence_calibration="skeptical",
     ),
+    "crypto-qwen": StrategyProfile(
+        agent_id="crypto-qwen",
+        archetype="mean_reversion",
+        preferred_indicators=["RSI", "Bollinger Bands", "support/resistance"],
+        preferred_regimes=["range", "exhaustion"],
+        aggressiveness="selective",
+        confidence_calibration="skeptical",
+    ),
 }
 
 
@@ -408,4 +416,5 @@ def _empty_diversity(shared_ratio: float) -> dict[str, Any]:
 
 
 def _short_agent(agent_id: str) -> str:
-    return "deepseek" if "deepseek" in agent_id else "grok" if "grok" in agent_id else agent_id.replace("crypto-", "")
+    lowered = agent_id.lower()
+    return "deepseek" if "deepseek" in lowered else "grok" if "grok" in lowered else "qwen" if "qwen" in lowered else agent_id.replace("crypto-", "")

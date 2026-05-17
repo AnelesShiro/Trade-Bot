@@ -4,6 +4,7 @@ import json
 from datetime import UTC, datetime, timedelta, timezone
 
 from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, create_engine, text
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship, sessionmaker
 
 
@@ -51,6 +52,48 @@ class ResponseRecord(Base):
     input_tokens: Mapped[int] = mapped_column(Integer, default=0)
     output_tokens: Mapped[int] = mapped_column(Integer, default=0)
     estimated_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+
+
+class ApiRequestRecord(Base):
+    __tablename__ = "api_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    timestamp: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
+    cycle_number: Mapped[int | None] = mapped_column(Integer, nullable=True, index=True)
+    agent_name: Mapped[str] = mapped_column(String, index=True)
+    model_name: Mapped[str] = mapped_column(String)
+    actual_model_name: Mapped[str | None] = mapped_column(String, nullable=True)
+    request_type: Mapped[str] = mapped_column(String)
+    prompt_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    completion_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    total_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    reasoning_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    server_tool_calls: Mapped[int] = mapped_column(Integer, default=0)
+    server_tool_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    token_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    total_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    latency_ms: Mapped[int] = mapped_column(Integer, default=0)
+    retry_count: Mapped[int] = mapped_column(Integer, default=0)
+    prompt_characters: Mapped[int] = mapped_column(Integer, default=0)
+    response_characters: Mapped[int] = mapped_column(Integer, default=0)
+    prompt_hash: Mapped[str] = mapped_column(String)
+    response_hash: Mapped[str] = mapped_column(String)
+    prompt_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    rulebook_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    config_version: Mapped[str | None] = mapped_column(String, nullable=True)
+    success: Mapped[int] = mapped_column(Integer, default=1)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    prompt_size_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    response_size_ratio: Mapped[float | None] = mapped_column(Float, nullable=True)
+    memory_size_characters: Mapped[int] = mapped_column(Integer, default=0)
+    private_lessons_count: Mapped[int] = mapped_column(Integer, default=0)
+    shared_lessons_count: Mapped[int] = mapped_column(Integer, default=0)
+    recent_trades_included: Mapped[int] = mapped_column(Integer, default=0)
+    reflection_characters: Mapped[int] = mapped_column(Integer, default=0)
+    local_tool_invocation_count: Mapped[int] = mapped_column(Integer, default=0)
+    cost_delta_usd: Mapped[float | None] = mapped_column(Float, nullable=True)
+    anomaly_flags_json: Mapped[str] = mapped_column(Text, default="[]")
+    cost_breakdown_json: Mapped[str] = mapped_column(Text, default="{}")
 
 
 class SignalRecord(Base):
@@ -375,7 +418,11 @@ def build_session_factory(database_url: str):
 
 def create_schema(database_url: str) -> None:
     engine = build_engine(database_url)
-    Base.metadata.create_all(engine)
+    try:
+        Base.metadata.create_all(engine)
+    except OperationalError as error:
+        if "already exists" not in str(error).lower():
+            raise
     if database_url.startswith("sqlite"):
         _migrate_sqlite(engine)
 
@@ -438,6 +485,28 @@ def _migrate_sqlite(engine) -> None:
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_cycle_number ON signals(cycle_number)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_agent_name ON signals(agent_name)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_signals_signal_status ON signals(signal_status)"))
+        api_rows = connection.execute(text("PRAGMA table_info(api_requests)")).mappings().all()
+        api_columns = {row["name"] for row in api_rows}
+        api_additions = {
+            "prompt_size_ratio": "FLOAT",
+            "actual_model_name": "VARCHAR",
+            "response_size_ratio": "FLOAT",
+            "memory_size_characters": "INTEGER DEFAULT 0",
+            "private_lessons_count": "INTEGER DEFAULT 0",
+            "shared_lessons_count": "INTEGER DEFAULT 0",
+            "recent_trades_included": "INTEGER DEFAULT 0",
+            "reflection_characters": "INTEGER DEFAULT 0",
+            "local_tool_invocation_count": "INTEGER DEFAULT 0",
+            "cost_delta_usd": "FLOAT",
+            "anomaly_flags_json": "TEXT DEFAULT '[]'",
+            "cost_breakdown_json": "TEXT DEFAULT '{}'",
+        }
+        for column, ddl in api_additions.items():
+            if api_rows and column not in api_columns:
+                connection.execute(text(f"ALTER TABLE api_requests ADD COLUMN {column} {ddl}"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_agent_name ON api_requests(agent_name)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_timestamp ON api_requests(timestamp)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_cycle_number ON api_requests(cycle_number)"))
         _backfill_signal_audit_columns(connection)
 
 

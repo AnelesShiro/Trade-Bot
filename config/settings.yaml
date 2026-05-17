@@ -98,12 +98,22 @@ feature_flags:
 agents:
   - id: crypto-deepseek
     name: Crypto DeepSeek
-    model: deepseek/deepseek-v4-flash
     session_id: crypto-deepseek
-  - id: crypto-grok
-    name: Crypto Grok
-    model: xai/grok-4-1-fast
-    session_id: crypto-grok
+    llm:
+      LLM_PROVIDER: deepseek
+      LLM_MODEL: deepseek-v4-flash
+      LLM_BASE_URL: ""
+      LLM_API_KEY: DEEPSEEK_API_KEY
+      LLM_ALLOW_FALLBACK: false
+  - id: crypto-qwen
+    name: Crypto Qwen
+    session_id: crypto-qwen
+    llm:
+      LLM_PROVIDER: qwen
+      LLM_MODEL: qwen/qwen3-max-2026-01-23
+      LLM_BASE_URL: ""
+      LLM_API_KEY: QWEN_API_KEY
+      LLM_ALLOW_FALLBACK: false
 
 paths:
   database: database/arena.db

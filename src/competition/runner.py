@@ -11,9 +11,10 @@ from json import JSONDecodeError
 from src.cloud.git_sync import sync_dashboard_snapshot
 from src.cloud.snapshot_exporter import write_dashboard_snapshot
 from src.agents.reflection import reflect_on_day, reflect_on_trade
-from src.agents.base_agent import OpenClawAgent
+from src.agents.base_agent import AgentRunResult, OpenClawAgent
 from src.agents.memory import AgentMemory
 from src.agents.shared_learning import IDENTITY_BLOCK, SHARED_LESSON_DISCLAIMER, SharedLearningManager
+from src.competition.api_cost_audit import prompt_audit_context, prompt_component_breakdown
 from src.competition.checkpoint import build_checkpoint_payload, restore_from_checkpoint
 from src.competition.config_manager import ConfigManager
 from src.competition.evaluation import calculate_leaderboard
@@ -42,6 +43,7 @@ from src.operations.update_manager import LiveUpdateManager
 
 MAX_OPENCLAW_MESSAGE_CHARS = 24000
 MAX_SIGNAL_REPAIR_ATTEMPTS = int(os.getenv("ARENA_SIGNAL_REPAIR_ATTEMPTS", "5"))
+ORIGINAL_OPENCLAW_RUN = OpenClawAgent.run
 
 
 class CompetitionRunner:
@@ -70,6 +72,7 @@ class CompetitionRunner:
             self.repository,
             taker_fee_rate=settings.execution.taker_fee_rate,
             slippage_bps=settings.execution.slippage_bps,
+            active_agent_ids={agent.id for agent in settings.agents},
         )
         self.position_manager.set_version_context(
             self.config_manager.config_version_id,
@@ -80,8 +83,18 @@ class CompetitionRunner:
         self.rule_engine = RuleEngine(settings.risk, settings.accounts.initial_equity)
         self.rulebook = load_rulebook(settings)
         self.system_prompt = settings.resolve_path("prompts/system_prompt.md").read_text(encoding="utf-8")
+        for agent in settings.agents:
+            logger.info(
+                "active locked LLM agent={} provider={} model={} fallback_allowed={}",
+                agent.id,
+                agent.provider,
+                agent.model,
+                agent.llm.LLM_ALLOW_FALLBACK,
+            )
         if not hasattr(self, "_last_cloud_push_at"):
             self._last_cloud_push_at: float | None = None
+        if not hasattr(self, "_prompt_audit_context"):
+            self._prompt_audit_context: dict[str, dict[str, int]] = {}
 
     def run_once(self) -> None:
         self.repository.ensure_competition_started("run_once")
@@ -327,6 +340,7 @@ class CompetitionRunner:
         if workload:
             workload.database_query("logging", agent_id=agent_id)
         self.repository.save_tool_call(agent_id, "compose_context", {"agent_id": agent_id}, tool_context)
+        self._prompt_audit_context[agent_id] = prompt_audit_context(tool_context)
         if workload:
             workload.local_function("prompt_construction", "compose_prompt", agent_id=agent_id)
         prompt = self._compose_prompt(agent_id, tool_context)
@@ -428,7 +442,7 @@ class CompetitionRunner:
         active_prompt = prompt
         active_prompt_id = prompt_id
         call_started = time.perf_counter()
-        raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+        raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload, request_type="signal")
         latency_ms = int((time.perf_counter() - call_started) * 1000)
         for attempt in range(MAX_SIGNAL_REPAIR_ATTEMPTS + 1):
             input_tokens, output_tokens, estimated_cost = estimate_cost_usd(agent_settings.model, active_prompt, raw)
@@ -485,7 +499,7 @@ class CompetitionRunner:
                 workload.local_function("prompt_construction", "compose_repair_prompt", agent_id=agent_id)
                 workload.database_query("logging", agent_id=agent_id)
             call_started = time.perf_counter()
-            raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload)
+            raw = self._run_agent_with_tools(agent, agent_id, active_prompt, active_prompt_id, market_state, workload, request_type="signal_repair")
             latency_ms = int((time.perf_counter() - call_started) * 1000)
 
     def _save_signal_audit(
@@ -624,11 +638,41 @@ class CompetitionRunner:
         prompt_id: int,
         market_state: MarketState,
         workload: WorkloadTracker | None = None,
+        request_type: str = "signal",
     ) -> str:
         started = time.perf_counter()
-        raw = self._call_agent(agent, prompt)
+        try:
+            call = self._call_agent_result(agent, prompt)
+        except Exception as error:
+            self._save_api_request_audit(
+                agent=agent,
+                agent_id=agent_id,
+                request_type=request_type,
+                prompt=prompt,
+                response="",
+                latency_ms=int((time.perf_counter() - started) * 1000),
+                retry_count=max(0, int(self.settings.api.max_retries) - 1),
+                success=False,
+                local_tool_invocation_count=0,
+                error_message=str(error)[:2000],
+                actual_model_name=agent.settings.model,
+            )
+            raise
+        raw = call.output
         if workload:
             workload.agent_latency(agent_id, time.perf_counter() - started)
+        self._save_api_request_audit(
+            agent=agent,
+            agent_id=agent_id,
+            request_type=request_type,
+            prompt=prompt,
+            response=raw,
+            latency_ms=call.latency_ms,
+            retry_count=call.retry_count,
+            success=True,
+            local_tool_invocation_count=0,
+            actual_model_name=call.actual_model,
+        )
         for step in range(2):
             request = _parse_tool_request(raw)
             if not request:
@@ -667,10 +711,39 @@ class CompetitionRunner:
             if workload:
                 workload.database_query("logging", agent_id=agent_id)
             started = time.perf_counter()
-            raw = self._call_agent(agent, followup)
+            try:
+                call = self._call_agent_result(agent, followup)
+            except Exception as error:
+                self._save_api_request_audit(
+                    agent=agent,
+                    agent_id=agent_id,
+                    request_type="tool_followup",
+                    prompt=followup,
+                    response="",
+                    latency_ms=int((time.perf_counter() - started) * 1000),
+                    retry_count=max(0, int(self.settings.api.max_retries) - 1),
+                    success=False,
+                    local_tool_invocation_count=len(request),
+                    error_message=str(error)[:2000],
+                    actual_model_name=agent.settings.model,
+                )
+                raise
+            raw = call.output
             if workload:
                 workload.agent_latency(agent_id, time.perf_counter() - started)
                 workload.database_query("logging", agent_id=agent_id)
+            self._save_api_request_audit(
+                agent=agent,
+                agent_id=agent_id,
+                request_type="tool_followup",
+                prompt=followup,
+                response=raw,
+                latency_ms=call.latency_ms,
+                retry_count=call.retry_count,
+                success=True,
+                local_tool_invocation_count=len(request),
+                actual_model_name=call.actual_model,
+            )
             self.repository.save_response(agent_id, raw, prompt_id=followup_prompt_id)
         return raw
 
@@ -806,8 +879,21 @@ class CompetitionRunner:
             self.repository.save_health_check("cloud_dashboard", "FAIL", False, str(error)[:1000])
 
     def _call_agent(self, agent: OpenClawAgent, prompt: str) -> str:
+        return self._call_agent_result(agent, prompt).output
+
+    def _call_agent_result(self, agent: OpenClawAgent, prompt: str):
+        if type(agent).run is not ORIGINAL_OPENCLAW_RUN:
+            started = time.perf_counter()
+            output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            return AgentRunResult(
+                output=output,
+                retry_count=0,
+                latency_ms=int((time.perf_counter() - started) * 1000),
+                configured_model=agent.settings.model,
+                actual_model=agent.settings.model,
+            )
         try:
-            return agent.run(
+            return agent.run_with_metadata(
                 prompt,
                 timeout_seconds=self.settings.api.timeout_seconds,
                 max_retries=self.settings.api.max_retries,
@@ -817,7 +903,79 @@ class CompetitionRunner:
         except TypeError as error:
             if "unexpected keyword" not in str(error):
                 raise
-            return agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            return AgentRunResult(
+                output=output,
+                retry_count=0,
+                latency_ms=0,
+                configured_model=agent.settings.model,
+                actual_model=agent.settings.model,
+            )
+
+    def _save_api_request_audit(
+        self,
+        *,
+        agent: OpenClawAgent,
+        agent_id: str,
+        request_type: str,
+        prompt: str,
+        response: str,
+        latency_ms: int,
+        retry_count: int,
+        success: bool,
+        local_tool_invocation_count: int,
+        error_message: str | None = None,
+        actual_model_name: str | None = None,
+    ) -> None:
+        try:
+            prompt_tokens, completion_tokens, token_cost = estimate_cost_usd(agent.settings.model, prompt, response)
+            breakdown = self._cost_breakdown(prompt, response, token_cost)
+            context = dict(self._prompt_audit_context.get(agent_id, {}))
+            self.repository.save_api_request(
+                {
+                    "timestamp": datetime.now(UTC),
+                    "cycle_number": self._cycle_count + 1,
+                    "agent_name": agent_id,
+                    "model_name": agent.settings.model,
+                    "actual_model_name": actual_model_name or agent.settings.model,
+                    "request_type": request_type,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": prompt_tokens + completion_tokens,
+                    "reasoning_tokens": 0,
+                    "server_tool_calls": 0,
+                    "server_tool_cost_usd": 0.0,
+                    "token_cost_usd": token_cost,
+                    "total_cost_usd": token_cost,
+                    "latency_ms": latency_ms,
+                    "retry_count": retry_count,
+                    "prompt_characters": len(prompt),
+                    "response_characters": len(response),
+                    "prompt_hash": _sha256(prompt),
+                    "response_hash": _sha256(response),
+                    "prompt_version": _sha256(prompt),
+                    "rulebook_version": _sha256(self.rulebook),
+                    "config_version": self.config_manager.config_hash,
+                    "success": success,
+                    "error_message": error_message,
+                    "local_tool_invocation_count": local_tool_invocation_count,
+                    "cost_breakdown": breakdown,
+                    **context,
+                }
+            )
+        except Exception as error:
+            logger.warning("api request audit logging failed for {} without affecting trading: {}", agent_id, error)
+
+    def _cost_breakdown(self, prompt: str, response: str, total_cost: float) -> dict[str, float]:
+        prompt_parts = prompt_component_breakdown(prompt)
+        prompt_total = max(1, sum(prompt_parts.values()))
+        prompt_cost = total_cost * (len(prompt) / max(1, len(prompt) + len(response)))
+        response_cost = total_cost - prompt_cost
+        breakdown = {f"{name}_cost_usd": prompt_cost * (chars / prompt_total) for name, chars in prompt_parts.items()}
+        breakdown["response_tokens_cost_usd"] = response_cost
+        breakdown["server_side_tools_cost_usd"] = 0.0
+        breakdown["retries_cost_usd"] = 0.0
+        return breakdown
 
     def _is_warmup_cycle(self) -> bool:
         return self._cycle_count < self.settings.safety.warmup_cycles or os.getenv("ARENA_WARMUP_MODE", "").lower() in {"1", "true", "yes"}

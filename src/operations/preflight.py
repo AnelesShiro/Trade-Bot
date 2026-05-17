@@ -27,7 +27,7 @@ class CheckResult:
 
 def run_preflight(settings: Settings) -> list[CheckResult]:
     results = [
-        _check_api_keys(),
+        _check_api_keys(settings),
         _check_database(settings),
         _check_market_data(settings),
         _check_rulebook(settings),
@@ -44,8 +44,9 @@ def has_critical_failures(results: list[CheckResult]) -> bool:
     return any(not result.passed and result.critical for result in results)
 
 
-def _check_api_keys() -> CheckResult:
-    missing = [name for name in ["DEEPSEEK_API_KEY", "XAI_API_KEY"] if not os.getenv(name)]
+def _check_api_keys(settings: Settings) -> CheckResult:
+    required = sorted({agent.llm.LLM_API_KEY for agent in settings.agents if agent.llm.LLM_API_KEY})
+    missing = [name for name in required if not os.getenv(name)]
     if missing:
         return CheckResult("api_keys", "FAIL", True, f"Missing {', '.join(missing)}")
     return CheckResult("api_keys", "PASS", True, "Required API key environment variables are present")
@@ -119,7 +120,7 @@ def _check_directories(settings: Settings) -> CheckResult:
         settings.resolve_path("data/processed"),
         settings.resolve_path("data/vectors"),
         settings.resolve_path("data/private/deepseek"),
-        settings.resolve_path("data/private/grok"),
+        settings.resolve_path("data/private/qwen"),
         settings.resolve_path("data/shared"),
         settings.resolve_path("data/profiles"),
         settings.resolve_path("database"),
