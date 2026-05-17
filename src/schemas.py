@@ -23,6 +23,7 @@ class Action(StrEnum):
     CUT = "CUT"
     CLOSE = "CLOSE"
     HOLD = "HOLD"
+    PLACE_TRIGGER = "PLACE_TRIGGER"
 
 
 class Direction(StrEnum):
@@ -165,6 +166,8 @@ class AgentSignal(BaseModel):
     counterargument: str | None = None
     data_used: list[str] = Field(default_factory=list)
     notes_for_ledger: str | None = None
+    trigger_order: dict[str, Any] | None = None
+    position_risk: dict[str, Any] | None = None
 
     @field_validator("margin_used_percent", "account_risk_percent", "total_account_risk_after_action_percent")
     @classmethod
@@ -175,6 +178,12 @@ class AgentSignal(BaseModel):
 
     @model_validator(mode="after")
     def validate_trade_fields(self) -> AgentSignal:
+        if self.action == Action.PLACE_TRIGGER:
+            if not self.trigger_order:
+                raise ValueError("trigger_order is required for PLACE_TRIGGER")
+            if not self.data_used:
+                raise ValueError("data_used is required")
+            return self
         if self.decision in {Decision.PAPER_TRADE, Decision.POSITION_UPDATE} and self.action not in {
             Action.REDUCE,
             Action.CUT,

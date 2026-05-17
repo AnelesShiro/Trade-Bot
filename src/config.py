@@ -32,11 +32,25 @@ class LlmLockSettings(BaseModel):
         return self
 
 
+class FailoverRouteSettings(BaseModel):
+    provider: str
+    model: str
+    LLM_BASE_URL: str = ""
+    LLM_API_KEY: str = ""
+
+
+class ApiFailoverAgentSettings(BaseModel):
+    enabled: bool = False
+    fallback_chain: list[FailoverRouteSettings] = Field(default_factory=list)
+    retest_interval_seconds: int = 3600
+
+
 class AgentSettings(BaseModel):
     id: str
     name: str
     session_id: str
     llm: LlmLockSettings
+    api_failover: ApiFailoverAgentSettings = Field(default_factory=ApiFailoverAgentSettings)
 
     @property
     def model(self) -> str:
@@ -105,6 +119,59 @@ class ExecutionSettings(BaseModel):
     slippage_bps: float = 2.0
 
 
+class ConditionalOrdersSettings(BaseModel):
+    enabled: bool = True
+
+
+class TrailingStopSettings(BaseModel):
+    enabled: bool = True
+    apply_by_default: bool = False
+    mode: str = "percent"
+    distance_pct: float = 0.01
+    atr_multiple: float = 1.5
+    step_pct: float = 0.005
+
+
+class BreakEvenSettings(BaseModel):
+    enabled: bool = True
+    apply_by_default: bool = False
+    trigger: str = "tp1"
+    r_multiple: float = 1.0
+    percent_gain: float = 0.01
+    fee_buffer_pct: float = 0.0005
+
+
+class TimeExitSettings(BaseModel):
+    enabled: bool = True
+    apply_by_default: bool = False
+    max_hold_hours: float = 24.0
+    only_if_profit_pct_below: float | None = None
+
+
+class CooldownSettings(BaseModel):
+    enabled: bool = True
+    consecutive_losses: int = 3
+    pause_hours_after_losses: float = 6.0
+    daily_loss_pct: float = 0.05
+    pause_hours_daily: float = 24.0
+    rejection_rate_threshold: float = 0.80
+    api_failure_threshold: int = 5
+
+
+class ApiFailoverSettings(BaseModel):
+    enabled: bool = True
+
+
+class RiskAutomationSettings(BaseModel):
+    enabled: bool = True
+    conditional_orders: ConditionalOrdersSettings = Field(default_factory=ConditionalOrdersSettings)
+    trailing_stop: TrailingStopSettings = Field(default_factory=TrailingStopSettings)
+    break_even: BreakEvenSettings = Field(default_factory=BreakEvenSettings)
+    time_exit: TimeExitSettings = Field(default_factory=TimeExitSettings)
+    cooldown: CooldownSettings = Field(default_factory=CooldownSettings)
+    api_failover: ApiFailoverSettings = Field(default_factory=ApiFailoverSettings)
+
+
 class SafetySettings(BaseModel):
     warmup_cycles: int = 0
     kill_switch_file: str = "KILL_SWITCH"
@@ -169,6 +236,7 @@ class Settings(BaseModel):
     shared_learning: SharedLearningSettings = Field(default_factory=SharedLearningSettings)
     api: ApiSettings = Field(default_factory=ApiSettings)
     execution: ExecutionSettings = Field(default_factory=ExecutionSettings)
+    risk_automation: RiskAutomationSettings = Field(default_factory=RiskAutomationSettings)
     safety: SafetySettings = Field(default_factory=SafetySettings)
     hot_reload: HotReloadSettings = Field(default_factory=HotReloadSettings)
     cloud_dashboard: CloudDashboardSettings = Field(default_factory=CloudDashboardSettings)

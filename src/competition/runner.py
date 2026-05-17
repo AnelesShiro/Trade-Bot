@@ -11,6 +11,7 @@ from json import JSONDecodeError
 from src.cloud.git_sync import sync_dashboard_snapshot
 from src.cloud.snapshot_exporter import write_dashboard_snapshot
 from src.agents.reflection import reflect_on_day, reflect_on_trade
+from src.agents.api_failover import ApiFailoverManager
 from src.agents.base_agent import AgentRunResult, OpenClawAgent
 from src.agents.memory import AgentMemory
 from src.agents.shared_learning import IDENTITY_BLOCK, SHARED_LESSON_DISCLAIMER, SharedLearningManager
@@ -33,6 +34,7 @@ from src.tools.toolbox import ALLOWED_TOOLS, execute_local_tool
 from src.trading.execution import PaperExecutionEngine
 from src.trading.paper_account import PaperAccount
 from src.trading.position_manager import PositionManager
+from src.trading.risk_automation import RiskAutomationEngine
 from src.utils.costs import estimate_cost_usd
 from src.validation.rule_engine import RuleEngine
 from src.validation.signal_logger import signal_audit_metadata
@@ -80,6 +82,8 @@ class CompetitionRunner:
             self.config_manager.code_version,
         )
         self.execution = PaperExecutionEngine(self.position_manager)
+        self.risk_engine = RiskAutomationEngine(settings, self.repository, self.position_manager, self.execution)
+        self.failover_manager = ApiFailoverManager(settings, self.repository)
         self.rule_engine = RuleEngine(settings.risk, settings.accounts.initial_equity)
         self.rulebook = load_rulebook(settings)
         self.system_prompt = settings.resolve_path("prompts/system_prompt.md").read_text(encoding="utf-8")
@@ -107,6 +111,15 @@ class CompetitionRunner:
         logger.info("frozen market snapshot {} at {} price {}", snapshot_id, market_state.timestamp, market_state.current_price)
         workload.database_query("position_management", details="load open positions for stop/target checks")
         workload.local_function("risk_management", "update_stops_and_targets")
+        if self.risk_engine.enabled:
+            try:
+                self.risk_engine.run_market_tick(
+                    market_state,
+                    rsi_14=market_state.indicators.rsi_14,
+                    atr_14=market_state.indicators.atr_14,
+                )
+            except Exception as error:
+                logger.exception("risk automation pre-cycle tick failed without stopping trading: {}", error)
         for trade in self.position_manager.update_stops_and_targets(market_state.current_price):
             reflect_on_trade(self.memory, trade)
             workload.reflection(trade.agent_id)
@@ -269,6 +282,15 @@ class CompetitionRunner:
             current_price=current_price,
             timeframe="ticker",
         )
+        if self.risk_engine.enabled:
+            try:
+                self.risk_engine.run_market_tick(
+                    market_state,
+                    rsi_14=None,
+                    atr_14=None,
+                )
+            except Exception as error:
+                logger.exception("risk automation monitor tick failed: {}", error)
         exit_trades = self.position_manager.update_stops_and_targets(current_price)
         if not exit_trades:
             return
@@ -294,6 +316,10 @@ class CompetitionRunner:
 
     def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)
+        self.failover_manager.maybe_restore_primary(agent_settings)
+        if self.risk_engine.enabled and self.risk_engine.blocks_new_entries(agent_id):
+            self.repository.save_health_check("cooldown", "PASS", False, f"{agent_id} entry cooldown active; skipped LLM cycle")
+            return
         if workload:
             workload.local_function("accounting", "account_summary", agent_id=agent_id)
             workload.database_query("accounting", agent_id=agent_id)
@@ -395,11 +421,27 @@ class CompetitionRunner:
             self.repository.save_health_check("warmup_mode", "PASS", False, f"Skipped execution for {agent_id}")
             self._record_signal_execution(signal_record_id, {"executed": False, "reason": "warmup_mode"})
             return
+        if signal and validation.accepted and signal.action == Action.PLACE_TRIGGER:
+            try:
+                order_id = self.risk_engine.handle_place_trigger(signal, signal_record_id)
+                self._record_signal_execution(
+                    signal_record_id,
+                    {"executed": bool(order_id), "pending_order_id": order_id, "action": signal.action.value},
+                )
+            except Exception as error:
+                logger.exception("PLACE_TRIGGER failed without stopping cycle: {}", error)
+                self._record_signal_execution(signal_record_id, {"executed": False, "reason": str(error)})
+            return
         if signal and validation.accepted and signal.decision.value in {"PAPER_TRADE", "POSITION_UPDATE"}:
             if workload:
                 workload.local_function("paper_execution", "execute_signal", agent_id=agent_id)
                 workload.database_query("paper_execution", agent_id=agent_id)
             position_id = self.execution.execute(signal, market_state.current_price)
+            if position_id and signal.action == Action.OPEN:
+                try:
+                    self.risk_engine.attach_position_risk(position_id, signal)
+                except Exception as error:
+                    logger.warning("attach position risk failed for {}: {}", position_id, error)
             self._record_signal_execution(
                 signal_record_id,
                 {
@@ -427,6 +469,12 @@ class CompetitionRunner:
                     "action": signal.action.value if signal else "NONE",
                 },
             )
+        try:
+            account = PaperAccount(agent_id, self.settings.accounts.initial_equity, self.repository)
+            summary = account.summary(market_state.current_price)
+            self.risk_engine.evaluate_agent_cooldowns(agent_id, equity=summary.equity, daily_pnl=summary.daily_pnl)
+        except Exception as error:
+            logger.warning("cooldown evaluation failed for {}: {}", agent_id, error)
 
     def _run_until_valid_signal(
         self,
@@ -900,6 +948,17 @@ class CompetitionRunner:
                 backoff_initial_seconds=self.settings.api.backoff_initial_seconds,
                 backoff_multiplier=self.settings.api.backoff_multiplier,
             )
+        except RuntimeError as error:
+            route = self.failover_manager.handle_failure(agent.settings, str(error))
+            if route:
+                return agent.run_with_metadata(
+                    prompt,
+                    timeout_seconds=self.settings.api.timeout_seconds,
+                    max_retries=1,
+                    backoff_initial_seconds=self.settings.api.backoff_initial_seconds,
+                    backoff_multiplier=self.settings.api.backoff_multiplier,
+                )
+            raise
         except TypeError as error:
             if "unexpected keyword" not in str(error):
                 raise

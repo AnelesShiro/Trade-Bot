@@ -87,8 +87,80 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "reflections_summary": _reflections(repository),
         "strategy_diversity_metrics": _diversity_metrics(repository),
         "deployment": LiveUpdateManager(settings, repository).deployment_state(),
+        "risk_automation": _risk_automation_payload(settings, repository),
     }
     return payload
+
+
+def _risk_automation_payload(settings: Settings, repository: ArenaRepository) -> dict[str, Any]:
+    pending = [
+        {
+            "id": row.id,
+            "agent_id": row.agent_id,
+            "status": row.status,
+            "created_at": row.created_at.isoformat() if row.created_at else None,
+            "expires_at": row.expires_at.isoformat() if row.expires_at else None,
+        }
+        for row in repository.list_pending_orders(status="PENDING", limit=100)
+    ]
+    cooldowns = [
+        {
+            "agent_id": row.agent_id,
+            "reason": row.reason,
+            "started_at": row.started_at.isoformat() if row.started_at else None,
+            "ends_at": row.ends_at.isoformat() if row.ends_at else None,
+        }
+        for row in repository.list_cooldowns(active_only=True)
+    ]
+    trailing = []
+    for row in repository.list_position_risk_states(limit=200):
+        try:
+            import json
+
+            state = json.loads(row.state_json or "{}")
+            config = json.loads(row.config_json or "{}")
+        except Exception:
+            state, config = {}, {}
+        trailing.append(
+            {
+                "position_id": row.position_id,
+                "trailing_active": bool(state.get("trailing_active")),
+                "trail_sl": state.get("trail_sl"),
+                "break_even_applied": bool(state.get("break_even_applied")),
+                "max_hold_until": state.get("max_hold_until"),
+                "config": config,
+            }
+        )
+    failover_events = [
+        {
+            "agent_id": row.agent_id,
+            "event_type": row.event_type,
+            "from_provider": row.from_provider,
+            "from_model": row.from_model,
+            "to_provider": row.to_provider,
+            "to_model": row.to_model,
+            "message": row.message,
+            "created_at": row.created_at.isoformat() if row.created_at else None,
+        }
+        for row in repository.failover_events(limit=50)
+    ]
+    active_models = {}
+    for agent in settings.agents:
+        state = repository.get_agent_failover_state(agent.id)
+        active_models[agent.id] = {
+            "configured_model": agent.model,
+            "active_model": state.active_model if state else agent.model,
+            "using_fallback": bool(state.using_fallback) if state else False,
+        }
+    return {
+        "pending_orders": pending,
+        "pending_orders_count": len(pending),
+        "cooldowns": cooldowns,
+        "active_cooldown_count": len(cooldowns),
+        "position_risk": trailing,
+        "failover_events": failover_events,
+        "active_models": active_models,
+    }
 
 
 def write_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -> Path:

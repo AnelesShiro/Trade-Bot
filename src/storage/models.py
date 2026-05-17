@@ -402,6 +402,70 @@ class CompetitionResultRecord(Base):
     payload_json: Mapped[str] = mapped_column(Text)
 
 
+class PendingOrderRecord(Base):
+    __tablename__ = "pending_orders"
+
+    id: Mapped[str] = mapped_column(String, primary_key=True)
+    agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"), index=True)
+    status: Mapped[str] = mapped_column(String, default="PENDING", index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    expires_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    triggered_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    trigger_json: Mapped[str] = mapped_column(Text)
+    execution_signal_json: Mapped[str] = mapped_column(Text)
+    source_signal_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    position_id: Mapped[str | None] = mapped_column(String, nullable=True)
+
+
+class PositionRiskStateRecord(Base):
+    __tablename__ = "position_risk_state"
+
+    position_id: Mapped[str] = mapped_column(String, ForeignKey("positions.id"), primary_key=True)
+    config_json: Mapped[str] = mapped_column(Text, default="{}")
+    state_json: Mapped[str] = mapped_column(Text, default="{}")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+
+
+class CooldownStateRecord(Base):
+    __tablename__ = "cooldown_state"
+
+    agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"), primary_key=True)
+    active: Mapped[int] = mapped_column(Integer, default=1)
+    reason: Mapped[str] = mapped_column(Text)
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    ends_at: Mapped[datetime] = mapped_column(DateTime)
+    metadata_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
+class ApiFailoverEventRecord(Base):
+    __tablename__ = "api_failover_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"), index=True)
+    event_type: Mapped[str] = mapped_column(String)
+    from_provider: Mapped[str] = mapped_column(String, default="")
+    from_model: Mapped[str] = mapped_column(String, default="")
+    to_provider: Mapped[str] = mapped_column(String, default="")
+    to_model: Mapped[str] = mapped_column(String, default="")
+    message: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
+
+
+class AgentFailoverStateRecord(Base):
+    __tablename__ = "agent_failover_state"
+
+    agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"), primary_key=True)
+    active_provider: Mapped[str] = mapped_column(String)
+    active_model: Mapped[str] = mapped_column(String)
+    primary_provider: Mapped[str] = mapped_column(String)
+    primary_model: Mapped[str] = mapped_column(String)
+    using_fallback: Mapped[int] = mapped_column(Integer, default=0)
+    primary_available: Mapped[int] = mapped_column(Integer, default=1)
+    fallback_index: Mapped[int] = mapped_column(Integer, default=-1)
+    last_retest_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+
+
 def build_engine(database_url: str):
     if database_url.startswith("sqlite:///"):
         from pathlib import Path

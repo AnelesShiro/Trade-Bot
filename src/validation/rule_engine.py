@@ -23,6 +23,12 @@ class RuleEngine:
         reasons: list[str] = []
         if signal.decision in {Decision.NO_TRADE, Decision.WATCHLIST}:
             return ValidationResult(accepted=True)
+        if signal.action == Action.PLACE_TRIGGER:
+            if not signal.trigger_order:
+                reasons.append("trigger_order is required for PLACE_TRIGGER")
+            if not signal.data_used:
+                reasons.append("data_used is required")
+            return ValidationResult(accepted=not reasons, reasons=reasons)
 
         if signal.symbol != "BTC":
             reasons.append("symbol must be BTC")

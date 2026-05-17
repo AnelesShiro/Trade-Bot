@@ -60,3 +60,29 @@ Do not change prompts, rulebook, dashboard UI, or strategy logic just to change 
 ## Why This Exists
 
 The Grok/xAI credit spike was caused by a provider-side model redirect from a retired `grok-4-1-fast` slug to a higher-priced model while OpenClaw kept a persistent session history. Strict model locking prevents silent redirects from being accepted as normal successful requests.
+
+## API Failover (Explicit, Not Silent Fallback)
+
+`LLM_ALLOW_FALLBACK` must remain `false`. That flag blocks **silent** provider-side redirects.
+
+Separate optional infrastructure failover is configured per agent under `agents.<id>.api_failover`:
+
+```yaml
+api_failover:
+  enabled: false
+  retest_interval_seconds: 3600
+  fallback_chain:
+    - provider: deepseek
+      model: deepseek-v4-flash
+      LLM_BASE_URL: ""
+      LLM_API_KEY: DEEPSEEK_API_KEY
+```
+
+When `enabled: true` and a billing/auth/rate-limit/timeout error occurs:
+
+1. The runner records an `api_failover_events` row.
+2. OpenClaw agent routing switches to the next `fallback_chain` entry (logged).
+3. The current request retries once.
+4. `show-failover-status` and dashboard tab **API Failover Events** show active routes.
+
+Failover does **not** change prompts, rulebook, or strategy. Re-enable only after updating `fallback_chain` and running `python -m src.cli init` if provider routes change.

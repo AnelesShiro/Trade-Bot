@@ -169,6 +169,28 @@ Allowed actions:
 - `CUT`
 - `CLOSE`
 - `HOLD`
+- `PLACE_TRIGGER` (optional local conditional entry; does not open until trigger fires)
+
+### Local conditional orders (`PLACE_TRIGGER`)
+
+Use only when the setup should execute automatically without another model call.
+
+- `action` must be `PLACE_TRIGGER`.
+- Include `trigger_order` with:
+  - `trigger`: AND/OR tree of conditions on `price` or `rsi_14` (`gte`, `lte`, `gt`, `lt`, `eq`).
+  - optional `expires_at` ISO timestamp.
+  - `execution_signal`: full compliant JSON for the paper trade to execute when triggered (typically `OPEN` / `PAPER_TRADE`).
+- The local engine monitors triggers; do not expect a follow-up cycle to enter the trade.
+
+### Position risk automation (optional on `OPEN`)
+
+You may include `position_risk` on an accepted `OPEN` signal:
+
+- `trailing_stop`: `{enabled, mode: percent|atr|step, distance_pct, atr_multiple, step_pct}`
+- `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`
+- `time_exit`: `{enabled, max_hold_hours, only_if_profit_pct_below}`
+
+If omitted, only standard SL/TP/time-horizon rules apply. Automation never widens stop risk.
 
 ### Constraints
 

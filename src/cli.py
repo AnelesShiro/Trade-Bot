@@ -429,6 +429,74 @@ def compare_agent_costs(limit: int = 1000) -> None:
         )
 
 
+@app.command("list-pending-orders")
+def list_pending_orders(agent: str | None = None) -> None:
+    """List active pending conditional orders."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    rows = repository.list_pending_orders(status="PENDING", agent_id=agent)
+    if not rows:
+        typer.echo("No pending orders.")
+        return
+    typer.echo(json.dumps([{"id": row.id, "agent_id": row.agent_id, "expires_at": str(row.expires_at)} for row in rows], indent=2))
+
+
+@app.command("cancel-pending-order")
+def cancel_pending_order(order_id: str = typer.Option(..., "--id")) -> None:
+    """Cancel a pending conditional order."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    if repository.cancel_pending_order(order_id):
+        typer.echo(f"Cancelled {order_id}")
+    else:
+        raise typer.Exit(code=1)
+
+
+@app.command("list-cooldowns")
+def list_cooldowns() -> None:
+    """List active agent entry cooldowns."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    rows = repository.list_cooldowns(active_only=True)
+    typer.echo(json.dumps([{"agent_id": row.agent_id, "reason": row.reason, "ends_at": str(row.ends_at)} for row in rows], indent=2))
+
+
+@app.command("clear-cooldown")
+def clear_cooldown(agent: str = typer.Option(..., "--agent")) -> None:
+    """Clear an active entry cooldown for an agent."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    if repository.clear_cooldown(agent):
+        typer.echo(f"Cleared cooldown for {agent}")
+    else:
+        raise typer.Exit(code=1)
+
+
+@app.command("show-failover-status")
+def show_failover_status() -> None:
+    """Show active API failover routes per agent."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    from src.agents.api_failover import ApiFailoverManager
+
+    manager = ApiFailoverManager(settings, repository)
+    payload = {}
+    for agent in settings.agents:
+        route = manager.active_route(agent)
+        payload[agent.id] = {
+            "using_fallback": route.using_fallback,
+            "provider": route.provider,
+            "model": route.model,
+            "fallback_index": route.fallback_index,
+        }
+    typer.echo(json.dumps(payload, indent=2))
+
+
 @app.command()
 def dashboard(port: int = 8501) -> None:
     """Launch the Streamlit dashboard."""

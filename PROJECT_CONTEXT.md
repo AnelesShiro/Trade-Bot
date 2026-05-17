@@ -8,6 +8,8 @@
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
 - Latest verified live cycle: cycle `46` completed. DeepSeek succeeded; Qwen was later verified with a new Standard Global DashScope key.
+- Local **risk automation** is enabled (`config/settings.yaml` → `risk_automation`). Conditional orders, trailing stop, break-even, time exit, and cooldowns run locally with **no extra LLM calls**. Legacy `OPEN`/`MARKET` signals are unchanged unless the agent sends `PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
+- Per-agent **API failover** is configured but **disabled by default** (`agents.*.api_failover.enabled: false`). It is separate from `LLM_ALLOW_FALLBACK`.
 - Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
@@ -30,6 +32,7 @@
   - Tracks rejected signals, accepted signals, raw outputs, memory, reflections, token usage, API cost, workload attribution, leaderboard, and account summaries.
   - Maintains a project memory log at `logs/SESSION_UPDATES.md` so future sessions can quickly reconstruct recent chat decisions and implementation updates.
   - Uses strict model locking so provider-side model redirects cannot be accepted silently.
+  - Runs optional local risk automation: conditional (`PLACE_TRIGGER`) orders, trailing stops, break-even moves, time-based exits, entry cooldowns, and explicit API failover routes (all local; no extra tokens when cooldown skips the agent round).
 - Target users:
   - The project owner monitoring the AI trading competition.
   - Future Codex/OpenClaw development sessions.
@@ -93,6 +96,9 @@
   - `src/tools/`: approved local tools agents can request before final signal.
   - `src/validation/rule_engine.py` and `signal_validator.py`: strict signal validation.
   - `src/trading/execution.py`, `paper_account.py`, `position_manager.py`, `pnl.py`: paper execution and accounting.
+  - `src/trading/risk_automation/`: local conditional-order and position risk engine (triggers, trailing stop, break-even, time exit, cooldown evaluation).
+  - `src/agents/api_failover.py`: explicit logged provider failover (not silent `LLM_ALLOW_FALLBACK`).
+  - `src/storage/risk_repository.py`: persistence mixin for `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`.
   - `src/storage/repository.py`: SQLite persistence for core arena state.
   - `src/storage/signal_repository.py`: accepted/rejected signal audit persistence.
   - `src/competition/runner.py`: main competition loop, cycle orchestration, provider error handling, checkpoint/export/sync.
@@ -114,7 +120,8 @@
   - Rejected signals are stored with validation errors and reasons.
   - SQLite and output files are updated.
   - Checkpoint is written after each completed cycle.
-  - Snapshot is exported to `cloud/dashboard_snapshot.json`.
+  - Before SL/TP checks each cycle (and on the position monitor interval), `RiskAutomationEngine` evaluates pending triggers and position risk state using the same market price/RSI snapshot.
+  - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models).
   - Optional Git sync commits and pushes snapshot to GitHub for Render.
 
 # Design Principles
@@ -194,7 +201,7 @@
 # Completed Work
 
 - Features already implemented:
-  - CLI commands for init, preflight, run-once, run-live, resume, dashboard, backtest, evaluate, config reload, prompt/rulebook queueing, safe restart, rollback, version display, workload analysis, cloud snapshot export, GitHub sync, and deployment checks.
+  - CLI commands for init, preflight, run-once, run-live, resume, dashboard, backtest, evaluate, config reload, prompt/rulebook queueing, safe restart, rollback, version display, workload analysis, cloud snapshot export, GitHub sync, deployment checks, and risk automation (`list-pending-orders`, `cancel-pending-order`, `list-cooldowns`, `clear-cooldown`, `show-failover-status`).
   - Paper trading engine with rule validation, simulated taker fees, and slippage.
   - Crash-safe checkpoints after completed cycles.
   - Position monitor that runs between cycles and auto-closes paper positions on TP/SL.
@@ -387,12 +394,25 @@
   - Confirm cloud snapshot does not contain secrets.
   - Run `pytest --cov=src`.
 
+# Risk Automation (Local Execution)
+
+- Config block: `risk_automation` in `config/settings.yaml` (master `enabled` plus per-feature toggles).
+- Agent JSON extensions (optional; backward compatible):
+  - `action: PLACE_TRIGGER` with `trigger_order` (`trigger` tree with `price` / `rsi_14`, AND/OR, `expires_at`, `execution_signal`).
+  - `position_risk` on `OPEN` for `trailing_stop`, `break_even`, `time_exit`.
+- Defaults: `trailing_stop.apply_by_default`, `break_even.apply_by_default`, `time_exit.apply_by_default` are **false** so existing competition behavior is unchanged.
+- Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally.
+- SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state` (created by `create_schema` / live runner startup).
+- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models.
+- Tests: `tests/test_risk_automation.py`.
+
 # Deployment Information
 
 - Hosting platform:
   - Local machine runs the trading engine and agents.
   - GitHub stores source and latest cloud dashboard snapshot.
   - Render hosts the read-only Streamlit dashboard.
+- Cloud dashboard URL (Render Web Service): configure in Render dashboard for repo `AnelesShiro/Trade-Bot`; placeholder in README is `https://your-app-name.onrender.com`. Auto-deploy on `main` push via `render.yaml` (`autoDeploy: true`).
 - Build commands:
   - Install dependencies:
     ```powershell

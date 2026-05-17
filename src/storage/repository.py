@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from src.config import AgentSettings
 from src.schemas import AgentSignal, ValidationResult
+from src.storage.risk_repository import RiskAutomationRepositoryMixin
 from src.storage.models import (
     AgentRecord,
     ApiRequestRecord,
@@ -41,7 +42,7 @@ from src.storage.models import (
 )
 
 
-class ArenaRepository:
+class ArenaRepository(RiskAutomationRepositoryMixin):
     """Database access layer for arena state."""
 
     def __init__(self, session_factory: sessionmaker[Session]) -> None:

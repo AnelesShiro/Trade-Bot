@@ -40,17 +40,17 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-17T18:13:33.492609Z",
     "active_versions_file": {
-      "code_version": "4856a1f58387",
-      "config_version": "f7bd2e0db47caf65550ea8d3b0e0bbde4b9353e261e456c1690ccdb3e87bb512",
+      "code_version": "1b4683c40c3d",
+      "config_version": "4d8739c021724903452c12d85c835d20f3a8b0dafe975a331b506754f1bdc7da",
       "rulebook": {
-        "hash": "2867c744ff118675156d3bb8e5afbbc42abe47b8570515b5666a02dcdc0f87dc",
+        "hash": "97972a65cb0c54a0fd3d14de33e5627f195d1fa46fbd484ece06bf8090dbd240",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
-        "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
+        "hash": "fd7a66d050611b2da2729da1f8668335740c16a1656f3000671c499352817741",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-17T17:10:13.410922Z"
+      "updated_at": "2026-05-17T19:09:30.392394Z"
     },
     "canary": {
       "enabled": false,
@@ -77,24 +77,24 @@
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "4856a1f58387",
-      "config_version": "f7bd2e0db47caf65550ea8d3b0e0bbde4b9353e261e456c1690ccdb3e87bb512",
+      "code_version": "1b4683c40c3d",
+      "config_version": "4d8739c021724903452c12d85c835d20f3a8b0dafe975a331b506754f1bdc7da",
       "rulebook": {
-        "hash": "2867c744ff118675156d3bb8e5afbbc42abe47b8570515b5666a02dcdc0f87dc",
+        "hash": "97972a65cb0c54a0fd3d14de33e5627f195d1fa46fbd484ece06bf8090dbd240",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
-        "hash": "830b65a103e452021c7124276362fbc7b4cfd9ab1a5ebfccfc8c634713c77be4",
+        "hash": "fd7a66d050611b2da2729da1f8668335740c16a1656f3000671c499352817741",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-17T18:13:33.694800Z"
+      "updated_at": "2026-05-17T19:09:30.472682Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-17T18:13:32.552722Z"
+        "timestamp": "2026-05-17T19:09:29.310425Z"
       },
       {
         "drawdown": -0.0005,
@@ -126,17 +126,17 @@
       },
       {
         "drawdown": -0.0025677985266548695,
-        "timestamp": "2026-05-17T18:13:33.552722Z"
+        "timestamp": "2026-05-17T19:09:30.310425Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-17T18:13:32.552722Z"
+        "timestamp": "2026-05-17T19:09:29.310425Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-17T18:13:33.552722Z"
+        "timestamp": "2026-05-17T19:09:30.310425Z"
       }
     ]
   },
@@ -144,7 +144,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-17T18:13:32.552722Z"
+        "timestamp": "2026-05-17T19:09:29.310425Z"
       },
       {
         "equity": 9995.0,
@@ -176,21 +176,21 @@
       },
       {
         "equity": 10077.142532121481,
-        "timestamp": "2026-05-17T18:13:33.552722Z"
+        "timestamp": "2026-05-17T19:09:30.310425Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-17T18:13:32.552722Z"
+        "timestamp": "2026-05-17T19:09:29.310425Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-17T18:13:33.552722Z"
+        "timestamp": "2026-05-17T19:09:30.310425Z"
       }
     ]
   },
-  "generated_at": "2026-05-17T18:13:33.532690Z",
+  "generated_at": "2026-05-17T19:09:30.285897Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -2724,6 +2724,26 @@
     ],
     "total_recent": 22
   },
+  "risk_automation": {
+    "active_cooldown_count": 0,
+    "active_models": {
+      "crypto-deepseek": {
+        "active_model": "deepseek-v4-flash",
+        "configured_model": "deepseek-v4-flash",
+        "using_fallback": false
+      },
+      "crypto-qwen": {
+        "active_model": "qwen3-max-2026-01-23",
+        "configured_model": "qwen3-max-2026-01-23",
+        "using_fallback": false
+      }
+    },
+    "cooldowns": [],
+    "failover_events": [],
+    "pending_orders": [],
+    "pending_orders_count": 0,
+    "position_risk": []
+  },
   "runner": {
     "cycle_interval_seconds": 3600,
     "cycle_number": 49,
@@ -2804,8 +2824,8 @@
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-05-17T23:06:31.810586+07:00",
-      "timestamp_utc": "2026-05-17T16:06:31.810586Z",
+      "timestamp_local": "2026-05-17T23:06:31.811596+07:00",
+      "timestamp_utc": "2026-05-17T16:06:31.811596Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
@@ -6316,8 +6336,8 @@
         "take_profit_1": null,
         "take_profit_2": null,
         "thesis": null,
-        "timestamp_local": "2026-05-17T23:06:31.810586+07:00",
-        "timestamp_utc": "2026-05-17T16:06:31.810586Z",
+        "timestamp_local": "2026-05-17T23:06:31.811596+07:00",
+        "timestamp_utc": "2026-05-17T16:06:31.811596Z",
         "validation_details": {
           "accepted": false,
           "reasons": [
@@ -7160,7 +7180,7 @@
     "thesis_embedding_similarity": 0.03130806391675957
   },
   "sync": {
-    "generated_at": "2026-05-17T18:13:33.532690Z",
+    "generated_at": "2026-05-17T19:09:30.285897Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },

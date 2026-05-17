@@ -12,6 +12,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
 - Qwen base URL source of truth: `LLM_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
+- Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
 
 ## Operating Rules
 

@@ -23,6 +23,6 @@ Do this proactively. The user should not need to ask for project context.
 
 - Active agents: `crypto-deepseek` and `crypto-qwen`.
 - Legacy `crypto-grok` data is retained for history/audit only.
-- Qwen model routing and OpenClaw registration are fixed.
-- Qwen currently fails provider auth: `Provider qwen has auth issue`.
+- Qwen model routing, OpenClaw registration, and provider auth are fixed (Standard Global DashScope URL). See `PROJECT_BOOTSTRAP.md` if auth regresses.
+- Local risk automation is enabled; see `PROJECT_CONTEXT.md` → Risk Automation.
 - Model locking uses OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides.

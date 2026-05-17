@@ -49,6 +49,39 @@ execution:
   taker_fee_rate: 0.0005
   slippage_bps: 2.0
 
+risk_automation:
+  enabled: true
+  conditional_orders:
+    enabled: true
+  trailing_stop:
+    enabled: true
+    apply_by_default: false
+    mode: percent
+    distance_pct: 0.01
+    atr_multiple: 1.5
+    step_pct: 0.005
+  break_even:
+    enabled: true
+    apply_by_default: false
+    trigger: tp1
+    r_multiple: 1.0
+    percent_gain: 0.01
+    fee_buffer_pct: 0.0005
+  time_exit:
+    enabled: true
+    apply_by_default: false
+    max_hold_hours: 24.0
+  cooldown:
+    enabled: true
+    consecutive_losses: 3
+    pause_hours_after_losses: 6.0
+    daily_loss_pct: 0.05
+    pause_hours_daily: 24.0
+    rejection_rate_threshold: 0.80
+    api_failure_threshold: 5
+  api_failover:
+    enabled: true
+
 safety:
   warmup_cycles: 0
   kill_switch_file: KILL_SWITCH
@@ -105,6 +138,10 @@ agents:
       LLM_BASE_URL: ""
       LLM_API_KEY: DEEPSEEK_API_KEY
       LLM_ALLOW_FALLBACK: false
+    api_failover:
+      enabled: false
+      retest_interval_seconds: 3600
+      fallback_chain: []
   - id: crypto-qwen
     name: Crypto Qwen
     session_id: crypto-qwen
@@ -114,6 +151,14 @@ agents:
       LLM_BASE_URL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
       LLM_API_KEY: QWEN_API_KEY
       LLM_ALLOW_FALLBACK: false
+    api_failover:
+      enabled: false
+      retest_interval_seconds: 3600
+      fallback_chain:
+        - provider: deepseek
+          model: deepseek-v4-flash
+          LLM_BASE_URL: ""
+          LLM_API_KEY: DEEPSEEK_API_KEY
 
 paths:
   database: database/arena.db

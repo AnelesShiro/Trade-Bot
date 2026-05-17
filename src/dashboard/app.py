@@ -30,7 +30,10 @@ if str(PROJECT_ROOT) not in sys.path:
 from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
 from src.dashboard.tabs.accepted_signals import render_accepted_signals_tab  # noqa: E402
+from src.dashboard.tabs.api_failover import render_api_failover_tab  # noqa: E402
+from src.dashboard.tabs.pending_orders import render_pending_orders_tab  # noqa: E402
 from src.dashboard.tabs.rejected_signals import render_rejected_signals_tab  # noqa: E402
+from src.dashboard.tabs.risk_automation import render_risk_automation_tab  # noqa: E402
 from src.market.indicators import ema, rsi  # noqa: E402
 from src.operations.update_manager import LiveUpdateManager  # noqa: E402
 from src.storage.models import build_session_factory, create_schema  # noqa: E402
@@ -1364,12 +1367,32 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-banner_cols = st.columns(4)
+pending_orders_count = 0
+active_cooldown_count = 0
+active_fallback_models = 0
+try:
+    with sqlite3.connect(str(db_path)) as _conn:
+        pending_orders_count = int(
+            _conn.execute("SELECT COUNT(*) FROM pending_orders WHERE status = 'PENDING'").fetchone()[0]
+        )
+        active_cooldown_count = int(
+            _conn.execute("SELECT COUNT(*) FROM cooldown_state WHERE active = 1").fetchone()[0]
+        )
+        active_fallback_models = int(
+            _conn.execute("SELECT COUNT(*) FROM agent_failover_state WHERE using_fallback = 1").fetchone()[0]
+        )
+except Exception:
+    pass
+
+banner_cols = st.columns(7)
 leader = metric_frame.iloc[0]["agent_id"] if not metric_frame.empty else "-"
 banner_cols[0].metric("Current leader", leader)
 banner_cols[1].metric("Time remaining", human_duration(remaining))
 banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
-banner_cols[3].metric("Start / End", f"{fmt_short_time(start_time)} -> {fmt_short_time(end_time)}")
+banner_cols[3].metric("Pending orders", pending_orders_count)
+banner_cols[4].metric("Cooldowns", active_cooldown_count)
+banner_cols[5].metric("Fallback models", active_fallback_models)
+banner_cols[6].metric("Start / End", f"{fmt_short_time(start_time)} -> {fmt_short_time(end_time)}")
 st.progress(percent_complete)
 
 alerts = notifications(signals, trades, positions, metric_frame)
@@ -1404,6 +1427,9 @@ tabs = st.tabs(
         "API Cost Audit",
         "Workload Attribution",
         "Strategy Diversity",
+        "Pending Orders",
+        "Risk Automation",
+        "API Failover Events",
         "Configuration",
     ]
 )
@@ -1888,6 +1914,15 @@ with tabs[12]:
         st.dataframe(lesson_promotions.sort_values("created_at", ascending=False).head(200), width="stretch", hide_index=True)
 
 with tabs[13]:
+    render_pending_orders_tab(db_path, selected_agents or agent_ids)
+
+with tabs[14]:
+    render_risk_automation_tab(db_path, positions)
+
+with tabs[15]:
+    render_api_failover_tab(db_path)
+
+with tabs[16]:
     st.subheader("Configuration")
     st.markdown("#### Deployment & Versions")
     render_deployment_panel(deployment_state)

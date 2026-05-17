@@ -278,3 +278,102 @@ Entry template:
 - Notes / follow-ups:
   - Recent `api_requests` still show Qwen auth failure on cycle 46 because that cycle happened before the endpoint fix. Health smoke after the fix is successful.
   - `outputs/EVALUATION.md`, `outputs/LEDGER.csv`, and `outputs/SIGNALS.md` remain dirty runtime files and were intentionally not committed.
+
+## 2026-05-18 01:20 Asia/Bangkok - New Session Project Context Briefing (Vietnamese)
+
+- User request (Vietnamese): Read `AGENTS.md` and understand what this project does, what has been built, and what bugs/issues were fixed.
+- Why this was done: New Cursor/Codex session onboarding per repo `AGENTS.md` / workspace `AGENTS.md` startup protocol; user wanted a human-readable handoff without digging through the whole repo first.
+- Discussion / deliverable summary:
+  - **`AGENTS.md` role**: Codex startup instructions only (read `PROJECT_BOOTSTRAP.md` first, then deeper context as needed). It is not the trading product spec.
+  - **Project purpose**: `crypto-paper-trading-arena` — BTCUSDT perpetual **paper** competition between `crypto-deepseek` and `crypto-qwen` via OpenClaw; CCXT market data, rulebook validation, paper execution, SQLite + `outputs/`, Streamlit local dashboard, Git snapshot -> Render read-only cloud dashboard.
+  - **Major work already in repo** (from prior sessions, summarized for user): project handoff files (`PROJECT_CONTEXT.md`, `PROJECT_BOOTSTRAP.md`, `SESSION_UPDATES.md`); Grok API cost forensics; Grok $5 credit root-cause analysis; strict model locking; Grok -> Qwen challenger migration with fresh 10k paper account; OpenClaw registry fix (no per-request `--model`); Qwen Standard Global DashScope endpoint + key verification; competition health check at cycle 46.
+  - **Bugs/fixes highlighted**: silent model redirect blocked; Gateway `--model` rejection; unregistered `crypto-qwen`; Qwen 401/wrong endpoint; Windows double-process confusion (one runner tree); legacy Grok rows filtered from active competition views; snapshot contract validation.
+  - **Doc drift called out**: Repo `AGENTS.md` still mentions `Provider qwen has auth issue`, but `PROJECT_BOOTSTRAP.md` and session `2026-05-17 22:40` record Qwen auth/endpoint as fixed after Standard Global key + `dashscope-intl` base URL. Prefer bootstrap/context over stale `AGENTS.md` line until `AGENTS.md` is updated.
+- Files read (no code changes in this step):
+  - `AGENTS.md`
+  - `PROJECT_BOOTSTRAP.md`
+  - `PROJECT_CONTEXT.md` (partial)
+  - `logs/SESSION_UPDATES.md` (recent entries)
+- Verification: Documentation-only briefing; no commands required.
+- Notes / follow-ups: Optional housekeeping — sync `AGENTS.md` "Current High-Signal State" with `PROJECT_BOOTSTRAP.md` when user wants doc consistency.
+
+## 2026-05-18 01:35 Asia/Bangkok - Restarted Local Streamlit Dashboard
+
+- User request (Vietnamese): Re-host the local web because local was broken but Render (Git snapshot source) still worked.
+- Why this was done: User could not use the full local SQLite dashboard while cloud read-only dashboard remained healthy; needed operational recovery without changing trading rules or cloud deploy.
+- Discussion:
+  - **Expected behavior**: Local Streamlit uses `database/arena.db` and live `outputs/` when `ARENA_DASHBOARD_MODE` is `auto` and DB exists. Render sets `RENDER` env and/or uses snapshot mode via `cloud/dashboard_snapshot.json` pushed to Git — explains why cloud could work while local failed.
+  - **Hypothesis before fix**: Stale or wrong Python interpreter serving port 8501, not necessarily broken app code or DB.
+- Finding:
+  - Port `8501` was `LISTENING` with HTTP `200` on root, but owner was stale `C:\Users\Admin\AppData\Local\Programs\Python\Python312\python.exe` (system Python), **not** `D:\Project\OpenClaw\crypto-paper-trading-arena\.venv\Scripts\python.exe`.
+  - `preflight-check` reported dashboard import OK and port already in use.
+  - `database/arena.db` and `cloud/dashboard_snapshot.json` both exist; local mode should use SQLite.
+  - `streamlit_lightweight_charts` imports OK in `.venv`; SQLite tables (`signals`, `positions`, `trades`, `api_requests`) readable.
+- What changed:
+  - Stopped stale PID `18540` on port `8501`.
+  - Started fresh dashboard: `.\.venv\Scripts\python.exe -m src.cli dashboard` (background Streamlit on `0.0.0.0:8501`).
+- Files touched:
+  - None (runtime/ops only).
+- Verification:
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard non-critical note: port in use after restart.
+  - `http://127.0.0.1:8501/_stcore/health` -> `200`.
+  - `http://127.0.0.1:8501` -> `200`.
+  - Streamlit log: `Local URL: http://localhost:8501`, `Network URL: http://192.168.1.3:8501`; no traceback in new process after startup.
+- Notes / follow-ups:
+  - If browser still shows old error UI, hard-refresh (`Ctrl+F5`) or new tab.
+  - To restart manually later: `cd D:\Project\OpenClaw\crypto-paper-trading-arena` then `.\.venv\Scripts\python.exe -m src.cli dashboard`.
+  - Do not commit dirty `outputs/*` unless explicitly requested.
+
+## 2026-05-18 01:40 Asia/Bangkok - Recorded Full Cursor Session Handoff In Project Log
+
+- User request (Vietnamese): Remember to update everything done, reasons, and discussion content into the project log.
+- Why this was done: Per `AGENTS.md` / `PROJECT_CONTEXT.md` — curated `logs/SESSION_UPDATES.md` is the canonical handoff so future sessions reconstruct context without re-reading the whole chat.
+- What changed:
+  - Expanded this file with the two session entries above (context briefing + local dashboard restart) including user language, rationale, discussion points, findings, commands, and follow-ups.
+- Files touched:
+  - `logs/SESSION_UPDATES.md`
+- Verification: Documentation-only; entries follow the file's entry template.
+- Notes / follow-ups:
+  - Consider updating repo `AGENTS.md` Qwen auth line to match `PROJECT_BOOTSTRAP.md` if user wants zero doc drift.
+  - Live runner and `outputs/` were not modified in this Cursor session.
+
+## 2026-05-18 - Professional Trade Management Features (Risk Automation)
+
+- User request: Add institutional-grade local trade management (conditional orders, trailing stop, break-even, time exit, cooldowns, API failover) without redesigning dashboard UI, without changing existing signal behavior, without extra LLM tokens, backward compatible, fail-safe.
+- Design:
+  - New local `RiskAutomationEngine` runs on existing market snapshots/indicators and position monitor ticks; no additional model calls.
+  - Features are opt-in per signal via `PLACE_TRIGGER`, `trigger_order`, and `position_risk` fields, or via config defaults (`apply_by_default: false` preserves legacy behavior).
+  - Cooldown skips the LLM round entirely when active (saves tokens).
+  - API failover is separate from `LLM_ALLOW_FALLBACK`; explicit logged route changes with optional per-agent `api_failover` chains (disabled by default on active agents).
+- What changed:
+  - Added `src/trading/risk_automation/` (triggers, position rules, cooldowns, engine).
+  - Added `src/agents/api_failover.py` and runner integration with one retry on failover.
+  - Added SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state` via `create_schema`.
+  - Extended `AgentSignal` with `PLACE_TRIGGER`, `trigger_order`, `position_risk`; extended `RuleEngine` validation for triggers.
+  - Wired runner + position monitor to evaluate automation before SL/TP checks.
+  - Added `risk_automation` config block in `config/settings.yaml`.
+  - Dashboard: additive tabs `Pending Orders`, `Risk Automation`, `API Failover Events`; overview metrics for pending orders, cooldowns, fallback models.
+  - Snapshot export: `risk_automation` section in `dashboard_snapshot.json`.
+  - CLI: `list-pending-orders`, `cancel-pending-order`, `list-cooldowns`, `clear-cooldown`, `show-failover-status`.
+- Files touched (high level):
+  - `src/trading/risk_automation/*`, `src/agents/api_failover.py`, `src/storage/models.py`, `src/storage/risk_repository.py`, `src/storage/repository.py`, `src/competition/runner.py`, `src/schemas.py`, `src/config.py`, `src/validation/rule_engine.py`, `src/cloud/snapshot_exporter.py`, `src/cli.py`, `src/dashboard/app.py`, `src/dashboard/tabs/*`, `config/settings.yaml`, `tests/test_risk_automation.py`, `logs/SESSION_UPDATES.md`
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py -q` -> 7 passed
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 56 passed
+- Notes / follow-ups:
+  - Enable per-agent `api_failover.enabled: true` and configure `fallback_chain` when ready; defaults keep existing model-lock behavior.
+  - Agents must include `trigger_order` / `position_risk` in JSON to use new features; otherwise behavior is unchanged.
+  - After deploy, run `python -m src.cli init` if OpenClaw routes change via failover.
+
+## 2026-05-18 - Post-Feature Workflow (Validate, Docs, Commit, Deploy)
+
+- User request: After feature completion, run validate/tests/build, update PROJECT_CONTEXT and related docs/prompts/rules, commit, push, deploy, final report.
+- Validation:
+  - `pytest -q` -> 56 passed
+  - `py_compile` on risk automation / runner / failover modules -> pass
+  - `validate-update --no-smoke` -> pass
+  - `preflight-check` -> all critical checks pass
+- Documentation:
+  - Updated `PROJECT_CONTEXT.md`, `PROJECT_BOOTSTRAP.md`, `AGENTS.md`, `config/rulebook.md`, `prompts/system_prompt.md`, `docs/MODEL_GOVERNANCE.md`
+  - Added `DECISIONS.md`, `TODO.md`
+- Git/deploy: commit and push on `main` (see final report commit hash); Render auto-deploy via `render.yaml`.
