@@ -400,3 +400,28 @@ Entry template:
   - `logs/SESSION_UPDATES.md`
 - Notes:
   - Do not commit runtime `outputs/EVALUATION.md`, `outputs/LEDGER.csv`, or `outputs/SIGNALS.md` unless explicitly requested.
+
+## 2026-05-18 - Risk Automation Audit And Hardening
+
+- User request (Vietnamese): Check whether the `Professional Trade Management Features (Risk Automation)` update was developed perfectly and whether any bugs remain.
+- Findings:
+  - Core feature exists and tests pass, but two real hardening issues were found.
+  - `PLACE_TRIGGER` stored nested `trigger_order.execution_signal` without validating that nested execution signal at placement time. A malformed pending order could be accepted and only fail later when the trigger fired.
+  - API failover route switching would still call/audit with the primary agent model settings after failover, which could collide with strict model-lock verification and misreport model/cost audit data if per-agent failover is enabled later.
+  - The later log note about `prompts/risk_automation_guide.md`, `src/competition/prompt_contracts.py`, and `tests/test_prompt_contracts.py` does not match the current repo or git history; those files are not present. The committed implementation uses the existing system prompt/rulebook/schema hint path.
+- What changed:
+  - `RiskAutomationEngine.handle_place_trigger()` now validates and normalizes nested `execution_signal` as an `AgentSignal` before creating a pending order.
+  - Invalid nested trigger execution actions (`NONE` / nested `PLACE_TRIGGER`) are rejected immediately.
+  - `ApiFailoverManager` can now build effective fallback `AgentSettings` with the fallback provider/model/base URL/API-key env while keeping `LLM_ALLOW_FALLBACK=false`.
+  - Runner API auditing now records/costs the configured model from the actual `AgentRunResult`, so explicit failover routes do not get logged as the primary model.
+  - OpenClaw route switching now uses `openclaw models --agent <id> set <provider/model>` first, with the old `agents add` call only as fallback; custom failover base URLs are synced into OpenClaw provider config.
+  - Added regression tests for invalid nested `PLACE_TRIGGER` execution signals and fallback route model-lock settings.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py -q` -> 9 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\trading\risk_automation\engine.py src\agents\api_failover.py src\competition\runner.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 58 passed.
+- Notes:
+  - Per-agent API failover remains disabled in `config/settings.yaml`; this patch hardens it for future enablement without enabling silent fallback.
+  - Runtime `outputs/*` files remain dirty and are intentionally not part of this code change.

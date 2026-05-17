@@ -15,7 +15,7 @@ from src.trading.risk_automation.engine import RiskAutomationEngine
 from src.trading.risk_automation.position_rules import apply_break_even, apply_trailing_stop, time_exit_due
 from src.trading.risk_automation.triggers import evaluate_trigger
 from src.trading.risk_automation.types import BreakEvenConfig, TimeExitConfig, TrailingStopConfig
-from src.agents.api_failover import ApiFailoverManager
+from src.agents.api_failover import ActiveRoute, ApiFailoverManager
 
 
 def test_trigger_evaluation_and_logic() -> None:
@@ -139,6 +139,36 @@ def test_pending_order_execution(repository: ArenaRepository, test_settings) -> 
     assert repository.open_positions()
 
 
+def test_place_trigger_rejects_invalid_execution_signal(repository: ArenaRepository, test_settings) -> None:
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+    signal = AgentSignal(
+        agent="crypto-deepseek",
+        decision=Decision.PAPER_TRADE,
+        action=Action.PLACE_TRIGGER,
+        symbol="BTC",
+        direction=Direction.NONE,
+        trigger_order={
+            "trigger": {"logic": "AND", "conditions": [{"field": "price", "op": "gte", "value": 100}]},
+            "execution_signal": {
+                "agent": "crypto-deepseek",
+                "decision": "PAPER_TRADE",
+                "action": "OPEN",
+                "symbol": "BTC",
+                "direction": "LONG",
+                "data_used": ["test"],
+            },
+        },
+        thesis="place trigger",
+        invalidation="n/a",
+        counterargument="n/a",
+        data_used=["test"],
+    )
+    with pytest.raises(ValueError):
+        engine.handle_place_trigger(signal, signal_record_id=None)
+
+
 def test_cooldown_blocks(repository: ArenaRepository, test_settings) -> None:
     manager = CooldownManager(repository, test_settings.risk_automation.cooldown)
     manager.start("crypto-deepseek", "test", 1)
@@ -148,3 +178,21 @@ def test_cooldown_blocks(repository: ArenaRepository, test_settings) -> None:
 def test_failover_error_detection(test_settings, repository) -> None:
     manager = ApiFailoverManager(test_settings, repository)
     assert manager.is_failover_error("GatewayClientRequestError: billing error 401")
+
+
+def test_failover_route_settings_update_model_lock(test_settings, repository) -> None:
+    manager = ApiFailoverManager(test_settings, repository)
+    agent = test_settings.agents[1]
+    route = ActiveRoute(
+        provider="deepseek",
+        model="deepseek-v4-flash",
+        base_url="",
+        api_key_env="DEEPSEEK_API_KEY",
+        using_fallback=True,
+        fallback_index=0,
+    )
+    fallback_agent = manager.settings_for_route(agent, route)
+    assert fallback_agent.id == agent.id
+    assert fallback_agent.provider == "deepseek"
+    assert fallback_agent.model == "deepseek-v4-flash"
+    assert fallback_agent.llm.LLM_ALLOW_FALLBACK is False

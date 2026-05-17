@@ -720,6 +720,7 @@ class CompetitionRunner:
             success=True,
             local_tool_invocation_count=0,
             actual_model_name=call.actual_model,
+            configured_model_name=call.configured_model,
         )
         for step in range(2):
             request = _parse_tool_request(raw)
@@ -791,6 +792,7 @@ class CompetitionRunner:
                 success=True,
                 local_tool_invocation_count=len(request),
                 actual_model_name=call.actual_model,
+                configured_model_name=call.configured_model,
             )
             self.repository.save_response(agent_id, raw, prompt_id=followup_prompt_id)
         return raw
@@ -951,7 +953,8 @@ class CompetitionRunner:
         except RuntimeError as error:
             route = self.failover_manager.handle_failure(agent.settings, str(error))
             if route:
-                return agent.run_with_metadata(
+                fallback_agent = OpenClawAgent(self.failover_manager.settings_for_route(agent.settings, route))
+                return fallback_agent.run_with_metadata(
                     prompt,
                     timeout_seconds=self.settings.api.timeout_seconds,
                     max_retries=1,
@@ -985,9 +988,11 @@ class CompetitionRunner:
         local_tool_invocation_count: int,
         error_message: str | None = None,
         actual_model_name: str | None = None,
+        configured_model_name: str | None = None,
     ) -> None:
         try:
-            prompt_tokens, completion_tokens, token_cost = estimate_cost_usd(agent.settings.model, prompt, response)
+            model_name = configured_model_name or agent.settings.model
+            prompt_tokens, completion_tokens, token_cost = estimate_cost_usd(model_name, prompt, response)
             breakdown = self._cost_breakdown(prompt, response, token_cost)
             context = dict(self._prompt_audit_context.get(agent_id, {}))
             self.repository.save_api_request(
@@ -995,8 +1000,8 @@ class CompetitionRunner:
                     "timestamp": datetime.now(UTC),
                     "cycle_number": self._cycle_count + 1,
                     "agent_name": agent_id,
-                    "model_name": agent.settings.model,
-                    "actual_model_name": actual_model_name or agent.settings.model,
+                    "model_name": model_name,
+                    "actual_model_name": actual_model_name or model_name,
                     "request_type": request_type,
                     "prompt_tokens": prompt_tokens,
                     "completion_tokens": completion_tokens,

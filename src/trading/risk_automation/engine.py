@@ -77,10 +77,17 @@ class RiskAutomationEngine:
         if not payload:
             raise ValueError("trigger_order is required for PLACE_TRIGGER")
         order = TriggerOrderPayload.model_validate(payload)
+        execution_payload = dict(order.execution_signal)
+        execution_payload["agent"] = signal.agent
+        execution_signal = AgentSignal.model_validate(execution_payload)
+        if execution_signal.action in {Action.NONE, Action.PLACE_TRIGGER}:
+            raise ValueError("trigger_order.execution_signal must be an executable trade action")
+        if execution_signal.decision not in {Decision.PAPER_TRADE, Decision.POSITION_UPDATE}:
+            raise ValueError("trigger_order.execution_signal must be PAPER_TRADE or POSITION_UPDATE")
         order_id = self.repository.create_pending_order(
             agent_id=signal.agent,
             trigger_json=order.trigger.model_dump(),
-            execution_signal_json=order.execution_signal,
+            execution_signal_json=execution_signal.model_dump(mode="json"),
             expires_at=order.expires_at,
             source_signal_id=signal_record_id,
         )

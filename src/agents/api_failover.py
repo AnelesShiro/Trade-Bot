@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import os
 import re
+import json
 import subprocess
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from src.config import AgentSettings, Settings
+from src.config import AgentSettings, LlmLockSettings, Settings
 from src.logger import logger
 from src.storage.repository import ArenaRepository
 
@@ -67,6 +68,21 @@ class ApiFailoverManager:
             api_key_env=agent.llm.LLM_API_KEY,
             using_fallback=False,
             fallback_index=-1,
+        )
+
+    def settings_for_route(self, agent: AgentSettings, route: ActiveRoute) -> AgentSettings:
+        if not route.using_fallback:
+            return agent
+        return agent.model_copy(
+            update={
+                "llm": LlmLockSettings(
+                    LLM_PROVIDER=route.provider,
+                    LLM_MODEL=route.model,
+                    LLM_BASE_URL=route.base_url,
+                    LLM_API_KEY=route.api_key_env,
+                    LLM_ALLOW_FALLBACK=False,
+                )
+            }
         )
 
     def is_failover_error(self, message: str) -> bool:
@@ -165,13 +181,41 @@ class ApiFailoverManager:
     def _apply_openclaw_route(self, agent_id: str, provider: str, model: str, base_url: str) -> None:
         binary = os.getenv("OPENCLAW_BIN", "openclaw")
         openclaw_model = model if "/" in model else f"{provider}/{model}"
-        subprocess.run(
-            [binary, "agents", "add", agent_id, "--model", openclaw_model],
+        completed = subprocess.run(
+            [binary, "models", "--agent", agent_id, "set", openclaw_model],
             capture_output=True,
             text=True,
             check=False,
         )
+        if completed.returncode != 0:
+            subprocess.run(
+                [binary, "agents", "add", agent_id, "--model", openclaw_model],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
         if base_url:
-            config_path = Path.home() / ".openclaw" / "openclaw.json"
-            if config_path.exists():
-                logger.info("failover route for {} uses provider {} model {}", agent_id, provider, model)
+            self._sync_provider_base_url(provider, model, base_url)
+        logger.info("failover route for {} uses provider {} model {}", agent_id, provider, model)
+
+    @staticmethod
+    def _sync_provider_base_url(provider: str, model: str, base_url: str) -> None:
+        config_path = Path.home() / ".openclaw" / "openclaw.json"
+        if config_path.exists():
+            try:
+                payload = json.loads(config_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                logger.warning("unable to sync OpenClaw base URL for {}; config JSON is invalid", provider)
+                return
+        else:
+            payload = {}
+        models = payload.setdefault("models", {})
+        models["mode"] = "merge"
+        providers = models.setdefault("providers", {})
+        providers[provider] = {
+            "baseUrl": base_url,
+            "api": "openai-completions",
+            "models": [{"id": model, "name": model}],
+        }
+        config_path.parent.mkdir(parents=True, exist_ok=True)
+        config_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
