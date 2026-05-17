@@ -377,3 +377,26 @@ Entry template:
   - Updated `PROJECT_CONTEXT.md`, `PROJECT_BOOTSTRAP.md`, `AGENTS.md`, `config/rulebook.md`, `prompts/system_prompt.md`, `docs/MODEL_GOVERNANCE.md`
   - Added `DECISIONS.md`, `TODO.md`
 - Git/deploy: commit and push on `main` (see final report commit hash); Render auto-deploy via `render.yaml`.
+
+## 2026-05-18 - Refreshed Startup Context From AGENTS.md
+
+- User request (Vietnamese): Read `AGENTS.md` and update the most recent project changes.
+- What was checked:
+  - Read `AGENTS.md`, `PROJECT_BOOTSTRAP.md`, latest `logs/SESSION_UPDATES.md`, and the quick-context section of `PROJECT_CONTEXT.md`.
+  - Checked current git state and confirmed the committed risk automation work is already on `main`; working tree only has runtime `outputs/*` changes.
+  - Queried SQLite/checkpoints for current competition state.
+- Current state captured:
+  - Active agents: `crypto-deepseek` and `crypto-qwen`.
+  - Legacy `crypto-grok` remains history/audit only.
+  - Latest checkpoint: cycle `50`, status `COMPLETED`, created at `2026-05-17 19:14:31 UTC`.
+  - Recent `api_requests`: both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`.
+  - Active open positions: none at latest check.
+  - Live runner is still one Windows process tree (`.venv` Python parent plus base Python child).
+  - Risk automation infrastructure is enabled globally, but per-agent API failover remains disabled (`agents.*.api_failover.enabled: false`), so it is not silent model fallback.
+- Files updated:
+  - `AGENTS.md`
+  - `PROJECT_BOOTSTRAP.md`
+  - `PROJECT_CONTEXT.md`
+  - `logs/SESSION_UPDATES.md`
+- Notes:
+  - Do not commit runtime `outputs/EVALUATION.md`, `outputs/LEDGER.csv`, or `outputs/SIGNALS.md` unless explicitly requested.

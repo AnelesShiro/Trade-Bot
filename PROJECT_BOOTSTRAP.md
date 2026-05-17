@@ -7,12 +7,15 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Project: `crypto-paper-trading-arena`, BTCUSDT paper-trading competition.
 - Active agents: `crypto-deepseek` and `crypto-qwen`.
 - Legacy `crypto-grok` data remains in SQLite for history/audit only. Do not merge it into Qwen.
-- Latest verified live cycle: `46` completed.
+- Latest verified live cycle/checkpoint: `50` completed.
+- Recent API audit shows both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`.
+- Current active open positions: none at last check.
 - DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
 - Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
 - Qwen base URL source of truth: `LLM_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
+- API failover infrastructure exists and global failover is enabled, but active agents still have `api_failover.enabled: false`; do not treat it as silent model fallback.
 
 ## Operating Rules
 

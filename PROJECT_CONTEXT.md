@@ -7,9 +7,9 @@
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
-- Latest verified live cycle: cycle `46` completed. DeepSeek succeeded; Qwen was later verified with a new Standard Global DashScope key.
+- Latest verified live cycle/checkpoint: cycle `50` completed. Recent API audit shows both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`; there were no active open positions at the latest check.
 - Local **risk automation** is enabled (`config/settings.yaml` → `risk_automation`). Conditional orders, trailing stop, break-even, time exit, and cooldowns run locally with **no extra LLM calls**. Legacy `OPEN`/`MARKET` signals are unchanged unless the agent sends `PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
-- Per-agent **API failover** is configured but **disabled by default** (`agents.*.api_failover.enabled: false`). It is separate from `LLM_ALLOW_FALLBACK`.
+- **API failover** infrastructure is present and global `risk_automation.api_failover.enabled` is true, but active agents still have `agents.*.api_failover.enabled: false`. It is separate from `LLM_ALLOW_FALLBACK` and must not be treated as silent model switching.
 - Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
