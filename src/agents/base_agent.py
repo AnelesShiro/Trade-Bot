@@ -39,10 +39,20 @@ class OpenClawAgent:
         for attempt in range(1, max_retries + 1):
             try:
                 logger.info("calling OpenClaw agent {} attempt {}/{}", self.settings.id, attempt, max_retries)
-                completed = subprocess.run(command, capture_output=True, text=True, timeout=timeout_seconds, check=False)
+                completed = subprocess.run(
+                    command,
+                    capture_output=True,
+                    text=True,
+                    encoding="utf-8",
+                    errors="replace",
+                    timeout=timeout_seconds,
+                    check=False,
+                )
+                stdout = (completed.stdout or "").strip()
+                stderr = (completed.stderr or "").strip()
                 if completed.returncode == 0:
-                    return completed.stdout.strip()
-                last_error = completed.stderr.strip() or completed.stdout.strip()
+                    return stdout
+                last_error = stderr or stdout or f"OpenClaw exited with code {completed.returncode}"
             except subprocess.TimeoutExpired as error:
                 last_error = f"OpenClaw timeout after {timeout_seconds}s: {error}"
             if attempt < max_retries:
