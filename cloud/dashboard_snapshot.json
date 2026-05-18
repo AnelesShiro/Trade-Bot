@@ -40,17 +40,17 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-18T09:15:38.742907Z",
     "active_versions_file": {
-      "code_version": "c3dd7e6df1ae",
-      "config_version": "12d673adafa6bbaaf737dda48be56c1ffb15eef51b08c1843fe1933ef37ae637",
+      "code_version": "f90435e984df",
+      "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
-        "hash": "7fde0bfd8d80222da3f558dcd66ac72bc0d0bba6bf66f0ced3367d43eba684f8",
+        "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
-        "hash": "630f39d560dfbccd429bfad7d7a5d6b38cbf4c1baa53dc5d5dd55b17c418e243",
+        "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-18T09:15:38.473371Z"
+      "updated_at": "2026-05-18T10:07:31.241844Z"
     },
     "canary": {
       "enabled": false,
@@ -75,26 +75,41 @@
       "id": 70,
       "status": "COMPLETED"
     },
-    "pending_updates": [],
+    "pending_updates": [
+      {
+        "id": "a69d8865636a434bad93bc199be41a32",
+        "payload": {},
+        "requested_at": "2026-05-18T09:54:33.347993Z",
+        "status": "PENDING",
+        "type": "CODE_RESTART"
+      },
+      {
+        "id": "2a69dc8c939d4bc38b0ed0294a2ecbef",
+        "payload": {},
+        "requested_at": "2026-05-18T10:05:08.090757Z",
+        "status": "PENDING",
+        "type": "CODE_RESTART"
+      }
+    ],
     "versions": {
-      "code_version": "c3dd7e6df1ae",
-      "config_version": "12d673adafa6bbaaf737dda48be56c1ffb15eef51b08c1843fe1933ef37ae637",
+      "code_version": "f90435e984df",
+      "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
-        "hash": "7fde0bfd8d80222da3f558dcd66ac72bc0d0bba6bf66f0ced3367d43eba684f8",
+        "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
         "path": "config\\rulebook.md"
       },
       "system_prompt": {
-        "hash": "630f39d560dfbccd429bfad7d7a5d6b38cbf4c1baa53dc5d5dd55b17c418e243",
+        "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-18T09:15:39.039033Z"
+      "updated_at": "2026-05-18T10:07:48.967266Z"
     }
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-18T09:15:37.830322Z"
+        "timestamp": "2026-05-18T10:07:47.746597Z"
       },
       {
         "drawdown": -0.0005,
@@ -134,17 +149,17 @@
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-18T09:15:38.830322Z"
+        "timestamp": "2026-05-18T10:07:48.746597Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-18T09:15:37.830322Z"
+        "timestamp": "2026-05-18T10:07:47.746597Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-18T09:15:38.830322Z"
+        "timestamp": "2026-05-18T10:07:48.746597Z"
       }
     ]
   },
@@ -152,7 +167,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-18T09:15:37.830322Z"
+        "timestamp": "2026-05-18T10:07:47.746597Z"
       },
       {
         "equity": 9995.0,
@@ -192,21 +207,21 @@
       },
       {
         "equity": 10202.694469140764,
-        "timestamp": "2026-05-18T09:15:38.830322Z"
+        "timestamp": "2026-05-18T10:07:48.746597Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-18T09:15:37.830322Z"
+        "timestamp": "2026-05-18T10:07:47.746597Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-18T09:15:38.830322Z"
+        "timestamp": "2026-05-18T10:07:48.746597Z"
       }
     ]
   },
-  "generated_at": "2026-05-18T09:15:38.804436Z",
+  "generated_at": "2026-05-18T10:07:48.710594Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -7902,7 +7917,7 @@
     "thesis_embedding_similarity": 0.053969052806656564
   },
   "sync": {
-    "generated_at": "2026-05-18T09:15:38.804436Z",
+    "generated_at": "2026-05-18T10:07:48.710594Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },

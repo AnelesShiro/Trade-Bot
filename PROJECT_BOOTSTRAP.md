@@ -16,8 +16,9 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Qwen base URL source of truth: `LLM_BASE_URL=https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
 - API failover is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, and risk notifications. This is separate from `LLM_ALLOW_FALLBACK`; silent model fallback remains impossible.
-- Prompt/rulebook now include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, use break-even/time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
+- Prompt/rulebook now include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, break-even is enforced locally around +1R on every open trade, use time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
 - Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `IN PROGRESS` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
+- Render/cloud dashboard snapshot mode mirrors the local risk automation tabs: Pending Orders, Risk Automation, and API Failover Events. Snapshot contract requires the `risk_automation` payload.
 
 ## Operating Rules
 

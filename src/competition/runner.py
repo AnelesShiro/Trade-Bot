@@ -879,7 +879,7 @@ class CompetitionRunner:
             "advanced_trade_management": {
                 "consider_every_cycle": True,
                 "PLACE_TRIGGER": "Prefer when entry needs future pullback, breakout, or RSI confirmation; include trigger_order and full nested execution_signal.",
-                "position_risk": "On OPEN, usually consider break_even and time_exit; add trailing_stop for momentum or trend-continuation trades.",
+                "position_risk": "Break-even is always enforced locally around +1R; on OPEN, consider time_exit and add trailing_stop for momentum or trend-continuation trades.",
                 "cooldown": "If cooldown context is active, avoid new entries unless managing existing positions.",
                 "failover": "Automatic and transparent; keep reasoning provider-neutral.",
             },

@@ -861,6 +861,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
     diversity = snapshot.get("strategy_diversity_metrics", {})
     workload = snapshot.get("workload", {})
+    risk_automation = snapshot.get("risk_automation", {}) if isinstance(snapshot.get("risk_automation"), dict) else {}
     audit_missing = "signal_audit_summary" not in snapshot
     audit_summary = _snapshot_audit_summary(snapshot)
     latest_cycle_at = pd.to_datetime(snapshot.get("system_status", {}).get("latest_cycle_at"), utc=True, errors="coerce")
@@ -932,6 +933,12 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     banner_cols[3].metric("Start / End", f"{fmt_short_time(start_dt)} -> {fmt_short_time(end_dt)}")
     st.progress(percent_complete)
     render_cycle_status(snapshot.get("runner", {}))
+    risk_cols = st.columns(3)
+    active_models = risk_automation.get("active_models", {}) if isinstance(risk_automation.get("active_models"), dict) else {}
+    active_fallback_count = sum(1 for row in active_models.values() if isinstance(row, dict) and row.get("using_fallback"))
+    risk_cols[0].metric("Pending orders", int(risk_automation.get("pending_orders_count") or 0))
+    risk_cols[1].metric("Cooldowns", int(risk_automation.get("active_cooldown_count") or 0))
+    risk_cols[2].metric("Fallback models", active_fallback_count)
 
     tabs = st.tabs(
         [
@@ -948,6 +955,9 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
             "API Cost Audit",
             "Workload Attribution",
             "Strategy Diversity",
+            "Pending Orders",
+            "Risk Automation",
+            "API Failover Events",
             "Configuration",
         ]
     )
@@ -1126,6 +1136,15 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
             st.info("No diversity metrics yet.")
 
     with tabs[13]:
+        render_cloud_pending_orders_tab(risk_automation, selected_agents or snapshot_agent_ids)
+
+    with tabs[14]:
+        render_cloud_risk_automation_tab(risk_automation, open_positions)
+
+    with tabs[15]:
+        render_cloud_api_failover_tab(risk_automation)
+
+    with tabs[16]:
         st.subheader("Configuration")
         st.markdown("#### Deployment & Versions")
         render_deployment_panel(snapshot.get("deployment", {}))
@@ -1142,6 +1161,64 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
                 "sync_note": sync_note,
             }
         )
+
+
+def render_cloud_pending_orders_tab(risk_automation: dict[str, Any], selected_agents: list[str]) -> None:
+    st.subheader("Pending Orders")
+    frame = pd.DataFrame(risk_automation.get("pending_orders", []))
+    if selected_agents and not frame.empty and "agent_id" in frame.columns:
+        frame = frame[frame["agent_id"].isin(selected_agents)]
+    if frame.empty:
+        st.info("No pending orders recorded in the latest snapshot.")
+        return
+    st.dataframe(frame, width="stretch", hide_index=True)
+
+
+def render_cloud_risk_automation_tab(risk_automation: dict[str, Any], open_positions: pd.DataFrame) -> None:
+    st.subheader("Risk Automation")
+    risk = pd.DataFrame(risk_automation.get("position_risk", []))
+    if not risk.empty and not open_positions.empty and {"position_id"}.issubset(risk.columns) and {"id", "agent_id", "status", "stop_loss"}.issubset(open_positions.columns):
+        risk = risk.merge(open_positions[["id", "agent_id", "status", "stop_loss"]], left_on="position_id", right_on="id", how="left")
+    if risk.empty:
+        st.info("No automated risk state in the latest snapshot.")
+    else:
+        display = risk.copy()
+        if "config" in display.columns:
+            display["config"] = display["config"].apply(lambda value: json.dumps(value, separators=(",", ":"), default=str)[:240])
+        st.dataframe(display, width="stretch", hide_index=True)
+
+    st.subheader("Active Cooldowns")
+    cooldowns = pd.DataFrame(risk_automation.get("cooldowns", []))
+    if cooldowns.empty:
+        st.success("No active entry cooldowns.")
+    else:
+        st.dataframe(cooldowns, width="stretch", hide_index=True)
+
+    st.subheader("Risk Notifications")
+    notifications = pd.DataFrame(risk_automation.get("notifications", []))
+    if notifications.empty:
+        st.info("No risk automation notifications in the latest snapshot.")
+    else:
+        st.dataframe(notifications, width="stretch", hide_index=True)
+
+
+def render_cloud_api_failover_tab(risk_automation: dict[str, Any]) -> None:
+    st.subheader("API Failover Events")
+    active_models = risk_automation.get("active_models", {}) if isinstance(risk_automation.get("active_models"), dict) else {}
+    rows = [{"agent_id": agent_id, **payload} for agent_id, payload in active_models.items() if isinstance(payload, dict)]
+    states = pd.DataFrame(rows)
+    st.markdown("#### Active routes")
+    if states.empty:
+        st.info("No active route state in the latest snapshot.")
+    else:
+        st.dataframe(states, width="stretch", hide_index=True)
+
+    st.markdown("#### Recent events")
+    events = pd.DataFrame(risk_automation.get("failover_events", []))
+    if events.empty:
+        st.info("No failover events recorded in the latest snapshot.")
+    else:
+        st.dataframe(events, width="stretch", hide_index=True)
 
 
 def render_cloud_price_chart(snapshot: dict[str, Any]) -> None:

@@ -9,7 +9,7 @@ The JSON must conform to the provided schema. Use uppercase enum values such as 
 Advanced trade management is available and must be considered on every setup:
 
 - If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.
-- On `OPEN`, usually include `position_risk.break_even` around +1R/TP1 and `position_risk.time_exit` when the thesis has a time window.
+- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.
 - Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.
 - If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.
 - API failover is automatic; keep reasoning provider-neutral.

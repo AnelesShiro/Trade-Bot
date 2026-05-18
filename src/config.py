@@ -134,8 +134,8 @@ class TrailingStopSettings(BaseModel):
 
 class BreakEvenSettings(BaseModel):
     enabled: bool = True
-    apply_by_default: bool = False
-    trigger: str = "tp1"
+    apply_by_default: bool = True
+    trigger: str = "r_multiple"
     r_multiple: float = 1.0
     percent_gain: float = 0.01
     fee_buffer_pct: float = 0.0005

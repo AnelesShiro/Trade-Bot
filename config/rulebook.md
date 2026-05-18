@@ -177,7 +177,7 @@ Allowed actions:
 1. Attractive setup right now -> `OPEN`.
 2. Future pullback, breakout, or RSI condition needed -> `PLACE_TRIGGER`.
 3. Momentum or trend continuation -> consider `trailing_stop`.
-4. Trade should become risk-free after favorable movement -> prefer `break_even` around +1R/TP1.
+4. Break-even stop is enforced locally by default around +1R, before TP if needed.
 5. Thesis has a time horizon -> set `time_exit.max_hold_hours`.
 
 Cooldowns are enforced locally; if cooldown context is active, do not request new entries. API failover is automatic and should not affect strategy reasoning.
@@ -201,7 +201,7 @@ Include `position_risk` when it improves trade quality without changing the core
 - `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`
 - `time_exit`: `{enabled, max_hold_hours, only_if_profit_pct_below}`
 
-If omitted, only standard SL/TP/time-horizon rules apply. Automation never widens stop risk.
+If omitted, break-even still applies by default at `r_multiple=1.0`; other automation remains opt-in unless configured. Automation never widens stop risk.
 
 ### Valid JSON Templates
 

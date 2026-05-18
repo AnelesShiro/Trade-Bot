@@ -212,8 +212,6 @@ class RiskAutomationEngine:
 
 
 def _resolve_position_risk(signal: AgentSignal, cfg: RiskAutomationSettings) -> PositionRiskAutomation | None:
-    if signal.position_risk:
-        return PositionRiskAutomation.model_validate(signal.position_risk)
     defaults: dict[str, Any] = {}
     if cfg.trailing_stop.enabled and cfg.trailing_stop.apply_by_default:
         defaults["trailing_stop"] = {"enabled": True, **cfg.trailing_stop.model_dump(exclude={"apply_by_default"})}
@@ -221,6 +219,11 @@ def _resolve_position_risk(signal: AgentSignal, cfg: RiskAutomationSettings) -> 
         defaults["break_even"] = {"enabled": True, **cfg.break_even.model_dump(exclude={"apply_by_default"})}
     if cfg.time_exit.enabled and cfg.time_exit.apply_by_default:
         defaults["time_exit"] = {"enabled": True, **cfg.time_exit.model_dump(exclude={"apply_by_default"})}
+    if signal.position_risk:
+        explicit = PositionRiskAutomation.model_validate(signal.position_risk).model_dump(exclude_none=True)
+        defaults.update(explicit)
+        if cfg.break_even.enabled and cfg.break_even.apply_by_default:
+            defaults["break_even"] = {"enabled": True, **cfg.break_even.model_dump(exclude={"apply_by_default"})}
     if not defaults:
         return None
     return PositionRiskAutomation.model_validate(defaults)

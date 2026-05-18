@@ -69,6 +69,7 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "sync",
         "runner",
         "deployment",
+        "risk_automation",
     ]:
         assert key in snapshot
     for key in [
@@ -95,6 +96,8 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         assert key in snapshot["signal_audit_summary"]
     assert isinstance(snapshot["signal_audit_summary"]["recent_accepted_signals"], list)
     assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
+    for key in ["pending_orders", "cooldowns", "position_risk", "failover_events", "notifications", "active_models"]:
+        assert key in snapshot["risk_automation"]
     assert validate_snapshot_contract(snapshot) == []
 
 
@@ -125,6 +128,30 @@ def test_cycle_status_does_not_mark_active_phase_overdue() -> None:
 
 
 def test_snapshot_contract_rejects_missing_signal_audit() -> None:
-    errors = validate_snapshot_contract({"generated_at": "now", "runner": {}, "leaderboard": [], "rejected_signals_summary": {}, "deployment": {}})
+    errors = validate_snapshot_contract({"generated_at": "now", "runner": {}, "leaderboard": [], "rejected_signals_summary": {}, "deployment": {}, "risk_automation": {}})
 
     assert any("signal_audit_summary" in error for error in errors)
+
+
+def test_snapshot_contract_rejects_missing_risk_automation() -> None:
+    errors = validate_snapshot_contract(
+        {
+            "generated_at": "now",
+            "runner": {},
+            "leaderboard": [],
+            "rejected_signals_summary": {},
+            "deployment": {},
+            "signal_audit_summary": {
+                "accepted_signal_count": 0,
+                "rejected_signal_count": 0,
+                "acceptance_rate": 0,
+                "rejection_breakdown": {},
+                "latest_accepted_signal": None,
+                "latest_rejected_signal": None,
+                "recent_accepted_signals": [],
+                "recent_rejected_signals": [],
+            },
+        }
+    )
+
+    assert any("risk_automation" in error for error in errors)

@@ -14,7 +14,7 @@
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
 - `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
-- Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. Agents are now explicitly told to consider advanced trade management on every setup: use `PLACE_TRIGGER` for future confirmation, break-even/time exits when useful, and trailing stops selectively for trends. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
+- Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. Agents are now explicitly told to consider advanced trade management on every setup: use `PLACE_TRIGGER` for future confirmation, break-even is enforced locally around +1R on every open trade, time exits when useful, and trailing stops selectively for trends. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
 - Live runner phase is persisted in SQLite table `runner_state`. During active bot calls the dashboard/snapshot should display phases such as `CALLING_DEEPSEEK` or `CALLING_QWEN` and `IN PROGRESS`, not `OVERDUE`.
 - Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
 - Use `.venv\Scripts\python.exe` for validation and tests.
@@ -408,11 +408,11 @@
   - `config/rulebook.md` has compact JSON templates for normal entry, local risk automation, conditional trigger entry, and position hold/update.
   - `prompts/system_prompt.md`, runner schema hints, reflection guidance, and shared-learning instructions actively encourage appropriate use of `PLACE_TRIGGER`, `trailing_stop`, `break_even`, and `time_exit` without changing backend defaults.
   - `tests/test_prompt_contracts.py` locks the formula/templates into regression tests.
-- Defaults: `trailing_stop.apply_by_default`, `break_even.apply_by_default`, `time_exit.apply_by_default` are **false** so existing competition behavior is unchanged.
+- Defaults: `break_even.apply_by_default` is **true** with `trigger: r_multiple` and `r_multiple: 1.0`, so every new accepted `OPEN` gets local break-even protection. `trailing_stop.apply_by_default` and `time_exit.apply_by_default` remain **false**.
 - Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally. Triggers include consecutive losses, daily loss, weekly drawdown, rejection rate, and API instability.
 - API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.
 - SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications` (created by `create_schema` / live runner startup).
-- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications.
+- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications. Local SQLite dashboard and Render/cloud snapshot dashboard both expose these tabs.
 - Tests: `tests/test_risk_automation.py`.
 
 # Deployment Information

@@ -198,6 +198,7 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
         "signal_audit_summary",
         "rejected_signals_summary",
         "deployment",
+        "risk_automation",
     ]
     for key in required_top_level:
         if key not in snapshot:
@@ -229,6 +230,13 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
             int(audit.get(key) or 0)
         except (TypeError, ValueError):
             errors.append(f"signal_audit_summary.{key} must be numeric")
+    risk = snapshot.get("risk_automation")
+    if not isinstance(risk, dict):
+        errors.append("risk_automation must be an object")
+    else:
+        for key in ["pending_orders", "cooldowns", "position_risk", "failover_events", "notifications", "active_models"]:
+            if key not in risk:
+                errors.append(f"missing risk_automation.{key}")
     return errors
 
 

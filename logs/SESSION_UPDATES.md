@@ -633,3 +633,52 @@ Entry template:
 - Notes:
   - Live runner must reload prompt/rulebook text before agents see these changes; queue a safe restart at cycle boundary instead of interrupting the current cycle.
   - Runtime `outputs/*` files remain dirty and should not be committed.
+
+## 2026-05-18 - Mandatory Break-Even Stop Default
+
+- User request (Vietnamese): Make bots always use break-even stop, meaning move stop loss to breakeven when a position is profitably strong enough, for example +1R, even before take profit is hit.
+- What changed:
+  - `config/settings.yaml` now has `risk_automation.break_even.apply_by_default: true`.
+  - Break-even default trigger changed from `tp1` to `r_multiple` with `r_multiple: 1.0`, so the local engine can move SL to breakeven after about +1R without waiting for TP1.
+  - `src/config.py` defaults were aligned so new/test settings also default to mandatory +1R break-even protection.
+  - `_resolve_position_risk()` now merges default automation with any agent-provided `position_risk`; mandatory break-even is re-applied after the merge so an agent cannot accidentally omit or disable it.
+  - Prompt/rulebook/schema-hint wording now says break-even is enforced locally around +1R on every open trade.
+  - `PROJECT_BOOTSTRAP.md` and `PROJECT_CONTEXT.md` were updated so future sessions know break-even is now a backend default, not just a prompt suggestion.
+  - Added regression tests proving default break-even is attached to `OPEN` signals and cannot be disabled by an agent payload.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py tests/test_prompt_contracts.py -q` -> 17 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\config.py src\trading\risk_automation\engine.py src\competition\runner.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 68 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - This changes future accepted `OPEN` behavior by adding local break-even protection automatically.
+  - Trailing stop and time exit remain opt-in unless separately configured.
+  - Existing open positions only receive this default if they already have or later get a `position_risk_state`; the default is attached when new positions are opened.
+
+## 2026-05-18 - Render Dashboard Risk Automation Tabs
+
+- User request (Vietnamese): Local web already has tabs for the new risk-management features, but Render web does not; fix Render.
+- Root cause:
+  - Local dashboard reads SQLite and already renders DB-backed tabs: Pending Orders, Risk Automation, API Failover Events.
+  - Render/cloud dashboard runs in snapshot mode from `cloud/dashboard_snapshot.json`; snapshot export already contained `risk_automation`, but `render_cloud_snapshot_dashboard()` did not create the three risk automation tabs.
+- What changed:
+  - Cloud snapshot dashboard now includes tabs:
+    - Pending Orders
+    - Risk Automation
+    - API Failover Events
+  - Cloud Overview now shows risk automation metric cards from the snapshot: pending orders, active cooldowns, active fallback models.
+  - Added snapshot-mode render helpers that read `risk_automation.pending_orders`, `position_risk`, `cooldowns`, `notifications`, `active_models`, and `failover_events`.
+  - Snapshot contract now requires top-level `risk_automation` and validates required subkeys so Render cannot silently lose these sections again.
+  - `TODO.md`, `PROJECT_BOOTSTRAP.md`, and `PROJECT_CONTEXT.md` updated so future sessions know cloud dashboard mirrors the local risk tabs.
+  - Exported a fresh `cloud/dashboard_snapshot.json`.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_hot_reload.py -q` -> 8 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\dashboard\app.py src\cloud\snapshot_exporter.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 69 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` files remain dirty and should not be committed.
+  - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.

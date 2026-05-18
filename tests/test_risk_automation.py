@@ -11,7 +11,7 @@ from src.storage.repository import ArenaRepository
 from src.trading.execution import PaperExecutionEngine
 from src.trading.position_manager import PositionManager
 from src.trading.risk_automation.cooldown import CooldownManager
-from src.trading.risk_automation.engine import RiskAutomationEngine
+from src.trading.risk_automation.engine import RiskAutomationEngine, _resolve_position_risk
 from src.trading.risk_automation.position_rules import apply_break_even, apply_trailing_stop, time_exit_due
 from src.trading.risk_automation.triggers import evaluate_trigger
 from src.trading.risk_automation.types import BreakEvenConfig, TimeExitConfig, TrailingStopConfig
@@ -97,6 +97,72 @@ def test_break_even_once() -> None:
     assert new_sl >= position.average_entry
     _, state2, applied2 = apply_break_even(position, 102000, config, state)
     assert not applied2
+
+
+def test_break_even_applies_by_default_on_open(test_settings) -> None:
+    signal = AgentSignal(
+        agent="crypto-qwen",
+        decision=Decision.PAPER_TRADE,
+        action=Action.OPEN,
+        symbol="BTC",
+        direction=Direction.LONG,
+        leverage=5,
+        margin_used_usdt=1000,
+        notional_exposure_usdt=5000,
+        entry=100000,
+        stop_loss=99000,
+        take_profit_1=103000,
+        take_profit_2=105000,
+        account_risk_usdt=50,
+        thesis="default break-even test",
+        invalidation="stop loss",
+        counterargument="setup can fail",
+        data_used=["test"],
+    )
+
+    automation = _resolve_position_risk(signal, test_settings.risk_automation)
+
+    assert automation is not None
+    assert automation.break_even is not None
+    assert automation.break_even.enabled is True
+    assert automation.break_even.trigger == "r_multiple"
+    assert automation.break_even.r_multiple == 1.0
+
+
+def test_break_even_default_cannot_be_disabled_by_signal(test_settings) -> None:
+    signal = AgentSignal(
+        agent="crypto-qwen",
+        decision=Decision.PAPER_TRADE,
+        action=Action.OPEN,
+        symbol="BTC",
+        direction=Direction.LONG,
+        leverage=5,
+        margin_used_usdt=1000,
+        notional_exposure_usdt=5000,
+        entry=100000,
+        stop_loss=99000,
+        take_profit_1=103000,
+        take_profit_2=105000,
+        account_risk_usdt=50,
+        thesis="mandatory break-even test",
+        invalidation="stop loss",
+        counterargument="setup can fail",
+        data_used=["test"],
+        position_risk={
+            "break_even": {"enabled": False, "trigger": "tp1"},
+            "time_exit": {"enabled": True, "max_hold_hours": 12},
+        },
+    )
+
+    automation = _resolve_position_risk(signal, test_settings.risk_automation)
+
+    assert automation is not None
+    assert automation.break_even is not None
+    assert automation.break_even.enabled is True
+    assert automation.break_even.trigger == "r_multiple"
+    assert automation.break_even.r_multiple == 1.0
+    assert automation.time_exit is not None
+    assert automation.time_exit.max_hold_hours == 12
 
 
 def test_time_exit_due() -> None:
