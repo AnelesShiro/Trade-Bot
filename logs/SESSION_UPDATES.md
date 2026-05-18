@@ -870,3 +870,30 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+
+## 2026-05-18 - Mandatory Break-Even Stop Enforcement Fix
+
+- User report: Check whether both bots are actually executing mandatory Break-Even Stop; SL did not appear to move to entry even though a position was profitable.
+- Findings:
+  - `config/settings.yaml` already had `risk_automation.break_even.enabled: true` and `break_even.apply_by_default: true`.
+  - Qwen position `crypto-qwen-8e6a3ee4e3` had `position_risk_state`, but SL was still `76200` after price reached/cleared TP1.
+  - Root cause: `apply_break_even()` compared PnL in USDT against raw price distance `abs(entry - stop_loss)` instead of account-risk USDT. This made the +1R trigger too hard to reach.
+  - DeepSeek position `DS-SHORT-004` was opened before mandatory break-even defaults were enabled, so it initially had no `position_risk_state`.
+- What changed:
+  - `apply_break_even()` now computes +1R using account-risk USDT: `abs(calculate_pnl(direction, notional, entry, stop_loss))`.
+  - Risk automation now attaches default mandatory position-risk state to existing open positions that are missing it, so older positions can still receive mandatory break-even protection.
+  - `parse_position_risk()` now unwraps multiple layers of JSON string encoding defensively.
+  - Risk automation stores normalized dict config payloads instead of re-double-encoding `position_risk_state.config_json`.
+- Live DB repair applied:
+  - Ran one local risk tick using latest market snapshot price `77624.5`.
+  - Qwen position `crypto-qwen-8e6a3ee4e3` moved SL from `76200` to `76853.76768` (`entry + fee_buffer`), with `break_even_applied: true`.
+  - DeepSeek position `DS-SHORT-004` now has mandatory break-even risk state, but did not move SL yet because at `77624.5` it was about `0.75R` on the remaining partial position, below the +1R trigger.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py -q` -> 18 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\trading\risk_automation\engine.py src\trading\risk_automation\position_rules.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 81 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.

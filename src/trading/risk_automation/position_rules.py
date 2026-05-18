@@ -13,8 +13,10 @@ from src.trading.pnl import calculate_pnl
 def parse_position_risk(payload: str | dict[str, Any] | None) -> PositionRiskAutomation | None:
     if not payload:
         return None
-    data = json.loads(payload) if isinstance(payload, str) else payload
-    if isinstance(data, str):
+    data = payload
+    for _ in range(4):
+        if not isinstance(data, str):
+            break
         data = json.loads(data)
     if not data:
         return None
@@ -91,7 +93,8 @@ def apply_break_even(
         hit = move >= config.percent_gain
     else:
         pnl = calculate_pnl(position.direction, position.notional, entry, current_price)
-        hit = pnl >= risk * (config.r_multiple or 1.0)
+        account_risk = abs(calculate_pnl(position.direction, position.notional, entry, position.stop_loss))
+        hit = account_risk > 0 and pnl >= account_risk * (config.r_multiple or 1.0)
     if not hit:
         return position.stop_loss, state, False
     if position.direction == Direction.LONG.value:

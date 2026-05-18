@@ -100,6 +100,30 @@ def test_break_even_once() -> None:
     assert not applied2
 
 
+def test_break_even_r_multiple_uses_account_risk_usdt() -> None:
+    position = PositionRecord(
+        id="p1",
+        agent_id="crypto-qwen",
+        symbol="BTC",
+        direction="LONG",
+        status="OPEN",
+        leverage=5,
+        margin=1000,
+        notional=5000,
+        average_entry=76815.36,
+        stop_loss=76200,
+        take_profit_1=77600,
+        take_profit_2=78200,
+    )
+    config = BreakEvenConfig(enabled=True, trigger="r_multiple", r_multiple=1.0, fee_buffer_pct=0.0005)
+
+    new_sl, state, applied = apply_break_even(position, 77624.5, config, {})
+
+    assert applied
+    assert state["break_even_applied"] is True
+    assert new_sl > position.average_entry
+
+
 def test_break_even_applies_by_default_on_open(test_settings) -> None:
     signal = AgentSignal(
         agent="crypto-qwen",
@@ -128,6 +152,38 @@ def test_break_even_applies_by_default_on_open(test_settings) -> None:
     assert automation.break_even.enabled is True
     assert automation.break_even.trigger == "r_multiple"
     assert automation.break_even.r_multiple == 1.0
+
+
+def test_market_tick_attaches_mandatory_break_even_to_existing_position(repository: ArenaRepository, test_settings) -> None:
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-qwen"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+    repository.add_or_update_position(
+        PositionRecord(
+            id="legacy-qwen",
+            agent_id="crypto-qwen",
+            symbol="BTC",
+            direction="LONG",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=76815.36,
+            stop_loss=76200,
+            take_profit_1=77600,
+            take_profit_2=78200,
+        )
+    )
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    market = MarketState(symbol="BTCUSDT", exchange="binanceusdm", current_price=77624.5, timeframe="1h", indicators=IndicatorSnapshot(rsi_14=50))
+    engine.run_market_tick(market, rsi_14=50)
+
+    position = repository.get_position("legacy-qwen")
+    risk_state = repository.get_position_risk_state("legacy-qwen")
+    assert risk_state is not None
+    assert position is not None
+    assert position.stop_loss > position.average_entry
 
 
 def test_break_even_default_cannot_be_disabled_by_signal(test_settings) -> None:

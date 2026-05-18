@@ -164,12 +164,20 @@ class RiskAutomationEngine:
         current_price = market_state.current_price
         for position in self.repository.open_positions():
             risk_row = self.repository.get_position_risk_state(position.id)
-            if not risk_row:
-                continue
-            automation = parse_position_risk(risk_row.config_json)
+            if risk_row:
+                automation = parse_position_risk(risk_row.config_json)
+                state = json.loads(risk_row.state_json or "{}")
+                config_payload = automation.model_dump() if automation else {}
+            else:
+                automation = _default_position_risk(self.cfg)
+                if not automation:
+                    continue
+                state = {"atr_14": None}
+                config_payload = automation.model_dump()
+                self.repository.upsert_position_risk_state(position.id, config_payload, state)
             if not automation:
                 continue
-            state = json.loads(risk_row.state_json or "{}")
+            original_state = dict(state)
             if atr_14 is not None:
                 state["atr_14"] = atr_14
             updated_sl = position.stop_loss
@@ -206,20 +214,25 @@ class RiskAutomationEngine:
                 self.execution.execute(close_signal, current_price, execution_timestamp=datetime.now(UTC))
                 stats["time_exits"] += 1
                 continue
-            if updated_sl != position.stop_loss or state != json.loads(risk_row.state_json or "{}"):
+            if updated_sl != position.stop_loss or state != original_state:
                 self.repository.add_or_update_position(position)
-            self.repository.upsert_position_risk_state(position.id, risk_row.config_json, state, merge_state=True)
+            self.repository.upsert_position_risk_state(position.id, config_payload, state, merge_state=True)
         return stats
 
 
-def _resolve_position_risk(signal: AgentSignal, cfg: RiskAutomationSettings) -> PositionRiskAutomation | None:
+def _default_position_risk(cfg: RiskAutomationSettings) -> PositionRiskAutomation | None:
     defaults: dict[str, Any] = {}
-    if cfg.trailing_stop.enabled and cfg.trailing_stop.apply_by_default:
-        defaults["trailing_stop"] = {"enabled": True, **cfg.trailing_stop.model_dump(exclude={"apply_by_default"})}
     if cfg.break_even.enabled and cfg.break_even.apply_by_default:
         defaults["break_even"] = {"enabled": True, **cfg.break_even.model_dump(exclude={"apply_by_default"})}
+    if cfg.trailing_stop.enabled and cfg.trailing_stop.apply_by_default:
+        defaults["trailing_stop"] = {"enabled": True, **cfg.trailing_stop.model_dump(exclude={"apply_by_default"})}
     if cfg.time_exit.enabled and cfg.time_exit.apply_by_default:
         defaults["time_exit"] = {"enabled": True, **cfg.time_exit.model_dump(exclude={"apply_by_default"})}
+    return PositionRiskAutomation.model_validate(defaults) if defaults else None
+
+
+def _resolve_position_risk(signal: AgentSignal, cfg: RiskAutomationSettings) -> PositionRiskAutomation | None:
+    defaults = _default_position_risk(cfg).model_dump(exclude_none=True) if _default_position_risk(cfg) else {}
     if signal.position_risk:
         explicit = PositionRiskAutomation.model_validate(signal.position_risk).model_dump(exclude_none=True)
         defaults.update(explicit)
