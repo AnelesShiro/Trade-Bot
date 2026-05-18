@@ -14,6 +14,7 @@
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
 - `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
+- Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
 - Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
 - Use `.venv\Scripts\python.exe` for validation and tests.
 
@@ -400,6 +401,10 @@
 - Agent JSON extensions (optional; backward compatible):
   - `action: PLACE_TRIGGER` with `trigger_order` (`trigger` tree with `price` / `rsi_14`, AND/OR, `expires_at`, `execution_signal`).
   - `position_risk` on `OPEN` for `trailing_stop`, `break_even`, `time_exit`.
+- Bot-facing prompt contracts:
+  - `config/rulebook.md` has compact JSON templates for normal entry, local risk automation, conditional trigger entry, and position hold/update.
+  - `prompts/system_prompt.md` and runner schema hints repeat the validator risk math so agents do not confuse account risk with risk budget.
+  - `tests/test_prompt_contracts.py` locks the formula/templates into regression tests.
 - Defaults: `trailing_stop.apply_by_default`, `break_even.apply_by_default`, `time_exit.apply_by_default` are **false** so existing competition behavior is unchanged.
 - Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally. Triggers include consecutive losses, daily loss, weekly drawdown, rejection rate, and API instability.
 - API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.

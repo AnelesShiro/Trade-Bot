@@ -646,11 +646,17 @@ class CompetitionRunner:
         schema_hint = {
             "agent": agent_id,
             "decision": "NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE",
-            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD",
+            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER",
             "symbol": "BTC",
             "direction": "NONE|LONG|SHORT",
             "execution_type": "NONE|MARKET|LIMIT|CONDITIONAL",
             "data_used": ["list", "of", "strings"],
+            "risk_math": {
+                "notional_exposure_usdt": "margin_used_usdt * leverage",
+                "account_risk_usdt": "abs(entry - stop_loss) / entry * notional_exposure_usdt",
+                "account_risk_percent": "account_risk_usdt / account_equity; use decimal fraction",
+                "warning": "Do not multiply by leverage again after using notional_exposure_usdt.",
+            },
             "allowed_fields_only": sorted(AgentSignal.model_fields),
         }
         no_trade_example = {
@@ -804,11 +810,18 @@ class CompetitionRunner:
         schema_hint = {
             "agent": agent_id,
             "decision": "NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE",
-            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD",
+            "action": "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER",
             "symbol": "BTC",
             "direction": "NONE|LONG|SHORT",
             "execution_type": "NONE|MARKET|LIMIT|CONDITIONAL",
-                "required_for_trades": [
+            "risk_math": {
+                "notional_exposure_usdt": "margin_used_usdt * leverage",
+                "account_risk_usdt": "abs(entry - stop_loss) / entry * notional_exposure_usdt",
+                "account_risk_percent": "account_risk_usdt / account_equity; use decimal fraction",
+                "example": "entry 77000, stop 76500, notional 5000 => account_risk_usdt 32.47 and account_risk_percent 0.003247 on 10000 equity",
+                "warning": "Do not multiply by leverage again after using notional_exposure_usdt.",
+            },
+            "required_for_trades": [
                 "entry",
                 "leverage",
                 "margin_used_usdt",
@@ -820,7 +833,7 @@ class CompetitionRunner:
                 "invalidation",
                 "counterargument",
                 "data_used",
-                ],
+            ],
             "optional_tool_request_format": {
                 "tool_requests": [
                     {
@@ -829,8 +842,12 @@ class CompetitionRunner:
                     }
                 ]
             },
-                "available_local_tools": sorted(ALLOWED_TOOLS),
-                "feature_flags": self._feature_flags_for_agent(agent_id),
+            "optional_local_automation": {
+                "PLACE_TRIGGER": "Use trigger_order with trigger conditions and a full nested execution_signal.",
+                "position_risk": "On OPEN only: trailing_stop, break_even, and time_exit settings.",
+            },
+            "available_local_tools": sorted(ALLOWED_TOOLS),
+            "feature_flags": self._feature_flags_for_agent(agent_id),
         }
         profile = self.shared_learning.profile(agent_id)
         shared_context = context.get("shared_learning", {})

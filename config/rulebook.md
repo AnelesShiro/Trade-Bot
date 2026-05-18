@@ -83,6 +83,7 @@ A trade idea is valid only if:
 - Stop loss is defined before take profit.
 - Margin used is stated in USDT and as percent of account.
 - Account risk at stop loss is stated in USDT and percent of account.
+- Account risk must equal the validator formula in the Futures PnL Convention section.
 - If modifying an existing position, the target position ID or context is stated.
 - Thesis and invalidation are both clear.
 - Counterargument is present.
@@ -192,6 +193,159 @@ You may include `position_risk` on an accepted `OPEN` signal:
 
 If omitted, only standard SL/TP/time-horizon rules apply. Automation never widens stop risk.
 
+### Valid JSON Templates
+
+Use these templates as shape examples. Replace prices with the live market setup. Do not copy stale prices blindly.
+
+#### Normal market entry with correct risk math
+
+```json
+{
+  "agent": "crypto-qwen",
+  "decision": "PAPER_TRADE",
+  "action": "OPEN",
+  "symbol": "BTC",
+  "direction": "LONG",
+  "execution_type": "MARKET",
+  "leverage": 5,
+  "margin_used_usdt": 1000,
+  "margin_used_percent": 0.10,
+  "notional_exposure_usdt": 5000,
+  "entry": 77000,
+  "stop_loss": 76500,
+  "take_profit_1": 77800,
+  "take_profit_2": 78200,
+  "time_horizon": "6-12h",
+  "account_risk_usdt": 32.47,
+  "account_risk_percent": 0.003247,
+  "total_account_risk_after_action_usdt": 32.47,
+  "total_account_risk_after_action_percent": 0.003247,
+  "liquidation_risk_note": "5x simulated paper leverage; stop is far from liquidation.",
+  "confidence": 3,
+  "risk_reward_to_tp1": 1.6,
+  "risk_reward_to_tp2": 2.4,
+  "thesis": "Price reclaimed support with improving momentum.",
+  "invalidation": "Close back below support or stop loss hit.",
+  "counterargument": "Trend may remain weak and reject the reclaim.",
+  "data_used": ["market_state", "indicators", "recent_candles"],
+  "notes_for_ledger": "Risk formula: abs(77000-76500)/77000*5000 = 32.47 USDT."
+}
+```
+
+#### Open with local risk automation
+
+```json
+{
+  "agent": "crypto-qwen",
+  "decision": "PAPER_TRADE",
+  "action": "OPEN",
+  "symbol": "BTC",
+  "direction": "LONG",
+  "execution_type": "MARKET",
+  "leverage": 5,
+  "margin_used_usdt": 1000,
+  "margin_used_percent": 0.10,
+  "notional_exposure_usdt": 5000,
+  "entry": 77000,
+  "stop_loss": 76500,
+  "take_profit_1": 77800,
+  "take_profit_2": 78200,
+  "time_horizon": "6-12h",
+  "account_risk_usdt": 32.47,
+  "account_risk_percent": 0.003247,
+  "total_account_risk_after_action_usdt": 32.47,
+  "total_account_risk_after_action_percent": 0.003247,
+  "liquidation_risk_note": "5x simulated paper leverage; stop is far from liquidation.",
+  "confidence": 3,
+  "risk_reward_to_tp1": 1.6,
+  "risk_reward_to_tp2": 2.4,
+  "thesis": "Breakout continuation setup.",
+  "invalidation": "Breakout fails and stop loss is reached.",
+  "counterargument": "Breakout may be a liquidity sweep.",
+  "data_used": ["market_state", "indicators", "recent_candles"],
+  "position_risk": {
+    "trailing_stop": {"enabled": true, "mode": "percent", "distance_pct": 0.01},
+    "break_even": {"enabled": true, "trigger": "tp1", "fee_buffer_pct": 0.0005},
+    "time_exit": {"enabled": true, "max_hold_hours": 12, "only_if_profit_pct_below": 0.002}
+  }
+}
+```
+
+#### Conditional order
+
+```json
+{
+  "agent": "crypto-qwen",
+  "decision": "PAPER_TRADE",
+  "action": "PLACE_TRIGGER",
+  "symbol": "BTC",
+  "direction": "NONE",
+  "execution_type": "CONDITIONAL",
+  "thesis": "Enter only if price confirms the breakout.",
+  "invalidation": "Trigger expires or price breaks the invalidation level first.",
+  "counterargument": "Waiting for trigger may miss the first move.",
+  "data_used": ["market_state", "indicators", "recent_candles"],
+  "trigger_order": {
+    "trigger": {
+      "logic": "AND",
+      "conditions": [
+        {"field": "price", "op": "gte", "value": 77000},
+        {"field": "rsi_14", "op": "gte", "value": 45}
+      ]
+    },
+    "expires_at": "2026-05-18T18:00:00Z",
+    "execution_signal": {
+      "agent": "crypto-qwen",
+      "decision": "PAPER_TRADE",
+      "action": "OPEN",
+      "symbol": "BTC",
+      "direction": "LONG",
+      "execution_type": "MARKET",
+      "leverage": 5,
+      "margin_used_usdt": 1000,
+      "margin_used_percent": 0.10,
+      "notional_exposure_usdt": 5000,
+      "entry": 77000,
+      "stop_loss": 76500,
+      "take_profit_1": 77800,
+      "take_profit_2": 78200,
+      "time_horizon": "6-12h",
+      "account_risk_usdt": 32.47,
+      "account_risk_percent": 0.003247,
+      "total_account_risk_after_action_usdt": 32.47,
+      "total_account_risk_after_action_percent": 0.003247,
+      "liquidation_risk_note": "5x simulated paper leverage; stop is far from liquidation.",
+      "confidence": 3,
+      "risk_reward_to_tp1": 1.6,
+      "risk_reward_to_tp2": 2.4,
+      "thesis": "Triggered breakout entry.",
+      "invalidation": "Stop loss is reached after trigger.",
+      "counterargument": "Trigger may activate into a failed breakout.",
+      "data_used": ["market_state", "indicators", "trigger_order"]
+    }
+  }
+}
+```
+
+#### Position update / hold
+
+```json
+{
+  "agent": "crypto-qwen",
+  "decision": "POSITION_UPDATE",
+  "action": "HOLD",
+  "symbol": "BTC",
+  "position_id": "existing-position-id",
+  "position_context": "Existing LONG remains above invalidation and has not reached TP/SL.",
+  "direction": "LONG",
+  "execution_type": "NONE",
+  "thesis": "Original thesis remains intact.",
+  "invalidation": "Close below support or stop loss hit.",
+  "counterargument": "Momentum is slowing and may require reduce/cut next cycle.",
+  "data_used": ["open_positions", "market_state", "indicators"]
+}
+```
+
 ### Constraints
 
 - Each `OPEN`, `ADD`, or `DCA` uses no more than 10% account equity as new margin.
@@ -217,6 +371,9 @@ For paper tracking:
 - Notional exposure = margin used x leverage
 - Long PnL = notional exposure x ((exit price - entry price) / entry price)
 - Short PnL = notional exposure x ((entry price - exit price) / entry price)
+- Account risk at stop = abs(entry price - stop loss) / entry price x notional exposure
+- Do not multiply by leverage again after notional exposure has already been calculated.
+- Example: margin 1,000 USDT at 5x means notional 5,000 USDT. Long entry 77,000 and stop 76,500 gives risk = 500 / 77,000 x 5,000 = 32.47 USDT, or 0.3247% of a 10,000 USDT account. In JSON, write `account_risk_percent: 0.003247`.
 - Account PnL % = PnL USDT / 10,000 x 100
 
 Fees and funding are ignored unless added later.

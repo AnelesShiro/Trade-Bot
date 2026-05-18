@@ -455,3 +455,62 @@ Entry template:
 - Notes:
   - Trading behavior for normal signals remains unchanged. New features are local/additive and only activate through config or optional signal fields.
   - Runtime `outputs/*` and generated snapshot files are live-generated and should not be reverted or committed unless explicitly requested.
+
+## 2026-05-18 - Qwen No-Trade Health Check
+
+- User request (Vietnamese): Check why Qwen has not entered trades for a long time; determine whether Qwen is healthy or producing invalid signals.
+- Findings:
+  - Qwen is healthy at the API/model layer. Latest checkpoint is cycle `60` completed; Qwen API requests succeeded in cycles `53` through `60`.
+  - Qwen is currently on primary route `qwen/qwen3-max-2026-01-23`; no active fallback, no cooldown, and no risk notifications.
+  - Latest Qwen signals cycles `56`-`60` are accepted `NO_TRADE` / `WATCHLIST`, not technical failures.
+  - Qwen has `0` accepted `PAPER_TRADE OPEN` signals and `0` trades in DB so far.
+  - Qwen attempted `OPEN` in cycles `51`, `54`, and `55`, but those signals were rejected by validation.
+- Root cause of rejected Qwen entries:
+  - Rejection code: `RISK_LIMIT_EXCEEDED`.
+  - Main reason: `declared account risk differs from calculated risk by more than 25%`.
+  - Examples:
+    - Cycle `55`: entry `77000`, stop `76500`, notional `5000` -> calculated risk about `32.47 USDT`, but Qwen declared `135.14 USDT`.
+    - Cycle `54`: entry `77800`, stop `77500`, notional `5000` -> calculated risk about `19.28 USDT`, but Qwen declared `193.55 USDT`.
+    - Cycle `51`: short entry `78450`, stop `78650`, notional `5000` -> calculated risk about `12.75 USDT`, but Qwen declared `254.76 USDT`.
+  - One rejected cycle also had `risk/reward to TP1 below 1:1.5`.
+- Interpretation:
+  - Qwen is not blocked and is not failing auth/model verification now.
+  - Qwen is conservative in the recent downtrend and often chooses accepted `NO_TRADE`.
+  - When Qwen does try to trade, it has been miscalculating `account_risk_usdt` versus the validator formula: `abs(entry - stop_loss) / entry * notional_exposure_usdt`.
+- Commands/evidence:
+  - `python -m src.cli show-failover-status` -> Qwen primary route, no fallback.
+  - `python -m src.cli list-cooldowns` -> `[]`.
+  - `python -m src.cli list-risk-notifications --limit 20` -> `[]`.
+  - SQLite `api_requests` and `signals` queries confirmed the cycle and rejection details above.
+
+## 2026-05-18 - Bot Rule/Feature Prompt Contract Update
+
+- User request (Vietnamese): Fix Qwen's risk misunderstanding, check whether both bots understand all rules/features, and add examples/templates if needed.
+- Diagnosis:
+  - Project validator formula is correct for USDT linear perps.
+  - Qwen was misreporting `account_risk_usdt`, likely treating it as risk budget or multiplying leverage again after notional.
+  - Existing prompt/rulebook stated account risk was required but did not spell out the exact validator formula or provide complete feature examples.
+  - Runner schema hint omitted `PLACE_TRIGGER` from the action enum even though schema/engine support it.
+- What changed:
+  - `prompts/system_prompt.md` now states exact risk math:
+    - `notional_exposure_usdt = margin_used_usdt * leverage`
+    - `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`
+    - Do not multiply by leverage again after notional exposure.
+    - Percent fields are decimal fractions.
+  - `config/rulebook.md` now includes validated JSON templates for:
+    - normal `OPEN` with correct risk math,
+    - `OPEN` with `position_risk` (`trailing_stop`, `break_even`, `time_exit`),
+    - `PLACE_TRIGGER` with nested compliant `execution_signal`,
+    - `POSITION_UPDATE` / `HOLD`.
+  - `src/competition/runner.py` schema hints now include `PLACE_TRIGGER`, risk formula, account risk percent guidance, and optional local automation summary.
+  - Added `tests/test_prompt_contracts.py` to lock the prompt/rulebook formula and ensure the documented `OPEN` template passes validator.
+  - Updated `PROJECT_BOOTSTRAP.md` and `PROJECT_CONTEXT.md` with the new bot-facing contract.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_prompt_contracts.py tests/test_validator.py tests/test_risk_automation.py -q` -> 19 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 64 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed.
+  - `.\.venv\Scripts\python.exe -m src.cli safe-restart --no-wait` -> queued safe restart `522e28cfcb97426892f216dd66c164b9` so the live runner picks up prompt/rulebook changes after the current cycle checkpoint.
+- Notes:
+  - No validator/trading-engine behavior changed; this is prompt/rulebook/schema-hint guidance plus regression tests.
+  - Existing live runner keeps prompt/rulebook text in memory until restart; safe restart was queued instead of interrupting the active cycle.
