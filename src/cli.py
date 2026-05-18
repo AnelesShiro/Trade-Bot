@@ -199,8 +199,24 @@ def safe_restart(wait: bool = typer.Option(True, "--wait/--no-wait", help="Wait 
     update_id = manager.queue_update("CODE_RESTART", {})
     typer.echo(f"Queued safe restart {update_id}. It will apply after the current cycle checkpoint.")
     if not wait:
+        _start_restart_watcher(update_id)
+        typer.echo("Started detached restart watcher; live runner will resume after the boundary restart applies.")
         return
-    deadline = time.time() + 1800
+    _wait_for_restart_and_resume(manager, update_id)
+
+
+@app.command("watch-safe-restart")
+def watch_safe_restart(update_id: str = typer.Argument(...), timeout_seconds: int = typer.Option(1800, "--timeout-seconds")) -> None:
+    """Wait for an existing safe restart update to apply, then resume live runner."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    manager = LiveUpdateManager(settings, repository)
+    _wait_for_restart_and_resume(manager, update_id, timeout_seconds=timeout_seconds)
+
+
+def _wait_for_restart_and_resume(manager: LiveUpdateManager, update_id: str, timeout_seconds: int = 1800) -> None:
+    deadline = time.time() + timeout_seconds
     while time.time() < deadline:
         matching = [entry for entry in manager.read_queue() if entry.get("id") == update_id]
         status = matching[0].get("status") if matching else "UNKNOWN"
@@ -220,6 +236,22 @@ def safe_restart(wait: bool = typer.Option(True, "--wait/--no-wait", help="Wait 
     typer.echo("Timed out waiting for safe restart boundary.")
     raise typer.Exit(code=1)
 
+
+def _start_restart_watcher(update_id: str) -> None:
+    logs = Path.cwd() / "logs"
+    logs.mkdir(parents=True, exist_ok=True)
+    stdout = (logs / "safe-restart-watch.out.log").open("ab")
+    stderr = (logs / "safe-restart-watch.err.log").open("ab")
+    kwargs: dict[str, Any] = {
+        "cwd": Path.cwd(),
+        "stdout": stdout,
+        "stderr": stderr,
+        "stdin": subprocess.DEVNULL,
+        "close_fds": True,
+    }
+    if os.name == "nt":
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
+    subprocess.Popen([sys.executable, "-m", "src.cli", "watch-safe-restart", update_id], **kwargs)
 
 @app.command("rollback")
 def rollback(to: str = typer.Option("previous", "--to", help="Rollback target. Use 'previous' for latest backup or provide a backup path.")) -> None:

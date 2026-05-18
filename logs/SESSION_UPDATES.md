@@ -554,3 +554,29 @@ Entry template:
 - Notes:
   - `OVERDUE` should now mean no active processing phase is present and the scheduled next cycle time is truly past.
   - Runtime `outputs/*` and `cloud/dashboard_snapshot.json` may remain dirty from live/export operations.
+
+## 2026-05-18 - Safe Restart No-Wait Root Cause
+
+- User request (Vietnamese): Ask why `run-live` stopped even though it was expected to run continuously, and whether there was a problem.
+- Finding:
+  - It was not a trading crash.
+  - A previous command queued `python -m src.cli safe-restart --no-wait`, creating CODE_RESTART update `522e28cfcb97426892f216dd66c164b9`.
+  - At cycle boundary after checkpoint `61`, the update manager applied that restart request and the live runner correctly exited with log: `graceful restart requested; exiting live loop after completed cycle`.
+  - Because the command used `--no-wait`, no foreground CLI process was waiting to start `run-live --resume`; this left the runner stopped until it was manually restarted.
+- Evidence:
+  - `state/update_queue.json`: update `522e28cfcb97426892f216dd66c164b9` status `APPLIED`, type `CODE_RESTART`, processed at `2026-05-18T06:46:58Z`.
+  - `state/restart_requested.json` was still present until cleared.
+  - `logs/arena.log`: `graceful restart requested; exiting live loop after completed cycle`.
+  - Recent health checks show checkpoint and snapshot succeeded before the exit.
+- Live state after repair:
+  - Live runner is running again as one Windows process tree.
+  - Latest verified checkpoint at the time: cycle `62` completed.
+  - `runner_state` is `WAITING`, next cycle at `2026-05-18 09:11:43 UTC`.
+- Hardening:
+  - Updated `safe-restart --no-wait` so it now launches a detached `watch-safe-restart` helper.
+  - The watcher waits for the existing update id to become `APPLIED`, waits for old runner PIDs to exit, starts `run-live --resume`, clears `restart_requested.json`, and records successful restart.
+  - Added CLI command `watch-safe-restart <update_id>` for existing queued safe restarts.
+  - Cleared the stale restart request and recorded `MANUAL_RESUME_AFTER_NO_WAIT_RESTART` for update `522e28cfcb97426892f216dd66c164b9`.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m py_compile src\cli.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli --help` -> passed and shows `watch-safe-restart`.
