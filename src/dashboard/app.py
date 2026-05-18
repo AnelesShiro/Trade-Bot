@@ -922,7 +922,9 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     equity_rows = _flatten_snapshot_series(snapshot.get("equity_curves", {}), "equity")
     drawdown_rows = _flatten_snapshot_series(snapshot.get("drawdown_curves", {}), "drawdown")
     rejected_recent = pd.DataFrame(snapshot.get("rejected_signals_summary", {}).get("recent", []))
-    reflections = pd.DataFrame(snapshot.get("reflections_summary", {}).get("recent", []))
+    cloud_reflection_summary = snapshot.get("reflections_summary", {}) if isinstance(snapshot.get("reflections_summary"), dict) else {}
+    reflections = pd.DataFrame(cloud_reflection_summary.get("recent", []))
+    snapshot_lessons = pd.DataFrame(cloud_reflection_summary.get("recent_lessons", []))
     token_usage = pd.DataFrame.from_dict(snapshot.get("token_usage", {}), orient="index").reset_index(names="agent_id")
     diversity = snapshot.get("strategy_diversity_metrics", {})
     workload = snapshot.get("workload", {})
@@ -1144,7 +1146,21 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     with tabs[8]:
         st.subheader("Memory & Reflections")
-        st.dataframe(reflections, width="stretch", hide_index=True) if not reflections.empty else st.info("No recent reflections.")
+        cols = st.columns(2)
+        with cols[0]:
+            st.markdown("#### Recent reflections")
+            if reflections.empty:
+                st.info("No recent reflections.")
+            else:
+                st.dataframe(lesson_display_frame(reflections), width="stretch", hide_index=True)
+                render_raw_lesson_expanders(reflections, "cloud_reflections_memory")
+        with cols[1]:
+            st.markdown("#### Lessons learned")
+            if snapshot_lessons.empty:
+                st.info("No recent lessons.")
+            else:
+                st.dataframe(lesson_display_frame(snapshot_lessons), width="stretch", hide_index=True)
+                render_raw_lesson_expanders(snapshot_lessons, "cloud_lessons_memory")
 
     with tabs[9]:
         st.subheader("Token & Cost Analytics")

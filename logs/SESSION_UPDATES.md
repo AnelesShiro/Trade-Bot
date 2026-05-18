@@ -736,7 +736,6 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
-  - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.
 
 ## 2026-05-18 - Render Lesson Tabs Duplicate Widget ID Fix
 
@@ -942,3 +941,30 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+
+## 2026-05-19 - Local/Render Lesson Summary UI Sync
+
+- User report: Render and local dashboard UI were not matching; lesson `summary` existed in DB but the local/Render views did not show the same content.
+- Findings:
+  - Local SQLite dashboard `Memory & Reflections` already used the canonical lesson display helper and raw expanders.
+  - Render/cloud snapshot mode still rendered recent reflections directly as a raw dataframe.
+  - `cloud/dashboard_snapshot.json` did not include recent lesson rows for the `Memory & Reflections` lesson column, so Render could not mirror local even when DB rows had summaries.
+- What changed:
+  - `src/cloud/snapshot_exporter.py` now exports `reflections_summary.recent_lessons` with `summary`, `raw_text`, metadata, and timestamps.
+  - `src/dashboard/app.py` cloud snapshot mode now renders `Memory & Reflections` with the same two-column layout as local:
+    - `Recent reflections`
+    - `Lessons learned`
+  - Both cloud columns use `lesson_display_frame()` and `render_raw_lesson_expanders()` so summaries are visible while raw text remains available for audit.
+  - `tests/test_hot_reload.py` now verifies exported snapshots contain canonical reflection and lesson summaries plus raw text.
+  - Regenerated `cloud/dashboard_snapshot.json` so Render receives the updated payload.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_hot_reload.py tests/test_dashboard_contract.py tests/test_lesson_analytics.py -q` -> 16 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\cloud\snapshot_exporter.py src\dashboard\app.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 85 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+  - Snapshot check confirmed `reflections_summary` keys: `by_agent`, `count_recent`, `recent`, `recent_lessons`; both recent collections include `summary` and `raw_text`.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+  - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.

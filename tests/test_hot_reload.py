@@ -68,6 +68,14 @@ def test_feature_flags_can_target_one_agent(test_settings) -> None:
 
 
 def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_settings) -> None:
+    repository.save_lesson(
+        "crypto-deepseek",
+        "Daily review: equity=10000.00, realized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+    )
+    repository.save_reflection(
+        "crypto-deepseek",
+        "Daily review: equity=10000.00, realized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
+    )
     repository.create_pending_order(
         agent_id="crypto-deepseek",
         trigger_json={"logic": "AND", "conditions": [{"field": "price", "op": "lte", "value": 78000}]},
@@ -139,6 +147,11 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
     assert pending["trigger_summary"] == "Price <= 78000"
     for key in ["follow", "avoid", "follow_summary", "avoid_summary"]:
         assert key in snapshot["lesson_analytics"]
+    recent_reflection = snapshot["reflections_summary"]["recent"][0]
+    recent_lesson = snapshot["reflections_summary"]["recent_lessons"][0]
+    assert recent_reflection["summary"] == "Trade only high-quality setups and maintain strict rule compliance."
+    assert recent_lesson["summary"] == "Trade only high-quality setups and maintain strict rule compliance."
+    assert "raw_text" in recent_lesson
     assert validate_snapshot_contract(snapshot) == []
 
 
