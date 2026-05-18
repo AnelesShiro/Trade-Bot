@@ -196,6 +196,7 @@ def test_pending_order_execution(repository: ArenaRepository, test_settings) -> 
         trigger_json={"logic": "AND", "conditions": [{"field": "price", "op": "gte", "value": 100}]},
         execution_signal_json={
             "agent": "crypto-deepseek",
+            "timestamp": "2026-05-18T05:18:05Z",
             "decision": "PAPER_TRADE",
             "action": "OPEN",
             "symbol": "BTC",
@@ -224,7 +225,13 @@ def test_pending_order_execution(repository: ArenaRepository, test_settings) -> 
     assert stats["pending_triggered"] == 1
     row = repository.get_pending_order(order_id)
     assert row.status == "TRIGGERED"
-    assert repository.open_positions()
+    assert row.triggered_at is not None
+    positions = repository.open_positions()
+    assert positions
+    trade = repository.latest_trade_for_position(positions[0].id)
+    assert trade is not None
+    assert trade.decision_timestamp == datetime(2026, 5, 18, 5, 18, 5)
+    assert trade.execution_timestamp == row.triggered_at
 
 
 def test_pending_order_view_extracts_intent_and_trigger_summary() -> None:

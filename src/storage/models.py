@@ -175,6 +175,8 @@ class TradeRecord(Base):
     agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"))
     position_id: Mapped[str] = mapped_column(String, ForeignKey("positions.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
+    decision_timestamp: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    execution_timestamp: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     action: Mapped[str] = mapped_column(String)
     direction: Mapped[str] = mapped_column(String)
     leverage: Mapped[float] = mapped_column(Float)
@@ -526,10 +528,59 @@ def _migrate_sqlite(engine) -> None:
             "config_version_id": "INTEGER",
             "config_hash": "VARCHAR DEFAULT ''",
             "code_version": "VARCHAR DEFAULT ''",
+            "decision_timestamp": "DATETIME",
+            "execution_timestamp": "DATETIME",
         }
         for column, ddl in additions.items():
             if column not in columns:
                 connection.execute(text(f"ALTER TABLE trades ADD COLUMN {column} {ddl}"))
+        connection.execute(
+            text(
+                """
+                UPDATE trades
+                SET execution_timestamp = COALESCE(
+                    (
+                        SELECT pending_orders.triggered_at
+                        FROM pending_orders
+                        WHERE pending_orders.position_id = trades.position_id
+                          AND pending_orders.triggered_at IS NOT NULL
+                        ORDER BY pending_orders.triggered_at DESC
+                        LIMIT 1
+                    ),
+                    created_at
+                )
+                WHERE execution_timestamp IS NULL
+                """
+            )
+        )
+        connection.execute(
+            text(
+                """
+                UPDATE trades
+                SET execution_timestamp = created_at
+                WHERE action LIKE 'AUTO_%'
+                """
+            )
+        )
+        connection.execute(
+            text(
+                """
+                UPDATE trades
+                SET decision_timestamp = COALESCE(
+                    (
+                        SELECT signals.created_at
+                        FROM pending_orders
+                        JOIN signals ON signals.id = pending_orders.source_signal_id
+                        WHERE pending_orders.position_id = trades.position_id
+                        ORDER BY pending_orders.created_at DESC
+                        LIMIT 1
+                    ),
+                    created_at
+                )
+                WHERE decision_timestamp IS NULL
+                """
+            )
+        )
         signal_rows = connection.execute(text("PRAGMA table_info(signals)")).mappings().all()
         signal_columns = {row["name"] for row in signal_rows}
         signal_additions = {

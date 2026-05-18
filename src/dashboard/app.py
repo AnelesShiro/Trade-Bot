@@ -166,7 +166,7 @@ def read_table(name: str, database: str) -> pd.DataFrame:
         except Exception:
             return pd.DataFrame()
     for column in frame.columns:
-        if column.endswith("_at") or column in {"created_at", "opened_at", "closed_at", "timestamp", "timestamp_utc", "timestamp_local", "day"}:
+        if column.endswith("_at") or column.endswith("_timestamp") or column in {"created_at", "opened_at", "closed_at", "timestamp", "timestamp_utc", "timestamp_local", "day"}:
             parsed = pd.to_datetime(frame[column], utc=True, errors="coerce")
             if parsed.notna().any():
                 frame[column] = parsed.dt.tz_convert(LOCAL_TZ)
@@ -298,15 +298,37 @@ def build_position_view(positions: pd.DataFrame, current_price: float | None) ->
     return frame
 
 
+def trade_execution_time(row: pd.Series) -> Any:
+    for column in ("execution_timestamp", "created_at"):
+        value = row.get(column)
+        if pd.notna(value):
+            return value
+    return pd.NaT
+
+
+def prepare_trade_timestamps(trades: pd.DataFrame) -> pd.DataFrame:
+    if trades.empty:
+        return trades
+    frame = trades.copy()
+    frame["displayed_timestamp"] = frame.apply(trade_execution_time, axis=1)
+    if "decision_timestamp" in frame.columns:
+        decision = pd.to_datetime(frame["decision_timestamp"], utc=True, errors="coerce")
+        executed = pd.to_datetime(frame["displayed_timestamp"], utc=True, errors="coerce")
+        delay = executed - decision
+        frame["trigger_delay"] = delay.apply(lambda value: human_duration(value) if pd.notna(value) else "-")
+    return frame
+
+
 def equity_curve(trades: pd.DataFrame, positions_view: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for agent_id in agent_ids:
         rows.append({"agent_id": agent_id, "timestamp": pd.Timestamp(utc_now()) - pd.Timedelta(seconds=1), "equity": initial_equity})
         running = initial_equity
         if not trades.empty:
-            for _, trade in trades[trades["agent_id"] == agent_id].sort_values("created_at").iterrows():
+            frame = prepare_trade_timestamps(trades[trades["agent_id"] == agent_id])
+            for _, trade in frame.sort_values("displayed_timestamp").iterrows():
                 running += float(trade.get("realized_pnl") or 0)
-                rows.append({"agent_id": agent_id, "timestamp": trade.get("created_at"), "equity": running})
+                rows.append({"agent_id": agent_id, "timestamp": trade_execution_time(trade), "equity": running})
         if not positions_view.empty:
             unrealized = float(
                 positions_view[
@@ -570,7 +592,7 @@ def build_markers(trades: pd.DataFrame, visible_agents: list[str]) -> list[dict[
         prefix = "D" if is_deepseek else "G"
         action = str(trade.get("action", "")).upper()
         direction = str(trade.get("direction", "")).upper()
-        ts = trade.get("created_at")
+        ts = trade_execution_time(trade)
         if pd.isna(ts):
             continue
         notes = str(trade.get("notes", ""))
@@ -660,7 +682,7 @@ def render_live_chart(ohlcv: pd.DataFrame, trades: pd.DataFrame, positions_view:
     if not chart_trades.empty and "agent_id" in chart_trades.columns:
         chart_trades = chart_trades[chart_trades["agent_id"].isin(visible_agents)]
     for _, trade in chart_trades.iterrows():
-        ts = pd.to_datetime(trade.get("created_at"), utc=True, errors="coerce")
+        ts = pd.to_datetime(trade_execution_time(trade), utc=True, errors="coerce")
         if pd.isna(ts):
             continue
         price = float(trade.get("entry") or trade.get("exit") or 0)
@@ -764,14 +786,14 @@ def trade_holding_time(trade: pd.Series, positions_frame: pd.DataFrame) -> str:
         return "-"
     opened = match.iloc[0].get("opened_at")
     closed = match.iloc[0].get("closed_at")
-    end = closed if pd.notna(closed) else trade.get("created_at")
+    end = closed if pd.notna(closed) else trade_execution_time(trade)
     return human_duration(end - opened if pd.notna(opened) and pd.notna(end) else None)
 
 
 def notifications(signals: pd.DataFrame, trades: pd.DataFrame, positions: pd.DataFrame, metric_frame: pd.DataFrame) -> list[str]:
     notes = []
     if not trades.empty:
-        latest = trades.sort_values("created_at", ascending=False).head(5)
+        latest = prepare_trade_timestamps(trades).sort_values("displayed_timestamp", ascending=False).head(5)
         for _, trade in latest.iterrows():
             action = str(trade.get("action", ""))
             pnl = float(trade.get("realized_pnl") or 0)
@@ -854,8 +876,11 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
                 open_positions[column] = pd.to_datetime(open_positions[column], utc=True, errors="coerce")
         open_positions = build_position_view(open_positions, current_price)
     recent_trades = pd.DataFrame(snapshot.get("recent_trades", []))
-    if not recent_trades.empty and "created_at" in recent_trades.columns:
-        recent_trades["created_at"] = pd.to_datetime(recent_trades["created_at"], utc=True, errors="coerce")
+    if not recent_trades.empty:
+        for column in ["created_at", "decision_timestamp", "execution_timestamp"]:
+            if column in recent_trades.columns:
+                recent_trades[column] = pd.to_datetime(recent_trades[column], utc=True, errors="coerce")
+        recent_trades = prepare_trade_timestamps(recent_trades)
     metric_frame = _snapshot_metric_frame(snapshot, snapshot_agent_ids)
     workload_cycles = _snapshot_workload_cycles(snapshot)
     equity_rows = _flatten_snapshot_series(snapshot.get("equity_curves", {}), "equity")
@@ -1447,6 +1472,7 @@ responses = read_table("responses", str(db_path))
 signals = read_table("signals", str(db_path))
 positions = read_table("positions", str(db_path))
 trades = read_table("trades", str(db_path))
+trades = prepare_trade_timestamps(trades)
 reflections = read_table("reflections", str(db_path))
 lessons = read_table("lessons", str(db_path))
 shared_lessons = read_table("shared_lessons", str(db_path))
@@ -1648,8 +1674,8 @@ with tabs[2]:
             filtered = filtered[pnl_values < 0]
         elif selected_outcome == "Breakeven":
             filtered = filtered[pnl_values == 0]
-        if isinstance(date_range, tuple) and len(date_range) == 2 and "created_at" in filtered.columns:
-            created = pd.to_datetime(filtered["created_at"], utc=True, errors="coerce")
+        if isinstance(date_range, tuple) and len(date_range) == 2 and "displayed_timestamp" in filtered.columns:
+            created = pd.to_datetime(filtered["displayed_timestamp"], utc=True, errors="coerce")
             filtered = filtered[(created.dt.date >= date_range[0]) & (created.dt.date <= date_range[1])]
     if filtered.empty:
         st.info("No trades match the current filters.")
@@ -1658,6 +1684,7 @@ with tabs[2]:
         display["outcome"] = pd.to_numeric(display["realized_pnl"], errors="coerce").fillna(0).map(lambda pnl: "Win" if pnl > 0 else "Loss" if pnl < 0 else "Open/Flat")
         display["r_multiple"] = display.apply(lambda row: r_multiple(row, positions, signals), axis=1)
         display["holding_time"] = display.apply(lambda row: trade_holding_time(row, positions), axis=1)
+        display = display.sort_values("displayed_timestamp", ascending=False)
         st.dataframe(display, width="stretch", hide_index=True)
         download_frame("Download trades CSV", filtered if export_scope == "Filtered" else trades, "trades.csv")
         download_frame("Download ledger CSV", ledger, "LEDGER.csv")

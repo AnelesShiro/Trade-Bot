@@ -140,11 +140,12 @@ class RiskAutomationEngine:
                 signal.decision = Decision.PAPER_TRADE
             if signal.action == Action.NONE:
                 signal.action = Action.OPEN
-            position_id = self.execution.execute(signal, market_state.current_price)
+            execution_timestamp = datetime.now(UTC)
+            position_id = self.execution.execute(signal, market_state.current_price, execution_timestamp=execution_timestamp)
             self.repository.update_pending_order(
                 row.id,
                 status="TRIGGERED",
-                triggered_at=datetime.now(UTC),
+                triggered_at=execution_timestamp,
                 position_id=position_id,
             )
             if position_id:
@@ -202,7 +203,7 @@ class RiskAutomationEngine:
                     counterargument="N/A",
                     data_used=["risk_automation_time_exit"],
                 )
-                self.execution.execute(close_signal, current_price)
+                self.execution.execute(close_signal, current_price, execution_timestamp=datetime.now(UTC))
                 stats["time_exits"] += 1
                 continue
             if updated_sl != position.stop_loss or state != json.loads(risk_row.state_json or "{}"):

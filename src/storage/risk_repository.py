@@ -190,7 +190,7 @@ class RiskAutomationRepositoryMixin:
             stmt = (
                 select(TradeRecord)
                 .where(TradeRecord.agent_id == agent_id, TradeRecord.exit_price.is_not(None))
-                .order_by(TradeRecord.created_at.desc())
+                .order_by(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at).desc())
                 .limit(count)
             )
             trades = list(session.scalars(stmt))
@@ -232,7 +232,10 @@ class RiskAutomationRepositoryMixin:
         with self.session_factory() as session:
             rows = list(
                 session.scalars(
-                    select(TradeRecord).where(TradeRecord.agent_id == agent_id, TradeRecord.created_at >= since)
+                    select(TradeRecord).where(
+                        TradeRecord.agent_id == agent_id,
+                        func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at) >= since,
+                    )
                 )
             )
         return float(sum(row.realized_pnl for row in rows))

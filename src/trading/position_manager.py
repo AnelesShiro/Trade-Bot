@@ -29,15 +29,16 @@ class PositionManager:
         self.config_hash = config_hash
         self.code_version = code_version
 
-    def apply_signal(self, signal: AgentSignal, current_price: float) -> str | None:
+    def apply_signal(self, signal: AgentSignal, current_price: float, execution_timestamp: datetime | None = None) -> str | None:
+        execution_timestamp = _as_utc_naive(execution_timestamp or datetime.now(UTC))
         if signal.action in {Action.NONE, Action.HOLD}:
             return None
         if signal.action == Action.OPEN:
-            return self._open(signal)
+            return self._open(signal, execution_timestamp)
         if signal.action in {Action.ADD, Action.DCA}:
-            return self._add(signal)
+            return self._add(signal, execution_timestamp)
         if signal.action in {Action.REDUCE, Action.CUT, Action.CLOSE}:
-            return self._close_or_reduce(signal, current_price)
+            return self._close_or_reduce(signal, current_price, execution_timestamp)
         return None
 
     def update_stops_and_targets(self, current_price: float) -> list[TradeRecord]:
@@ -67,6 +68,7 @@ class PositionManager:
                 and current_price <= position.take_profit_2
             )
             if hit_tp1 and not hit_tp2 and not hit_stop:
+                execution_timestamp = _as_utc_naive(datetime.now(UTC))
                 closed_notional = position.notional * 0.5
                 closed_margin = position.margin * 0.5
                 exit_price = self._apply_slippage(current_price, position.direction, is_exit=True)
@@ -81,6 +83,9 @@ class PositionManager:
                     id=new_trade_id(position.agent_id),
                     agent_id=position.agent_id,
                     position_id=position.id,
+                    created_at=execution_timestamp,
+                    decision_timestamp=_as_utc_naive(position.opened_at),
+                    execution_timestamp=execution_timestamp,
                     action="AUTO_REDUCE",
                     direction=position.direction,
                     leverage=position.leverage,
@@ -97,17 +102,21 @@ class PositionManager:
                 self.repository.add_trade(trade)
                 exit_trades.append(trade)
             if hit_stop or hit_tp2:
+                execution_timestamp = _as_utc_naive(datetime.now(UTC))
                 exit_price = self._apply_slippage(current_price, position.direction, is_exit=True)
                 fee = self._fee(position.notional)
                 pnl = calculate_pnl(position.direction, position.notional, position.average_entry, exit_price) - fee
                 position.status = PositionStatus.CLOSED.value
-                position.closed_at = datetime.now(UTC)
+                position.closed_at = execution_timestamp
                 position.realized_pnl += pnl
                 self.repository.add_or_update_position(position)
                 trade = TradeRecord(
                     id=new_trade_id(position.agent_id),
                     agent_id=position.agent_id,
                     position_id=position.id,
+                    created_at=execution_timestamp,
+                    decision_timestamp=_as_utc_naive(position.opened_at),
+                    execution_timestamp=execution_timestamp,
                     action="AUTO_CLOSE",
                     direction=position.direction,
                     leverage=position.leverage,
@@ -125,8 +134,9 @@ class PositionManager:
                 exit_trades.append(trade)
         return exit_trades
 
-    def _open(self, signal: AgentSignal) -> str:
+    def _open(self, signal: AgentSignal, execution_timestamp: datetime) -> str:
         position_id = signal.position_id or new_position_id(signal.agent)
+        decision_timestamp = _as_utc_naive(signal.timestamp)
         margin = float(signal.margin_used_usdt or 0)
         leverage = float(signal.leverage or 1)
         notional = float(signal.notional_exposure_usdt or margin * leverage)
@@ -146,6 +156,7 @@ class PositionManager:
             take_profit_1=float(signal.take_profit_1 or 0),
             take_profit_2=float(signal.take_profit_2 or 0),
             dca_count=0,
+            opened_at=execution_timestamp,
         )
         self.repository.add_or_update_position(position)
         self.repository.add_trade(
@@ -153,6 +164,9 @@ class PositionManager:
                 id=new_trade_id(signal.agent),
                 agent_id=signal.agent,
                 position_id=position_id,
+                created_at=execution_timestamp,
+                decision_timestamp=decision_timestamp,
+                execution_timestamp=execution_timestamp,
                 action=signal.action.value,
                 direction=signal.direction.value,
                 leverage=leverage,
@@ -168,9 +182,10 @@ class PositionManager:
         )
         return position_id
 
-    def _add(self, signal: AgentSignal) -> str | None:
+    def _add(self, signal: AgentSignal, execution_timestamp: datetime) -> str | None:
         if not signal.position_id:
             return None
+        decision_timestamp = _as_utc_naive(signal.timestamp)
         position = self.repository.get_position(signal.position_id)
         if not position:
             return None
@@ -197,6 +212,9 @@ class PositionManager:
                 id=new_trade_id(signal.agent),
                 agent_id=signal.agent,
                 position_id=position.id,
+                created_at=execution_timestamp,
+                decision_timestamp=decision_timestamp,
+                execution_timestamp=execution_timestamp,
                 action=signal.action.value,
                 direction=position.direction,
                 leverage=leverage,
@@ -212,9 +230,10 @@ class PositionManager:
         )
         return position.id
 
-    def _close_or_reduce(self, signal: AgentSignal, current_price: float) -> str | None:
+    def _close_or_reduce(self, signal: AgentSignal, current_price: float, execution_timestamp: datetime) -> str | None:
         if not signal.position_id:
             return None
+        decision_timestamp = _as_utc_naive(signal.timestamp)
         position = self.repository.get_position(signal.position_id)
         if not position:
             return None
@@ -226,7 +245,7 @@ class PositionManager:
         position.realized_pnl += pnl
         if close_fraction >= 1.0:
             position.status = PositionStatus.CLOSED.value
-            position.closed_at = datetime.now(UTC)
+            position.closed_at = execution_timestamp
         else:
             position.notional -= closed_notional
             position.margin *= 1 - close_fraction
@@ -237,6 +256,9 @@ class PositionManager:
                 id=new_trade_id(signal.agent),
                 agent_id=signal.agent,
                 position_id=position.id,
+                created_at=execution_timestamp,
+                decision_timestamp=decision_timestamp,
+                execution_timestamp=execution_timestamp,
                 action=signal.action.value,
                 direction=position.direction,
                 leverage=position.leverage,
@@ -267,3 +289,9 @@ class PositionManager:
 
 def _join_notes(*parts: str | None) -> str:
     return "; ".join([part for part in parts if part])
+
+
+def _as_utc_naive(value: datetime) -> datetime:
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)

@@ -377,11 +377,16 @@ def _position_payload(position: Any, btc_price: float) -> dict[str, Any]:
 
 
 def _trade_payload(trade: TradeRecord) -> dict[str, Any]:
+    execution_timestamp = trade.execution_timestamp or trade.created_at
+    decision_timestamp = trade.decision_timestamp or trade.created_at
     return {
         "id": trade.id,
         "agent_id": trade.agent_id,
         "position_id": trade.position_id,
         "created_at": _iso(trade.created_at),
+        "decision_timestamp": _iso(decision_timestamp),
+        "execution_timestamp": _iso(execution_timestamp),
+        "displayed_timestamp": _iso(execution_timestamp),
         "action": trade.action,
         "direction": trade.direction,
         "leverage": trade.leverage,
@@ -423,7 +428,7 @@ def _equity_curves(repository: ArenaRepository, agent_ids: list[str], initial_eq
         points = [{"timestamp": _iso(now - timedelta(seconds=1)), "equity": initial_equity}]
         for trade in repository.trades(agent_id):
             running += float(trade.realized_pnl or 0)
-            points.append({"timestamp": _iso(trade.created_at), "equity": running})
+            points.append({"timestamp": _iso(trade.execution_timestamp or trade.created_at), "equity": running})
         summary = PaperAccount(agent_id, initial_equity, repository).summary(btc_price)
         points.append({"timestamp": _iso(now), "equity": summary.equity})
         curves[agent_id] = points

@@ -75,6 +75,8 @@ class PaperAccount:
     def daily_pnl(self, current_price: float) -> float:
         today = datetime.now(UTC).date()
         realized_today = sum(
-            trade.realized_pnl for trade in self.repository.trades(self.agent_id) if trade.created_at.date() == today
+            trade.realized_pnl
+            for trade in self.repository.trades(self.agent_id)
+            if (trade.execution_timestamp or trade.created_at).date() == today
         )
         return realized_today + self.unrealized_pnl(current_price)

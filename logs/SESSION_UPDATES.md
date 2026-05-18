@@ -835,3 +835,38 @@ Entry template:
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
   - A normal Windows live runner appears as one parent `.venv` Python process plus one child base Python process; multiple unrelated parent trees should be treated as duplicate runners.
+
+## 2026-05-18 - Trade History Execution Timestamp Accuracy
+
+- User request: Fix Trade History so timestamps answer "when did this order actually execute?", especially for `PLACE_TRIGGER` fills and automated actions.
+- Constraints honored:
+  - No trading logic changes.
+  - No PnL calculation changes.
+  - No competition behavior changes.
+  - Dashboard UI/UX style preserved.
+  - Historical records remain backward compatible.
+- What changed:
+  - Added additive nullable columns on `trades`: `decision_timestamp` and `execution_timestamp`.
+  - New trades set `execution_timestamp` at the moment the paper execution engine finalizes the fill.
+  - Immediate orders set decision time from `AgentSignal.timestamp` and execution time from the local fill time.
+  - Triggered pending orders now use one shared fill timestamp for both `pending_orders.triggered_at` and `trades.execution_timestamp`.
+  - Automated `AUTO_REDUCE` / `AUTO_CLOSE` actions set `execution_timestamp` to their local TP/SL/time-exit execution time.
+  - SQLite migration backfills historical records:
+    - Legacy records fall back to `created_at`.
+    - Pending-order OPEN fills use `pending_orders.triggered_at` as execution time.
+    - `AUTO_*` rows always use their own trade `created_at` as execution time.
+  - Dashboard local and Render snapshot modes derive `displayed_timestamp = execution_timestamp || created_at`.
+  - Trade History date filtering, sorting, chart markers, equity curves, notifications, and snapshot export now use displayed/execution time.
+  - Snapshot `recent_trades` now includes `decision_timestamp`, `execution_timestamp`, and `displayed_timestamp`.
+- Verified live DB example:
+  - Qwen pending OPEN `trade-crypto-qwen-09141b4426`: decision `2026-05-18 10:21:33.732795`, execution/display `2026-05-18 12:28:22.129891`.
+  - Qwen `AUTO_REDUCE` `trade-crypto-qwen-d22f9edb0d`: execution/display `2026-05-18 12:39:16.602007`.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_position_manager.py tests/test_risk_automation.py tests/test_hot_reload.py -q` -> 29 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\storage\models.py src\storage\repository.py src\storage\risk_repository.py src\trading\execution.py src\trading\position_manager.py src\trading\risk_automation\engine.py src\dashboard\app.py src\cloud\snapshot_exporter.py src\trading\paper_account.py src\tools\retrieve_similar_trades.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 79 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.

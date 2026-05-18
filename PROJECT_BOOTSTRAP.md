@@ -22,6 +22,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Dashboard UI contract: local SQLite mode and Render snapshot mode must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`; `tests/test_dashboard_contract.py` prevents tab-list drift.
 - Read-only lesson analytics tabs are available in both local and Render dashboards: Lessons to Follow and Lessons to Avoid. They use existing lessons/shared lessons/reflections/trades only; no model calls and no trading behavior changes.
 - Pending Orders dashboard now exposes order intent at a glance in both local and Render modes: action, direction, entry, stop, TP1, leverage, trigger summary, thesis, and expandable raw trigger/signal evidence.
+- Trade History timestamp contract: display `execution_timestamp`/`displayed_timestamp` as the fill time. Preserve `decision_timestamp` for when the agent created the signal and fall back to legacy `created_at` only if execution time is unavailable.
 
 ## Operating Rules
 

@@ -46,6 +46,20 @@ def test_trade_records_config_and_code_versions(repository) -> None:
     assert trade.code_version == "code456"
 
 
+def test_snapshot_exports_trade_execution_timestamps(repository, test_settings) -> None:
+    manager = PositionManager(repository)
+    decision_time = datetime(2026, 5, 18, 5, 18, 5, tzinfo=UTC)
+    execution_time = datetime(2026, 5, 18, 6, 41, 50, tzinfo=UTC)
+    manager.apply_signal(make_signal(position_id="p-snapshot", timestamp=decision_time), 100000, execution_timestamp=execution_time)
+
+    snapshot = export_dashboard_snapshot(test_settings, repository)
+    trade = next(row for row in snapshot["recent_trades"] if row["position_id"] == "p-snapshot")
+
+    assert trade["decision_timestamp"] == "2026-05-18T05:18:05Z"
+    assert trade["execution_timestamp"] == "2026-05-18T06:41:50Z"
+    assert trade["displayed_timestamp"] == "2026-05-18T06:41:50Z"
+
+
 def test_feature_flags_can_target_one_agent(test_settings) -> None:
     test_settings.feature_flags["new-risk"] = FeatureFlagSettings(enabled=True, agents=["crypto-deepseek"])
 

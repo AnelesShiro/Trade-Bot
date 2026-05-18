@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from src.schemas import Action, AgentSignal, Decision, Direction, ExecutionType
 from src.trading.position_manager import PositionManager
 
@@ -66,3 +68,17 @@ def test_close_signal_realizes_pnl(repository) -> None:
     assert trade.realized_pnl > 0
     assert position is not None
     assert position.status == "CLOSED"
+
+
+def test_trade_records_decision_and_execution_timestamps(repository) -> None:
+    manager = PositionManager(repository)
+    decision_time = datetime(2026, 5, 18, 5, 18, 5, tzinfo=UTC)
+    execution_time = datetime(2026, 5, 18, 6, 41, 50, tzinfo=UTC)
+
+    position_id = manager.apply_signal(make_signal(position_id="p3", timestamp=decision_time), 100000, execution_timestamp=execution_time)
+
+    trade = repository.latest_trade_for_position(position_id)
+    assert trade is not None
+    assert trade.decision_timestamp == decision_time.replace(tzinfo=None)
+    assert trade.execution_timestamp == execution_time.replace(tzinfo=None)
+    assert trade.created_at == execution_time.replace(tzinfo=None)

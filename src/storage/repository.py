@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from typing import Any
 from uuid import uuid4
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
 from src.config import AgentSettings
@@ -258,7 +258,7 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
 
     def trades(self, agent_id: str | None = None) -> list[TradeRecord]:
         with self.session_factory() as session:
-            stmt = select(TradeRecord).order_by(TradeRecord.created_at.asc())
+            stmt = select(TradeRecord).order_by(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at).asc())
             if agent_id:
                 stmt = stmt.where(TradeRecord.agent_id == agent_id)
             return list(session.scalars(stmt).all())
@@ -268,7 +268,7 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
             stmt = (
                 select(TradeRecord)
                 .where(TradeRecord.position_id == position_id)
-                .order_by(TradeRecord.created_at.desc())
+                .order_by(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at).desc())
                 .limit(1)
             )
             return session.scalars(stmt).first()
@@ -289,11 +289,11 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
                     TradeRecord.direction == direction,
                     TradeRecord.notes.contains("stop_loss"),
                 )
-                .order_by(TradeRecord.created_at.desc())
+                .order_by(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at).desc())
                 .limit(1)
             )
             if since:
-                stmt = stmt.where(TradeRecord.created_at > since)
+                stmt = stmt.where(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at) > since)
             trade = session.scalars(stmt).first()
             return bool(trade)
 
