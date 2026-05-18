@@ -126,7 +126,7 @@
   - Checkpoint is written after each completed cycle.
   - Before SL/TP checks each cycle (and on the position monitor interval), `RiskAutomationEngine` evaluates pending triggers and position risk state using the same market price/RSI snapshot.
   - The runner writes `runner_state` at phase transitions so the dashboard can distinguish active processing from a truly late/offline runner.
-  - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models, risk notifications).
+  - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders with parsed action/direction/levels/trigger intent, cooldowns, trailing/break-even state, failover events, active models, risk notifications).
   - Optional Git sync commits and pushes snapshot to GitHub for Render.
 - Dashboard sync contract:
   - Local SQLite dashboard and Render snapshot dashboard must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`.
@@ -419,6 +419,7 @@
 - API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.
 - SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications` (created by `create_schema` / live runner startup).
 - Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications. Local SQLite dashboard and Render/cloud snapshot dashboard both expose these tabs through the shared dashboard contract.
+- Pending Orders tab parses existing `trigger_json` and `execution_signal_json` without schema changes. It shows `intent`, `action`, `direction`, `entry_price`, `stop_loss`, `take_profit_1`, `leverage`, `trigger_summary`, and `thesis`, plus detail expanders with raw trigger/signal JSON.
 - Lesson analytics tabs (read-only): Lessons to Follow and Lessons to Avoid rank validated lessons by impact, confidence, evidence count, and recency. They include KPI cards, ranked cards, trend charts, agent contribution breakdown, and evidence expanders.
 - Tests: `tests/test_risk_automation.py`.
 

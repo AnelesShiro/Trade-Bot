@@ -16,6 +16,7 @@ from src.dashboard.contract import REQUIRED_LESSON_ANALYTICS_SNAPSHOT_KEYS, REQU
 from src.logger import logger
 from src.operations.update_manager import LiveUpdateManager
 from src.storage.models import LessonRecord, ReflectionRecord, SharedLessonRecord, SignalRecord, TradeRecord
+from src.trading.risk_automation.pending_order_view import pending_order_view
 from src.storage.signal_repository import SignalAuditRepository
 from src.storage.repository import ArenaRepository
 from src.trading.paper_account import PaperAccount
@@ -97,13 +98,17 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
 
 def _risk_automation_payload(settings: Settings, repository: ArenaRepository) -> dict[str, Any]:
     pending = [
-        {
-            "id": row.id,
-            "agent_id": row.agent_id,
-            "status": row.status,
-            "created_at": row.created_at.isoformat() if row.created_at else None,
-            "expires_at": row.expires_at.isoformat() if row.expires_at else None,
-        }
+        pending_order_view(
+            order_id=row.id,
+            agent_id=row.agent_id,
+            status=row.status,
+            created_at=row.created_at,
+            expires_at=row.expires_at,
+            triggered_at=row.triggered_at,
+            position_id=row.position_id,
+            trigger_json=row.trigger_json,
+            execution_signal_json=row.execution_signal_json,
+        )
         for row in repository.list_pending_orders(status="PENDING", limit=100)
     ]
     cooldowns = [

@@ -54,6 +54,24 @@ def test_feature_flags_can_target_one_agent(test_settings) -> None:
 
 
 def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_settings) -> None:
+    repository.create_pending_order(
+        agent_id="crypto-deepseek",
+        trigger_json={"logic": "AND", "conditions": [{"field": "price", "op": "lte", "value": 78000}]},
+        execution_signal_json={
+            "agent": "crypto-deepseek",
+            "decision": "PAPER_TRADE",
+            "action": "OPEN",
+            "symbol": "BTC",
+            "direction": "LONG",
+            "entry": 78000,
+            "stop_loss": 77500,
+            "take_profit_1": 79000,
+            "leverage": 5,
+            "thesis": "Snapshot pending order visibility test.",
+        },
+        expires_at=None,
+        source_signal_id=None,
+    )
     snapshot = export_dashboard_snapshot(test_settings, repository)
 
     for key in [
@@ -100,6 +118,11 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
     assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
     for key in REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS:
         assert key in snapshot["risk_automation"]
+    pending = snapshot["risk_automation"]["pending_orders"][0]
+    for key in ["action", "direction", "entry_price", "stop_loss", "take_profit_1", "leverage", "trigger_summary", "thesis"]:
+        assert key in pending
+    assert pending["intent"] == "OPEN LONG"
+    assert pending["trigger_summary"] == "Price <= 78000"
     for key in ["follow", "avoid", "follow_summary", "avoid_summary"]:
         assert key in snapshot["lesson_analytics"]
     assert validate_snapshot_contract(snapshot) == []

@@ -13,6 +13,7 @@ from src.trading.position_manager import PositionManager
 from src.trading.risk_automation.cooldown import CooldownManager
 from src.trading.risk_automation.engine import RiskAutomationEngine, _resolve_position_risk
 from src.trading.risk_automation.position_rules import apply_break_even, apply_trailing_stop, time_exit_due
+from src.trading.risk_automation.pending_order_view import pending_order_view, trigger_summary
 from src.trading.risk_automation.triggers import evaluate_trigger
 from src.trading.risk_automation.types import BreakEvenConfig, TimeExitConfig, TrailingStopConfig
 from src.agents.api_failover import ActiveRoute, ApiFailoverManager
@@ -224,6 +225,44 @@ def test_pending_order_execution(repository: ArenaRepository, test_settings) -> 
     row = repository.get_pending_order(order_id)
     assert row.status == "TRIGGERED"
     assert repository.open_positions()
+
+
+def test_pending_order_view_extracts_intent_and_trigger_summary() -> None:
+    view = pending_order_view(
+        order_id="po-test",
+        agent_id="crypto-qwen",
+        status="PENDING",
+        trigger_json={
+            "logic": "AND",
+            "conditions": [
+                {"field": "price", "op": "lte", "value": 78000},
+                {"field": "rsi_14", "op": "lte", "value": 30},
+            ],
+        },
+        execution_signal_json={
+            "action": "OPEN",
+            "direction": "LONG",
+            "entry": 78000,
+            "stop_loss": 77500,
+            "take_profit_1": 79000,
+            "leverage": 5,
+            "thesis": "Buy pullback into support with RSI confirmation.",
+        },
+    )
+
+    assert view["intent"] == "OPEN LONG"
+    assert view["action"] == "OPEN"
+    assert view["direction"] == "LONG"
+    assert view["entry_price"] == 78000
+    assert view["stop_loss"] == 77500
+    assert view["take_profit_1"] == 79000
+    assert view["leverage"] == 5
+    assert view["trigger_summary"] == "Price <= 78000 AND RSI14 <= 30"
+    assert view["thesis"] == "Buy pullback into support with RSI confirmation."
+
+
+def test_trigger_summary_formats_single_condition() -> None:
+    assert trigger_summary({"logic": "OR", "conditions": [{"field": "price", "op": "gte", "value": 80000}]}) == "Price >= 80000"
 
 
 def test_place_trigger_rejects_invalid_execution_signal(repository: ArenaRepository, test_settings) -> None:

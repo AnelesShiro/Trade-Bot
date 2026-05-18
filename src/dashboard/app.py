@@ -1162,7 +1162,63 @@ def render_cloud_pending_orders_tab(risk_automation: dict[str, Any], selected_ag
     if frame.empty:
         st.info("No pending orders recorded in the latest snapshot.")
         return
-    st.dataframe(frame, width="stretch", hide_index=True)
+    _pending_order_summary_cards(frame)
+    columns = [
+        "intent",
+        "id",
+        "agent_id",
+        "status",
+        "action",
+        "direction",
+        "entry_price",
+        "stop_loss",
+        "take_profit_1",
+        "leverage",
+        "trigger_summary",
+        "thesis",
+        "created_at",
+        "expires_at",
+        "triggered_at",
+        "position_id",
+    ]
+    st.dataframe(frame[[column for column in columns if column in frame.columns]], width="stretch", hide_index=True)
+    st.markdown("#### Order details")
+    for row in frame.head(50).to_dict("records"):
+        _pending_order_detail(row)
+
+
+def _pending_order_summary_cards(frame: pd.DataFrame) -> None:
+    pending = frame[frame["status"].astype(str).str.upper() == "PENDING"] if not frame.empty and "status" in frame.columns else frame
+    open_long = int(((pending.get("action") == "OPEN") & (pending.get("direction") == "LONG")).sum()) if not pending.empty else 0
+    open_short = int(((pending.get("action") == "OPEN") & (pending.get("direction") == "SHORT")).sum()) if not pending.empty else 0
+    close_orders = int(pending.get("action", pd.Series(dtype=str)).isin(["CLOSE", "CUT", "REDUCE"]).sum()) if not pending.empty else 0
+    expiring_soon = 0
+    if not pending.empty and "expires_at" in pending.columns:
+        expires = pd.to_datetime(pending["expires_at"], utc=True, errors="coerce")
+        now = pd.Timestamp.now(tz="UTC")
+        expiring_soon = int(((expires.notna()) & (expires <= now + pd.Timedelta(hours=6))).sum())
+    cols = st.columns(4)
+    cols[0].metric("Pending OPEN LONG", open_long)
+    cols[1].metric("Pending OPEN SHORT", open_short)
+    cols[2].metric("Pending CLOSE/REDUCE", close_orders)
+    cols[3].metric("Expiring soon", expiring_soon)
+
+
+def _pending_order_detail(row: dict[str, Any]) -> None:
+    intent = row.get("intent") or "-"
+    accent = "#22c55e" if "LONG" in str(intent) else "#ef4444" if "SHORT" in str(intent) else "#94a3b8"
+    st.markdown(
+        f"<span style='border-left:4px solid {accent};padding:4px 8px;background:rgba(15,23,42,.18);border-radius:6px;font-weight:700'>{intent}</span>",
+        unsafe_allow_html=True,
+    )
+    with st.expander(f"{row.get('id')} | {row.get('trigger_summary')} | {row.get('status')}", expanded=False):
+        st.markdown(f"**Thesis:** {row.get('thesis') or '-'}")
+        st.markdown("**Full trigger conditions**")
+        st.json(row.get("trigger_conditions") or {})
+        st.markdown("**Raw normalized signal JSON**")
+        st.json(row.get("normalized_signal") or {})
+        st.markdown("**Validation details**")
+        st.json(row.get("validation_details") or {})
 
 
 def render_cloud_risk_automation_tab(risk_automation: dict[str, Any], open_positions: pd.DataFrame) -> None:

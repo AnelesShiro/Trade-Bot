@@ -755,3 +755,39 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m pytest -q` -> 75 passed.
   - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+
+## 2026-05-18 - Pending Orders Intent Visibility
+
+- User request: Improve the existing Pending Orders dashboard so each pending order clearly shows what action will execute when triggered.
+- Constraints honored:
+  - No trading logic changes.
+  - No database schema changes.
+  - No new model calls.
+  - Existing dashboard theme/style preserved.
+- What changed:
+  - Added `src/trading/risk_automation/pending_order_view.py` to parse existing `trigger_json` and `execution_signal_json`.
+  - Local Pending Orders tab now fetches `trigger_json` and `execution_signal_json` in the same table query and derives:
+    - `intent`
+    - `action`
+    - `direction`
+    - `entry_price`
+    - `stop_loss`
+    - `take_profit_1`
+    - `leverage`
+    - `trigger_summary`
+    - `thesis`
+  - Added summary cards: Pending OPEN LONG, Pending OPEN SHORT, Pending CLOSE/REDUCE, Expiring soon.
+  - Added intent badge and per-order detail expanders with full trigger conditions, raw normalized signal JSON, and validation details.
+  - Render/cloud Pending Orders tab now uses the same enriched snapshot fields.
+  - Snapshot export now includes enriched pending order fields in `risk_automation.pending_orders`.
+  - Added regression tests for trigger summary formatting, pending order intent extraction, and snapshot pending order fields.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py tests/test_hot_reload.py -q` -> 25 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\trading\risk_automation\pending_order_view.py src\dashboard\tabs\pending_orders.py src\dashboard\app.py src\cloud\snapshot_exporter.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 77 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed; snapshot pending orders include `action`, `direction`, `entry_price`, `stop_loss`, `take_profit_1`, `leverage`, `trigger_summary`, and `thesis`.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+  - `cloud/dashboard_snapshot.json` was regenerated for Render.
