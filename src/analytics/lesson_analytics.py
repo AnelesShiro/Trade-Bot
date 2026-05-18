@@ -7,6 +7,8 @@ from typing import Any
 
 import pandas as pd
 
+from src.agents.lesson_canonicalizer import canonical_summary, canonicalize_lesson, lesson_key
+
 
 FOLLOW_TERMS = {
     "win",
@@ -139,7 +141,8 @@ def _shared_lesson_rows(shared_lessons: pd.DataFrame) -> list[dict[str, Any]]:
         return []
     rows = []
     for _, item in shared_lessons.head(1000).iterrows():
-        text = str(item.get("lesson_text") or "").strip()
+        raw_text = str(item.get("raw_text") or item.get("lesson_text") or "").strip()
+        text = canonical_summary(str(item.get("summary") or raw_text or item.get("lesson_text") or "")).strip()
         if not text:
             continue
         lesson_type = str(item.get("lesson_type") or "best_practice")
@@ -152,6 +155,10 @@ def _shared_lesson_rows(shared_lessons: pd.DataFrame) -> list[dict[str, Any]]:
             {
                 "lesson_id": f"shared-{item.get('id')}",
                 "lesson_text": text,
+                "summary": text,
+                "raw_text": raw_text or text,
+                "category": str(item.get("category") or ""),
+                "sentiment": str(item.get("sentiment") or kind),
                 "lesson_kind": kind,
                 "source_type": "shared",
                 "is_shared": True,
@@ -168,6 +175,7 @@ def _shared_lesson_rows(shared_lessons: pd.DataFrame) -> list[dict[str, Any]]:
                         "type": "validated_shared_lesson",
                         "agent_id": str(item.get("source_agent") or "unknown"),
                         "excerpt": text[:500],
+                        "raw_text": (raw_text or text)[:1500],
                         "sample_size": evidence,
                         "profit_factor": profit_factor,
                     }
@@ -182,28 +190,34 @@ def _private_lesson_rows(lessons: pd.DataFrame, reflections: pd.DataFrame, trade
     if not lessons.empty:
         frame = lessons.copy()
         frame["content"] = frame.get("content", "")
+        frame["summary"] = frame["summary"] if "summary" in frame.columns else ""
+        frame["raw_text"] = frame["raw_text"] if "raw_text" in frame.columns else ""
         frame["source_type"] = "private_lesson"
-        frames.append(frame[["agent_id", "created_at", "content", "source_type"]])
+        frames.append(frame[["agent_id", "created_at", "content", "summary", "raw_text", "source_type"]])
     if not reflections.empty:
         frame = reflections.copy()
         frame["content"] = frame.get("content", "")
+        frame["summary"] = frame["summary"] if "summary" in frame.columns else ""
+        frame["raw_text"] = frame["raw_text"] if "raw_text" in frame.columns else ""
         frame["source_type"] = "reflection"
-        frames.append(frame[["agent_id", "created_at", "content", "source_type"]])
+        frames.append(frame[["agent_id", "created_at", "content", "summary", "raw_text", "source_type"]])
     if not frames:
         return []
     combined = pd.concat(frames, ignore_index=True).dropna(subset=["content"]).tail(2000)
     trade_stats = _trade_stats_by_agent(trades)
     grouped: dict[str, dict[str, Any]] = {}
     for _, item in combined.iterrows():
-        text = str(item.get("content") or "").strip()
-        if not text:
+        raw_text = str(item.get("raw_text") or item.get("content") or "").strip()
+        text = canonical_summary(str(item.get("summary") or raw_text)).strip()
+        if not raw_text and not text:
             continue
-        key = _lesson_key(text)
+        key = lesson_key(text)
         entry = grouped.setdefault(
             key,
             {
                 "lesson_id": f"derived-{abs(hash(key))}",
-                "lesson_text": _clean_lesson_text(text),
+                "lesson_text": text,
+                "raw_texts": [],
                 "sources": [],
                 "agents": set(),
                 "dates": [],
@@ -212,10 +226,20 @@ def _private_lesson_rows(lessons: pd.DataFrame, reflections: pd.DataFrame, trade
         agent_id = str(item.get("agent_id") or "unknown")
         entry["agents"].add(agent_id)
         entry["dates"].append(pd.to_datetime(item.get("created_at"), utc=True, errors="coerce"))
-        entry["sources"].append({"type": item.get("source_type"), "agent_id": agent_id, "excerpt": text[:500], "created_at": _iso(item.get("created_at"))})
+        entry["raw_texts"].append(raw_text or text)
+        entry["sources"].append(
+            {
+                "type": item.get("source_type"),
+                "agent_id": agent_id,
+                "excerpt": text[:500],
+                "raw_text": (raw_text or text)[:1500],
+                "created_at": _iso(item.get("created_at")),
+            }
+        )
     rows = []
     for entry in grouped.values():
         text = entry["lesson_text"]
+        canonical = canonicalize_lesson(entry["raw_texts"][0] if entry.get("raw_texts") else text, evidence_count=len(entry["sources"]))
         positive = _positive_score(text)
         negative = _negative_score(text)
         kind = "avoid" if negative > positive else "follow"
@@ -231,6 +255,10 @@ def _private_lesson_rows(lessons: pd.DataFrame, reflections: pd.DataFrame, trade
             {
                 "lesson_id": entry["lesson_id"],
                 "lesson_text": text,
+                "summary": text,
+                "raw_text": entry["raw_texts"][0] if entry.get("raw_texts") else text,
+                "category": canonical.category,
+                "sentiment": canonical.sentiment,
                 "lesson_kind": kind,
                 "source_type": "derived",
                 "is_shared": len(agents) > 1,

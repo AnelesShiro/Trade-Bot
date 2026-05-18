@@ -9,9 +9,13 @@ from src.storage.vector_store import LocalVectorStore
 
 def test_repository_memory_and_reflection(repository, tmp_path) -> None:
     memory = AgentMemory(repository, LocalVectorStore(tmp_path / "vectors"))
-    memory.save_lesson("crypto-deepseek", "Respect invalidation in range regimes.")
+    raw = "Daily review: equity=10000 realized_pnl=0. Keep valid setups only and preserve rule compliance."
+    memory.save_lesson("crypto-deepseek", raw)
     lessons = memory.retrieve_lessons("crypto-deepseek", "range")
-    assert "Respect invalidation in range regimes." in lessons
+    assert "Trade only high-quality setups and maintain strict rule compliance." in lessons
+    record = repository.lesson_records("crypto-deepseek", limit=1)[0]
+    assert record.raw_text == raw
+    assert record.summary == "Trade only high-quality setups and maintain strict rule compliance."
 
     trade = TradeRecord(
         id="t1",

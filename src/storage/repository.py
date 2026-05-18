@@ -9,6 +9,7 @@ from uuid import uuid4
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, sessionmaker
 
+from src.agents.lesson_canonicalizer import canonicalize_lesson, canonical_summary
 from src.config import AgentSettings
 from src.schemas import AgentSignal, ValidationResult
 from src.storage.risk_repository import RiskAutomationRepositoryMixin
@@ -310,8 +311,23 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
             return session.get(PositionRecord, position_id)
 
     def save_lesson(self, agent_id: str, content: str) -> None:
+        canonical = canonicalize_lesson(content, evidence_count=1)
         with self.session_factory() as session, session.begin():
-            session.add(LessonRecord(agent_id=agent_id, content=content))
+            session.add(
+                LessonRecord(
+                    agent_id=agent_id,
+                    content=canonical.summary,
+                    raw_text=canonical.raw_text,
+                    summary=canonical.summary,
+                    category=canonical.category,
+                    sentiment=canonical.sentiment,
+                    confidence=canonical.confidence,
+                    impact=canonical.impact,
+                    evidence_count=canonical.evidence_count,
+                    source_agents_json=json.dumps([agent_id]),
+                    last_updated=datetime.now(UTC),
+                )
+            )
 
     def save_reflection(self, agent_id: str, content: str) -> None:
         with self.session_factory() as session, session.begin():
@@ -325,7 +341,7 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
                 .order_by(LessonRecord.created_at.desc())
                 .limit(limit)
             )
-            return [item.content for item in session.scalars(stmt)]
+            return [canonical_summary(item.summary or item.raw_text or item.content) for item in session.scalars(stmt)]
 
     def lesson_records(self, agent_id: str, limit: int = 200) -> list[LessonRecord]:
         with self.session_factory() as session:
@@ -348,11 +364,13 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
         profit_factor: float,
         lesson_type: str = "best_practice",
     ) -> int | None:
-        normalized = " ".join(lesson_text.lower().split())
+        canonical = canonicalize_lesson(lesson_text, evidence_count=sample_size or 1)
+        normalized = " ".join(canonical.summary.lower().split())
         with self.session_factory() as session, session.begin():
             existing = list(session.scalars(select(SharedLessonRecord)).all())
             for item in existing:
-                if " ".join(item.lesson_text.lower().split()) == normalized:
+                item_summary = item.summary or canonical_summary(item.raw_text or item.lesson_text)
+                if " ".join(item_summary.lower().split()) == normalized:
                     session.add(
                         LessonPromotionRecord(
                             source_agent=source_agent,
@@ -365,7 +383,15 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
             record = SharedLessonRecord(
                 source_agent=source_agent,
                 market_regime=market_regime,
-                lesson_text=lesson_text,
+                lesson_text=canonical.summary,
+                raw_text=canonical.raw_text,
+                summary=canonical.summary,
+                category=canonical.category,
+                sentiment=canonical.sentiment,
+                impact=canonical.impact,
+                evidence_count=canonical.evidence_count,
+                source_agents_json=json.dumps([source_agent]),
+                last_updated=datetime.now(UTC),
                 lesson_type=lesson_type,
                 confidence=confidence,
                 sample_size=sample_size,

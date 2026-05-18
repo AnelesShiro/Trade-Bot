@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from src.agents.lesson_canonicalizer import canonical_summary
 from src.storage.repository import ArenaRepository
 from src.storage.vector_store import LocalVectorStore
 
@@ -14,10 +15,12 @@ class AgentMemory:
         sql_lessons = self.repository.lessons(agent_id, limit=limit)
         merged: list[str] = []
         for lesson in [*vector_lessons, *sql_lessons]:
-            if lesson not in merged:
-                merged.append(lesson)
+            summary = canonical_summary(lesson)
+            if summary not in merged:
+                merged.append(summary)
         return merged[:limit]
 
     def save_lesson(self, agent_id: str, content: str) -> None:
+        summary = canonical_summary(content)
         self.repository.save_lesson(agent_id, content)
-        self.vector_store.add_lesson(agent_id, f"{agent_id}-{abs(hash(content))}", content)
+        self.vector_store.add_lesson(agent_id, f"{agent_id}-{abs(hash(summary))}", summary)

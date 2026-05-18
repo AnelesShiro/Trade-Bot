@@ -28,6 +28,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.analytics.lesson_analytics import build_lesson_analytics  # noqa: E402
+from src.agents.lesson_canonicalizer import canonical_summary  # noqa: E402
 from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
 from src.dashboard.contract import DASHBOARD_TAB_LABELS  # noqa: E402
@@ -255,6 +256,41 @@ def signal_payloads(signals: pd.DataFrame) -> pd.DataFrame:
             record.update({f"payload_{key}": value for key, value in payload.items()})
         rows.append(record)
     return pd.DataFrame(rows)
+
+
+def lesson_display_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    if frame.empty:
+        return frame
+    view = frame.copy()
+    if "summary" not in view.columns:
+        view["summary"] = ""
+    if "raw_text" not in view.columns:
+        view["raw_text"] = ""
+    view["summary"] = view.apply(lambda row: canonical_summary(row.get("summary") or row.get("raw_text") or row.get("content") or ""), axis=1)
+    columns = [
+        "created_at",
+        "agent_id",
+        "summary",
+        "category",
+        "sentiment",
+        "confidence",
+        "impact",
+        "evidence_count",
+        "last_updated",
+    ]
+    return view[[column for column in columns if column in view.columns]]
+
+
+def render_raw_lesson_expanders(frame: pd.DataFrame, key_prefix: str) -> None:
+    if frame.empty:
+        return
+    source = frame.copy()
+    for _, row in source.sort_values("created_at", ascending=False).head(8).iterrows():
+        summary = canonical_summary(row.get("summary") or row.get("raw_text") or row.get("content") or "")
+        raw = row.get("raw_text") or row.get("content") or ""
+        if raw and raw != summary:
+            with st.expander(f"View Raw Lesson: {summary[:72]}", expanded=False):
+                st.text(str(raw))
 
 
 def position_unrealized(row: pd.Series, price: float | None) -> float:
@@ -1763,7 +1799,8 @@ with tabs[8]:
             st.info("No reflections yet.")
         else:
             view = reflections[reflections["agent_id"].isin(selected_agents)] if selected_agents else reflections
-            st.dataframe(view.sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            st.dataframe(lesson_display_frame(view).sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            render_raw_lesson_expanders(view, "reflections_memory")
             download_frame("Download reflections", view, "reflections.csv")
     with cols[1]:
         st.markdown("#### Lessons learned")
@@ -1771,7 +1808,8 @@ with tabs[8]:
             st.info("No lessons yet.")
         else:
             view = lessons[lessons["agent_id"].isin(selected_agents)] if selected_agents else lessons
-            st.dataframe(view.sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            st.dataframe(lesson_display_frame(view).sort_values("created_at", ascending=False), width="stretch", hide_index=True)
+            render_raw_lesson_expanders(view, "lessons_memory")
             download_frame("Download lessons", view, "lessons.csv")
     st.markdown("#### Best and worst setups")
     if trades.empty:
@@ -2071,7 +2109,9 @@ with tabs[12]:
     if shared_lessons.empty:
         st.info("No promoted shared lessons yet.")
     else:
-        st.dataframe(shared_lessons.sort_values("promoted_at", ascending=False), width="stretch", hide_index=True)
+        shared_view = lesson_display_frame(shared_lessons.rename(columns={"source_agent": "agent_id", "lesson_text": "content"}))
+        sort_column = "last_updated" if "last_updated" in shared_view.columns else shared_view.columns[0]
+        st.dataframe(shared_view.sort_values(sort_column, ascending=False), width="stretch", hide_index=True)
         download_frame("Download shared lessons CSV", shared_lessons, "shared_lessons.csv")
 
     st.markdown("#### Unique Private Lessons")
@@ -2085,7 +2125,7 @@ with tabs[12]:
                     st.caption("No lessons yet.")
                 else:
                     for _, row in agent_lessons.iterrows():
-                        st.write(f"- {row.get('content')}")
+                        st.write(f"- {canonical_summary(row.get('summary') or row.get('raw_text') or row.get('content') or '')}")
 
     st.markdown("#### Lesson Promotion Audit")
     if lesson_promotions.empty:

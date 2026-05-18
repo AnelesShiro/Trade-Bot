@@ -128,7 +128,15 @@ def _lesson_card(row: dict[str, Any], accent: str) -> None:
         if evidence.empty:
             st.info("No detailed evidence rows available.")
         else:
-            st.dataframe(evidence, width="stretch", hide_index=True)
+            display = evidence.drop(columns=[column for column in ["raw_text"] if column in evidence.columns])
+            st.dataframe(display, width="stretch", hide_index=True)
+    raw_values = [str(row.get("raw_text") or "")]
+    raw_values.extend(str(item.get("raw_text") or "") for item in row.get("evidence", []) if isinstance(item, dict))
+    raw_values = [value for value in raw_values if value and value != row.get("lesson_text")]
+    if raw_values:
+        with st.expander("View Raw Lesson", expanded=False):
+            for value in raw_values[:5]:
+                st.text(value)
 
 
 def _short(value: Any, limit: int) -> str:

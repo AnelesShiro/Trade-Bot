@@ -12,6 +12,7 @@ from typing import Any
 from pydantic import BaseModel, Field
 from sqlalchemy import select
 
+from src.agents.lesson_canonicalizer import canonical_summary, lesson_key
 from src.config import Settings, SharedLearningSettings
 from src.storage.models import SignalRecord, TradeRecord
 from src.storage.repository import ArenaRepository
@@ -153,20 +154,22 @@ class SharedLearningManager:
         for agent in self.settings.agents:
             stats = _trade_stats(self.repository.trades(agent.id))
             for lesson in self.repository.lesson_records(agent.id, limit=200):
-                accepted, reason = self._promotion_reason(lesson.content, stats)
+                raw_text = lesson.raw_text or lesson.content
+                summary = canonical_summary(lesson.summary or raw_text)
+                accepted, reason = self._promotion_reason(summary, stats)
                 if not accepted:
                     self.repository.save_lesson_promotion(agent.id, lesson.id, "rejected", reason)
                     results["rejected"] += 1
                     continue
                 shared_id = self.repository.save_shared_lesson(
                     source_agent=agent.id,
-                    market_regime=_infer_regime(lesson.content),
-                    lesson_text=_generalize_lesson(lesson.content),
+                    market_regime=_infer_regime(summary),
+                    lesson_text=summary,
                     confidence=_confidence(stats),
                     sample_size=stats["sample_size"],
                     win_rate=stats["win_rate"],
                     profit_factor=stats["profit_factor"],
-                    lesson_type="failure_caution" if _is_failure_lesson(lesson.content) else "best_practice",
+                    lesson_type="failure_caution" if _is_failure_lesson(summary) else "best_practice",
                 )
                 if shared_id is None:
                     results["deduplicated_or_existing"] += 1
@@ -206,17 +209,18 @@ class SharedLearningManager:
             return []
         candidates = []
         for lesson in self.repository.shared_lessons(exclude_source_agent=agent_id, limit=100):
-            compatibility = compatibility_score(profile, lesson.lesson_text, lesson.market_regime)
+            lesson_text = canonical_summary(lesson.summary or lesson.raw_text or lesson.lesson_text)
+            compatibility = compatibility_score(profile, lesson_text, lesson.market_regime)
             if compatibility < self.config.compatibility_threshold:
                 continue
             score = (
-                0.35 * text_similarity(query, lesson.lesson_text)
+                0.35 * text_similarity(query, lesson_text)
                 + 0.25 * min(1.0, lesson.profit_factor / 3.0)
                 + 0.20 * lesson.win_rate
                 + 0.10 * min(1.0, lesson.sample_size / 50.0)
                 + 0.10 * compatibility
             )
-            candidates.append({"id": lesson.id, "text": lesson.lesson_text, "score": score})
+            candidates.append({"id": lesson.id, "text": lesson_text, "score": score})
         return sorted(candidates, key=lambda item: item["score"], reverse=True)[:limit]
 
     def _recent_signals(self, window_size: int) -> dict[str, list[SignalRecord]]:
@@ -271,7 +275,7 @@ class SharedLearningManager:
                         lesson.id,
                         lesson.source_agent,
                         lesson.market_regime,
-                        lesson.lesson_text,
+                        canonical_summary(lesson.summary or lesson.raw_text or lesson.lesson_text),
                         lesson.lesson_type,
                         lesson.confidence,
                         lesson.sample_size,
@@ -326,7 +330,12 @@ def compatibility_score(profile: StrategyProfile, lesson_text: str, market_regim
 
 
 def is_generalized_lesson(text: str) -> bool:
-    cleaned = text.lower()
+    raw = text.lower()
+    if re.search(r"\b\d{4,}(?:\.\d+)?\b", raw):
+        return False
+    if any(term in raw for term in ["entry=", "exit=", "pnl=", "position_id"]):
+        return False
+    cleaned = lesson_key(text)
     if re.search(r"\b\d{4,}(?:\.\d+)?\b", cleaned):
         return False
     ledger_terms = ["entry=", "exit=", "pnl=", "position_id"]

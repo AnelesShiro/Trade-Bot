@@ -62,3 +62,30 @@ def test_lesson_filters_apply_thresholds() -> None:
 
     assert filter_lessons(rows, agents=["crypto-qwen"], market_regime="trend", min_confidence=0.7, min_evidence=2, shared_only=True)
     assert not filter_lessons(rows, agents=["crypto-deepseek"], market_regime="trend", min_confidence=0.7, min_evidence=2, shared_only=True)
+
+
+def test_private_lessons_deduplicate_by_canonical_summary() -> None:
+    lessons = pd.DataFrame(
+        [
+            {
+                "id": 1,
+                "agent_id": "crypto-deepseek",
+                "created_at": "2026-05-18T00:00:00Z",
+                "content": "SHORT loss: notes=CLOSED DS-SHORT-003 fee=5 slippage_bps=2 After-stop-loss wait rule.",
+            },
+            {
+                "id": 2,
+                "agent_id": "crypto-deepseek",
+                "created_at": "2026-05-18T01:00:00Z",
+                "content": "SHORT loss: notes=CLOSED DS-SHORT-004 fee=7 slippage_bps=3 After-stop-loss wait rule.",
+            },
+        ]
+    )
+
+    analytics = build_lesson_analytics(lessons, pd.DataFrame(), pd.DataFrame(), pd.DataFrame())
+    avoid = analytics["avoid"]
+
+    assert len(avoid) == 1
+    assert avoid[0]["lesson_text"] == "Pause new SHORT entries for one full cycle after a short stop-loss."
+    assert avoid[0]["evidence_count"] == 2
+    assert "raw_text" in avoid[0]["evidence"][0]

@@ -897,3 +897,48 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+
+## 2026-05-19 - Canonical Lesson Summaries With Raw Text Preservation
+
+- User request: Store lessons in two forms: full `raw_text` for audit/debugging and concise canonical `summary` for dashboard and prompt use.
+- Constraints honored:
+  - No trading logic changes.
+  - No signal generation changes.
+  - No competition behavior changes.
+  - No LLM/API calls for summarization.
+  - Backward-compatible additive schema only.
+- What changed:
+  - Added deterministic local canonicalization utility: `src/agents/lesson_canonicalizer.py`.
+  - New lesson records now store:
+    - `raw_text`
+    - `summary`
+    - `category`
+    - `sentiment`
+    - `confidence`
+    - `impact`
+    - `evidence_count`
+    - `source_agents_json`
+    - `last_updated`
+  - Added the same additive metadata fields to `shared_lessons`.
+  - SQLite migration backfills legacy `lessons` and `shared_lessons` with canonical summaries and metadata.
+  - `AgentMemory.retrieve_lessons()` and vector memory now use canonical summaries instead of noisy raw reflections.
+  - Shared learning promotion/dedup/ranking now uses canonical summaries as the stable lesson key.
+  - Lesson analytics deduplicates similar noisy lessons by canonical summary.
+  - `Lessons to Follow` / `Lessons to Avoid` display canonical summaries as headlines and expose raw text in `View Raw Lesson` expanders.
+  - `Memory & Reflections` displays summaries in tables and exposes raw lesson/reflection text through expanders.
+  - Snapshot export includes summarized reflection rows and lesson analytics with both `summary` and `raw_text`.
+  - `PROJECT_BOOTSTRAP.md` updated with the lesson memory contract.
+- Example verified:
+  - Raw: `Daily review: equity=10021.56, realized_pnl=21.56 ...`
+  - Summary: `Trade only high-quality setups and maintain strict rule compliance.`
+  - Raw: `SHORT loss: notes=CLOSED DS-SHORT-003 ... After-stop-loss wait rule ...`
+  - Summary: `Pause new SHORT entries for one full cycle after a short stop-loss.`
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_lesson_canonicalizer.py tests/test_memory_repository_runner.py tests/test_lesson_analytics.py tests/test_shared_learning.py tests/test_hot_reload.py -q` -> 21 passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 85 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\agents\lesson_canonicalizer.py src\agents\memory.py src\agents\shared_learning.py src\analytics\lesson_analytics.py src\storage\models.py src\storage\repository.py src\dashboard\app.py src\dashboard\tabs\lessons_to_follow.py src\cloud\snapshot_exporter.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.

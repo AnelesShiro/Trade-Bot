@@ -209,6 +209,15 @@ class LessonRecord(Base):
     agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
     content: Mapped[str] = mapped_column(Text)
+    raw_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str | None] = mapped_column(String, nullable=True)
+    sentiment: Mapped[str | None] = mapped_column(String, nullable=True)
+    confidence: Mapped[float | None] = mapped_column(Float, nullable=True)
+    impact: Mapped[float | None] = mapped_column(Float, nullable=True)
+    evidence_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    source_agents_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_updated: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 
 class SharedLessonRecord(Base):
@@ -218,6 +227,14 @@ class SharedLessonRecord(Base):
     source_agent: Mapped[str] = mapped_column(String, ForeignKey("agents.id"))
     market_regime: Mapped[str] = mapped_column(String, default="unknown")
     lesson_text: Mapped[str] = mapped_column(Text)
+    raw_text: Mapped[str | None] = mapped_column(Text, nullable=True)
+    summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    category: Mapped[str | None] = mapped_column(String, nullable=True)
+    sentiment: Mapped[str | None] = mapped_column(String, nullable=True)
+    impact: Mapped[float | None] = mapped_column(Float, nullable=True)
+    evidence_count: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    source_agents_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_updated: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     lesson_type: Mapped[str] = mapped_column(String, default="best_practice")
     confidence: Mapped[float] = mapped_column(Float, default=0.0)
     sample_size: Mapped[int] = mapped_column(Integer, default=0)
@@ -581,6 +598,46 @@ def _migrate_sqlite(engine) -> None:
                 """
             )
         )
+        lesson_rows = connection.execute(text("PRAGMA table_info(lessons)")).mappings().all()
+        lesson_columns = {row["name"] for row in lesson_rows}
+        lesson_additions = {
+            "raw_text": "TEXT",
+            "summary": "TEXT",
+            "category": "VARCHAR",
+            "sentiment": "VARCHAR",
+            "confidence": "FLOAT",
+            "impact": "FLOAT",
+            "evidence_count": "INTEGER",
+            "source_agents_json": "TEXT",
+            "last_updated": "DATETIME",
+        }
+        for column, ddl in lesson_additions.items():
+            if column not in lesson_columns:
+                connection.execute(text(f"ALTER TABLE lessons ADD COLUMN {column} {ddl}"))
+        connection.execute(text("UPDATE lessons SET raw_text = content WHERE raw_text IS NULL"))
+        connection.execute(text("UPDATE lessons SET summary = content WHERE summary IS NULL"))
+        connection.execute(text("UPDATE lessons SET evidence_count = 1 WHERE evidence_count IS NULL"))
+        connection.execute(text("UPDATE lessons SET last_updated = created_at WHERE last_updated IS NULL"))
+        shared_rows = connection.execute(text("PRAGMA table_info(shared_lessons)")).mappings().all()
+        shared_columns = {row["name"] for row in shared_rows}
+        shared_additions = {
+            "raw_text": "TEXT",
+            "summary": "TEXT",
+            "category": "VARCHAR",
+            "sentiment": "VARCHAR",
+            "impact": "FLOAT",
+            "evidence_count": "INTEGER",
+            "source_agents_json": "TEXT",
+            "last_updated": "DATETIME",
+        }
+        for column, ddl in shared_additions.items():
+            if column not in shared_columns:
+                connection.execute(text(f"ALTER TABLE shared_lessons ADD COLUMN {column} {ddl}"))
+        connection.execute(text("UPDATE shared_lessons SET raw_text = lesson_text WHERE raw_text IS NULL"))
+        connection.execute(text("UPDATE shared_lessons SET summary = lesson_text WHERE summary IS NULL"))
+        connection.execute(text("UPDATE shared_lessons SET evidence_count = sample_size WHERE evidence_count IS NULL"))
+        connection.execute(text("UPDATE shared_lessons SET last_updated = promoted_at WHERE last_updated IS NULL"))
+        _backfill_lesson_canonical_columns(connection)
         signal_rows = connection.execute(text("PRAGMA table_info(signals)")).mappings().all()
         signal_columns = {row["name"] for row in signal_rows}
         signal_additions = {
@@ -650,6 +707,101 @@ def _migrate_sqlite(engine) -> None:
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_timestamp ON api_requests(timestamp)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_cycle_number ON api_requests(cycle_number)"))
         _backfill_signal_audit_columns(connection)
+
+
+def _backfill_lesson_canonical_columns(connection) -> None:
+    from src.agents.lesson_canonicalizer import canonicalize_lesson
+
+    lesson_rows = connection.execute(
+        text(
+            """
+            SELECT id, agent_id, created_at, content, raw_text, evidence_count
+            FROM lessons
+            WHERE summary IS NULL
+               OR summary = raw_text
+               OR category IS NULL
+               OR sentiment IS NULL
+               OR summary = 'Trade only high-quality setups and maintain strict rule compliance.'
+            LIMIT 5000
+            """
+        )
+    ).mappings().all()
+    for row in lesson_rows:
+        raw = row["raw_text"] or row["content"] or ""
+        canonical = canonicalize_lesson(raw, evidence_count=int(row["evidence_count"] or 1), last_updated=_parse_db_datetime(row["created_at"]))
+        connection.execute(
+            text(
+                """
+                UPDATE lessons
+                SET raw_text = :raw_text,
+                    summary = :summary,
+                    category = :category,
+                    sentiment = :sentiment,
+                    confidence = :confidence,
+                    impact = :impact,
+                    evidence_count = :evidence_count,
+                    source_agents_json = :source_agents_json,
+                    last_updated = COALESCE(last_updated, created_at)
+                WHERE id = :id
+                """
+            ),
+            {
+                "id": row["id"],
+                "raw_text": raw,
+                "summary": canonical.summary,
+                "category": canonical.category,
+                "sentiment": canonical.sentiment,
+                "confidence": canonical.confidence,
+                "impact": canonical.impact,
+                "evidence_count": canonical.evidence_count,
+                "source_agents_json": json.dumps([row["agent_id"]]),
+            },
+        )
+    shared_rows = connection.execute(
+        text(
+            """
+            SELECT id, source_agent, promoted_at, lesson_text, raw_text, sample_size, evidence_count
+            FROM shared_lessons
+            WHERE summary IS NULL
+               OR summary = raw_text
+               OR category IS NULL
+               OR sentiment IS NULL
+               OR summary = 'Trade only high-quality setups and maintain strict rule compliance.'
+            LIMIT 5000
+            """
+        )
+    ).mappings().all()
+    for row in shared_rows:
+        raw = row["raw_text"] or row["lesson_text"] or ""
+        evidence = int(row["evidence_count"] or row["sample_size"] or 1)
+        canonical = canonicalize_lesson(raw, evidence_count=evidence, last_updated=_parse_db_datetime(row["promoted_at"]))
+        connection.execute(
+            text(
+                """
+                UPDATE shared_lessons
+                SET raw_text = :raw_text,
+                    summary = :summary,
+                    lesson_text = :summary,
+                    category = :category,
+                    sentiment = :sentiment,
+                    impact = :impact,
+                    evidence_count = :evidence_count,
+                    source_agents_json = :source_agents_json,
+                    last_updated = COALESCE(last_updated, promoted_at)
+                WHERE id = :id
+                """
+            ),
+            {
+                "id": row["id"],
+                "raw_text": raw,
+                "summary": canonical.summary,
+                "category": canonical.category,
+                "sentiment": canonical.sentiment,
+                "impact": canonical.impact,
+                "evidence_count": canonical.evidence_count,
+                "source_agents_json": json.dumps([row["source_agent"]]),
+            },
+        )
 
 
 def _backfill_signal_audit_columns(connection) -> None:

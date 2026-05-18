@@ -9,6 +9,7 @@ import pandas as pd
 from sqlalchemy import select
 
 from src.analytics.lesson_analytics import build_lesson_analytics, lesson_summary
+from src.agents.lesson_canonicalizer import canonical_summary
 from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import summarize_workload
 from src.config import Settings
@@ -556,7 +557,15 @@ def _reflections(repository: ArenaRepository) -> dict[str, Any]:
     return {
         "count_recent": len(rows),
         "by_agent": _count_by(rows, "agent_id"),
-        "recent": [{"created_at": _iso(row.created_at), "agent_id": row.agent_id, "content": row.content[:500]} for row in rows[:20]],
+        "recent": [
+            {
+                "created_at": _iso(row.created_at),
+                "agent_id": row.agent_id,
+                "summary": canonical_summary(row.content),
+                "raw_text": row.content,
+            }
+            for row in rows[:20]
+        ],
     }
 
 
@@ -565,7 +574,19 @@ def _lesson_analytics_payload(repository: ArenaRepository) -> dict[str, Any]:
         with repository.session_factory() as session:
             lessons = pd.DataFrame(
                 [
-                    {"id": row.id, "agent_id": row.agent_id, "created_at": _iso(row.created_at), "content": row.content}
+                    {
+                        "id": row.id,
+                        "agent_id": row.agent_id,
+                        "created_at": _iso(row.created_at),
+                        "content": row.content,
+                        "raw_text": row.raw_text or row.content,
+                        "summary": canonical_summary(row.summary or row.raw_text or row.content),
+                        "category": row.category,
+                        "sentiment": row.sentiment,
+                        "confidence": row.confidence,
+                        "impact": row.impact,
+                        "evidence_count": row.evidence_count,
+                    }
                     for row in session.scalars(select(LessonRecord).order_by(LessonRecord.created_at.desc()).limit(1000))
                 ]
             )
@@ -576,6 +597,12 @@ def _lesson_analytics_payload(repository: ArenaRepository) -> dict[str, Any]:
                         "source_agent": row.source_agent,
                         "market_regime": row.market_regime,
                         "lesson_text": row.lesson_text,
+                        "raw_text": row.raw_text or row.lesson_text,
+                        "summary": canonical_summary(row.summary or row.raw_text or row.lesson_text),
+                        "category": row.category,
+                        "sentiment": row.sentiment,
+                        "impact": row.impact,
+                        "evidence_count": row.evidence_count,
                         "lesson_type": row.lesson_type,
                         "confidence": row.confidence,
                         "sample_size": row.sample_size,
@@ -589,7 +616,14 @@ def _lesson_analytics_payload(repository: ArenaRepository) -> dict[str, Any]:
             )
             reflections = pd.DataFrame(
                 [
-                    {"id": row.id, "agent_id": row.agent_id, "created_at": _iso(row.created_at), "content": row.content}
+                    {
+                        "id": row.id,
+                        "agent_id": row.agent_id,
+                        "created_at": _iso(row.created_at),
+                        "content": row.content,
+                        "raw_text": row.content,
+                        "summary": canonical_summary(row.content),
+                    }
                     for row in session.scalars(select(ReflectionRecord).order_by(ReflectionRecord.created_at.desc()).limit(1000))
                 ]
             )
