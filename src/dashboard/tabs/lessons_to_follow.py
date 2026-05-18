@@ -6,7 +6,13 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.analytics.lesson_analytics import contribution_frame, filter_lessons, lesson_summary, trend_frame
+from src.analytics.lesson_analytics import (
+    contribution_frame,
+    filter_lessons,
+    lesson_summary,
+    normalize_lesson_display_row,
+    trend_frame,
+)
 
 
 def render_lessons_to_follow_tab(rows: list[dict[str, Any]], agent_ids: list[str], date_range: tuple[Any, Any] | None = None) -> None:
@@ -32,6 +38,7 @@ def _render_lesson_tab(
     date_range: tuple[Any, Any] | None,
 ) -> None:
     st.subheader(title)
+    rows = [normalize_lesson_display_row(row) for row in rows]
     filters = _filters(rows, agent_ids, accent, key_prefix)
     filtered = filter_lessons(
         rows,

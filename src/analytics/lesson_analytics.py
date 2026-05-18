@@ -115,6 +115,33 @@ def filter_lessons(
     return filtered
 
 
+def normalize_lesson_display_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Normalize dashboard lesson rows from live analytics or older snapshots."""
+    normalized = dict(row)
+    candidate = str(normalized.get("summary") or normalized.get("lesson_text") or normalized.get("raw_text") or "").strip()
+    raw_text = str(normalized.get("raw_text") or "").strip()
+    if not raw_text and candidate:
+        raw_text = candidate
+    summary = canonical_summary(candidate or raw_text).strip()
+    if summary:
+        normalized["summary"] = summary
+        normalized["lesson_text"] = summary
+    if raw_text:
+        normalized["raw_text"] = raw_text
+    evidence_rows = []
+    for item in normalized.get("evidence", []) or []:
+        if not isinstance(item, dict):
+            continue
+        evidence = dict(item)
+        excerpt_candidate = str(evidence.get("excerpt") or evidence.get("raw_text") or "").strip()
+        excerpt_summary = canonical_summary(excerpt_candidate).strip()
+        if excerpt_summary:
+            evidence["excerpt"] = excerpt_summary
+        evidence_rows.append(evidence)
+    normalized["evidence"] = evidence_rows
+    return normalized
+
+
 def trend_frame(rows: list[dict[str, Any]]) -> pd.DataFrame:
     points: list[dict[str, Any]] = []
     for row in rows:

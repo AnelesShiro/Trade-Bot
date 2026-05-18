@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pandas as pd
 
-from src.analytics.lesson_analytics import build_lesson_analytics, filter_lessons, lesson_summary
+from src.analytics.lesson_analytics import build_lesson_analytics, filter_lessons, lesson_summary, normalize_lesson_display_row
 
 
 def test_lesson_analytics_separates_follow_and_avoid() -> None:
@@ -89,3 +89,18 @@ def test_private_lessons_deduplicate_by_canonical_summary() -> None:
     assert avoid[0]["lesson_text"] == "Pause new SHORT entries for one full cycle after a short stop-loss."
     assert avoid[0]["evidence_count"] == 2
     assert "raw_text" in avoid[0]["evidence"][0]
+
+
+def test_dashboard_lesson_display_normalizes_raw_snapshot_rows() -> None:
+    raw = "equity=10213.86, realized_pnl=133.27, unrealized_pnl=80.59. Keep valid setups only and preserve rule compliance."
+    row = normalize_lesson_display_row(
+        {
+            "lesson_text": raw,
+            "evidence": [{"excerpt": raw, "raw_text": raw}],
+        }
+    )
+
+    assert row["lesson_text"] == "Trade only high-quality setups and maintain strict rule compliance."
+    assert row["summary"] == "Trade only high-quality setups and maintain strict rule compliance."
+    assert row["raw_text"] == raw
+    assert row["evidence"][0]["excerpt"] == "Trade only high-quality setups and maintain strict rule compliance."

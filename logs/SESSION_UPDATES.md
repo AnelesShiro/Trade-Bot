@@ -968,3 +968,26 @@ Entry template:
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
   - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.
+
+## 2026-05-19 - Lesson Card Headline Summary Guard
+
+- User report: Local web `Lessons to Follow` ranked cards still showed noisy raw lesson text such as `equity=... realized_pnl=...` instead of the human-friendly summary.
+- Root cause:
+  - `Lessons to Follow` / `Lessons to Avoid` cards displayed `lesson_text` directly.
+  - Analytics normally canonicalizes new rows, but stale/local rows or older snapshot-style payloads could still carry raw text in `lesson_text`.
+- What changed:
+  - Added `normalize_lesson_display_row()` in `src/analytics/lesson_analytics.py`.
+  - `src/dashboard/tabs/lessons_to_follow.py` now normalizes all rows before filters, KPI cards, charts, and ranked cards render.
+  - If `lesson_text` is raw account-status text, the card headline becomes the canonical summary.
+  - Original raw text remains available in the `View Raw Lesson` expander.
+  - Evidence excerpts are also canonicalized for readability while preserving raw evidence.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_lesson_analytics.py tests/test_dashboard_contract.py -q` -> 7 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\analytics\lesson_analytics.py src\dashboard\tabs\lessons_to_follow.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 86 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - Manual normalize check confirmed:
+    - Raw `equity=10213.86...` becomes `Trade only high-quality setups and maintain strict rule compliance.`
+    - Raw text is still preserved for audit.
+- Notes:
+  - Refresh local Streamlit after this change if the browser still shows the old card text.
