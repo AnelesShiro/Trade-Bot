@@ -791,3 +791,22 @@ Entry template:
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
   - `cloud/dashboard_snapshot.json` was regenerated for Render.
+
+## 2026-05-18 - Risk Automation Lazy Import Hotfix
+
+- User report: Dashboard failed with `ImportError: cannot import name 'RiskAutomationSettings' from 'src.config'` while importing `src.dashboard.tabs.pending_orders`.
+- Root cause:
+  - Importing `src.trading.risk_automation.pending_order_view` first executes package `src.trading.risk_automation.__init__`.
+  - `__init__.py` eagerly imported `RiskAutomationEngine`, which pulled in `engine.py` and `src.config` even when the dashboard only needed the read-only pending-order view helper.
+  - This created an unnecessary import-chain risk for dashboard/Render startup.
+- What changed:
+  - `src/trading/risk_automation/__init__.py` now lazy-loads `RiskAutomationEngine` via `__getattr__`.
+  - Dashboard helper imports no longer eagerly import the risk automation engine/config path.
+  - Existing runner import `from src.trading.risk_automation import RiskAutomationEngine` still works.
+- Verification:
+  - `from src.dashboard.tabs.pending_orders import render_pending_orders_tab` -> passed.
+  - `from src.trading.risk_automation.pending_order_view import pending_order_view` -> passed.
+  - `from src.trading.risk_automation import RiskAutomationEngine` -> passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\trading\risk_automation\__init__.py src\dashboard\tabs\pending_orders.py src\trading\risk_automation\pending_order_view.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py tests/test_hot_reload.py tests/test_dashboard_contract.py -q` -> 28 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
