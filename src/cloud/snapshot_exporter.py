@@ -11,6 +11,7 @@ from sqlalchemy import select
 from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import summarize_workload
 from src.config import Settings
+from src.dashboard.contract import REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS
 from src.logger import logger
 from src.operations.update_manager import LiveUpdateManager
 from src.storage.models import ReflectionRecord, SignalRecord, TradeRecord
@@ -234,7 +235,7 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
     if not isinstance(risk, dict):
         errors.append("risk_automation must be an object")
     else:
-        for key in ["pending_orders", "cooldowns", "position_risk", "failover_events", "notifications", "active_models"]:
+        for key in REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS:
             if key not in risk:
                 errors.append(f"missing risk_automation.{key}")
     return errors

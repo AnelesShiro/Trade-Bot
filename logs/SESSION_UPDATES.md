@@ -682,3 +682,23 @@ Entry template:
 - Notes:
   - Runtime `outputs/*` files remain dirty and should not be committed.
   - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.
+
+## 2026-05-18 - Dashboard UI Contract To Prevent Local/Render Drift
+
+- User request (Vietnamese): Add a mechanism to ensure local DB dashboard UI/UX and Render dashboard UI/UX always stay synced, avoiding future mismatch.
+- What changed:
+  - Added `src/dashboard/contract.py` as the single source of truth for dashboard tab labels.
+  - Both local SQLite dashboard mode and Render/cloud snapshot dashboard mode now call `st.tabs(DASHBOARD_TAB_LABELS)` instead of maintaining separate hardcoded tab lists.
+  - Centralized required risk automation snapshot keys in the same contract module.
+  - Snapshot exporter validates `risk_automation` against the shared contract keys.
+  - Added `tests/test_dashboard_contract.py` to fail if the app stops using the shared tab contract or if required risk tabs are removed.
+  - Updated `tests/test_hot_reload.py` to use shared snapshot contract constants.
+  - Updated `PROJECT_BOOTSTRAP.md` and `PROJECT_CONTEXT.md` with the dashboard sync rule for future sessions.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_dashboard_contract.py tests/test_hot_reload.py -q` -> 10 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\dashboard\contract.py src\dashboard\app.py src\cloud\snapshot_exporter.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 71 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - This does not redesign the dashboard; it only removes duplicate local/cloud tab definitions and adds regression protection.

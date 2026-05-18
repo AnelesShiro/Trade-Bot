@@ -8,6 +8,7 @@ from src.competition.config_manager import ConfigManager
 from src.config import FeatureFlagSettings
 from src.cloud.snapshot_exporter import export_dashboard_snapshot, validate_snapshot_contract
 from src.dashboard.components.cycle_status_bar import _countdown
+from src.dashboard.contract import REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS
 from src.schemas import Action
 from src.trading.position_manager import PositionManager
 
@@ -96,7 +97,7 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         assert key in snapshot["signal_audit_summary"]
     assert isinstance(snapshot["signal_audit_summary"]["recent_accepted_signals"], list)
     assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
-    for key in ["pending_orders", "cooldowns", "position_risk", "failover_events", "notifications", "active_models"]:
+    for key in REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS:
         assert key in snapshot["risk_automation"]
     assert validate_snapshot_contract(snapshot) == []
 

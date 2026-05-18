@@ -19,6 +19,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Prompt/rulebook now include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, break-even is enforced locally around +1R on every open trade, use time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
 - Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `IN PROGRESS` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
 - Render/cloud dashboard snapshot mode mirrors the local risk automation tabs: Pending Orders, Risk Automation, and API Failover Events. Snapshot contract requires the `risk_automation` payload.
+- Dashboard UI contract: local SQLite mode and Render snapshot mode must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`; `tests/test_dashboard_contract.py` prevents tab-list drift.
 
 ## Operating Rules
 

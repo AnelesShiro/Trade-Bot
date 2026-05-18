@@ -29,6 +29,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
+from src.dashboard.contract import DASHBOARD_TAB_LABELS  # noqa: E402
 from src.dashboard.tabs.accepted_signals import render_accepted_signals_tab  # noqa: E402
 from src.dashboard.tabs.api_failover import render_api_failover_tab  # noqa: E402
 from src.dashboard.tabs.pending_orders import render_pending_orders_tab  # noqa: E402
@@ -940,27 +941,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     risk_cols[1].metric("Cooldowns", int(risk_automation.get("active_cooldown_count") or 0))
     risk_cols[2].metric("Fallback models", active_fallback_count)
 
-    tabs = st.tabs(
-        [
-            "Overview",
-            "Live Positions",
-            "Trade History",
-            "Equity Curves",
-            "Leaderboard",
-            "Accepted Signals",
-            "Rejected Signals",
-            "Raw Model Outputs",
-            "Memory & Reflections",
-            "Token & Cost",
-            "API Cost Audit",
-            "Workload Attribution",
-            "Strategy Diversity",
-            "Pending Orders",
-            "Risk Automation",
-            "API Failover Events",
-            "Configuration",
-        ]
-    )
+    tabs = st.tabs(DASHBOARD_TAB_LABELS)
 
     with tabs[0]:
         st.subheader("Overview")
@@ -1532,27 +1513,7 @@ if not runner_payload:
     runner_payload = snapshot_for_status.get("runner") if isinstance(snapshot_for_status, dict) else {}
 render_cycle_status(runner_payload)
 
-tabs = st.tabs(
-    [
-        "Overview",
-        "Live Positions",
-        "Trade History",
-        "Equity Curves",
-        "Leaderboard",
-        "Accepted Signals",
-        "Rejected Signals",
-        "Raw Model Outputs",
-        "Memory & Reflections",
-        "Token & Cost",
-        "API Cost Audit",
-        "Workload Attribution",
-        "Strategy Diversity",
-        "Pending Orders",
-        "Risk Automation",
-        "API Failover Events",
-        "Configuration",
-    ]
-)
+tabs = st.tabs(DASHBOARD_TAB_LABELS)
 
 with tabs[0]:
     st.subheader("Overview")

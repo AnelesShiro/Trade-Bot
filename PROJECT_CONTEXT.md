@@ -127,6 +127,10 @@
   - The runner writes `runner_state` at phase transitions so the dashboard can distinguish active processing from a truly late/offline runner.
   - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models, risk notifications).
   - Optional Git sync commits and pushes snapshot to GitHub for Render.
+- Dashboard sync contract:
+  - Local SQLite dashboard and Render snapshot dashboard must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`.
+  - Snapshot tab requirements such as `risk_automation` keys are centralized in `src/dashboard/contract.py`.
+  - `tests/test_dashboard_contract.py` and `tests/test_hot_reload.py` must fail if local and Render tab surfaces drift apart.
 
 # Design Principles
 
@@ -412,7 +416,7 @@
 - Cooldown: blocks **new LLM calls** for an agent until expiry; open positions still managed locally. Triggers include consecutive losses, daily loss, weekly drawdown, rejection rate, and API instability.
 - API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.
 - SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications` (created by `create_schema` / live runner startup).
-- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications. Local SQLite dashboard and Render/cloud snapshot dashboard both expose these tabs.
+- Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications. Local SQLite dashboard and Render/cloud snapshot dashboard both expose these tabs through the shared dashboard contract.
 - Tests: `tests/test_risk_automation.py`.
 
 # Deployment Information
