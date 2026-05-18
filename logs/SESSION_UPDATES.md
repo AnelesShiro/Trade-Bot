@@ -815,8 +815,9 @@ Entry template:
 
 - User report: `Next Cycle In` showed `OVERDUE`; if a cycle is truly overdue, fix immediately, but if the runner is calling a bot it must show `TRADING`.
 - Investigation:
-  - Found two independent `run-live --resume` process trees running at the same time, which can cause duplicate agent calls and confusing checkpoint/snapshot state.
-  - Stopped the older duplicate process tree and verified only one live runner tree remained.
+  - Reconfirmed the existing project rule: two visible `run-live --resume` process rows can be a normal Windows parent-child pair (`.venv` Python parent plus base Python child), which is one runner, not two.
+  - Duplicate runner risk only exists when there are multiple unrelated parent process trees, not when the rows have a parent-child relationship.
+  - Verified the current live runner is one valid parent-child tree: parent `4228`, child `41012`.
   - SQLite `runner_state` showed the runner was actively processing cycle `67` in `CALLING_QWEN`, so this was not a true overdue state during the bot-call phase.
   - Cycle `67` later completed successfully and `runner_state` moved to `WAITING` with `next_cycle_at=2026-05-18 13:31:07.708520`.
 - What changed:

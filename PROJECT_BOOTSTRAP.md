@@ -8,7 +8,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Active agents: `crypto-deepseek` and `crypto-qwen`.
 - Legacy `crypto-grok` data remains in SQLite for history/audit only. Do not merge it into Qwen.
 - Latest verified live cycle/checkpoint: `67` completed.
-- Recent API audit shows both DeepSeek and Qwen succeeded in cycle `67`; duplicate runner cleanup was required during that cycle.
+- Recent API audit shows both DeepSeek and Qwen succeeded in cycle `67`; current live runner is one normal Windows parent-child process tree.
 - Current active open positions at last check: `DS-SHORT-004` (`crypto-deepseek`, SHORT, PARTIAL) and `crypto-qwen-8e6a3ee4e3` (`crypto-qwen`, LONG, OPEN).
 - DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
 - Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
