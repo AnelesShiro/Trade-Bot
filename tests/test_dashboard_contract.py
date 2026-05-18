@@ -31,3 +31,13 @@ def test_render_dashboard_risk_tabs_have_snapshot_contract_keys() -> None:
         "notifications",
         "active_models",
     )
+
+
+def test_lesson_filter_widgets_have_unique_keys() -> None:
+    source = (PROJECT_ROOT / "src" / "dashboard" / "tabs" / "lessons_to_follow.py").read_text(encoding="utf-8")
+    avoid_source = (PROJECT_ROOT / "src" / "dashboard" / "tabs" / "lessons_to_avoid.py").read_text(encoding="utf-8")
+
+    assert "key_prefix=\"lessons_follow\"" in source
+    assert "key_prefix=\"lessons_avoid\"" in avoid_source
+    for suffix in ["agents", "market_regime", "confidence", "evidence", "shared_only"]:
+        assert f"key=f\"{{key_prefix}}_{suffix}\"" in source

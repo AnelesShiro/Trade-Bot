@@ -16,6 +16,7 @@ def render_lessons_to_follow_tab(rows: list[dict[str, Any]], agent_ids: list[str
         title="Lessons to Follow",
         empty_message="No validated positive lessons meet the current filters yet.",
         accent="#22c55e",
+        key_prefix="lessons_follow",
         date_range=date_range,
     )
 
@@ -27,10 +28,11 @@ def _render_lesson_tab(
     title: str,
     empty_message: str,
     accent: str,
+    key_prefix: str,
     date_range: tuple[Any, Any] | None,
 ) -> None:
     st.subheader(title)
-    filters = _filters(rows, agent_ids, accent)
+    filters = _filters(rows, agent_ids, accent, key_prefix)
     filtered = filter_lessons(
         rows,
         agents=filters["agents"],
@@ -52,14 +54,14 @@ def _render_lesson_tab(
         _lesson_card(row, accent)
 
 
-def _filters(rows: list[dict[str, Any]], agent_ids: list[str], accent: str) -> dict[str, Any]:
+def _filters(rows: list[dict[str, Any]], agent_ids: list[str], accent: str, key_prefix: str) -> dict[str, Any]:
     regimes = sorted({str(row.get("market_regime") or "unknown") for row in rows})
     cols = st.columns([1.4, 1, 1, 1, 0.8])
-    agents = cols[0].multiselect("Agent", options=agent_ids, default=agent_ids)
-    market_regime = cols[1].selectbox("Market regime", ["All"] + regimes)
-    min_confidence = cols[2].slider("Confidence threshold", 0.0, 1.0, 0.35, 0.05)
-    min_evidence = cols[3].number_input("Minimum evidence", min_value=1, max_value=100, value=1, step=1)
-    shared_only = cols[4].toggle("Shared only", value=False)
+    agents = cols[0].multiselect("Agent", options=agent_ids, default=agent_ids, key=f"{key_prefix}_agents")
+    market_regime = cols[1].selectbox("Market regime", ["All"] + regimes, key=f"{key_prefix}_market_regime")
+    min_confidence = cols[2].slider("Confidence threshold", 0.0, 1.0, 0.35, 0.05, key=f"{key_prefix}_confidence")
+    min_evidence = cols[3].number_input("Minimum evidence", min_value=1, max_value=100, value=1, step=1, key=f"{key_prefix}_evidence")
+    shared_only = cols[4].toggle("Shared only", value=False, key=f"{key_prefix}_shared_only")
     st.markdown(f"<div style='height:2px;background:{accent};opacity:.35;margin:4px 0 12px 0'></div>", unsafe_allow_html=True)
     return {
         "agents": agents,

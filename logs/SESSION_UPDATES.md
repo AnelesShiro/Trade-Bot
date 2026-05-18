@@ -737,3 +737,21 @@ Entry template:
 - Notes:
   - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
   - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.
+
+## 2026-05-18 - Render Lesson Tabs Duplicate Widget ID Fix
+
+- User report: Render dashboard crashed with `streamlit.errors.StreamlitDuplicateElementId` in `Lessons to Avoid`; both lesson tabs created a `multiselect("Agent")` with identical auto-generated widget IDs.
+- Root cause:
+  - `Lessons to Follow` and `Lessons to Avoid` reused the same shared `_filters()` helper without passing explicit widget keys.
+  - Streamlit generated the same internal ID for matching filter widgets across tabs.
+- What changed:
+  - Added `key_prefix` to lesson tab rendering.
+  - `Lessons to Follow` uses `lessons_follow_*` widget keys.
+  - `Lessons to Avoid` uses `lessons_avoid_*` widget keys.
+  - Added regression test to ensure lesson filter widgets keep unique keys.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_dashboard_contract.py tests/test_lesson_analytics.py -q` -> 5 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\dashboard\tabs\lessons_to_follow.py src\dashboard\tabs\lessons_to_avoid.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 75 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.

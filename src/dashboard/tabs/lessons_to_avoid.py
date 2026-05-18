@@ -12,5 +12,6 @@ def render_lessons_to_avoid_tab(rows: list[dict[str, Any]], agent_ids: list[str]
         title="Lessons to Avoid",
         empty_message="No validated negative lessons meet the current filters yet.",
         accent="#ef4444",
+        key_prefix="lessons_avoid",
         date_range=date_range,
     )
