@@ -978,6 +978,7 @@ Entry template:
 - What changed:
   - Added `normalize_lesson_display_row()` in `src/analytics/lesson_analytics.py`.
   - `src/dashboard/tabs/lessons_to_follow.py` now normalizes all rows before filters, KPI cards, charts, and ranked cards render.
+  - Follow-up hot-reload fix: the tab no longer imports `normalize_lesson_display_row` from `src.analytics.lesson_analytics`; it keeps a local dashboard helper so Streamlit cannot crash if the analytics module was already cached from an older process.
   - If `lesson_text` is raw account-status text, the card headline becomes the canonical summary.
   - Original raw text remains available in the `View Raw Lesson` expander.
   - Evidence excerpts are also canonicalized for readability while preserving raw evidence.
@@ -986,6 +987,7 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m py_compile src\analytics\lesson_analytics.py src\dashboard\tabs\lessons_to_follow.py` -> passed.
   - `.\.venv\Scripts\python.exe -m pytest -q` -> 86 passed.
   - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - Import smoke confirmed `from src.dashboard.tabs.lessons_to_follow import render_lessons_to_follow_tab, normalize_lesson_display_row` works and normalizes raw `equity=...` text.
   - Manual normalize check confirmed:
     - Raw `equity=10213.86...` becomes `Trade only high-quality setups and maintain strict rule compliance.`
     - Raw text is still preserved for audit.

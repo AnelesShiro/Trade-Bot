@@ -10,9 +10,9 @@ from src.analytics.lesson_analytics import (
     contribution_frame,
     filter_lessons,
     lesson_summary,
-    normalize_lesson_display_row,
     trend_frame,
 )
+from src.agents.lesson_canonicalizer import canonical_summary
 
 
 def render_lessons_to_follow_tab(rows: list[dict[str, Any]], agent_ids: list[str], date_range: tuple[Any, Any] | None = None) -> None:
@@ -77,6 +77,33 @@ def _filters(rows: list[dict[str, Any]], agent_ids: list[str], accent: str, key_
         "min_evidence": int(min_evidence),
         "shared_only": bool(shared_only),
     }
+
+
+def normalize_lesson_display_row(row: dict[str, Any]) -> dict[str, Any]:
+    """Normalize dashboard lesson rows without relying on a hot-reloaded analytics module."""
+    normalized = dict(row)
+    candidate = str(normalized.get("summary") or normalized.get("lesson_text") or normalized.get("raw_text") or "").strip()
+    raw_text = str(normalized.get("raw_text") or "").strip()
+    if not raw_text and candidate:
+        raw_text = candidate
+    summary = canonical_summary(candidate or raw_text).strip()
+    if summary:
+        normalized["summary"] = summary
+        normalized["lesson_text"] = summary
+    if raw_text:
+        normalized["raw_text"] = raw_text
+    evidence_rows = []
+    for item in normalized.get("evidence", []) or []:
+        if not isinstance(item, dict):
+            continue
+        evidence = dict(item)
+        excerpt_candidate = str(evidence.get("excerpt") or evidence.get("raw_text") or "").strip()
+        excerpt_summary = canonical_summary(excerpt_candidate).strip()
+        if excerpt_summary:
+            evidence["excerpt"] = excerpt_summary
+        evidence_rows.append(evidence)
+    normalized["evidence"] = evidence_rows
+    return normalized
 
 
 def _summary_cards(summary: dict[str, Any]) -> None:
