@@ -17,6 +17,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
 - API failover is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, and risk notifications. This is separate from `LLM_ALLOW_FALLBACK`; silent model fallback remains impossible.
 - Prompt/rulebook now include validated signal templates and the exact risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
+- Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `IN PROGRESS` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
 
 ## Operating Rules
 

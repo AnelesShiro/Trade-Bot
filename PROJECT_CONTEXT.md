@@ -15,6 +15,7 @@
 - `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
 - `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
 - Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
+- Live runner phase is persisted in SQLite table `runner_state`. During active bot calls the dashboard/snapshot should display phases such as `CALLING_DEEPSEEK` or `CALLING_QWEN` and `IN PROGRESS`, not `OVERDUE`.
 - Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
 - Use `.venv\Scripts\python.exe` for validation and tests.
 
@@ -100,6 +101,7 @@
   - `src/trading/risk_automation/`: local conditional-order and position risk engine (triggers, trailing stop, break-even, time exit, cooldown evaluation).
   - `src/agents/api_failover.py`: explicit logged provider failover (not silent `LLM_ALLOW_FALLBACK`).
   - `src/storage/risk_repository.py`: persistence mixin for `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications`.
+  - `runner_state` SQLite table: single-row live runner phase/status used by local dashboard and cloud snapshot to avoid false overdue warnings while bots are processing.
   - `src/storage/repository.py`: SQLite persistence for core arena state.
   - `src/storage/signal_repository.py`: accepted/rejected signal audit persistence.
   - `src/competition/runner.py`: main competition loop, cycle orchestration, provider error handling, checkpoint/export/sync.
@@ -122,6 +124,7 @@
   - SQLite and output files are updated.
   - Checkpoint is written after each completed cycle.
   - Before SL/TP checks each cycle (and on the position monitor interval), `RiskAutomationEngine` evaluates pending triggers and position risk state using the same market price/RSI snapshot.
+  - The runner writes `runner_state` at phase transitions so the dashboard can distinguish active processing from a truly late/offline runner.
   - Snapshot is exported to `cloud/dashboard_snapshot.json` (includes `risk_automation` summary: pending orders, cooldowns, trailing/break-even state, failover events, active models, risk notifications).
   - Optional Git sync commits and pushes snapshot to GitHub for Render.
 

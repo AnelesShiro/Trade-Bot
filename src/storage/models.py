@@ -371,6 +371,21 @@ class CheckpointRecord(Base):
     payload_json: Mapped[str] = mapped_column(Text)
 
 
+class RunnerStateRecord(Base):
+    __tablename__ = "runner_state"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
+    status: Mapped[str] = mapped_column(String, default="RUNNING")
+    phase: Mapped[str] = mapped_column(String, default="WAITING")
+    cycle_number: Mapped[int] = mapped_column(Integer, default=0)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    next_cycle_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    message: Mapped[str] = mapped_column(Text, default="")
+    payload_json: Mapped[str] = mapped_column(Text, default="{}")
+
+
 class DowntimeEventRecord(Base):
     __tablename__ = "downtime_events"
 

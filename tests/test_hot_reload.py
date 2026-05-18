@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 import yaml
 
 from src.competition.config_manager import ConfigManager
 from src.config import FeatureFlagSettings
 from src.cloud.snapshot_exporter import export_dashboard_snapshot, validate_snapshot_contract
+from src.dashboard.components.cycle_status_bar import _countdown
 from src.schemas import Action
 from src.trading.position_manager import PositionManager
 
@@ -93,6 +96,32 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
     assert isinstance(snapshot["signal_audit_summary"]["recent_accepted_signals"], list)
     assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
     assert validate_snapshot_contract(snapshot) == []
+
+
+def test_cloud_snapshot_reports_active_runner_phase(repository, test_settings) -> None:
+    started_at = datetime(2026, 5, 18, 6, 0, tzinfo=UTC)
+    repository.save_runner_state(
+        status="RUNNING",
+        phase="CALLING_QWEN",
+        cycle_number=12,
+        started_at=started_at,
+        message="Calling crypto-qwen and validating its signal",
+    )
+
+    snapshot = export_dashboard_snapshot(test_settings, repository)
+
+    assert snapshot["runner"]["status"] == "RUNNING"
+    assert snapshot["runner"]["phase"] == "CALLING_QWEN"
+    assert snapshot["runner"]["cycle_number"] == 12
+    assert snapshot["runner"]["next_cycle_at"] is None
+    assert snapshot["runner"]["current_cycle_started_at"] == "2026-05-18T06:00:00Z"
+
+
+def test_cycle_status_does_not_mark_active_phase_overdue() -> None:
+    label, overdue = _countdown(None, "CALLING_QWEN")
+
+    assert label == "IN PROGRESS"
+    assert overdue is False
 
 
 def test_snapshot_contract_rejects_missing_signal_audit() -> None:

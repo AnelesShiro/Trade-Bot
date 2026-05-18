@@ -32,6 +32,7 @@ from src.storage.models import (
     PromptVersionRecord,
     ReflectionRecord,
     ResponseRecord,
+    RunnerStateRecord,
     SharedLessonRecord,
     SignalRecord,
     StrategyProfileRecord,
@@ -668,6 +669,41 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
             stmt = select(CheckpointRecord).order_by(CheckpointRecord.created_at.desc()).limit(1)
             return session.scalars(stmt).first()
 
+    def save_runner_state(
+        self,
+        *,
+        status: str,
+        phase: str,
+        cycle_number: int,
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        next_cycle_at: datetime | None = None,
+        message: str = "",
+        payload: dict[str, Any] | None = None,
+    ) -> None:
+        with self.session_factory() as session, session.begin():
+            record = session.get(RunnerStateRecord, 1)
+            values = {
+                "updated_at": datetime.now(UTC),
+                "status": status,
+                "phase": phase,
+                "cycle_number": cycle_number,
+                "started_at": _naive_utc(started_at),
+                "completed_at": _naive_utc(completed_at),
+                "next_cycle_at": _naive_utc(next_cycle_at),
+                "message": message[:4000],
+                "payload_json": json.dumps(payload or {}, default=str),
+            }
+            if record:
+                for key, value in values.items():
+                    setattr(record, key, value)
+            else:
+                session.add(RunnerStateRecord(id=1, **values))
+
+    def latest_runner_state(self) -> RunnerStateRecord | None:
+        with self.session_factory() as session:
+            return session.get(RunnerStateRecord, 1)
+
     def checkpoints(self, limit: int = 100) -> list[CheckpointRecord]:
         with self.session_factory() as session:
             stmt = select(CheckpointRecord).order_by(CheckpointRecord.created_at.desc()).limit(limit)
@@ -704,3 +740,11 @@ def new_position_id(agent_id: str) -> str:
 
 def new_trade_id(agent_id: str) -> str:
     return f"trade-{agent_id}-{uuid4().hex[:10]}"
+
+
+def _naive_utc(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value
+    return value.astimezone(UTC).replace(tzinfo=None)

@@ -101,6 +101,10 @@ class CompetitionRunner:
             self._prompt_audit_context: dict[str, dict[str, int]] = {}
 
     def run_once(self) -> None:
+        cycle_number = self._cycle_count + 1
+        cycle_started_at = datetime.now(UTC)
+        self._active_cycle_started_at = cycle_started_at
+        self._mark_runner_state("RUNNING", "FETCHING_DATA", cycle_number, started_at=cycle_started_at, message="Fetching market data")
         self.repository.ensure_competition_started("run_once")
         self._reload_runtime_config()
         self._ensure_not_killed()
@@ -109,6 +113,7 @@ class CompetitionRunner:
         market_state = get_market_state(self.settings)
         snapshot_id = self.repository.save_market_snapshot(market_state)
         logger.info("frozen market snapshot {} at {} price {}", snapshot_id, market_state.timestamp, market_state.current_price)
+        self._mark_runner_state("RUNNING", "MANAGING_POSITIONS", cycle_number, started_at=cycle_started_at, message="Updating local risk automation and stops")
         workload.database_query("position_management", details="load open positions for stop/target checks")
         workload.local_function("risk_management", "update_stops_and_targets")
         if self.risk_engine.enabled:
@@ -125,6 +130,7 @@ class CompetitionRunner:
             workload.reflection(trade.agent_id)
         for agent in self.settings.agents:
             self._run_agent_round(agent_id=agent.id, market_state=market_state, workload=workload)
+        self._mark_runner_state("RUNNING", "POST_PROCESSING", cycle_number, started_at=cycle_started_at, message="Persisting metrics and lessons")
         workload.local_function("analytics", "persist_daily_metrics")
         self._persist_daily_metrics(market_state, workload)
         workload.local_function("learning", "promote_lessons")
@@ -132,14 +138,27 @@ class CompetitionRunner:
         workload.lesson_promotion(int(promotion_result.get("promoted", 0)))
         workload.local_function("analytics", "analyze_diversity")
         self.shared_learning.analyze_diversity()
+        self._mark_runner_state("RUNNING", "WRITING_OUTPUTS", cycle_number, started_at=cycle_started_at, message="Writing outputs and benchmark")
         workload.local_function("outputs", "write_outputs")
         self._write_outputs(market_state)
         workload.local_function("benchmark", "buy_and_hold_btc")
         self._save_benchmark(market_state)
+        self._mark_runner_state("RUNNING", "CHECKPOINTING", cycle_number, started_at=cycle_started_at, message="Saving checkpoint")
         self._save_checkpoint(market_state, status="COMPLETED")
         cycle, components = workload.finalize()
         self.repository.save_workload_cycle(cycle, components)
         self._cycle_count += 1
+        completed_at = datetime.now(UTC)
+        self._mark_runner_state(
+            "RUNNING",
+            "WAITING",
+            cycle_number,
+            started_at=cycle_started_at,
+            completed_at=completed_at,
+            next_cycle_at=completed_at + timedelta(seconds=self.settings.competition.poll_interval_seconds),
+            message="Cycle completed; waiting for next scheduled cycle",
+            payload={"last_cycle_duration_seconds": cycle.get("payload", {}).get("total_wall_time_seconds")},
+        )
         self._cloud_update_after_cycle()
         self._process_cycle_boundary_updates()
 
@@ -178,6 +197,13 @@ class CompetitionRunner:
                     return
             except Exception as error:
                 logger.exception("live loop failed: {}", error)
+                self._mark_runner_state(
+                    "ERROR",
+                    "ERROR",
+                    self._cycle_count + 1,
+                    started_at=getattr(self, "_active_cycle_started_at", None),
+                    message=str(error)[:1000],
+                )
             self._sleep_with_position_monitor(self.settings.competition.poll_interval_seconds)
             if self._restart_requested:
                 logger.info("graceful restart requested during wait; exiting live loop")
@@ -315,6 +341,14 @@ class CompetitionRunner:
         self._cloud_update_after_cycle()
 
     def _run_agent_round(self, agent_id: str, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
+        phase = f"CALLING_{agent_id.replace('crypto-', '').upper()}"
+        self._mark_runner_state(
+            "RUNNING",
+            phase,
+            self._cycle_count + 1,
+            started_at=getattr(self, "_active_cycle_started_at", None),
+            message=f"Calling {agent_id} and validating its signal",
+        )
         agent_settings = next(agent for agent in self.settings.agents if agent.id == agent_id)
         self.failover_manager.maybe_restore_primary(agent_settings)
         active_route = self.failover_manager.active_route(agent_settings)
@@ -1121,6 +1155,32 @@ class CompetitionRunner:
         checkpoint_id = self.repository.save_checkpoint(checkpoint_cycle, status, payload)
         self.update_manager.write_checkpoint_file(payload, checkpoint_id, checkpoint_cycle, status)
         self.repository.save_health_check("checkpoint", "PASS", False, f"Saved checkpoint {checkpoint_id} for cycle {checkpoint_cycle}")
+
+    def _mark_runner_state(
+        self,
+        status: str,
+        phase: str,
+        cycle_number: int,
+        *,
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        next_cycle_at: datetime | None = None,
+        message: str = "",
+        payload: dict[str, Any] | None = None,
+    ) -> None:
+        try:
+            self.repository.save_runner_state(
+                status=status,
+                phase=phase,
+                cycle_number=cycle_number,
+                started_at=started_at,
+                completed_at=completed_at,
+                next_cycle_at=next_cycle_at,
+                message=message,
+                payload=payload,
+            )
+        except Exception as error:
+            logger.warning("runner state update failed without stopping trading: {}", error)
 
     def _current_completed_cycle_number(self) -> int:
         latest = self.repository.latest_checkpoint()

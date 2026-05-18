@@ -11,12 +11,17 @@ import streamlit as st
 
 PHASE_LABELS = {
     "FETCHING_DATA": "Fetching Data",
+    "MANAGING_POSITIONS": "Managing Positions",
     "BUILDING_PROMPTS": "Building Prompts",
     "CALLING_DEEPSEEK": "Calling DeepSeek",
+    "CALLING_QWEN": "Calling Qwen",
     "CALLING_GROK": "Calling Grok",
     "VALIDATING_SIGNALS": "Validating Signals",
     "EXECUTING_TRADES": "Executing Trades",
+    "POST_PROCESSING": "Post Processing",
     "WRITING_MEMORY": "Writing Memory",
+    "WRITING_OUTPUTS": "Writing Outputs",
+    "CHECKPOINTING": "Checkpointing",
     "EXPORTING_SNAPSHOT": "Exporting Snapshot",
     "SYNCING_GITHUB": "Syncing GitHub",
     "WAITING": "Waiting",
@@ -43,9 +48,10 @@ _fragment_runner = st.fragment(run_every="1s")(_render_cycle_status_fragment) if
 def _render_cycle_status_inner(runner: dict[str, Any]) -> None:
     with st.container():
         status = str(runner.get("status") or "N/A").upper()
-        phase = _phase_label(runner.get("phase"))
+        raw_phase = str(runner.get("phase") or "").upper()
+        phase = _phase_label(raw_phase)
         next_cycle_at = _parse_time(runner.get("next_cycle_at"))
-        next_in, overdue = _countdown(next_cycle_at)
+        next_in, overdue = _countdown(next_cycle_at, raw_phase)
         fields = [
             _field("Status", _status_badge(status), "Runner process state", raw=True),
             _field("Cycle #", _prefixed_number(runner.get("cycle_number")), "Current cycle number"),
@@ -195,7 +201,9 @@ def _parse_time(value: Any) -> datetime | None:
     return parsed.replace(tzinfo=UTC) if parsed.tzinfo is None else parsed.astimezone(UTC)
 
 
-def _countdown(next_cycle_at: datetime | None) -> tuple[str, bool]:
+def _countdown(next_cycle_at: datetime | None, phase: str = "") -> tuple[str, bool]:
+    if phase and phase not in {"WAITING", "ERROR", "OFFLINE"}:
+        return "IN PROGRESS", False
     if not next_cycle_at:
         return "N/A", False
     remaining = int((next_cycle_at - datetime.now(UTC)).total_seconds())

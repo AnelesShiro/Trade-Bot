@@ -434,6 +434,7 @@ def _workload_payload(repository: ArenaRepository) -> dict[str, Any]:
 
 def _runner_payload(repository: ArenaRepository, status: str, cycle_interval_seconds: int) -> dict[str, Any]:
     checkpoint = repository.latest_checkpoint()
+    runner_state = repository.latest_runner_state()
     workload = repository.workload_cycles(limit=1)
     latest_workload = workload[0] if workload else None
     workload_payload = _safe_json(latest_workload.payload_json, {}) if latest_workload else {}
@@ -451,6 +452,26 @@ def _runner_payload(repository: ArenaRepository, status: str, cycle_interval_sec
     )
     next_cycle_at = last_completed_at + timedelta(seconds=cycle_interval_seconds) if last_completed_at else None
     runner_status = "RUNNING" if status in {"RUNNING", "SCHEDULED"} else "OFFLINE" if status in {"PAUSED", "COMPLETED"} else "ERROR"
+    if runner_state:
+        state_phase = str(runner_state.phase or "").upper()
+        state_status = str(runner_state.status or runner_status).upper()
+        if state_phase and state_phase != "WAITING":
+            return {
+                "status": state_status,
+                "cycle_number": int(runner_state.cycle_number or cycle_number),
+                "phase": state_phase,
+                "last_cycle_duration_seconds": last_duration_seconds,
+                "cycle_interval_seconds": cycle_interval_seconds,
+                "next_cycle_at": None,
+                "last_cycle_started_at": _iso(runner_state.started_at),
+                "current_cycle_started_at": _iso(runner_state.started_at),
+                "state_updated_at": _iso(runner_state.updated_at),
+                "message": runner_state.message,
+                "total_cycles_completed": cycle_number,
+            }
+        if state_phase == "WAITING":
+            next_cycle_at = _utc(runner_state.next_cycle_at) if runner_state.next_cycle_at else next_cycle_at
+            runner_status = state_status
     return {
         "status": runner_status,
         "cycle_number": cycle_number,

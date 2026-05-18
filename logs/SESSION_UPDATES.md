@@ -514,3 +514,43 @@ Entry template:
 - Notes:
   - No validator/trading-engine behavior changed; this is prompt/rulebook/schema-hint guidance plus regression tests.
   - Existing live runner keeps prompt/rulebook text in memory until restart; safe restart was queued instead of interrupting the active cycle.
+
+## 2026-05-18 - Runner State Fix For False Overdue
+
+- User request (Vietnamese): Dashboard/DB shows `OVERDUE` even though cycles complete, and it also shows overdue while bots are being called. Update DB/UI so users know the bot is processing; reserve overdue for real errors.
+- Root cause:
+  - Dashboard/snapshot computed `next_cycle_at = latest_checkpoint.created_at + poll_interval`.
+  - During an active cycle, the new checkpoint is not written until the end, so the previous `next_cycle_at` can be in the past while DeepSeek/Qwen is still processing.
+  - The UI had no persisted "current runner phase" source, so it rendered a false `OVERDUE`.
+- What changed:
+  - Added SQLite table `runner_state` with status, phase, cycle number, timestamps, next cycle time, message, and payload.
+  - Runner now updates `runner_state` at cycle phase transitions:
+    - `FETCHING_DATA`
+    - `MANAGING_POSITIONS`
+    - `CALLING_DEEPSEEK`
+    - `CALLING_QWEN`
+    - `POST_PROCESSING`
+    - `WRITING_OUTPUTS`
+    - `CHECKPOINTING`
+    - `WAITING`
+    - `ERROR`
+  - Runner state updates are best-effort and non-fatal; trading continues if DB state write fails.
+  - Local dashboard now reads `runner_state` from SQLite and prefers it over stale snapshot runner data.
+  - Cloud snapshot runner payload now uses active `runner_state` and sets `next_cycle_at: null` while a cycle is processing.
+  - Cycle status component now shows `IN PROGRESS` for active phases instead of `OVERDUE`.
+- Live repair:
+  - Before restart, no `run-live` process was detected. Latest checkpoint was cycle `61` completed at `2026-05-18 06:46:55 UTC`; current time was already `2026-05-18 08:09 UTC`, so the runner had actually stopped after the earlier no-wait safe restart.
+  - Ran `python -m src.cli init` to create the new `runner_state` table and sync OpenClaw config.
+  - Restarted live runner detached with `python -m src.cli run-live --resume`.
+  - Verified Windows process tree is running.
+  - Verified DB row: cycle `62`, status `RUNNING`, phase `CALLING_DEEPSEEK`, `next_cycle_at` null, message `Calling crypto-deepseek and validating its signal`.
+  - Exported snapshot and verified runner payload shows active `CALLING_DEEPSEEK` with `current_cycle_started_at`, not stale overdue.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_hot_reload.py tests/test_prompt_contracts.py -q` -> 10 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile ...` on modified modules -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 66 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed.
+- Notes:
+  - `OVERDUE` should now mean no active processing phase is present and the scheduled next cycle time is truly past.
+  - Runtime `outputs/*` and `cloud/dashboard_snapshot.json` may remain dirty from live/export operations.

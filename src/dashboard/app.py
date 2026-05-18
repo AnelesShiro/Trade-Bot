@@ -501,6 +501,7 @@ def local_runner_status(
     checkpoints: pd.DataFrame,
     workload_cycles: pd.DataFrame,
     next_run: datetime | None,
+    runner_state_frame: pd.DataFrame | None = None,
 ) -> dict[str, Any]:
     if checkpoints.empty:
         return {"status": "OFFLINE" if status in {"PAUSED", "COMPLETED"} else status, "phase": "WAITING" if status == "RUNNING" else status}
@@ -516,11 +517,36 @@ def local_runner_status(
         elif {"local_wall_time_seconds", "deepseek_latency_seconds", "grok_latency_seconds"}.issubset(workload_cycles.columns):
             last_duration = float(latest_workload.get("local_wall_time_seconds") or 0) + float(latest_workload.get("deepseek_latency_seconds") or 0) + float(latest_workload.get("grok_latency_seconds") or 0)
     started_at = last_completed_at.to_pydatetime() - timedelta(seconds=last_duration) if pd.notna(last_completed_at) and last_duration is not None else None
-    runner_state = "RUNNING" if status in {"RUNNING", "SCHEDULED"} else "OFFLINE" if status in {"PAUSED", "COMPLETED"} else "ERROR"
+    runner_status = "RUNNING" if status in {"RUNNING", "SCHEDULED"} else "OFFLINE" if status in {"PAUSED", "COMPLETED"} else "ERROR"
+    if runner_state_frame is not None and not runner_state_frame.empty:
+        latest_state = runner_state_frame.sort_values("updated_at", ascending=False).iloc[0]
+        phase = str(latest_state.get("phase") or "").upper()
+        state_status = str(latest_state.get("status") or runner_status).upper()
+        if phase and phase != "WAITING":
+            state_started_at = pd.to_datetime(latest_state.get("started_at"), utc=True, errors="coerce")
+            state_updated_at = pd.to_datetime(latest_state.get("updated_at"), utc=True, errors="coerce")
+            return {
+                "status": state_status,
+                "cycle_number": int(latest_state.get("cycle_number") or cycle_number),
+                "phase": phase,
+                "last_cycle_duration_seconds": last_duration,
+                "cycle_interval_seconds": settings.competition.poll_interval_seconds,
+                "next_cycle_at": None,
+                "last_cycle_started_at": state_started_at.isoformat().replace("+00:00", "Z") if pd.notna(state_started_at) else None,
+                "current_cycle_started_at": state_started_at.isoformat().replace("+00:00", "Z") if pd.notna(state_started_at) else None,
+                "state_updated_at": state_updated_at.isoformat().replace("+00:00", "Z") if pd.notna(state_updated_at) else None,
+                "message": str(latest_state.get("message") or ""),
+                "total_cycles_completed": cycle_number,
+            }
+        if phase == "WAITING":
+            state_next_run = pd.to_datetime(latest_state.get("next_cycle_at"), utc=True, errors="coerce")
+            if pd.notna(state_next_run):
+                next_run = state_next_run.to_pydatetime()
+            runner_status = state_status
     return {
-        "status": runner_state,
+        "status": runner_status,
         "cycle_number": cycle_number,
-        "phase": "WAITING" if runner_state == "RUNNING" else runner_state,
+        "phase": "WAITING" if runner_status == "RUNNING" else runner_status,
         "last_cycle_duration_seconds": last_duration,
         "cycle_interval_seconds": settings.competition.poll_interval_seconds,
         "next_cycle_at": next_run.isoformat().replace("+00:00", "Z") if next_run else None,
@@ -1305,6 +1331,7 @@ diversity_metrics = read_table("diversity_metrics", str(db_path))
 lesson_promotions = read_table("lesson_promotions", str(db_path))
 workload_cycles = read_table("workload_cycles", str(db_path))
 workload_components = read_table("workload_components", str(db_path))
+runner_state = read_table("runner_state", str(db_path))
 api_requests = read_table("api_requests", str(db_path))
 health_checks = read_table("health_checks", str(db_path))
 benchmarks = read_table("benchmarks", str(db_path))
@@ -1332,6 +1359,16 @@ latest_checkpoint_time = pd.to_datetime(checkpoints["created_at"], utc=True, err
 system_uptime = utc_now() - latest_checkpoint_time.to_pydatetime() if pd.notna(latest_checkpoint_time) else None
 next_run = last_cycle.to_pydatetime() + timedelta(seconds=settings.competition.poll_interval_seconds) if pd.notna(last_cycle) else None
 status = system_status(last_cycle, end_time, start_time)
+if not runner_state.empty:
+    latest_runner_state = runner_state.sort_values("updated_at", ascending=False).iloc[0]
+    runner_phase = str(latest_runner_state.get("phase") or "").upper()
+    if runner_phase and runner_phase != "WAITING":
+        next_run = None
+        status = str(latest_runner_state.get("status") or "RUNNING").upper()
+    elif runner_phase == "WAITING":
+        state_next_run = pd.to_datetime(latest_runner_state.get("next_cycle_at"), utc=True, errors="coerce")
+        if pd.notna(state_next_run):
+            next_run = state_next_run.to_pydatetime()
 elapsed = max(timedelta(0), utc_now() - start_time)
 duration = max(timedelta(seconds=1), end_time - start_time)
 remaining = max(timedelta(0), end_time - utc_now())
@@ -1413,9 +1450,9 @@ if alerts:
                 st.warning(note)
 
 snapshot_for_status = read_snapshot(str(cloud_snapshot_path))
-runner_payload = snapshot_for_status.get("runner") if isinstance(snapshot_for_status, dict) else {}
+runner_payload = local_runner_status(status, checkpoints, workload_cycles, next_run, runner_state)
 if not runner_payload:
-    runner_payload = local_runner_status(status, checkpoints, workload_cycles, next_run)
+    runner_payload = snapshot_for_status.get("runner") if isinstance(snapshot_for_status, dict) else {}
 render_cycle_status(runner_payload)
 
 tabs = st.tabs(
