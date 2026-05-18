@@ -203,7 +203,7 @@ def _parse_time(value: Any) -> datetime | None:
 
 def _countdown(next_cycle_at: datetime | None, phase: str = "") -> tuple[str, bool]:
     if phase and phase not in {"WAITING", "ERROR", "OFFLINE"}:
-        return "IN PROGRESS", False
+        return "TRADING", False
     if not next_cycle_at:
         return "N/A", False
     remaining = int((next_cycle_at - datetime.now(UTC)).total_seconds())

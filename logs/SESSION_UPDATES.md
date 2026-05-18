@@ -810,3 +810,27 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m py_compile src\trading\risk_automation\__init__.py src\dashboard\tabs\pending_orders.py src\trading\risk_automation\pending_order_view.py` -> passed.
   - `.\.venv\Scripts\python.exe -m pytest tests/test_risk_automation.py tests/test_hot_reload.py tests/test_dashboard_contract.py -q` -> 28 passed.
   - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+
+## 2026-05-18 - Active Cycle Status Must Show TRADING, Not OVERDUE
+
+- User report: `Next Cycle In` showed `OVERDUE`; if a cycle is truly overdue, fix immediately, but if the runner is calling a bot it must show `TRADING`.
+- Investigation:
+  - Found two independent `run-live --resume` process trees running at the same time, which can cause duplicate agent calls and confusing checkpoint/snapshot state.
+  - Stopped the older duplicate process tree and verified only one live runner tree remained.
+  - SQLite `runner_state` showed the runner was actively processing cycle `67` in `CALLING_QWEN`, so this was not a true overdue state during the bot-call phase.
+  - Cycle `67` later completed successfully and `runner_state` moved to `WAITING` with `next_cycle_at=2026-05-18 13:31:07.708520`.
+- What changed:
+  - `src/dashboard/components/cycle_status_bar.py` now returns `TRADING` for active phases such as `CALLING_DEEPSEEK`, `CALLING_QWEN`, validation, execution, and snapshot export.
+  - `OVERDUE` remains reserved for cases where there is no active processing phase and the next scheduled cycle is genuinely late.
+  - `tests/test_hot_reload.py` now locks this behavior with a regression test.
+  - `src/trading/risk_automation/position_rules.py` now tolerates double-encoded `position_risk` JSON so local automation parsing warnings do not pollute live-cycle diagnostics.
+  - `PROJECT_BOOTSTRAP.md` updated with the new `TRADING` display contract and latest verified cycle `67`.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_hot_reload.py tests/test_risk_automation.py -q` -> 25 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\dashboard\components\cycle_status_bar.py src\trading\risk_automation\position_rules.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 77 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+  - A normal Windows live runner appears as one parent `.venv` Python process plus one child base Python process; multiple unrelated parent trees should be treated as duplicate runners.

@@ -7,9 +7,9 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Project: `crypto-paper-trading-arena`, BTCUSDT paper-trading competition.
 - Active agents: `crypto-deepseek` and `crypto-qwen`.
 - Legacy `crypto-grok` data remains in SQLite for history/audit only. Do not merge it into Qwen.
-- Latest verified live cycle/checkpoint: `50` completed.
-- Recent API audit shows both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`.
-- Current active open positions: none at last check.
+- Latest verified live cycle/checkpoint: `67` completed.
+- Recent API audit shows both DeepSeek and Qwen succeeded in cycle `67`; duplicate runner cleanup was required during that cycle.
+- Current active open positions at last check: `DS-SHORT-004` (`crypto-deepseek`, SHORT, PARTIAL) and `crypto-qwen-8e6a3ee4e3` (`crypto-qwen`, LONG, OPEN).
 - DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
 - Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
@@ -17,7 +17,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
 - API failover is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, and risk notifications. This is separate from `LLM_ALLOW_FALLBACK`; silent model fallback remains impossible.
 - Prompt/rulebook now include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, break-even is enforced locally around +1R on every open trade, use time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
-- Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `IN PROGRESS` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
+- Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `TRADING` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
 - Render/cloud dashboard snapshot mode mirrors the local risk automation tabs: Pending Orders, Risk Automation, and API Failover Events. Snapshot contract requires the `risk_automation` payload.
 - Dashboard UI contract: local SQLite mode and Render snapshot mode must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`; `tests/test_dashboard_contract.py` prevents tab-list drift.
 - Read-only lesson analytics tabs are available in both local and Render dashboards: Lessons to Follow and Lessons to Avoid. They use existing lessons/shared lessons/reflections/trades only; no model calls and no trading behavior changes.

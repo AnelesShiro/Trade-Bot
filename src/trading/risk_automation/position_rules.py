@@ -14,6 +14,8 @@ def parse_position_risk(payload: str | dict[str, Any] | None) -> PositionRiskAut
     if not payload:
         return None
     data = json.loads(payload) if isinstance(payload, str) else payload
+    if isinstance(data, str):
+        data = json.loads(data)
     if not data:
         return None
     return PositionRiskAutomation.model_validate(data)

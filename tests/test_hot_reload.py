@@ -150,7 +150,7 @@ def test_cloud_snapshot_reports_active_runner_phase(repository, test_settings) -
 def test_cycle_status_does_not_mark_active_phase_overdue() -> None:
     label, overdue = _countdown(None, "CALLING_QWEN")
 
-    assert label == "IN PROGRESS"
+    assert label == "TRADING"
     assert overdue is False
 
 
