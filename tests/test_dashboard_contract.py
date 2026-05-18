@@ -13,10 +13,12 @@ def test_dashboard_tab_contract_is_single_source_of_truth() -> None:
     app_source = (PROJECT_ROOT / "src" / "dashboard" / "app.py").read_text(encoding="utf-8")
 
     assert validate_dashboard_contract() == []
-    assert len(DASHBOARD_TAB_LABELS) == 17
+    assert len(DASHBOARD_TAB_LABELS) == 19
     assert dashboard_tab_index("Pending Orders") < dashboard_tab_index("Configuration")
     assert dashboard_tab_index("Risk Automation") < dashboard_tab_index("Configuration")
     assert dashboard_tab_index("API Failover Events") < dashboard_tab_index("Configuration")
+    assert dashboard_tab_index("Lessons to Follow") > dashboard_tab_index("Configuration")
+    assert dashboard_tab_index("Lessons to Avoid") > dashboard_tab_index("Lessons to Follow")
     assert app_source.count("st.tabs(DASHBOARD_TAB_LABELS)") == 2
 
 

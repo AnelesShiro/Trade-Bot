@@ -20,6 +20,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `IN PROGRESS` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
 - Render/cloud dashboard snapshot mode mirrors the local risk automation tabs: Pending Orders, Risk Automation, and API Failover Events. Snapshot contract requires the `risk_automation` payload.
 - Dashboard UI contract: local SQLite mode and Render snapshot mode must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`; `tests/test_dashboard_contract.py` prevents tab-list drift.
+- Read-only lesson analytics tabs are available in both local and Render dashboards: Lessons to Follow and Lessons to Avoid. They use existing lessons/shared lessons/reflections/trades only; no model calls and no trading behavior changes.
 
 ## Operating Rules
 

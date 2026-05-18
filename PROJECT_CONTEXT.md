@@ -32,6 +32,7 @@
   - Shows a Streamlit dashboard for local and cloud monitoring.
   - Exports a compact cloud snapshot for Render-hosted read-only dashboards.
   - Tracks rejected signals, accepted signals, raw outputs, memory, reflections, token usage, API cost, workload attribution, leaderboard, and account summaries.
+  - Shows read-only lesson analytics: Lessons to Follow and Lessons to Avoid, sourced from existing private lessons, shared lessons, reflections, and trades.
   - Maintains a project memory log at `logs/SESSION_UPDATES.md` so future sessions can quickly reconstruct recent chat decisions and implementation updates.
   - Uses strict model locking so provider-side model redirects cannot be accepted silently.
   - Runs optional local risk automation: conditional (`PLACE_TRIGGER`) orders, trailing stops, break-even moves, time-based exits, entry cooldowns, and explicit API failover routes (all local; no extra tokens when cooldown skips the agent round).
@@ -131,6 +132,7 @@
   - Local SQLite dashboard and Render snapshot dashboard must use the same `DASHBOARD_TAB_LABELS` from `src/dashboard/contract.py`.
   - Snapshot tab requirements such as `risk_automation` keys are centralized in `src/dashboard/contract.py`.
   - `tests/test_dashboard_contract.py` and `tests/test_hot_reload.py` must fail if local and Render tab surfaces drift apart.
+  - Lesson analytics snapshot payload is `lesson_analytics` with `follow`, `avoid`, `follow_summary`, and `avoid_summary`.
 
 # Design Principles
 
@@ -417,6 +419,7 @@
 - API failover: active agents have explicit fallback chains only (`crypto-deepseek` -> Qwen, `crypto-qwen` -> DeepSeek). The runner applies the active route before the request, verifies the actual model against that route, logs failover/restore events, and periodically retests the primary.
 - SQLite tables: `pending_orders`, `position_risk_state`, `cooldown_state`, `api_failover_events`, `agent_failover_state`, `risk_notifications` (created by `create_schema` / live runner startup).
 - Dashboard tabs (additive): Pending Orders, Risk Automation, API Failover Events; Overview metrics for pending orders, cooldowns, fallback models; Risk Automation tab and snapshot include risk notifications. Local SQLite dashboard and Render/cloud snapshot dashboard both expose these tabs through the shared dashboard contract.
+- Lesson analytics tabs (read-only): Lessons to Follow and Lessons to Avoid rank validated lessons by impact, confidence, evidence count, and recency. They include KPI cards, ranked cards, trend charts, agent contribution breakdown, and evidence expanders.
 - Tests: `tests/test_risk_automation.py`.
 
 # Deployment Information

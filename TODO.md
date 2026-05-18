@@ -10,6 +10,7 @@
 - [x] Per-agent failover enabled with DeepSeek <-> Qwen fallback chains, primary retests, OpenClaw auth/base URL sync, and risk notifications
 - [x] Agent prompt/rulebook guidance for active use of `PLACE_TRIGGER`, `position_risk`, `trailing_stop`, `break_even`, and `time_exit`
 - [x] Cloud dashboard mirrors risk automation tabs from snapshot mode
+- [x] Read-only Lessons to Follow / Lessons to Avoid dashboard tabs with snapshot support
 
 ## Open
 

@@ -71,6 +71,7 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
         "runner",
         "deployment",
         "risk_automation",
+        "lesson_analytics",
     ]:
         assert key in snapshot
     for key in [
@@ -99,6 +100,8 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
     assert isinstance(snapshot["signal_audit_summary"]["recent_rejected_signals"], list)
     for key in REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS:
         assert key in snapshot["risk_automation"]
+    for key in ["follow", "avoid", "follow_summary", "avoid_summary"]:
+        assert key in snapshot["lesson_analytics"]
     assert validate_snapshot_contract(snapshot) == []
 
 
@@ -156,3 +159,35 @@ def test_snapshot_contract_rejects_missing_risk_automation() -> None:
     )
 
     assert any("risk_automation" in error for error in errors)
+
+
+def test_snapshot_contract_rejects_missing_lesson_analytics() -> None:
+    errors = validate_snapshot_contract(
+        {
+            "generated_at": "now",
+            "runner": {},
+            "leaderboard": [],
+            "rejected_signals_summary": {},
+            "deployment": {},
+            "risk_automation": {
+                "pending_orders": [],
+                "cooldowns": [],
+                "position_risk": [],
+                "failover_events": [],
+                "notifications": [],
+                "active_models": {},
+            },
+            "signal_audit_summary": {
+                "accepted_signal_count": 0,
+                "rejected_signal_count": 0,
+                "acceptance_rate": 0,
+                "rejection_breakdown": {},
+                "latest_accepted_signal": None,
+                "latest_rejected_signal": None,
+                "recent_accepted_signals": [],
+                "recent_rejected_signals": [],
+            },
+        }
+    )
+
+    assert any("lesson_analytics" in error for error in errors)

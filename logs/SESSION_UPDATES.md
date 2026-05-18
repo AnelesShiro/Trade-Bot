@@ -702,3 +702,38 @@ Entry template:
   - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
 - Notes:
   - This does not redesign the dashboard; it only removes duplicate local/cloud tab definitions and adds regression protection.
+
+## 2026-05-18 - Lessons To Follow / Lessons To Avoid Dashboard Tabs
+
+- User request (English): Add two read-only dashboard tabs, `Lessons to Follow` and `Lessons to Avoid`, to visualize important validated lessons from all agents without changing trading logic or agent behavior.
+- What changed:
+  - Added `src/analytics/lesson_analytics.py` to aggregate existing `lessons`, `shared_lessons`, `reflections`, and `trades` into ranked lesson analytics.
+  - Classification separates positive/follow lessons from negative/avoid lessons using existing shared-lesson metadata plus lightweight text/outcome heuristics.
+  - Ranking combines impact, confidence, evidence count, and recency.
+  - Added local/cloud reusable tab renderers:
+    - `src/dashboard/tabs/lessons_to_follow.py`
+    - `src/dashboard/tabs/lessons_to_avoid.py`
+  - Each tab includes KPI cards, ranked lesson cards, trend charts, agent contribution breakdown, filters, and evidence expanders.
+  - Dashboard tab contract now includes `Lessons to Follow` and `Lessons to Avoid` at the end of the tab list.
+  - Snapshot export now includes `lesson_analytics` with `follow`, `avoid`, `follow_summary`, and `avoid_summary`, so Render shows the same read-only tabs.
+  - Snapshot contract validates the new `lesson_analytics` payload.
+  - Added tests:
+    - `tests/test_lesson_analytics.py`
+    - updated `tests/test_dashboard_contract.py`
+    - updated `tests/test_hot_reload.py`
+- Safety:
+  - No trading logic changed.
+  - No agent prompts/behavior changed.
+  - No new model calls.
+  - If lesson analytics fail to load locally, dashboard shows a warning and continues.
+  - Snapshot export falls back to empty lesson lists if lesson analytics fail.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_lesson_analytics.py tests/test_dashboard_contract.py tests/test_hot_reload.py -q` -> 13 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\analytics\lesson_analytics.py src\dashboard\tabs\lessons_to_follow.py src\dashboard\tabs\lessons_to_avoid.py src\dashboard\app.py src\cloud\snapshot_exporter.py src\dashboard\contract.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 74 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed; current snapshot has 8 follow lessons and 3 avoid lessons.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Runtime `outputs/*` remain dirty from the live runner and should not be committed.
+  - `cloud/dashboard_snapshot.json` was regenerated because Render reads it directly.

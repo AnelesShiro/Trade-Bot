@@ -27,11 +27,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from src.analytics.lesson_analytics import build_lesson_analytics  # noqa: E402
 from src.config import load_settings, safe_canary, safe_features  # noqa: E402
 from src.dashboard.components.cycle_status_bar import render_cycle_status  # noqa: E402
 from src.dashboard.contract import DASHBOARD_TAB_LABELS  # noqa: E402
 from src.dashboard.tabs.accepted_signals import render_accepted_signals_tab  # noqa: E402
 from src.dashboard.tabs.api_failover import render_api_failover_tab  # noqa: E402
+from src.dashboard.tabs.lessons_to_avoid import render_lessons_to_avoid_tab  # noqa: E402
+from src.dashboard.tabs.lessons_to_follow import render_lessons_to_follow_tab  # noqa: E402
 from src.dashboard.tabs.pending_orders import render_pending_orders_tab  # noqa: E402
 from src.dashboard.tabs.rejected_signals import render_rejected_signals_tab  # noqa: E402
 from src.dashboard.tabs.risk_automation import render_risk_automation_tab  # noqa: E402
@@ -863,6 +866,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     diversity = snapshot.get("strategy_diversity_metrics", {})
     workload = snapshot.get("workload", {})
     risk_automation = snapshot.get("risk_automation", {}) if isinstance(snapshot.get("risk_automation"), dict) else {}
+    lesson_analytics = snapshot.get("lesson_analytics", {}) if isinstance(snapshot.get("lesson_analytics"), dict) else {}
     audit_missing = "signal_audit_summary" not in snapshot
     audit_summary = _snapshot_audit_summary(snapshot)
     latest_cycle_at = pd.to_datetime(snapshot.get("system_status", {}).get("latest_cycle_at"), utc=True, errors="coerce")
@@ -1142,6 +1146,12 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
                 "sync_note": sync_note,
             }
         )
+
+    with tabs[17]:
+        render_lessons_to_follow_tab(lesson_analytics.get("follow", []), selected_agents or snapshot_agent_ids)
+
+    with tabs[18]:
+        render_lessons_to_avoid_tab(lesson_analytics.get("avoid", []), selected_agents or snapshot_agent_ids)
 
 
 def render_cloud_pending_orders_tab(risk_automation: dict[str, Any], selected_agents: list[str]) -> None:
@@ -1436,6 +1446,12 @@ api_budget = os.getenv("ARENA_API_BUDGET_USD")
 spent = float(metric_frame["estimated_api_cost"].sum()) if not metric_frame.empty else 0.0
 remaining_budget = (float(api_budget) - spent) if api_budget else None
 deployment_state = LiveUpdateManager(settings, ArenaRepository(build_session_factory(settings.database_url))).deployment_state()
+try:
+    lesson_analytics = build_lesson_analytics(lessons, shared_lessons, reflections, trades, limit=500)
+    lesson_analytics_warning = ""
+except Exception as error:
+    lesson_analytics = {"follow": [], "avoid": []}
+    lesson_analytics_warning = f"Lesson analytics failed to load: {error}"
 
 with st.sidebar:
     st.divider()
@@ -2107,3 +2123,13 @@ with tabs[16]:
         download_text("Download rulebook", rulebook_md, "rulebook.md")
     with export_cols[2]:
         download_frame("Download metrics CSV", metric_frame, "arena_metrics.csv")
+
+with tabs[17]:
+    if lesson_analytics_warning:
+        st.warning(lesson_analytics_warning)
+    render_lessons_to_follow_tab(lesson_analytics.get("follow", []), selected_agents or agent_ids, date_range)
+
+with tabs[18]:
+    if lesson_analytics_warning:
+        st.warning(lesson_analytics_warning)
+    render_lessons_to_avoid_tab(lesson_analytics.get("avoid", []), selected_agents or agent_ids, date_range)

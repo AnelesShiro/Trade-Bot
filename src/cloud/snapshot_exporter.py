@@ -8,13 +8,14 @@ from typing import Any
 import pandas as pd
 from sqlalchemy import select
 
+from src.analytics.lesson_analytics import build_lesson_analytics, lesson_summary
 from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import summarize_workload
 from src.config import Settings
-from src.dashboard.contract import REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS
+from src.dashboard.contract import REQUIRED_LESSON_ANALYTICS_SNAPSHOT_KEYS, REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS
 from src.logger import logger
 from src.operations.update_manager import LiveUpdateManager
-from src.storage.models import ReflectionRecord, SignalRecord, TradeRecord
+from src.storage.models import LessonRecord, ReflectionRecord, SharedLessonRecord, SignalRecord, TradeRecord
 from src.storage.signal_repository import SignalAuditRepository
 from src.storage.repository import ArenaRepository
 from src.trading.paper_account import PaperAccount
@@ -89,6 +90,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "strategy_diversity_metrics": _diversity_metrics(repository),
         "deployment": LiveUpdateManager(settings, repository).deployment_state(),
         "risk_automation": _risk_automation_payload(settings, repository),
+        "lesson_analytics": _lesson_analytics_payload(repository),
     }
     return payload
 
@@ -200,6 +202,7 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
         "rejected_signals_summary",
         "deployment",
         "risk_automation",
+        "lesson_analytics",
     ]
     for key in required_top_level:
         if key not in snapshot:
@@ -238,6 +241,13 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
         for key in REQUIRED_RISK_AUTOMATION_SNAPSHOT_KEYS:
             if key not in risk:
                 errors.append(f"missing risk_automation.{key}")
+    lessons = snapshot.get("lesson_analytics")
+    if not isinstance(lessons, dict):
+        errors.append("lesson_analytics must be an object")
+    else:
+        for key in REQUIRED_LESSON_ANALYTICS_SNAPSHOT_KEYS:
+            if key not in lessons:
+                errors.append(f"missing lesson_analytics.{key}")
     return errors
 
 
@@ -537,6 +547,59 @@ def _reflections(repository: ArenaRepository) -> dict[str, Any]:
         "count_recent": len(rows),
         "by_agent": _count_by(rows, "agent_id"),
         "recent": [{"created_at": _iso(row.created_at), "agent_id": row.agent_id, "content": row.content[:500]} for row in rows[:20]],
+    }
+
+
+def _lesson_analytics_payload(repository: ArenaRepository) -> dict[str, Any]:
+    try:
+        with repository.session_factory() as session:
+            lessons = pd.DataFrame(
+                [
+                    {"id": row.id, "agent_id": row.agent_id, "created_at": _iso(row.created_at), "content": row.content}
+                    for row in session.scalars(select(LessonRecord).order_by(LessonRecord.created_at.desc()).limit(1000))
+                ]
+            )
+            shared = pd.DataFrame(
+                [
+                    {
+                        "id": row.id,
+                        "source_agent": row.source_agent,
+                        "market_regime": row.market_regime,
+                        "lesson_text": row.lesson_text,
+                        "lesson_type": row.lesson_type,
+                        "confidence": row.confidence,
+                        "sample_size": row.sample_size,
+                        "win_rate": row.win_rate,
+                        "profit_factor": row.profit_factor,
+                        "usage_count": row.usage_count,
+                        "promoted_at": _iso(row.promoted_at),
+                    }
+                    for row in session.scalars(select(SharedLessonRecord).order_by(SharedLessonRecord.promoted_at.desc()).limit(1000))
+                ]
+            )
+            reflections = pd.DataFrame(
+                [
+                    {"id": row.id, "agent_id": row.agent_id, "created_at": _iso(row.created_at), "content": row.content}
+                    for row in session.scalars(select(ReflectionRecord).order_by(ReflectionRecord.created_at.desc()).limit(1000))
+                ]
+            )
+            trades = pd.DataFrame(
+                [
+                    {"id": row.id, "agent_id": row.agent_id, "created_at": _iso(row.created_at), "realized_pnl": row.realized_pnl}
+                    for row in session.scalars(select(TradeRecord).order_by(TradeRecord.created_at.desc()).limit(1000))
+                ]
+            )
+        analytics = build_lesson_analytics(lessons, shared, reflections, trades, limit=100)
+    except Exception as error:
+        logger.warning("lesson analytics snapshot failed without blocking dashboard export: {}", error)
+        analytics = {"follow": [], "avoid": []}
+    follow = analytics.get("follow", [])
+    avoid = analytics.get("avoid", [])
+    return {
+        "follow": follow[:100],
+        "avoid": avoid[:100],
+        "follow_summary": lesson_summary(follow),
+        "avoid_summary": lesson_summary(avoid),
     }
 
 
