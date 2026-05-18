@@ -8,9 +8,9 @@
 - [x] Snapshot export `risk_automation` section
 - [x] Tests: `tests/test_risk_automation.py`
 - [x] Per-agent failover enabled with DeepSeek <-> Qwen fallback chains, primary retests, OpenClaw auth/base URL sync, and risk notifications
+- [x] Agent prompt/rulebook guidance for active use of `PLACE_TRIGGER`, `position_risk`, `trailing_stop`, `break_even`, and `time_exit`
 
 ## Open
 
-- [ ] Add agent prompt examples for `PLACE_TRIGGER` in a versioned prompt file if competition adopts conditional entries
 - [ ] Cloud dashboard: mirror new tabs in snapshot-only render path (local DB tabs already work)
 - [ ] Record canonical Render URL in this file once confirmed from Render dashboard

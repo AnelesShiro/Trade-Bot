@@ -27,7 +27,8 @@ IDENTITY_BLOCK = (
 
 SHARED_LESSON_DISCLAIMER = (
     "The following are optional cross-agent insights.\n"
-    "Use them only when they align with your own strategy and evidence."
+    "Use them only when they align with your own strategy and evidence.\n"
+    "Evidence-backed lessons about PLACE_TRIGGER, trailing stops, break-even, and time exits are valid."
 )
 
 

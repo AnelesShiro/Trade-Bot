@@ -580,3 +580,56 @@ Entry template:
 - Verification:
   - `.\.venv\Scripts\python.exe -m py_compile src\cli.py` -> passed.
   - `.\.venv\Scripts\python.exe -m src.cli --help` -> passed and shows `watch-safe-restart`.
+
+## 2026-05-18 - Risk Automation Usage Check
+
+- User request (Vietnamese): Ask whether all Professional Trade Management features are actually available and why the bots have not used them.
+- Findings:
+  - Implementation exists for all six requested features: conditional orders, trailing stop, break-even stop, time-based exit, cooldown rules, and explicit API failover.
+  - Code/config/tests/docs contain support for `PLACE_TRIGGER`, `trigger_order`, `position_risk`, `trailing_stop`, `break_even`, `time_exit`, cooldowns, API failover, dashboard tabs, snapshot export, and CLI commands.
+  - Targeted tests covering the feature area passed: `pytest tests/test_risk_automation.py tests/test_hot_reload.py tests/test_prompt_contracts.py -q` -> 22 passed.
+  - Live DB usage check:
+    - `pending_orders`: 0 rows.
+    - `position_risk_state`: 0 rows.
+    - `cooldown_state`: 0 rows.
+    - `api_failover_events`: 0 rows.
+    - `agent_failover_state`: 0 rows.
+    - `risk_notifications`: 0 rows.
+    - No historical `signals` rows have `action=PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
+  - Recent accepted/rejected `OPEN` signals also have no `position_risk` or `trigger_order`.
+- Interpretation:
+  - The features are implemented and available, but are optional/additive by design.
+  - Config defaults keep `trailing_stop.apply_by_default`, `break_even.apply_by_default`, and `time_exit.apply_by_default` false to preserve existing trading behavior.
+  - Bots will only use conditional orders or trade-management automation if they choose to include the optional JSON fields in their signal.
+  - Cooldowns only appear after configured poor-performance triggers fire.
+  - API failover only appears after billing/auth/rate-limit/timeout/provider outage conditions fire.
+- Practical next step if the owner wants visible usage:
+  - Either keep current conservative behavior and wait for bots to choose the features naturally, or explicitly request a config/prompt change that makes safe defaults apply to every accepted `OPEN` without extra LLM calls.
+
+## 2026-05-18 - Agents Prompted To Actively Use Advanced Trade Management
+
+- User request (Vietnamese/English): Update all agent prompts, prompt-building logic, rulebook wording, reflection guidance, and shared-learning instructions so DeepSeek, Qwen, and future models actively consider the implemented advanced trade-management features.
+- Constraints honored:
+  - No backend trading logic changes.
+  - No dashboard UI/UX changes.
+  - No database schema changes.
+  - No config default changes; existing trading behavior remains unchanged unless an agent includes optional fields.
+  - Added system-prompt guidance is compact: 73 words in the new active trade-management block.
+- What changed:
+  - `prompts/system_prompt.md` now says advanced trade management must be considered on every setup.
+  - Agents are explicitly guided to prefer `PLACE_TRIGGER` when entry requires pullback, breakout, or RSI confirmation.
+  - Agents are guided to usually include break-even and time-exit settings on appropriate `OPEN` trades, and to use trailing stops selectively for momentum/trend trades.
+  - Prompt builder schema hint changed from passive `optional_local_automation` to concise `advanced_trade_management` with `consider_every_cycle: true`.
+  - `config/rulebook.md` now has a compact priority ladder: `OPEN` now, `PLACE_TRIGGER` for future condition, trailing stop for trends, break-even around +1R/TP1, and time exit for known thesis windows.
+  - `prompts/reflection_prompt.md`, `src/agents/reflection.py`, and `src/agents/shared_learning.py` now encourage lessons about conditional entries, trailing stops, break-even protection, and stale-trade exits when evidence supports them.
+  - `tests/test_prompt_contracts.py` now locks the active advanced trade-management guidance into regression tests.
+  - `PROJECT_BOOTSTRAP.md`, `PROJECT_CONTEXT.md`, and `TODO.md` were updated so future sessions can find the new prompt contract quickly.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_prompt_contracts.py tests/test_memory_repository_runner.py tests/test_shared_learning.py -q` -> 8 passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 66 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\competition\runner.py src\agents\reflection.py src\agents\shared_learning.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - Live runner must reload prompt/rulebook text before agents see these changes; queue a safe restart at cycle boundary instead of interrupting the current cycle.
+  - Runtime `outputs/*` files remain dirty and should not be committed.

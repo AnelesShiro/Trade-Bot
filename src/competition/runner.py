@@ -876,9 +876,12 @@ class CompetitionRunner:
                     }
                 ]
             },
-            "optional_local_automation": {
-                "PLACE_TRIGGER": "Use trigger_order with trigger conditions and a full nested execution_signal.",
-                "position_risk": "On OPEN only: trailing_stop, break_even, and time_exit settings.",
+            "advanced_trade_management": {
+                "consider_every_cycle": True,
+                "PLACE_TRIGGER": "Prefer when entry needs future pullback, breakout, or RSI confirmation; include trigger_order and full nested execution_signal.",
+                "position_risk": "On OPEN, usually consider break_even and time_exit; add trailing_stop for momentum or trend-continuation trades.",
+                "cooldown": "If cooldown context is active, avoid new entries unless managing existing positions.",
+                "failover": "Automatic and transparent; keep reasoning provider-neutral.",
             },
             "available_local_tools": sorted(ALLOWED_TOOLS),
             "feature_flags": self._feature_flags_for_agent(agent_id),

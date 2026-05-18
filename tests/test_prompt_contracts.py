@@ -18,6 +18,9 @@ def test_prompt_docs_pin_risk_formula_and_feature_templates() -> None:
     assert "Do not multiply by leverage again" in combined
     assert "PLACE_TRIGGER" in combined
     assert "position_risk" in combined
+    assert "must be considered on every setup" in system_prompt
+    assert "prefer `PLACE_TRIGGER`" in system_prompt
+    assert "Advanced trade-management priority" in rulebook
     assert '"trailing_stop"' in combined
     assert '"break_even"' in combined
     assert '"time_exit"' in combined
@@ -42,6 +45,9 @@ def test_runner_schema_hint_exposes_trigger_and_risk_math(test_settings) -> None
     assert "NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER" in prompt
     assert "abs(entry - stop_loss) / entry * notional_exposure_usdt" in prompt
     assert "Do not multiply by leverage again" in prompt
+    assert "advanced_trade_management" in prompt
+    assert "consider_every_cycle" in prompt
+    assert "Prefer when entry needs future pullback" in prompt
 
 
 def test_documented_open_template_risk_math_passes_validator(test_settings) -> None:

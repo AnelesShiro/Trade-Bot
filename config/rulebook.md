@@ -172,9 +172,19 @@ Allowed actions:
 - `HOLD`
 - `PLACE_TRIGGER` (optional local conditional entry; does not open until trigger fires)
 
+### Advanced trade-management priority
+
+1. Attractive setup right now -> `OPEN`.
+2. Future pullback, breakout, or RSI condition needed -> `PLACE_TRIGGER`.
+3. Momentum or trend continuation -> consider `trailing_stop`.
+4. Trade should become risk-free after favorable movement -> prefer `break_even` around +1R/TP1.
+5. Thesis has a time horizon -> set `time_exit.max_hold_hours`.
+
+Cooldowns are enforced locally; if cooldown context is active, do not request new entries. API failover is automatic and should not affect strategy reasoning.
+
 ### Local conditional orders (`PLACE_TRIGGER`)
 
-Use only when the setup should execute automatically without another model call.
+Use when the setup should execute automatically without another model call.
 
 - `action` must be `PLACE_TRIGGER`.
 - Include `trigger_order` with:
@@ -183,9 +193,9 @@ Use only when the setup should execute automatically without another model call.
   - `execution_signal`: full compliant JSON for the paper trade to execute when triggered (typically `OPEN` / `PAPER_TRADE`).
 - The local engine monitors triggers; do not expect a follow-up cycle to enter the trade.
 
-### Position risk automation (optional on `OPEN`)
+### Position risk automation (available on `OPEN`)
 
-You may include `position_risk` on an accepted `OPEN` signal:
+Include `position_risk` when it improves trade quality without changing the core setup:
 
 - `trailing_stop`: `{enabled, mode: percent|atr|step, distance_pct, atr_multiple, step_pct}`
 - `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`
