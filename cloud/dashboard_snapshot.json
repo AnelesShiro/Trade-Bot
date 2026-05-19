@@ -11,14 +11,14 @@
       "unrealized_pnl": 0.0
     },
     "crypto-qwen": {
-      "daily_pnl": -53.593457391950196,
-      "equity": 9965.466479969535,
-      "open_margin": 1000.0,
-      "open_positions": 1,
-      "open_risk": 33.468177309400645,
-      "realized_pnl": -20.80611610086423,
-      "roi_pct": -0.345335200304653,
-      "unrealized_pnl": -13.727403929599983
+      "daily_pnl": -53.084915475670186,
+      "equity": 9965.975021885815,
+      "open_margin": 0.0,
+      "open_positions": 0,
+      "open_risk": 0.0,
+      "realized_pnl": -34.02497811418421,
+      "roi_pct": -0.34024978114184706,
+      "unrealized_pnl": 0.0
     }
   },
   "api_costs": {
@@ -28,7 +28,7 @@
     },
     "total": 0.22620144
   },
-  "btc_price": 76786.6,
+  "btc_price": 76848.3,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -36,11 +36,11 @@
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT"
   },
-  "competition_status": "RUNNING",
+  "competition_status": "PAUSED",
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-19T03:47:27.372157Z",
     "active_versions_file": {
-      "code_version": "be998f7db19c",
+      "code_version": "afe29d0f8feb",
       "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
@@ -50,7 +50,7 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T03:05:42.893962Z"
+      "updated_at": "2026-05-19T03:47:30.442759Z"
     },
     "canary": {
       "enabled": false,
@@ -75,17 +75,9 @@
       "id": 94,
       "status": "COMPLETED"
     },
-    "pending_updates": [
-      {
-        "id": "cb45fa2227c24872b297acd03923230d",
-        "payload": {},
-        "requested_at": "2026-05-19T03:05:42.894963Z",
-        "status": "PENDING",
-        "type": "CODE_RESTART"
-      }
-    ],
+    "pending_updates": [],
     "versions": {
-      "code_version": "be998f7db19c",
+      "code_version": "afe29d0f8feb",
       "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
@@ -95,14 +87,173 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T03:47:27.626434Z"
+      "updated_at": "2026-05-19T13:19:13.782809Z"
     }
+  },
+  "downtime": {
+    "latest": {
+      "duration_seconds": 30356.962225,
+      "ended_at": "2026-05-19T13:13:24.361949Z",
+      "missed_scheduled_cycle": true,
+      "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=9; expected_next_cycle_at=2026-05-19T04:47:27.399724Z; resumed_at=2026-05-19T13:13:24.361949Z; delay_seconds=30356.962",
+      "started_at": "2026-05-19T04:47:27.399724Z"
+    },
+    "latest_missed_cycle": {
+      "duration_seconds": 30356.962225,
+      "ended_at": "2026-05-19T13:13:24.361949Z",
+      "missed_scheduled_cycle": true,
+      "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=9; expected_next_cycle_at=2026-05-19T04:47:27.399724Z; resumed_at=2026-05-19T13:13:24.361949Z; delay_seconds=30356.962",
+      "started_at": "2026-05-19T04:47:27.399724Z"
+    },
+    "missed_cycle_count_recent": 2,
+    "recent": [
+      {
+        "duration_seconds": 30356.962225,
+        "ended_at": "2026-05-19T13:13:24.361949Z",
+        "missed_scheduled_cycle": true,
+        "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=9; expected_next_cycle_at=2026-05-19T04:47:27.399724Z; resumed_at=2026-05-19T13:13:24.361949Z; delay_seconds=30356.962",
+        "started_at": "2026-05-19T04:47:27.399724Z"
+      },
+      {
+        "duration_seconds": 33957.136024,
+        "ended_at": "2026-05-19T13:13:24.308981Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-19T03:47:27.172957Z"
+      },
+      {
+        "duration_seconds": 4199.610591,
+        "ended_at": "2026-05-19T02:40:58.078333Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-19T01:30:58.467742Z"
+      },
+      {
+        "duration_seconds": 2692.40944,
+        "ended_at": "2026-05-19T02:40:58.078333Z",
+        "missed_scheduled_cycle": true,
+        "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=1; expected_next_cycle_at=2026-05-19T01:56:05.668893Z; resumed_at=2026-05-19T02:40:58.078333Z; delay_seconds=2692.409; source=manual post-reset audit backfill",
+        "started_at": "2026-05-19T01:56:05.668893Z"
+      },
+      {
+        "duration_seconds": 67.571495,
+        "ended_at": "2026-05-18T10:20:30.029532Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-18T10:19:22.458037Z"
+      },
+      {
+        "duration_seconds": 4996.353049,
+        "ended_at": "2026-05-18T08:10:11.846636Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-18T06:46:55.493587Z"
+      },
+      {
+        "duration_seconds": 463.233905,
+        "ended_at": "2026-05-17T15:00:11.413879Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T14:52:28.179974Z"
+      },
+      {
+        "duration_seconds": 15812.17085,
+        "ended_at": "2026-05-17T14:51:42.653876Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T10:28:10.483026Z"
+      },
+      {
+        "duration_seconds": 10278.086637,
+        "ended_at": "2026-05-17T06:44:41.592045Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T03:53:23.505408Z"
+      },
+      {
+        "duration_seconds": 9984.075473,
+        "ended_at": "2026-05-17T06:39:47.580881Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T03:53:23.505408Z"
+      },
+      {
+        "duration_seconds": 2352.868297,
+        "ended_at": "2026-05-16T16:00:20.480572Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-16T15:21:07.612275Z"
+      },
+      {
+        "duration_seconds": 671.54837,
+        "ended_at": "2026-05-15T20:12:01.865238Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T20:00:50.316868Z"
+      },
+      {
+        "duration_seconds": 456.216514,
+        "ended_at": "2026-05-15T19:59:59.311383Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T19:52:23.094869Z"
+      },
+      {
+        "duration_seconds": 660.791665,
+        "ended_at": "2026-05-15T18:47:13.714811Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:36:12.923146Z"
+      },
+      {
+        "duration_seconds": 167.529138,
+        "ended_at": "2026-05-15T18:35:31.292925Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:32:43.763787Z"
+      },
+      {
+        "duration_seconds": 129.038868,
+        "ended_at": "2026-05-15T18:31:56.144697Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:29:47.105829Z"
+      },
+      {
+        "duration_seconds": 2256.016058,
+        "ended_at": "2026-05-15T18:29:01.431252Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:51:25.415194Z"
+      },
+      {
+        "duration_seconds": 1132.925178,
+        "ended_at": "2026-05-15T17:50:26.977781Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:31:34.052603Z"
+      },
+      {
+        "duration_seconds": 1061.868934,
+        "ended_at": "2026-05-15T17:30:07.978918Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:12:26.109984Z"
+      },
+      {
+        "duration_seconds": 313.554359,
+        "ended_at": "2026-05-15T17:10:39.604144Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:05:26.049785Z"
+      }
+    ]
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T03:47:26.448396Z"
+        "timestamp": "2026-05-19T13:19:12.568076Z"
       },
       {
         "drawdown": -0.0005,
@@ -146,13 +297,13 @@
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T03:47:27.448396Z"
+        "timestamp": "2026-05-19T13:19:13.568076Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T03:47:26.448396Z"
+        "timestamp": "2026-05-19T13:19:12.568076Z"
       },
       {
         "drawdown": -0.00025,
@@ -179,8 +330,12 @@
         "timestamp": "2026-05-19T01:30:57.777755Z"
       },
       {
-        "drawdown": -0.005648746242558277,
-        "timestamp": "2026-05-19T03:47:27.448396Z"
+        "drawdown": -0.0055980040828151065,
+        "timestamp": "2026-05-19T13:13:25.145371Z"
+      },
+      {
+        "drawdown": -0.0055980040828151065,
+        "timestamp": "2026-05-19T13:19:13.568076Z"
       }
     ]
   },
@@ -188,7 +343,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T03:47:26.448396Z"
+        "timestamp": "2026-05-19T13:19:12.568076Z"
       },
       {
         "equity": 9995.0,
@@ -232,13 +387,13 @@
       },
       {
         "equity": 10231.54469954226,
-        "timestamp": "2026-05-19T03:47:27.448396Z"
+        "timestamp": "2026-05-19T13:19:13.568076Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T03:47:26.448396Z"
+        "timestamp": "2026-05-19T13:19:12.568076Z"
       },
       {
         "equity": 9997.5,
@@ -265,12 +420,16 @@
         "timestamp": "2026-05-19T01:30:57.777755Z"
       },
       {
-        "equity": 9965.466479969535,
-        "timestamp": "2026-05-19T03:47:27.448396Z"
+        "equity": 9965.975021885815,
+        "timestamp": "2026-05-19T13:13:25.145371Z"
+      },
+      {
+        "equity": 9965.975021885815,
+        "timestamp": "2026-05-19T13:19:13.568076Z"
       }
     ]
   },
-  "generated_at": "2026-05-19T03:47:27.419888Z",
+  "generated_at": "2026-05-19T13:19:13.516241Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -292,18 +451,18 @@
     {
       "agent_id": "crypto-qwen",
       "api_cost_usd": 0.16556436,
-      "equity": 9965.466479969535,
-      "max_drawdown_pct": 0.004279029999403035,
-      "profit_factor": 0.5415617684261678,
-      "realized_pnl": -20.80611610086423,
+      "equity": 9965.975021885815,
+      "max_drawdown_pct": 0.0055980040828151065,
+      "profit_factor": 0.41940501119771345,
+      "realized_pnl": -34.02497811418421,
       "rejected_signals": 19,
-      "rule_compliance": 0.24,
-      "score": 0.21544194000119393,
-      "sharpe": -0.1924907394607013,
-      "sortino": -0.24480061832475702,
-      "total_return_pct": -0.00345335200304653,
-      "unrealized_pnl": -13.727403929599983,
-      "win_rate": 0.16666666666666666
+      "rule_compliance": 0.2692307692307693,
+      "score": 0.21572706875744674,
+      "sharpe": -0.2855219276806619,
+      "sortino": -0.37324226195785803,
+      "total_return_pct": -0.0034024978114184706,
+      "unrealized_pnl": 0.0,
+      "win_rate": 0.14285714285714285
     }
   ],
   "lesson_analytics": {
@@ -354,11 +513,11 @@
         "impact_score": 0.7315,
         "is_shared": false,
         "last_updated": "2026-05-17T18:13:08.578200Z",
-        "lesson_id": "derived-4613645612904475328",
+        "lesson_id": "derived-4585291046365607019",
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.6922,
+        "rank_score": 0.6892,
         "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-003. Estimated loss -16 to -21 USDT depending on fill. Combined PnL across all trades: DS-SHORT-001 (+103 USDT), DS-SHORT-002 (-7 USDT), DS-SHORT-003 (-21 USDT) = ~+75 USDT total. Account equity ~10,075 USDT (+0.75%). No positions. 2.5 days remaining. 9.25% to +10% weekly target. After-stop-loss wait rule in effect for shorts.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -407,7 +566,7 @@
           "crypto-grok",
           "crypto-qwen"
         ],
-        "avg_pnl": 1.1023324788423652,
+        "avg_pnl": 0.6379907647228761,
         "badges": [
           "Shared",
           "High Confidence",
@@ -477,11 +636,11 @@
         "impact_score": 1.0,
         "is_shared": true,
         "last_updated": "2026-05-19T03:47:26.461887Z",
-        "lesson_id": "derived-7877578390384023464",
+        "lesson_id": "derived-1219233806693950163",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
-        "rank_score": 0.972,
+        "rank_score": 0.9686,
         "raw_text": "Daily review: equity=9965.47, realized_pnl=-20.81, unrealized_pnl=-13.73. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -524,7 +683,7 @@
             "timestamp": "2026-05-19T03:47:26.461887+00:00"
           }
         ],
-        "win_rate": 0.2841269841269841
+        "win_rate": 0.27619047619047615
       },
       {
         "agent_count": 2,
@@ -602,11 +761,11 @@
         "impact_score": 0.7053,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.338211Z",
-        "lesson_id": "derived-8443157220093411438",
+        "lesson_id": "derived-8434516122279883864",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.8386,
+        "rank_score": 0.8355,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -657,7 +816,7 @@
           "crypto-deepseek",
           "crypto-qwen"
         ],
-        "avg_pnl": 9.843391968707692,
+        "avg_pnl": 9.146879397528458,
         "badges": [
           "Shared",
           "High Confidence",
@@ -724,14 +883,14 @@
           }
         ],
         "evidence_count": 8,
-        "impact_score": 0.6401,
+        "impact_score": 0.6272,
         "is_shared": true,
         "last_updated": "2026-05-19T01:30:57.982643Z",
-        "lesson_id": "derived-1525268691090548800",
+        "lesson_id": "derived-1686749872864456633",
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.784,
+        "rank_score": 0.7753,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -740,41 +899,41 @@
           {
             "confidence_score": 0.7125,
             "frequency": 1,
-            "impact_score": 0.1067,
+            "impact_score": 0.1045,
             "timestamp": "2026-05-14T01:30:57.982643+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
-            "impact_score": 0.2134,
+            "impact_score": 0.2091,
             "timestamp": "2026-05-15T01:30:57.982643+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
-            "impact_score": 0.3201,
+            "impact_score": 0.3136,
             "timestamp": "2026-05-16T01:30:57.982643+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
-            "impact_score": 0.4267,
+            "impact_score": 0.4181,
             "timestamp": "2026-05-17T01:30:57.982643+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
-            "impact_score": 0.5334,
+            "impact_score": 0.5227,
             "timestamp": "2026-05-18T01:30:57.982643+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
-            "impact_score": 0.6401,
+            "impact_score": 0.6272,
             "timestamp": "2026-05-19T01:30:57.982643+00:00"
           }
         ],
-        "win_rate": 0.2833333333333333
+        "win_rate": 0.27142857142857146
       },
       {
         "agent_count": 1,
@@ -782,9 +941,7 @@
           "crypto-grok"
         ],
         "avg_pnl": -16.37978650088829,
-        "badges": [
-          "Recently Improved"
-        ],
+        "badges": [],
         "category": "risk_management",
         "confidence_score": 0.73,
         "evidence": [
@@ -821,11 +978,11 @@
         "impact_score": 0.5067,
         "is_shared": false,
         "last_updated": "2026-05-17T00:58:53.117439Z",
-        "lesson_id": "derived-6053802952061742424",
+        "lesson_id": "derived-2117341268786491174",
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.5924,
+        "rank_score": 0.5895,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -861,7 +1018,7 @@
     ],
     "follow_summary": {
       "avg_confidence": 0.8575,
-      "avg_impact": 0.713025,
+      "avg_impact": 0.7098,
       "most_influential_lesson": "Trade only high-quality setups and maintain strict rule compliance.",
       "shared_count": 3,
       "total": 4
@@ -869,86 +1026,6 @@
   },
   "market": {
     "candles": [
-      {
-        "close": 80345.0,
-        "high": 80641.8,
-        "low": 80325.7,
-        "open": 80340.7,
-        "timestamp": "2026-05-09T04:00:00Z",
-        "volume": 3766.222
-      },
-      {
-        "close": 80331.4,
-        "high": 80445.0,
-        "low": 80303.1,
-        "open": 80345.0,
-        "timestamp": "2026-05-09T05:00:00Z",
-        "volume": 1474.842
-      },
-      {
-        "close": 80214.9,
-        "high": 80393.4,
-        "low": 80154.5,
-        "open": 80331.4,
-        "timestamp": "2026-05-09T06:00:00Z",
-        "volume": 3218.227
-      },
-      {
-        "close": 80181.7,
-        "high": 80268.4,
-        "low": 80084.3,
-        "open": 80215.0,
-        "timestamp": "2026-05-09T07:00:00Z",
-        "volume": 2522.361
-      },
-      {
-        "close": 80378.1,
-        "high": 80422.3,
-        "low": 80171.6,
-        "open": 80181.6,
-        "timestamp": "2026-05-09T08:00:00Z",
-        "volume": 2869.702
-      },
-      {
-        "close": 80199.9,
-        "high": 80383.0,
-        "low": 80166.1,
-        "open": 80378.0,
-        "timestamp": "2026-05-09T09:00:00Z",
-        "volume": 1828.419
-      },
-      {
-        "close": 80232.7,
-        "high": 80317.6,
-        "low": 80124.8,
-        "open": 80199.9,
-        "timestamp": "2026-05-09T10:00:00Z",
-        "volume": 1662.459
-      },
-      {
-        "close": 80310.4,
-        "high": 80349.9,
-        "low": 80220.0,
-        "open": 80232.8,
-        "timestamp": "2026-05-09T11:00:00Z",
-        "volume": 997.632
-      },
-      {
-        "close": 80367.2,
-        "high": 80388.0,
-        "low": 80235.3,
-        "open": 80310.4,
-        "timestamp": "2026-05-09T12:00:00Z",
-        "volume": 1275.419
-      },
-      {
-        "close": 80359.4,
-        "high": 80382.0,
-        "low": 80274.7,
-        "open": 80367.2,
-        "timestamp": "2026-05-09T13:00:00Z",
-        "volume": 978.258
-      },
       {
         "close": 80292.4,
         "high": 80395.0,
@@ -2782,52 +2859,112 @@
         "volume": 4745.72
       },
       {
-        "close": 76786.6,
+        "close": 76749.9,
         "high": 76837.0,
         "low": 76550.0,
         "open": 76586.2,
         "timestamp": "2026-05-19T03:00:00Z",
-        "volume": 2366.832
+        "volume": 2677.159
+      },
+      {
+        "close": 76889.4,
+        "high": 76916.5,
+        "low": 76658.0,
+        "open": 76750.0,
+        "timestamp": "2026-05-19T04:00:00Z",
+        "volume": 2587.324
+      },
+      {
+        "close": 76872.8,
+        "high": 76978.0,
+        "low": 76595.7,
+        "open": 76889.4,
+        "timestamp": "2026-05-19T05:00:00Z",
+        "volume": 2806.705
+      },
+      {
+        "close": 76985.2,
+        "high": 77070.4,
+        "low": 76846.9,
+        "open": 76872.8,
+        "timestamp": "2026-05-19T06:00:00Z",
+        "volume": 2999.916
+      },
+      {
+        "close": 77200.4,
+        "high": 77247.7,
+        "low": 76929.5,
+        "open": 76985.1,
+        "timestamp": "2026-05-19T07:00:00Z",
+        "volume": 4023.829
+      },
+      {
+        "close": 77015.8,
+        "high": 77291.3,
+        "low": 76932.0,
+        "open": 77200.4,
+        "timestamp": "2026-05-19T08:00:00Z",
+        "volume": 3821.06
+      },
+      {
+        "close": 76787.4,
+        "high": 77047.4,
+        "low": 76671.1,
+        "open": 77015.9,
+        "timestamp": "2026-05-19T09:00:00Z",
+        "volume": 4536.807
+      },
+      {
+        "close": 77005.8,
+        "high": 77070.0,
+        "low": 76666.0,
+        "open": 76787.3,
+        "timestamp": "2026-05-19T10:00:00Z",
+        "volume": 3518.738
+      },
+      {
+        "close": 76677.1,
+        "high": 77039.1,
+        "low": 76576.8,
+        "open": 77005.8,
+        "timestamp": "2026-05-19T11:00:00Z",
+        "volume": 3674.566
+      },
+      {
+        "close": 76901.3,
+        "high": 76947.5,
+        "low": 76609.5,
+        "open": 76677.0,
+        "timestamp": "2026-05-19T12:00:00Z",
+        "volume": 2310.159
+      },
+      {
+        "close": 76848.3,
+        "high": 76947.8,
+        "low": 76707.0,
+        "open": 76901.2,
+        "timestamp": "2026-05-19T13:00:00Z",
+        "volume": 889.37
       }
     ],
-    "current_price": 76786.6,
+    "current_price": 76848.3,
     "indicators": {
-      "atr_14": 457.56428571428324,
-      "bb_high": 77487.7931583767,
-      "bb_low": 76150.8668416233,
-      "bb_mid": 76819.33,
-      "ema_20": 76894.45495481238,
-      "ema_50": 77358.12336826845,
-      "macd": -161.76908614856075,
-      "macd_signal": -204.3699041956098,
-      "rsi_14": 48.00050222863969
+      "atr_14": 366.5785714285708,
+      "bb_high": 77303.47032606088,
+      "bb_low": 76428.24967393912,
+      "bb_mid": 76865.86,
+      "ema_20": 76899.59794098801,
+      "ema_50": 77210.42033334516,
+      "macd": -59.81405856722267,
+      "macd_signal": -83.95916173112654,
+      "rsi_14": 47.738634127140436
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-19T03:46:04.983705Z"
+    "timestamp": "2026-05-19T13:13:25.126341Z"
   },
-  "open_positions": [
-    {
-      "agent_id": "crypto-qwen",
-      "average_entry": 76997.99652,
-      "closed_at": null,
-      "dca_count": 0,
-      "direction": "LONG",
-      "id": "crypto-qwen-96784cce85",
-      "leverage": 5.0,
-      "margin": 1000.0,
-      "notional": 5000.0,
-      "opened_at": "2026-05-18T23:51:36.401097Z",
-      "realized_pnl": 0.0,
-      "status": "OPEN",
-      "stop_loss": 76482.6,
-      "symbol": "BTC",
-      "take_profit_1": 77782.6,
-      "take_profit_2": 78182.6,
-      "unrealized_pnl": -13.727403929599983
-    }
-  ],
+  "open_positions": [],
   "recent_trades": [
     {
       "action": "OPEN",
@@ -3164,6 +3301,27 @@
       "notional": 5000.0,
       "position_id": "crypto-qwen-a5056c1283",
       "realized_pnl": -37.36605346235021
+    },
+    {
+      "action": "CLOSE",
+      "agent_id": "crypto-qwen",
+      "code_version": "afe29d0f8feb",
+      "config_hash": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
+      "config_version_id": 29,
+      "created_at": "2026-05-19T13:13:25.145371Z",
+      "decision_timestamp": "2026-05-19T13:13:25.145371Z",
+      "direction": "LONG",
+      "displayed_timestamp": "2026-05-19T13:13:25.145371Z",
+      "entry": 76997.99652,
+      "execution_timestamp": "2026-05-19T13:13:25.145371Z",
+      "exit_price": 76832.93034,
+      "id": "trade-crypto-qwen-8d42c80f5e",
+      "leverage": 5.0,
+      "margin": 1000.0,
+      "notes": "fee=2.5000; slippage_bps=2",
+      "notional": 5000.0,
+      "position_id": "crypto-qwen-96784cce85",
+      "realized_pnl": -13.218862013319978
     }
   ],
   "reflections_summary": {
@@ -3927,6 +4085,13 @@
     ],
     "notifications": [
       {
+        "agent_id": "system",
+        "created_at": "2026-05-19T13:13:24.372202",
+        "event_type": "MISSED_SCHEDULED_CYCLE",
+        "message": "MISSED_SCHEDULED_CYCLE: missed_slots=9; expected_next_cycle_at=2026-05-19T04:47:27.399724Z; resumed_at=2026-05-19T13:13:24.361949Z; delay_seconds=30356.962",
+        "severity": "WARN"
+      },
+      {
         "agent_id": "crypto-qwen",
         "created_at": "2026-05-19T03:47:05.894103",
         "event_type": "API_FAILOVER",
@@ -4003,12 +4168,15 @@
     ]
   },
   "runner": {
+    "current_cycle_started_at": "2026-05-19T13:13:24.391223Z",
     "cycle_interval_seconds": 3600,
-    "cycle_number": 81,
+    "cycle_number": 82,
     "last_cycle_duration_seconds": 83.06672189999972,
-    "last_cycle_started_at": "2026-05-19T03:46:04.106235Z",
-    "next_cycle_at": "2026-05-19T04:47:27.399724Z",
-    "phase": "WAITING",
+    "last_cycle_started_at": "2026-05-19T13:13:24.391223Z",
+    "message": "Calling crypto-deepseek and validating its signal",
+    "next_cycle_at": null,
+    "phase": "CALLING_DEEPSEEK",
+    "state_updated_at": "2026-05-19T13:13:25.157479Z",
     "status": "RUNNING",
     "total_cycles_completed": 81
   },
@@ -9476,7 +9644,7 @@
     "thesis_embedding_similarity": 0.048819289428038044
   },
   "sync": {
-    "generated_at": "2026-05-19T03:47:27.419888Z",
+    "generated_at": "2026-05-19T13:19:13.516241Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
@@ -9509,11 +9677,11 @@
       "wins": 4
     },
     "crypto-qwen": {
-      "closed_or_fee_events": 6,
-      "losses": 5,
-      "realized_pnl": -20.80611610086423,
-      "trade_count": 6,
-      "win_rate": 0.16666666666666666,
+      "closed_or_fee_events": 7,
+      "losses": 6,
+      "realized_pnl": -34.02497811418421,
+      "trade_count": 7,
+      "win_rate": 0.14285714285714285,
       "wins": 1
     }
   },
