@@ -28,7 +28,7 @@
     },
     "total": 0.22620144
   },
-  "btc_price": 76848.3,
+  "btc_price": 76577.0,
   "competition": {
     "duration_days": 7,
     "end_time": "2026-05-22T17:00:00Z",
@@ -40,8 +40,8 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-19T03:47:27.372157Z",
     "active_versions_file": {
-      "code_version": "afe29d0f8feb",
-      "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
+      "code_version": "4185c518bf01",
+      "config_version": "501660161066376d2df00ffedacedede479135bd1006fbbe58dfd1e53ea5ddf4",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
         "path": "config\\rulebook.md"
@@ -50,7 +50,7 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T03:47:30.442759Z"
+      "updated_at": "2026-05-19T13:26:51.860341Z"
     },
     "canary": {
       "enabled": false,
@@ -77,8 +77,8 @@
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "afe29d0f8feb",
-      "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
+      "code_version": "4185c518bf01",
+      "config_version": "501660161066376d2df00ffedacedede479135bd1006fbbe58dfd1e53ea5ddf4",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
         "path": "config\\rulebook.md"
@@ -87,16 +87,16 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T13:19:13.782809Z"
+      "updated_at": "2026-05-19T13:27:30.250497Z"
     }
   },
   "downtime": {
     "latest": {
-      "duration_seconds": 30356.962225,
-      "ended_at": "2026-05-19T13:13:24.361949Z",
-      "missed_scheduled_cycle": true,
-      "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=9; expected_next_cycle_at=2026-05-19T04:47:27.399724Z; resumed_at=2026-05-19T13:13:24.361949Z; delay_seconds=30356.962",
-      "started_at": "2026-05-19T04:47:27.399724Z"
+      "duration_seconds": 34766.475536,
+      "ended_at": "2026-05-19T13:26:53.648493Z",
+      "missed_scheduled_cycle": false,
+      "reason": "automatic resume from latest checkpoint",
+      "started_at": "2026-05-19T03:47:27.172957Z"
     },
     "latest_missed_cycle": {
       "duration_seconds": 30356.962225,
@@ -107,6 +107,13 @@
     },
     "missed_cycle_count_recent": 2,
     "recent": [
+      {
+        "duration_seconds": 34766.475536,
+        "ended_at": "2026-05-19T13:26:53.648493Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-19T03:47:27.172957Z"
+      },
       {
         "duration_seconds": 30356.962225,
         "ended_at": "2026-05-19T13:13:24.361949Z",
@@ -239,13 +246,6 @@
         "missed_scheduled_cycle": false,
         "reason": "automatic resume from latest checkpoint",
         "started_at": "2026-05-15T17:12:26.109984Z"
-      },
-      {
-        "duration_seconds": 313.554359,
-        "ended_at": "2026-05-15T17:10:39.604144Z",
-        "missed_scheduled_cycle": false,
-        "reason": "automatic resume from latest checkpoint",
-        "started_at": "2026-05-15T17:05:26.049785Z"
       }
     ]
   },
@@ -253,7 +253,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T13:19:12.568076Z"
+        "timestamp": "2026-05-19T13:27:29.082556Z"
       },
       {
         "drawdown": -0.0005,
@@ -297,13 +297,13 @@
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T13:19:13.568076Z"
+        "timestamp": "2026-05-19T13:27:30.082556Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T13:19:12.568076Z"
+        "timestamp": "2026-05-19T13:27:29.082556Z"
       },
       {
         "drawdown": -0.00025,
@@ -335,7 +335,7 @@
       },
       {
         "drawdown": -0.0055980040828151065,
-        "timestamp": "2026-05-19T13:19:13.568076Z"
+        "timestamp": "2026-05-19T13:27:30.082556Z"
       }
     ]
   },
@@ -343,7 +343,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T13:19:12.568076Z"
+        "timestamp": "2026-05-19T13:27:29.082556Z"
       },
       {
         "equity": 9995.0,
@@ -387,13 +387,13 @@
       },
       {
         "equity": 10231.54469954226,
-        "timestamp": "2026-05-19T13:19:13.568076Z"
+        "timestamp": "2026-05-19T13:27:30.082556Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T13:19:12.568076Z"
+        "timestamp": "2026-05-19T13:27:29.082556Z"
       },
       {
         "equity": 9997.5,
@@ -425,11 +425,11 @@
       },
       {
         "equity": 9965.975021885815,
-        "timestamp": "2026-05-19T13:19:13.568076Z"
+        "timestamp": "2026-05-19T13:27:30.082556Z"
       }
     ]
   },
-  "generated_at": "2026-05-19T13:19:13.516241Z",
+  "generated_at": "2026-05-19T13:27:30.048297Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -513,7 +513,7 @@
         "impact_score": 0.7315,
         "is_shared": false,
         "last_updated": "2026-05-17T18:13:08.578200Z",
-        "lesson_id": "derived-4585291046365607019",
+        "lesson_id": "derived-618867499788483426",
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
@@ -636,7 +636,7 @@
         "impact_score": 1.0,
         "is_shared": true,
         "last_updated": "2026-05-19T03:47:26.461887Z",
-        "lesson_id": "derived-1219233806693950163",
+        "lesson_id": "derived-7260704210346620776",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
@@ -761,7 +761,7 @@
         "impact_score": 0.7053,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.338211Z",
-        "lesson_id": "derived-8434516122279883864",
+        "lesson_id": "derived-5425359309449346906",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
@@ -886,11 +886,11 @@
         "impact_score": 0.6272,
         "is_shared": true,
         "last_updated": "2026-05-19T01:30:57.982643Z",
-        "lesson_id": "derived-1686749872864456633",
+        "lesson_id": "derived-6543185654227514278",
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.7753,
+        "rank_score": 0.7752,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -978,11 +978,11 @@
         "impact_score": 0.5067,
         "is_shared": false,
         "last_updated": "2026-05-17T00:58:53.117439Z",
-        "lesson_id": "derived-2117341268786491174",
+        "lesson_id": "derived-1227516027957237095",
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.5895,
+        "rank_score": 0.5894,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2939,30 +2939,30 @@
         "volume": 2310.159
       },
       {
-        "close": 76848.3,
+        "close": 76577.0,
         "high": 76947.8,
-        "low": 76707.0,
+        "low": 76577.0,
         "open": 76901.2,
         "timestamp": "2026-05-19T13:00:00Z",
-        "volume": 889.37
+        "volume": 2008.405
       }
     ],
-    "current_price": 76848.3,
+    "current_price": 76577.0,
     "indicators": {
-      "atr_14": 366.5785714285708,
-      "bb_high": 77303.47032606088,
-      "bb_low": 76428.24967393912,
-      "bb_mid": 76865.86,
-      "ema_20": 76899.59794098801,
-      "ema_50": 77210.42033334516,
-      "macd": -59.81405856722267,
-      "macd_signal": -83.95916173112654,
-      "rsi_14": 47.738634127140436
+      "atr_14": 375.8642857142851,
+      "bb_high": 77308.61664314377,
+      "bb_low": 76395.97335685622,
+      "bb_mid": 76852.295,
+      "ema_20": 76873.75984574991,
+      "ema_50": 77199.78111765887,
+      "macd": -81.45622380937857,
+      "macd_signal": -88.28759477955772,
+      "rsi_14": 43.13251298100867
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-19T13:13:25.126341Z"
+    "timestamp": "2026-05-19T13:26:54.533771Z"
   },
   "open_positions": [],
   "recent_trades": [
@@ -4168,15 +4168,15 @@
     ]
   },
   "runner": {
-    "current_cycle_started_at": "2026-05-19T13:13:24.391223Z",
+    "current_cycle_started_at": "2026-05-19T13:26:53.720322Z",
     "cycle_interval_seconds": 3600,
     "cycle_number": 82,
     "last_cycle_duration_seconds": 83.06672189999972,
-    "last_cycle_started_at": "2026-05-19T13:13:24.391223Z",
+    "last_cycle_started_at": "2026-05-19T13:26:53.720322Z",
     "message": "Calling crypto-deepseek and validating its signal",
     "next_cycle_at": null,
     "phase": "CALLING_DEEPSEEK",
-    "state_updated_at": "2026-05-19T13:13:25.157479Z",
+    "state_updated_at": "2026-05-19T13:26:54.559353Z",
     "status": "RUNNING",
     "total_cycles_completed": 81
   },
@@ -9644,7 +9644,7 @@
     "thesis_embedding_similarity": 0.048819289428038044
   },
   "sync": {
-    "generated_at": "2026-05-19T13:19:13.516241Z",
+    "generated_at": "2026-05-19T13:27:30.048297Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
