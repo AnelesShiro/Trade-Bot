@@ -7,9 +7,10 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Project: `crypto-paper-trading-arena`, BTCUSDT paper-trading competition.
 - Active agents: `crypto-deepseek` and `crypto-qwen`.
 - Legacy `crypto-grok` data remains in SQLite for history/audit only. Do not merge it into Qwen.
-- Latest verified live cycle/checkpoint: `67` completed.
-- Recent API audit shows both DeepSeek and Qwen succeeded in cycle `67`; current live runner is one normal Windows parent-child process tree.
-- Current active open positions at last check: `DS-SHORT-004` (`crypto-deepseek`, SHORT, PARTIAL) and `crypto-qwen-8e6a3ee4e3` (`crypto-qwen`, LONG, OPEN).
+- Latest verified live cycle/checkpoint: `82` completed at `2026-05-19T13:38:21Z`; runner is `RUNNING / WAITING` with next cycle at `2026-05-19T14:38:21Z`.
+- Cycle `82` recovered from a real overdue/stale dashboard condition: the runner had stopped after a safe restart, was manually resumed, then both agents timed out through OpenClaw and were recorded as `INTERNAL_ERROR`; checkpoint/snapshot still completed.
+- Current live runner is one normal Windows parent-child process tree.
+- Current active open positions at last check: none.
 - DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
 - Qwen routing/registration and provider auth now work after switching OpenClaw Qwen to the Standard Global DashScope endpoint.
 - Qwen model lock expected actual response model: `qwen3-max-2026-01-23`.
@@ -43,6 +44,7 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 - Treat that as one runner process tree unless there are multiple unrelated parent trees.
 - `run-live --resume` runs a cycle immediately on process start, then continues the schedule.
 - One provider failure must not stop the full cycle; it should be recorded and checkpoint/snapshot should still complete.
+- OpenClaw agent calls are bounded by `api.timeout_seconds: 180` and `api.max_retries: 1`; the CLI call also receives `--timeout <seconds>`. This prevents one hung provider call from blocking a live cycle for ~30 minutes.
 
 ## Model Governance
 

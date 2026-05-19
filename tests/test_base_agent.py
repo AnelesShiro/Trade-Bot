@@ -102,6 +102,23 @@ def test_openclaw_agent_does_not_use_gateway_model_override(monkeypatch, tmp_pat
     assert "--model" not in seen_command["command"]
 
 
+def test_openclaw_agent_passes_cli_timeout(monkeypatch, tmp_path) -> None:
+    seen_command = {}
+
+    def fake_run(*args, **kwargs):
+        seen_command["command"] = args[0]
+        return subprocess.CompletedProcess(args=args[0], returncode=0, stdout="ok", stderr="")
+
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(Path, "home", lambda: tmp_path)
+    write_session_model(tmp_path, "exact-model")
+    agent = make_agent(model="exact-model")
+
+    assert agent.run("prompt", timeout_seconds=123, max_retries=1) == "ok"
+    timeout_index = seen_command["command"].index("--timeout")
+    assert seen_command["command"][timeout_index + 1] == "123"
+
+
 def test_openclaw_agent_model_mismatch_throws(monkeypatch, tmp_path) -> None:
     def fake_run(*args, **kwargs):
         return subprocess.CompletedProcess(args=args[0], returncode=0, stdout="ok", stderr="")

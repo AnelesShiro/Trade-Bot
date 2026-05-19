@@ -60,6 +60,8 @@ class OpenClawAgent:
             self.settings.session_id,
             "--message",
             prompt,
+            "--timeout",
+            str(timeout_seconds),
         ]
         delay = backoff_initial_seconds
         last_error = ""

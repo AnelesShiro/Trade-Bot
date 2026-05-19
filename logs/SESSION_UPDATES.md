@@ -1059,3 +1059,35 @@ Entry template:
 - Notes:
   - This is observational/audit-only. It does not backfill trades, alter positions, or change strategy behavior.
   - Runtime `outputs/*` remain dirty from live runner updates and were not reverted.
+
+## 2026-05-19 - Overdue Recovery And OpenClaw Timeout Tightening
+
+- User report: both local dashboard and Render/cloud dashboard were stuck showing `OVERDUE`.
+- Findings:
+  - The earlier safe restart had exited the live loop after cycle `81`; no live runner remained until manual resume.
+  - After resume, cycle `82` initially entered `CALLING_DEEPSEEK`, but `cloud/dashboard_snapshot.json` was still from cycle `81`, so both dashboards were reading stale runner state.
+  - Manual `export-snapshot` + `sync-github` pushed a live `RUNNING / CALLING_DEEPSEEK` snapshot so dashboards could show `TRADING` instead of stale `OVERDUE`.
+  - The first resumed runner used the old API limits: `timeout_seconds=600`, `max_retries=3`, allowing one hung OpenClaw call to stall a cycle for roughly 30 minutes.
+- What changed:
+  - `config/settings.yaml` API limits changed to `timeout_seconds: 180` and `max_retries: 1`.
+  - `src/agents/base_agent.py` now passes `--timeout <seconds>` directly to `openclaw agent` in addition to the Python subprocess timeout.
+  - `tests/test_base_agent.py` now verifies the OpenClaw CLI timeout argument is always sent.
+  - Killed the stuck old runner process tree and restarted via `scripts/start_bot_live.ps1` using `run-live --resume`.
+- Runtime result:
+  - New runner process tree is active: `.venv\Scripts\python.exe -m src.cli run-live --resume` plus base Python child.
+  - Cycle `82` completed safely despite provider timeouts:
+    - DeepSeek signal recorded as rejected `INTERNAL_ERROR` due `OpenClaw timeout after 180s`.
+    - Qwen signal recorded as rejected `INTERNAL_ERROR` due `OpenClaw timeout after 180s`.
+    - Checkpoint `95` saved for cycle `82`.
+    - `runner_state`: `RUNNING / WAITING`, next cycle `2026-05-19T14:38:21Z`.
+    - Snapshot generated at `2026-05-19T13:38:21Z` and pushed to GitHub.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests\test_base_agent.py -q` -> 8 passed.
+  - `.\.venv\Scripts\python.exe -m pytest tests\test_base_agent.py tests\test_checkpoint_resume.py tests\test_hot_reload.py -q` -> 21 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\agents\base_agent.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` in use.
+  - `http://127.0.0.1:8501` returned HTTP `200`.
+- Notes:
+  - Trading logic, rulebook, prompts, and dashboard UI were not changed.
+  - Runtime `outputs/*` remain dirty from live runner updates and were not reverted.

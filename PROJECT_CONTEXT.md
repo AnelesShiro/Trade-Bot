@@ -7,7 +7,8 @@
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
 - Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
-- Latest verified live cycle/checkpoint: cycle `50` completed. Recent API audit shows both DeepSeek and Qwen succeeded in cycles `48`, `49`, and `50`; there were no active open positions at the latest check.
+- Latest verified live cycle/checkpoint: cycle `82` completed at `2026-05-19T13:38:21Z`; runner is `RUNNING / WAITING`, next cycle is `2026-05-19T14:38:21Z`, and there were no active open positions at the latest check.
+- Latest overdue recovery: after a safe-restart exit left no live runner, `run-live --resume` was restarted manually. Both agents timed out through OpenClaw in cycle `82`, were recorded as rejected `INTERNAL_ERROR`, and the cycle still checkpointed/exported successfully.
 - Local **risk automation** is enabled (`config/settings.yaml` -> `risk_automation`). Conditional orders, trailing stop, break-even, time exit, cooldowns, and explicit API failover run locally with **no extra LLM calls** except the intentional one-request retry after failover. Legacy `OPEN`/`MARKET` signals are unchanged unless the agent sends `PLACE_TRIGGER`, `trigger_order`, or `position_risk`.
 - **API failover** is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, primary retests, and `risk_notifications`. It is separate from `LLM_ALLOW_FALLBACK`; silent model switching remains impossible.
 - Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
@@ -16,6 +17,7 @@
 - `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
 - Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. Agents are now explicitly told to consider advanced trade management on every setup: use `PLACE_TRIGGER` for future confirmation, break-even is enforced locally around +1R on every open trade, time exits when useful, and trailing stops selectively for trends. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
 - Live runner phase is persisted in SQLite table `runner_state`. During active bot calls the dashboard/snapshot should display phases such as `CALLING_DEEPSEEK` or `CALLING_QWEN` and `IN PROGRESS`, not `OVERDUE`.
+- OpenClaw calls are bounded by `api.timeout_seconds: 180` and `api.max_retries: 1`; `src/agents/base_agent.py` also passes `--timeout <seconds>` to `openclaw agent` so a hung provider cannot stall the cycle for roughly 30 minutes.
 - Runtime files in `outputs/` are live-generated and may remain dirty. Do not revert them unless explicitly asked.
 - Use `.venv\Scripts\python.exe` for validation and tests.
 
