@@ -910,11 +910,12 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     start_time = pd.to_datetime(competition.get("start_time"), utc=True, errors="coerce")
     end_time = pd.to_datetime(competition.get("end_time"), utc=True, errors="coerce")
     start_dt = start_time.to_pydatetime() if pd.notna(start_time) else utc_now()
-    end_dt = end_time.to_pydatetime() if pd.notna(end_time) else start_dt + timedelta(days=float(settings.competition.duration_days))
-    elapsed = max(timedelta(0), utc_now() - start_dt)
-    duration = max(timedelta(seconds=1), end_dt - start_dt)
-    remaining = max(timedelta(0), end_dt - utc_now())
-    percent_complete = min(1.0, elapsed.total_seconds() / duration.total_seconds())
+    end_dt = end_time.to_pydatetime() if pd.notna(end_time) else None
+    snap_uptime = utc_now() - start_dt
+    _snap_weekly_target = competition.get("weekly_target_pct") or settings.competition.weekly_target_pct
+    _snap_rolling_7d_raw = competition.get("rolling_7d_return_pct")
+    _snap_rolling_7d = float(_snap_rolling_7d_raw) if _snap_rolling_7d_raw is not None else None
+    _snap_weekly_progress = (_snap_rolling_7d / _snap_weekly_target) if (_snap_rolling_7d is not None and _snap_weekly_target > 0) else None
 
     agents = snapshot.get("agents", {})
     snapshot_agent_ids = list(agents) or agent_ids
@@ -1015,10 +1016,14 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
 
     banner_cols = st.columns(4)
     banner_cols[0].metric("Current leader", snapshot.get("leader") or "-")
-    banner_cols[1].metric("Time remaining", human_duration(remaining))
-    banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
-    banner_cols[3].metric("Start / End", f"{fmt_short_time(start_dt)} -> {fmt_short_time(end_dt)}")
-    st.progress(percent_complete)
+    banner_cols[1].metric("Project Uptime", human_duration(snap_uptime))
+    banner_cols[2].metric("Rolling 7d Return", f"{_snap_rolling_7d * 100:+.2f}%" if _snap_rolling_7d is not None else "-")
+    banner_cols[3].metric("Project Start", fmt_short_time(start_dt))
+    _snap_progress = min(1.0, max(0.0, _snap_weekly_progress)) if _snap_weekly_progress is not None else 0.0
+    st.progress(
+        _snap_progress,
+        text=f"Weekly target progress: {_snap_progress * 100:.1f}% of +{_snap_weekly_target * 100:.0f}%",
+    )
     render_cycle_status(snapshot.get("runner", {}))
     latest_missed = downtime.get("latest_missed_cycle") if isinstance(downtime, dict) else None
     if isinstance(latest_missed, dict):
