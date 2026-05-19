@@ -929,6 +929,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     diversity = snapshot.get("strategy_diversity_metrics", {})
     workload = snapshot.get("workload", {})
     risk_automation = snapshot.get("risk_automation", {}) if isinstance(snapshot.get("risk_automation"), dict) else {}
+    downtime = snapshot.get("downtime", {}) if isinstance(snapshot.get("downtime"), dict) else {}
     lesson_analytics = snapshot.get("lesson_analytics", {}) if isinstance(snapshot.get("lesson_analytics"), dict) else {}
     audit_missing = "signal_audit_summary" not in snapshot
     audit_summary = _snapshot_audit_summary(snapshot)
@@ -1001,6 +1002,13 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
     banner_cols[3].metric("Start / End", f"{fmt_short_time(start_dt)} -> {fmt_short_time(end_dt)}")
     st.progress(percent_complete)
     render_cycle_status(snapshot.get("runner", {}))
+    latest_missed = downtime.get("latest_missed_cycle") if isinstance(downtime, dict) else None
+    if isinstance(latest_missed, dict):
+        st.warning(
+            "Latest missed scheduled cycle: "
+            f"{human_duration(timedelta(seconds=float(latest_missed.get('duration_seconds') or 0)))} "
+            f"({latest_missed.get('started_at')} -> {latest_missed.get('ended_at')})."
+        )
     risk_cols = st.columns(3)
     active_models = risk_automation.get("active_models", {}) if isinstance(risk_automation.get("active_models"), dict) else {}
     active_fallback_count = sum(1 for row in active_models.values() if isinstance(row, dict) and row.get("using_fallback"))

@@ -993,3 +993,69 @@ Entry template:
     - Raw text is still preserved for audit.
 - Notes:
   - Refresh local Streamlit after this change if the browser still shows the old card text.
+
+## 2026-05-19 - Post Power Reset Health Check And Local Dashboard Restart
+
+- User report: Machine reset because of a power outage; requested full health check and local web hosting.
+- Findings:
+  - Live runner auto-recovered after reset as one normal Windows parent-child process tree:
+    - `.venv\Scripts\python.exe -m src.cli run-live --resume`
+    - base Python child process with the same command.
+  - During the first check, runner was actively processing cycle `80` in `CALLING_QWEN`; this was a valid `TRADING` phase, not overdue.
+  - Cycle `80` then completed successfully:
+    - `runner_state`: `RUNNING / WAITING`
+    - latest checkpoint: cycle `80`, status `COMPLETED`
+    - next cycle: `2026-05-19 03:43:48 UTC`
+  - Snapshot refreshed after cycle `80`:
+    - `cloud/dashboard_snapshot.json` generated at `2026-05-19T02:43:48Z`
+    - local modified time: `2026-05-19 09:43:49`
+  - Open positions after reset check:
+    - Qwen LONG `crypto-qwen-96784cce85` remains `OPEN`.
+  - Active cooldowns: `0`.
+  - Recent cycle `80` signals:
+    - DeepSeek accepted `NO_TRADE`.
+    - Qwen had two rejected `POSITION_UPDATE/HOLD` attempts with `LEVERAGE_LIMIT_EXCEEDED`, then self-repaired to accepted `NO_TRADE`.
+- Local dashboard:
+  - `preflight-check` reported all critical checks PASS and port `8501` free before launch.
+  - Started local dashboard through `scripts/start_local_dashboard.ps1`.
+  - Verified `http://127.0.0.1:8501` returns HTTP `200`.
+  - Streamlit process is listening on port `8501`.
+- Notes:
+  - Runtime `outputs/*` remain dirty from live runner updates and were not reverted.
+
+## 2026-05-19 - Missed Cycle Recovery Audit
+
+- User concern: the gap between recent cycles looked close to 2 hours, suggesting one scheduled cycle may have been missed during the power outage.
+- Findings:
+  - Confirmed cycle numbering stayed continuous (`79 -> 80`), but there was a real scheduled-slot gap:
+    - cycle `79` completed at `2026-05-19 00:56:05 UTC`
+    - expected next scheduled slot was about `2026-05-19 01:56:05 UTC`
+    - runner resumed at `2026-05-19 02:40:58 UTC`
+    - cycle `80` completed at `2026-05-19 02:43:46 UTC`
+  - Impact: one scheduled decision slot was missed while the machine was off; runner resumed safely and ran the next cycle immediately after reboot.
+- What changed:
+  - Added `audit_missed_scheduled_cycles()` in `src/competition/checkpoint.py`.
+  - `run-live --resume` now compares persisted `runner_state.next_cycle_at` with actual resume time before overwriting runner state.
+  - If resume is late beyond the downtime grace window, it records:
+    - `downtime_events` reason `MISSED_SCHEDULED_CYCLE`
+    - `health_checks` component `missed_cycle`
+    - `risk_notifications` event `MISSED_SCHEDULED_CYCLE`
+    - payload with missed slot count, delay seconds, expected next cycle time, and resume time.
+  - Snapshot export now includes a `downtime` payload with `latest_missed_cycle`.
+  - Render/cloud dashboard shows a warning when the snapshot contains a latest missed scheduled cycle.
+  - Backfilled the actual outage event into the live SQLite DB:
+    - missed slots: `1`
+    - expected next cycle: `2026-05-19T01:56:05.668893Z`
+    - resumed: `2026-05-19T02:40:58.078333Z`
+    - delay: `2692.409s`
+  - Regenerated `cloud/dashboard_snapshot.json` so the dashboard shows the missed-cycle audit immediately.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest tests/test_checkpoint_resume.py tests/test_hot_reload.py tests/test_dashboard_contract.py -q` -> 16 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\competition\checkpoint.py src\competition\runner.py src\cloud\snapshot_exporter.py src\dashboard\app.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 87 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli export-snapshot` -> passed.
+  - `.\.venv\Scripts\python.exe -m src.cli preflight-check` -> all critical checks passed; dashboard port `8501` already in use.
+- Notes:
+  - This is observational/audit-only. It does not backfill trades, alter positions, or change strategy behavior.
+  - Runtime `outputs/*` remain dirty from live runner updates and were not reverted.

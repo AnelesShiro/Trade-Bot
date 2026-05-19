@@ -53,6 +53,47 @@ def restore_from_checkpoint(repository: ArenaRepository, checkpoint: CheckpointR
     return int(checkpoint.cycle_number)
 
 
+def audit_missed_scheduled_cycles(
+    repository: ArenaRepository,
+    *,
+    cycle_interval_seconds: int,
+    grace_seconds: int,
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    state = repository.latest_runner_state()
+    if not state or not state.next_cycle_at or cycle_interval_seconds <= 0:
+        return {"missed_slots": 0, "recorded": False}
+    resumed_at = _as_utc(now or datetime.now(UTC))
+    expected_at = _as_utc(state.next_cycle_at)
+    delay_seconds = (resumed_at - expected_at).total_seconds()
+    if delay_seconds < max(0, grace_seconds):
+        return {"missed_slots": 0, "recorded": False, "delay_seconds": max(0.0, delay_seconds)}
+
+    missed_slots = int(delay_seconds // cycle_interval_seconds) + 1
+    payload = {
+        "missed_slots": missed_slots,
+        "delay_seconds": round(delay_seconds, 3),
+        "expected_next_cycle_at": expected_at.isoformat().replace("+00:00", "Z"),
+        "resumed_at": resumed_at.isoformat().replace("+00:00", "Z"),
+        "previous_cycle_number": int(state.cycle_number or 0),
+    }
+    if _already_recorded_missed_slot(repository, expected_at):
+        payload["recorded"] = False
+        return payload
+
+    reason = (
+        f"MISSED_SCHEDULED_CYCLE: missed_slots={missed_slots}; "
+        f"expected_next_cycle_at={payload['expected_next_cycle_at']}; "
+        f"resumed_at={payload['resumed_at']}; "
+        f"delay_seconds={payload['delay_seconds']}"
+    )
+    repository.save_downtime_event(expected_at, resumed_at, reason)
+    repository.save_health_check("missed_cycle", "WARN", False, reason[:1000])
+    repository.save_risk_notification("system", "MISSED_SCHEDULED_CYCLE", reason, severity="WARN", payload=payload)
+    payload["recorded"] = True
+    return payload
+
+
 def checkpoint_payload(record: CheckpointRecord | None) -> dict[str, Any]:
     if not record:
         return {}
@@ -60,6 +101,20 @@ def checkpoint_payload(record: CheckpointRecord | None) -> dict[str, Any]:
         return json.loads(record.payload_json or "{}")
     except json.JSONDecodeError:
         return {}
+
+
+def _already_recorded_missed_slot(repository: ArenaRepository, expected_at: datetime) -> bool:
+    expected_naive = expected_at.replace(tzinfo=None)
+    for event in repository.downtime_events(limit=25):
+        if "MISSED_SCHEDULED_CYCLE" not in (event.reason or ""):
+            continue
+        if abs((event.started_at - expected_naive).total_seconds()) < 1:
+            return True
+    return False
+
+
+def _as_utc(value: datetime) -> datetime:
+    return value.replace(tzinfo=UTC) if value.tzinfo is None else value.astimezone(UTC)
 
 
 def position_to_dict(position: Any) -> dict[str, Any]:

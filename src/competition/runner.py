@@ -16,7 +16,7 @@ from src.agents.base_agent import AgentRunResult, OpenClawAgent
 from src.agents.memory import AgentMemory
 from src.agents.shared_learning import IDENTITY_BLOCK, SHARED_LESSON_DISCLAIMER, SharedLearningManager
 from src.competition.api_cost_audit import prompt_audit_context, prompt_component_breakdown
-from src.competition.checkpoint import build_checkpoint_payload, restore_from_checkpoint
+from src.competition.checkpoint import audit_missed_scheduled_cycles, build_checkpoint_payload, restore_from_checkpoint
 from src.competition.config_manager import ConfigManager
 from src.competition.evaluation import calculate_leaderboard
 from src.competition.workload import WorkloadTracker
@@ -181,6 +181,13 @@ class CompetitionRunner:
                     False,
                     f"Loaded filesystem checkpoint cycle {file_cycle}; SQLite remains canonical",
                 )
+            missed = audit_missed_scheduled_cycles(
+                self.repository,
+                cycle_interval_seconds=self.settings.competition.poll_interval_seconds,
+                grace_seconds=self.settings.safety.downtime_threshold_seconds,
+            )
+            if missed.get("missed_slots"):
+                logger.warning("missed scheduled cycle audit: {}", missed)
         official_start = self.repository.ensure_competition_started("run_live")
         if official_start.tzinfo is None:
             official_start = official_start.replace(tzinfo=UTC)

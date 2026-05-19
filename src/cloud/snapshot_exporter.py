@@ -89,6 +89,7 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "signal_audit_summary": SignalAuditRepository(repository).summary(),
         "rejected_signals_summary": _rejected_signals(repository),
         "reflections_summary": _reflections(repository),
+        "downtime": _downtime_payload(repository),
         "strategy_diversity_metrics": _diversity_metrics(repository),
         "deployment": LiveUpdateManager(settings, repository).deployment_state(),
         "risk_automation": _risk_automation_payload(settings, repository),
@@ -523,6 +524,27 @@ def _api_costs(repository: ArenaRepository, agent_ids: list[str]) -> dict[str, A
     return {
         "by_agent": {agent_id: values.get("estimated_cost_usd", 0.0) for agent_id, values in usage.items()},
         "total": sum(values.get("estimated_cost_usd", 0.0) for values in usage.values()),
+    }
+
+
+def _downtime_payload(repository: ArenaRepository) -> dict[str, Any]:
+    rows = repository.downtime_events(limit=20)
+    recent = [
+        {
+            "started_at": _iso(row.started_at),
+            "ended_at": _iso(row.ended_at),
+            "duration_seconds": row.duration_seconds,
+            "reason": row.reason,
+            "missed_scheduled_cycle": "MISSED_SCHEDULED_CYCLE" in (row.reason or ""),
+        }
+        for row in rows
+    ]
+    missed = [row for row in recent if row["missed_scheduled_cycle"]]
+    return {
+        "recent": recent,
+        "latest": recent[0] if recent else None,
+        "latest_missed_cycle": missed[0] if missed else None,
+        "missed_cycle_count_recent": len(missed),
     }
 
 

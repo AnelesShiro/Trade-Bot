@@ -68,6 +68,11 @@ def test_feature_flags_can_target_one_agent(test_settings) -> None:
 
 
 def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_settings) -> None:
+    repository.save_downtime_event(
+        datetime(2026, 5, 19, 1, 56, tzinfo=UTC),
+        datetime(2026, 5, 19, 2, 40, tzinfo=UTC),
+        "MISSED_SCHEDULED_CYCLE: missed_slots=1; expected_next_cycle_at=2026-05-19T01:56:00Z",
+    )
     repository.save_lesson(
         "crypto-deepseek",
         "Daily review: equity=10000.00, realized_pnl=0.00. Keep valid setups only and preserve rule compliance.",
@@ -152,6 +157,7 @@ def test_cloud_snapshot_contains_required_dashboard_sections(repository, test_se
     assert recent_reflection["summary"] == "Trade only high-quality setups and maintain strict rule compliance."
     assert recent_lesson["summary"] == "Trade only high-quality setups and maintain strict rule compliance."
     assert "raw_text" in recent_lesson
+    assert snapshot["downtime"]["latest_missed_cycle"]["missed_scheduled_cycle"] is True
     assert validate_snapshot_contract(snapshot) == []
 
 

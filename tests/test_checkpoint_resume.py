@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 
-from src.competition.checkpoint import build_checkpoint_payload, checkpoint_payload, restore_from_checkpoint
+from src.competition.checkpoint import (
+    audit_missed_scheduled_cycles,
+    build_checkpoint_payload,
+    checkpoint_payload,
+    restore_from_checkpoint,
+)
 from src.storage.models import PositionRecord
 
 
@@ -51,3 +56,28 @@ def test_resume_records_downtime(repository) -> None:
 
     assert cycle == 5
     assert repository.downtime_events()
+
+
+def test_resume_audits_missed_scheduled_cycle(repository) -> None:
+    expected_at = datetime.now(UTC) - timedelta(minutes=90)
+    resumed_at = datetime.now(UTC)
+    repository.save_runner_state(
+        status="RUNNING",
+        phase="WAITING",
+        cycle_number=12,
+        completed_at=expected_at - timedelta(hours=1),
+        next_cycle_at=expected_at,
+        message="waiting before power loss",
+    )
+
+    result = audit_missed_scheduled_cycles(
+        repository,
+        cycle_interval_seconds=3600,
+        grace_seconds=60,
+        now=resumed_at,
+    )
+
+    assert result["missed_slots"] == 2
+    assert result["recorded"] is True
+    assert "MISSED_SCHEDULED_CYCLE" in repository.downtime_events(limit=1)[0].reason
+    assert repository.risk_notifications(limit=1)[0].event_type == "MISSED_SCHEDULED_CYCLE"

@@ -40,7 +40,7 @@
   "deployment": {
     "active_checkpoint_timestamp": "2026-05-19T02:43:48.181228Z",
     "active_versions_file": {
-      "code_version": "ce49048b5ce6",
+      "code_version": "9d926f83e978",
       "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
@@ -50,7 +50,7 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T02:40:51.778675Z"
+      "updated_at": "2026-05-19T03:01:54.937262Z"
     },
     "canary": {
       "enabled": false,
@@ -77,7 +77,7 @@
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "ce49048b5ce6",
+      "code_version": "9d926f83e978",
       "config_version": "3f8d55f3156f62b19025302a96dbbee40d44ab92061e7647c50f3ed8caf3fc5b",
       "rulebook": {
         "hash": "57a5bf230ca008372001e4d4c9873ac480afa9f60a47ad2d11b969bdde5d3cb9",
@@ -87,14 +87,159 @@
         "hash": "9f17cc4a9fd674d2d0243946ed5a82f7d37057b4faac50105f293e65982d40c0",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-19T02:43:48.595277Z"
+      "updated_at": "2026-05-19T03:01:55.006261Z"
     }
+  },
+  "downtime": {
+    "latest": {
+      "duration_seconds": 4199.610591,
+      "ended_at": "2026-05-19T02:40:58.078333Z",
+      "missed_scheduled_cycle": false,
+      "reason": "automatic resume from latest checkpoint",
+      "started_at": "2026-05-19T01:30:58.467742Z"
+    },
+    "latest_missed_cycle": {
+      "duration_seconds": 2692.40944,
+      "ended_at": "2026-05-19T02:40:58.078333Z",
+      "missed_scheduled_cycle": true,
+      "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=1; expected_next_cycle_at=2026-05-19T01:56:05.668893Z; resumed_at=2026-05-19T02:40:58.078333Z; delay_seconds=2692.409; source=manual post-reset audit backfill",
+      "started_at": "2026-05-19T01:56:05.668893Z"
+    },
+    "missed_cycle_count_recent": 1,
+    "recent": [
+      {
+        "duration_seconds": 4199.610591,
+        "ended_at": "2026-05-19T02:40:58.078333Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-19T01:30:58.467742Z"
+      },
+      {
+        "duration_seconds": 2692.40944,
+        "ended_at": "2026-05-19T02:40:58.078333Z",
+        "missed_scheduled_cycle": true,
+        "reason": "MISSED_SCHEDULED_CYCLE: missed_slots=1; expected_next_cycle_at=2026-05-19T01:56:05.668893Z; resumed_at=2026-05-19T02:40:58.078333Z; delay_seconds=2692.409; source=manual post-reset audit backfill",
+        "started_at": "2026-05-19T01:56:05.668893Z"
+      },
+      {
+        "duration_seconds": 67.571495,
+        "ended_at": "2026-05-18T10:20:30.029532Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-18T10:19:22.458037Z"
+      },
+      {
+        "duration_seconds": 4996.353049,
+        "ended_at": "2026-05-18T08:10:11.846636Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-18T06:46:55.493587Z"
+      },
+      {
+        "duration_seconds": 463.233905,
+        "ended_at": "2026-05-17T15:00:11.413879Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T14:52:28.179974Z"
+      },
+      {
+        "duration_seconds": 15812.17085,
+        "ended_at": "2026-05-17T14:51:42.653876Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T10:28:10.483026Z"
+      },
+      {
+        "duration_seconds": 10278.086637,
+        "ended_at": "2026-05-17T06:44:41.592045Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T03:53:23.505408Z"
+      },
+      {
+        "duration_seconds": 9984.075473,
+        "ended_at": "2026-05-17T06:39:47.580881Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-17T03:53:23.505408Z"
+      },
+      {
+        "duration_seconds": 2352.868297,
+        "ended_at": "2026-05-16T16:00:20.480572Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-16T15:21:07.612275Z"
+      },
+      {
+        "duration_seconds": 671.54837,
+        "ended_at": "2026-05-15T20:12:01.865238Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T20:00:50.316868Z"
+      },
+      {
+        "duration_seconds": 456.216514,
+        "ended_at": "2026-05-15T19:59:59.311383Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T19:52:23.094869Z"
+      },
+      {
+        "duration_seconds": 660.791665,
+        "ended_at": "2026-05-15T18:47:13.714811Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:36:12.923146Z"
+      },
+      {
+        "duration_seconds": 167.529138,
+        "ended_at": "2026-05-15T18:35:31.292925Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:32:43.763787Z"
+      },
+      {
+        "duration_seconds": 129.038868,
+        "ended_at": "2026-05-15T18:31:56.144697Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T18:29:47.105829Z"
+      },
+      {
+        "duration_seconds": 2256.016058,
+        "ended_at": "2026-05-15T18:29:01.431252Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:51:25.415194Z"
+      },
+      {
+        "duration_seconds": 1132.925178,
+        "ended_at": "2026-05-15T17:50:26.977781Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:31:34.052603Z"
+      },
+      {
+        "duration_seconds": 1061.868934,
+        "ended_at": "2026-05-15T17:30:07.978918Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:12:26.109984Z"
+      },
+      {
+        "duration_seconds": 313.554359,
+        "ended_at": "2026-05-15T17:10:39.604144Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-15T17:05:26.049785Z"
+      }
+    ]
   },
   "drawdown_curves": {
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T02:43:47.377801Z"
+        "timestamp": "2026-05-19T03:01:53.842166Z"
       },
       {
         "drawdown": -0.0005,
@@ -138,13 +283,13 @@
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T02:43:48.377801Z"
+        "timestamp": "2026-05-19T03:01:54.842166Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-19T02:43:47.377801Z"
+        "timestamp": "2026-05-19T03:01:53.842166Z"
       },
       {
         "drawdown": -0.00025,
@@ -172,7 +317,7 @@
       },
       {
         "drawdown": -0.005756303782466512,
-        "timestamp": "2026-05-19T02:43:48.377801Z"
+        "timestamp": "2026-05-19T03:01:54.842166Z"
       }
     ]
   },
@@ -180,7 +325,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T02:43:47.377801Z"
+        "timestamp": "2026-05-19T03:01:53.842166Z"
       },
       {
         "equity": 9995.0,
@@ -224,13 +369,13 @@
       },
       {
         "equity": 10231.54469954226,
-        "timestamp": "2026-05-19T02:43:48.377801Z"
+        "timestamp": "2026-05-19T03:01:54.842166Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-19T02:43:47.377801Z"
+        "timestamp": "2026-05-19T03:01:53.842166Z"
       },
       {
         "equity": 9997.5,
@@ -258,11 +403,11 @@
       },
       {
         "equity": 9964.388529844191,
-        "timestamp": "2026-05-19T02:43:48.377801Z"
+        "timestamp": "2026-05-19T03:01:54.842166Z"
       }
     ]
   },
-  "generated_at": "2026-05-19T02:43:48.347263Z",
+  "generated_at": "2026-05-19T03:01:54.810162Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
@@ -346,11 +491,11 @@
         "impact_score": 0.7315,
         "is_shared": false,
         "last_updated": "2026-05-17T18:13:08.578200Z",
-        "lesson_id": "derived-4613645612904475328",
+        "lesson_id": "derived-1807738686201848149",
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.6926,
+        "rank_score": 0.6925,
         "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-003. Estimated loss -16 to -21 USDT depending on fill. Combined PnL across all trades: DS-SHORT-001 (+103 USDT), DS-SHORT-002 (-7 USDT), DS-SHORT-003 (-21 USDT) = ~+75 USDT total. Account equity ~10,075 USDT (+0.75%). No positions. 2.5 days remaining. 9.25% to +10% weekly target. After-stop-loss wait rule in effect for shorts.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -469,11 +614,11 @@
         "impact_score": 1.0,
         "is_shared": true,
         "last_updated": "2026-05-19T02:43:44.671379Z",
-        "lesson_id": "derived-7877578390384023464",
+        "lesson_id": "derived-5730709700340437435",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
-        "rank_score": 0.972,
+        "rank_score": 0.9719,
         "raw_text": "Daily review: equity=9964.39, realized_pnl=-20.81, unrealized_pnl=-14.81. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -594,11 +739,11 @@
         "impact_score": 0.7053,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.338211Z",
-        "lesson_id": "derived-8443157220093411438",
+        "lesson_id": "derived-6536160860750768962",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.839,
+        "rank_score": 0.8389,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -719,11 +864,11 @@
         "impact_score": 0.6401,
         "is_shared": true,
         "last_updated": "2026-05-19T01:30:57.982643Z",
-        "lesson_id": "derived-1525268691090548800",
+        "lesson_id": "derived-5167893239102823342",
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.7844,
+        "rank_score": 0.7843,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -813,11 +958,11 @@
         "impact_score": 0.5067,
         "is_shared": false,
         "last_updated": "2026-05-17T00:58:53.117439Z",
-        "lesson_id": "derived-6053802952061742424",
+        "lesson_id": "derived-7180741202241354858",
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.5927,
+        "rank_score": 0.5926,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -3906,7 +4051,15 @@
     },
     "cooldowns": [],
     "failover_events": [],
-    "notifications": [],
+    "notifications": [
+      {
+        "agent_id": "system",
+        "created_at": "2026-05-19T03:01:41.188628",
+        "event_type": "MISSED_SCHEDULED_CYCLE",
+        "message": "MISSED_SCHEDULED_CYCLE: missed_slots=1; expected_next_cycle_at=2026-05-19T01:56:05.668893Z; resumed_at=2026-05-19T02:40:58.078333Z; delay_seconds=2692.409; source=manual post-reset audit backfill",
+        "severity": "WARN"
+      }
+    ],
     "pending_orders": [],
     "pending_orders_count": 0,
     "position_risk": [
@@ -9401,7 +9554,7 @@
     "thesis_embedding_similarity": 0.048819289428038044
   },
   "sync": {
-    "generated_at": "2026-05-19T02:43:48.347263Z",
+    "generated_at": "2026-05-19T03:01:54.810162Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
