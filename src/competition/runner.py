@@ -193,9 +193,12 @@ class CompetitionRunner:
             official_start = official_start.replace(tzinfo=UTC)
         else:
             official_start = official_start.astimezone(UTC)
-        logger.info("starting live competition loop from official start {}", official_start)
-        ends_at = official_start.timestamp() + (self.settings.competition.duration_days * 86400)
-        while datetime.now(UTC).timestamp() < ends_at:
+        logger.info("starting live competition loop from official start {} (continuous mode)", official_start)
+        while True:
+            kill_switch = self.settings.resolve_path(self.settings.safety.kill_switch_file)
+            if kill_switch.exists():
+                logger.info("kill switch active; exiting live loop")
+                return
             try:
                 self._reload_runtime_config()
                 self.run_once()
@@ -215,11 +218,6 @@ class CompetitionRunner:
             if self._restart_requested:
                 logger.info("graceful restart requested during wait; exiting live loop")
                 return
-        market_state = get_market_state(self.settings)
-        self._persist_daily_metrics(market_state)
-        self._write_outputs(market_state)
-        self._save_checkpoint(market_state, status="COMPLETED")
-        self._cloud_update_after_cycle()
 
     def _wait_for_live_preflight(self) -> None:
         while True:
@@ -1205,9 +1203,9 @@ class CompetitionRunner:
             start = start.replace(tzinfo=UTC)
         else:
             start = start.astimezone(UTC)
-        total = max(1.0, self.settings.competition.duration_days * 86400)
         elapsed = max(0.0, (datetime.now(UTC) - start).total_seconds())
-        return min(1.0, elapsed / total)
+        week_seconds = 7 * 86400
+        return elapsed / week_seconds
 
     def _persist_daily_metrics(self, market_state: MarketState, workload: WorkloadTracker | None = None) -> None:
         rows = calculate_leaderboard(

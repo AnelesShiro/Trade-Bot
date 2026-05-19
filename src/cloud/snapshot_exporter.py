@@ -69,9 +69,12 @@ def export_dashboard_snapshot(settings: Settings, repository: ArenaRepository) -
         "competition": {
             "name": settings.competition.name,
             "start_time": start_time.isoformat().replace("+00:00", "Z"),
-            "end_time": end_time.isoformat().replace("+00:00", "Z"),
+            "end_time": end_time.isoformat().replace("+00:00", "Z") if end_time is not None else None,
             "duration_days": settings.competition.duration_days,
             "symbol": settings.competition.display_symbol,
+            "continuous_mode": settings.competition.duration_days == 0,
+            "uptime_seconds": (generated_at - start_time).total_seconds(),
+            "weekly_target_pct": settings.competition.weekly_target_pct,
         },
         "leader": leader,
         "btc_price": btc_price,
@@ -258,16 +261,18 @@ def validate_snapshot_contract(snapshot: dict[str, Any]) -> list[str]:
     return errors
 
 
-def _competition_window(settings: Settings, repository: ArenaRepository) -> tuple[datetime, datetime]:
+def _competition_window(settings: Settings, repository: ArenaRepository) -> tuple[datetime, datetime | None]:
     official_start = repository.competition_start_time()
     start = _utc(official_start) if official_start else datetime.now(UTC)
+    if settings.competition.duration_days == 0:
+        return start, None
     return start, start + timedelta(days=settings.competition.duration_days)
 
 
-def _competition_status(now: datetime, start_time: datetime, end_time: datetime, latest_cycle: datetime | None, poll_interval: int) -> str:
+def _competition_status(now: datetime, start_time: datetime, end_time: datetime | None, latest_cycle: datetime | None, poll_interval: int) -> str:
     if now < start_time:
         return "SCHEDULED"
-    if now >= end_time:
+    if end_time is not None and now >= end_time:
         return "COMPLETED"
     if not latest_cycle:
         return "PAUSED"

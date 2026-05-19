@@ -45,7 +45,17 @@ def has_critical_failures(results: list[CheckResult]) -> bool:
 
 
 def _check_api_keys(settings: Settings) -> CheckResult:
-    required = sorted({agent.llm.LLM_API_KEY for agent in settings.agents if agent.llm.LLM_API_KEY})
+    def _is_placeholder(agent) -> bool:
+        return any(
+            str(v).startswith("FILL_IN_")
+            for v in (agent.llm.LLM_PROVIDER, agent.llm.LLM_MODEL, agent.llm.LLM_BASE_URL)
+        )
+
+    required = sorted({
+        agent.llm.LLM_API_KEY
+        for agent in settings.agents
+        if agent.llm.LLM_API_KEY and not _is_placeholder(agent)
+    })
     missing = [name for name in required if not os.getenv(name)]
     if missing:
         return CheckResult("api_keys", "FAIL", True, f"Missing {', '.join(missing)}")

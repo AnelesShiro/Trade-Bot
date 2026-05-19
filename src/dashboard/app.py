@@ -504,7 +504,25 @@ def competition_times(
                     candidates.append(candidate)
         start = min(candidates) if candidates else pd.Timestamp(utc_now())
     start_time = start.to_pydatetime()
+    if settings.competition.duration_days == 0:
+        return start_time, None
     return start_time, start_time + timedelta(days=float(settings.competition.duration_days))
+
+
+def rolling_7d_return_pct(trades_df: pd.DataFrame, initial_equity: float) -> float:
+    if trades_df.empty or initial_equity <= 0:
+        return 0.0
+    cutoff = utc_now() - timedelta(days=7)
+    ts_col = next((c for c in ("execution_timestamp", "created_at") if c in trades_df.columns), None)
+    if not ts_col:
+        return 0.0
+    try:
+        ts = pd.to_datetime(trades_df[ts_col], utc=True, errors="coerce")
+        mask = ts >= pd.Timestamp(cutoff)
+        recent_pnl = float(trades_df.loc[mask, "realized_pnl"].sum()) if "realized_pnl" in trades_df.columns else 0.0
+        return recent_pnl / initial_equity
+    except Exception:
+        return 0.0
 
 
 def last_cycle_timestamp(*frames: pd.DataFrame) -> pd.Timestamp | pd.NaT:
@@ -518,12 +536,12 @@ def last_cycle_timestamp(*frames: pd.DataFrame) -> pd.Timestamp | pd.NaT:
     return max(timestamps) if timestamps else pd.NaT
 
 
-def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime, start_time: datetime | None = None) -> str:
+def system_status(last_cycle: pd.Timestamp | pd.NaT, end_time: datetime | None, start_time: datetime | None = None) -> str:
     if not db_path.exists():
         return "ERROR"
     if start_time and utc_now() < start_time:
         return "SCHEDULED"
-    if utc_now() >= end_time:
+    if end_time is not None and utc_now() >= end_time:
         return "COMPLETED"
     if pd.isna(last_cycle):
         return "PAUSED"
@@ -963,7 +981,7 @@ def render_cloud_snapshot_dashboard(snapshot: dict[str, Any]) -> None:
         st.markdown(f"<meta http-equiv='refresh' content='{seconds}'>", unsafe_allow_html=True)
 
     st.title("Crypto Paper Trading Arena")
-    st.caption("BTCUSDT perpetual futures paper competition")
+    st.caption("BTCUSDT perpetual futures continuous trading system")
 
     sync_note = ""
     if age is None:
@@ -1579,10 +1597,13 @@ if not runner_state.empty:
         state_next_run = pd.to_datetime(latest_runner_state.get("next_cycle_at"), utc=True, errors="coerce")
         if pd.notna(state_next_run):
             next_run = state_next_run.to_pydatetime()
-elapsed = max(timedelta(0), utc_now() - start_time)
-duration = max(timedelta(seconds=1), end_time - start_time)
-remaining = max(timedelta(0), end_time - utc_now())
-percent_complete = min(1.0, elapsed.total_seconds() / duration.total_seconds())
+project_uptime = utc_now() - start_time
+_rolling_7d = rolling_7d_return_pct(trades, settings.accounts.initial_equity)
+_weekly_target = settings.competition.weekly_target_pct
+_weekly_progress = (_rolling_7d / _weekly_target) if _weekly_target > 0 else 0.0
+_since_inception = (
+    float(metric_frame["total_return_pct"].mean()) if not metric_frame.empty and "total_return_pct" in metric_frame.columns else 0.0
+)
 open_count = 0 if positions_view.empty else int(positions_view["status"].isin(["OPEN", "PARTIAL"]).sum())
 api_budget = os.getenv("ARENA_API_BUDGET_USD")
 spent = float(metric_frame["estimated_api_cost"].sum()) if not metric_frame.empty else 0.0
@@ -1604,7 +1625,7 @@ with st.sidebar:
     st.caption(f"Last updated: {fmt_time(utc_now())}")
 
 st.title("Crypto Paper Trading Arena")
-st.caption("BTCUSDT perpetual futures paper competition")
+st.caption("BTCUSDT perpetual futures continuous trading system")
 st.markdown(
     f"""
     <div class="arena-banner">
@@ -1644,13 +1665,16 @@ except Exception:
 banner_cols = st.columns(7)
 leader = metric_frame.iloc[0]["agent_id"] if not metric_frame.empty else "-"
 banner_cols[0].metric("Current leader", leader)
-banner_cols[1].metric("Time remaining", human_duration(remaining))
-banner_cols[2].metric("Complete", f"{percent_complete * 100:.1f}%")
+banner_cols[1].metric("Project Uptime", human_duration(project_uptime))
+banner_cols[2].metric("Rolling 7d Return", f"{_rolling_7d * 100:+.2f}%")
 banner_cols[3].metric("Pending orders", pending_orders_count)
 banner_cols[4].metric("Cooldowns", active_cooldown_count)
 banner_cols[5].metric("Fallback models", active_fallback_models)
-banner_cols[6].metric("Start / End", f"{fmt_short_time(start_time)} -> {fmt_short_time(end_time)}")
-st.progress(percent_complete)
+banner_cols[6].metric("Project Start", fmt_short_time(start_time))
+st.progress(
+    min(1.0, max(0.0, _weekly_progress)),
+    text=f"Weekly target progress: {_weekly_progress * 100:.1f}% of +{_weekly_target * 100:.0f}%",
+)
 
 alerts = notifications(signals, trades, positions, metric_frame)
 for severity, agent_id, event_type, message in risk_notification_rows:

@@ -1,9 +1,9 @@
 # Crypto Paper Trading Arena
 
-This arena compares two OpenClaw crypto agents:
+This is a continuous, permanent trading arena with no end date. Two OpenClaw agents operate indefinitely:
 
 - `crypto-deepseek`
-- `crypto-qwen`
+- `crypto-challenger`
 
 The exact provider/model for each agent is locked in `config/settings.yaml` under the agent `llm` block.
 
@@ -26,8 +26,8 @@ The exact provider/model for each agent is locked in `config/settings.yaml` unde
 - Symbol: BTC only
 - Instrument: BTCUSDT perpetual futures, paper trading
 - Maximum leverage: 10x
-- Trial period: 1 week
-- Target: strive for +10% account PnL in 1 week
+- Operation: continuous, no end date — the system runs indefinitely until manually stopped
+- Soft weekly target: approximately +7% account growth per rolling 7-day period when quality opportunities exist (this is a KPI only; it must never force trades or override risk rules)
 - Position sizing: agent may choose, but must state margin used, notional exposure, and account risk
 - Max margin per OPEN/ADD/DCA action: 10% of account equity (1,000 USDT initially)
 - Maximum total account risk across all open positions: 2% of account equity
@@ -43,17 +43,17 @@ The exact provider/model for each agent is locked in `config/settings.yaml` unde
 
 ---
 
-## Competition Loop
+## Trading Loop
 
 Run both agents from the same market state and as close together in time as possible.
 
 1. Ask `crypto-deepseek` for a signal.
-2. Ask `crypto-qwen` for a signal.
+2. Ask `crypto-challenger` for a signal.
 3. Paste both raw outputs into `SIGNALS.md`.
 4. Accept only signals that follow this rulebook.
 5. Record accepted paper trades in `LEDGER.csv`.
 6. Review open trades at least once per day.
-7. Evaluate results weekly in `EVALUATION.md`.
+7. Evaluate rolling 7-day performance in `EVALUATION.md`.
 
 ---
 
@@ -211,7 +211,7 @@ Use these templates as shape examples. Replace prices with the live market setup
 
 ```json
 {
-  "agent": "crypto-qwen",
+  "agent": "crypto-challenger",
   "decision": "PAPER_TRADE",
   "action": "OPEN",
   "symbol": "BTC",
@@ -246,7 +246,7 @@ Use these templates as shape examples. Replace prices with the live market setup
 
 ```json
 {
-  "agent": "crypto-qwen",
+  "agent": "crypto-challenger",
   "decision": "PAPER_TRADE",
   "action": "OPEN",
   "symbol": "BTC",
@@ -285,7 +285,7 @@ Use these templates as shape examples. Replace prices with the live market setup
 
 ```json
 {
-  "agent": "crypto-qwen",
+  "agent": "crypto-challenger",
   "decision": "PAPER_TRADE",
   "action": "PLACE_TRIGGER",
   "symbol": "BTC",
@@ -305,7 +305,7 @@ Use these templates as shape examples. Replace prices with the live market setup
     },
     "expires_at": "2026-05-18T18:00:00Z",
     "execution_signal": {
-      "agent": "crypto-qwen",
+      "agent": "crypto-challenger",
       "decision": "PAPER_TRADE",
       "action": "OPEN",
       "symbol": "BTC",
@@ -341,7 +341,7 @@ Use these templates as shape examples. Replace prices with the live market setup
 
 ```json
 {
-  "agent": "crypto-qwen",
+  "agent": "crypto-challenger",
   "decision": "POSITION_UPDATE",
   "action": "HOLD",
   "symbol": "BTC",
@@ -405,7 +405,7 @@ Score these together:
 - Clarity and repeatability
 - Number of rejected signals
 - Avoidance of low-quality trades
-- Progress toward the +10% weekly target
+- Rolling 7-day return progress toward the +7% soft weekly target
 
 ---
 
@@ -424,14 +424,15 @@ An agent may be disqualified for:
 
 ---
 
-## Winner Criteria
+## Performance Criteria
 
-At the end of the trial, keep the agent with the best risk-adjusted performance.
+Agents are evaluated continuously on risk-adjusted performance.
 
-Preferred winner profile:
+Preferred agent profile:
 
-- Reaches or gets closest to +10% account PnL in 1 week
+- Consistent rolling 7-day return closest to +7% soft target
 - Lower drawdown
 - Fewer invalid/rejected signals
 - Better adherence to rules
 - Clearer reasoning that can be audited later
+- Sustainable compounding over time, not short-term gambling

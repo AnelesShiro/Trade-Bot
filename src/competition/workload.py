@@ -12,6 +12,7 @@ AGENT_ALIASES = {
     "crypto-deepseek": "deepseek",
     "crypto-grok": "grok",
     "crypto-qwen": "grok",
+    "crypto-challenger": "grok",
 }
 
 
@@ -251,5 +252,5 @@ def _agent_key(agent_id: str) -> str:
     lowered = agent_id.lower()
     return AGENT_ALIASES.get(
         agent_id,
-        "deepseek" if "deepseek" in lowered else "grok" if "grok" in lowered or "qwen" in lowered else agent_id,
+        "deepseek" if "deepseek" in lowered else "grok",
     )

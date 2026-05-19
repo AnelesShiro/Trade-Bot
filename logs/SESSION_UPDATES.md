@@ -923,7 +923,7 @@ Entry template:
   - `AgentMemory.retrieve_lessons()` and vector memory now use canonical summaries instead of noisy raw reflections.
   - Shared learning promotion/dedup/ranking now uses canonical summaries as the stable lesson key.
   - Lesson analytics deduplicates similar noisy lessons by canonical summary.
-  - `Lessons to Follow` / `Lessons to Avoid` display canonical summaries as headlines and expose raw text in `View Raw Lesson` expanders.
+  - `Lessons to Follow` / `Lessons to Avoid` display canonical summaries as headlines and expose raw text in `View Raw Lesson` expanders.l
   - `Memory & Reflections` displays summaries in tables and exposes raw lesson/reflection text through expanders.
   - Snapshot export includes summarized reflection rows and lesson analytics with both `summary` and `raw_text`.
   - `PROJECT_BOOTSTRAP.md` updated with the lesson memory contract.
@@ -1091,3 +1091,130 @@ Entry template:
 - Notes:
   - Trading logic, rulebook, prompts, and dashboard UI were not changed.
   - Runtime `outputs/*` remain dirty from live runner updates and were not reverted.
+
+## 2026-05-19 22:xx BKT - DeepSeek Gateway Fix And Failover State Reset
+
+- User request: Fix all current errors (Qwen billing intentionally not fixed), make project run normally when not all bots fail.
+- Root cause investigation:
+  - `crypto-deepseek` was timing out with `OpenClaw timeout after 180s` on every cycle.
+  - Cause 1: OpenClaw Gateway at `ws://127.0.0.1:18789` was timing out (60s), triggering embedded Claude fallback.
+  - Cause 2: With the full 5000-token trading prompt, embedded fallback exceeded the 180s subprocess timeout.
+  - Cause 3 (critical): `crypto-deepseek` failover state was stuck on Qwen (`using_fallback=True, active_provider=qwen`). Since Qwen has billing error (HTTP 400), all DeepSeek calls were actually trying Qwen first then failing.
+  - `crypto-qwen` billing failure confirmed as intentional (not fixed per user request). Failover to DeepSeek already configured.
+  - DeepSeek API itself is healthy (direct REST test returned OK).
+- What changed:
+  - Ran `.\.venv\Scripts\python.exe -m src.cli init` → re-registered OpenClaw agents, refreshed gateway routing; DeepSeek calls now work via gateway.
+  - Directly reset `agent_failover_state` for `crypto-deepseek`: `using_fallback=0, active_provider=deepseek, primary_available=1, fallback_index=-1`.
+  - Applied `openclaw agents` model back to `deepseek/deepseek-v4-flash` for `crypto-deepseek`.
+  - Logged `RESTORE_PRIMARY` event to `api_failover_events` audit trail.
+  - Added `reset-failover <agent-id>` CLI command to `src/cli.py` so future stuck failover states can be manually reset without direct DB edits.
+- Final state:
+  - `crypto-deepseek`: primary DeepSeek, `using_fallback=False` ✅
+  - `crypto-qwen`: using DeepSeek fallback (Qwen billing failed), `using_fallback=True` ✅
+  - Both agents will produce signals via DeepSeek; runner continues normally.
+- Verification:
+  - Smoke test: `openclaw agent --agent crypto-deepseek --session-id smoke-ds-2 --message "Reply OK" --timeout 60` → OK, model `deepseek-v4-flash` ✅
+  - `show-failover-status`: crypto-deepseek primary deepseek, crypto-qwen fallback deepseek ✅
+  - `.\.venv\Scripts\python.exe -m pytest -q` → 88 passed ✅
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` → passed ✅
+- Notes:
+  - If DeepSeek gateway fails again in future, run `python -m src.cli init` then `python -m src.cli reset-failover crypto-deepseek`.
+  - Runner was already handling individual bot failures gracefully (records INTERNAL_ERROR, continues cycle). The issue was BOTH bots failing because DeepSeek's failover was stuck pointing to Qwen (billing).
+  - `PositionRiskAutomation` validation error seen in earlier logs was already fixed in current codebase (loop in `parse_position_risk`); no code change needed.
+
+## 2026-05-19 - Graceful Degradation Hardening: Subprocess Timeout In Route Switching
+
+- User request (Vietnamese): Ensure the competition keeps running normally as long as not ALL bots are dead — no hanging, no timeouts, no blocking issues from a dead bot.
+- Analysis:
+  - crypto-qwen is dead (billing expired) and runs on DeepSeek fallback.
+  - Each Qwen cycle currently exits fast via INTERNAL_ERROR (RuntimeError caught by `_run_agent_round`); no repair loop runs.
+  - `maybe_restore_primary` runs every 3600 s for Qwen, calling `_probe_primary` to test if billing recovered.
+  - Root risk: `_apply_openclaw_route` (called twice inside `_probe_primary` and once in `handle_failure`) used `subprocess.run` with NO timeout. If the `openclaw` binary hangs at that moment, the live runner blocks forever.
+  - Secondary checks: `base_agent.py` already has `timeout=timeout_seconds` (180 s) on the actual agent call subprocess; `_probe_primary` already has `timeout=75`; `_run_agent_round` catches all exceptions. These are safe.
+- What changed:
+  - `src/agents/api_failover.py` — `_apply_openclaw_route()` now uses `timeout=30` on both `subprocess.run` calls (`models set` and fallback `agents add`) and wraps them in try/except. If either command hangs or errors out, it logs a warning and continues; the runner does not block.
+- Worst-case overhead per hour with a dead Qwen:
+  - Probe (`maybe_restore_primary`): up to 30 s + 75 s + 30 s = 135 s, once per 3600 s.
+  - Per-cycle Qwen failure: fast HTTP 400 on billing → INTERNAL_ERROR in seconds.
+  - DeepSeek (primary) cycles: unaffected.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m py_compile src\agents\api_failover.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 88 passed.
+
+## 2026-05-19 - Bot Succession: crypto-qwen Replaced By crypto-challenger
+
+- User request (Vietnamese): Replace the Qwen bot with a new bot that inherits Qwen's accumulated lessons and DeepSeek's shared learning. Model TBD; set everything up so only model/API key needs to be filled in.
+- What changed:
+  - `config/settings.yaml`: `crypto-qwen` agent entry replaced with `crypto-challenger` (with `FILL_IN_PROVIDER`, `FILL_IN_MODEL`, `FILL_IN_BASE_URL`, `CHALLENGER_API_KEY` placeholders). `crypto-deepseek` fallback chain also updated to point to challenger placeholders (was Qwen, now TBD).
+  - `src/cli.py`: added `migrate-agent-lessons <from_agent> <to_agent>` command that copies all private lesson records (preserving summary, category, sentiment, confidence, impact, evidence_count, raw_text) from one agent to another without re-canonicalizing. Source lessons remain intact.
+  - Migration executed: `python -m src.cli migrate-agent-lessons crypto-qwen crypto-challenger` → 50 lessons copied to `crypto-challenger`.
+  - `PROJECT_BOOTSTRAP.md`: updated Current State section and added Activating crypto-challenger guide (4-step: fill YAML, set .env, run init + validate, smoke test).
+  - `PROJECT_BOOTSTRAP.md`: updated smoke test command from Qwen to Challenger.
+- Inheritance model:
+  - `crypto-challenger` starts competition with `initial_equity: 10000` (fresh competitive slate).
+  - Has all 50 private lessons from `crypto-qwen` available from cycle 1.
+  - Shared lessons (cross-agent pool) are automatically visible to all agents once promoted.
+  - `crypto-qwen` data preserved in SQLite for history/audit.
+- Current state until activation:
+  - `crypto-challenger` will call agent with placeholder model → OpenClaw will fail → `INTERNAL_ERROR` → cycle continues normally.
+  - `crypto-deepseek` is unaffected and runs normally every cycle.
+- Activation steps (when model is decided):
+  1. Fill `FILL_IN_*` in `config/settings.yaml` (challenger block + deepseek fallback).
+  2. Add `CHALLENGER_API_KEY=<key>` to `.env`.
+  3. `python -m src.cli init` → registers agent in OpenClaw.
+  4. `python -m src.cli validate-update --no-smoke` + `preflight-check`.
+  5. Smoke: `openclaw agent --agent crypto-challenger --session-id challenger-smoke --message "Return exactly OK." --timeout 120`.
+- Verification:
+  - Migration: 50 lessons confirmed in `lessons` table for `crypto-challenger`.
+  - `.\.venv\Scripts\python.exe -m py_compile src\cli.py` -> passed.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 88 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+
+## 2026-05-20 - WorkloadTracker KeyError Fix (crypto-challenger)
+
+- User report: DB showing phase=ERROR and N/A for important dashboard fields.
+- Root cause: `runner_state` was stuck in ERROR/ERROR with `message="'crypto-challenger'"`. This was a `KeyError: 'crypto-challenger'` crashing `run_once` at the post-processing phase, preventing cycle counter increment (cycle 85 ran twice). Crash site: `workload.reflection("crypto-challenger")` in `_persist_daily_metrics`, which is outside `_run_agent_round`'s try-except.
+- Specific bug: `_agent_key("crypto-challenger")` fell through all alias/substring checks and returned `"crypto-challenger"` as-is. Then `self.agents["crypto-challenger"]` raised `KeyError` because `WorkloadTracker.agents` is a fixed dict `{"deepseek": AgentWork(), "grok": AgentWork()}`.
+- What changed:
+  - `src/competition/workload.py` — added `"crypto-challenger": "grok"` to `AGENT_ALIASES`.
+  - `_agent_key()` fallback changed from `else agent_id` (raw ID → crash) to `else "grok"` (safe second slot for any unknown agent, including future bots).
+  - Cleared `runner_state` ERROR row directly in SQLite to restore dashboard visibility.
+- Any future bot with a non-deepseek name automatically maps to the `"grok"` telemetry slot without crashing.
+- Verification:
+  - `_agent_key` + `WorkloadTracker.reflection()` tested for all current and hypothetical agent IDs — no KeyError.
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 88 passed.
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
+  - Cycle 85 completed successfully after restart; checkpoint 85 saved; `runner_state = RUNNING/WAITING`.
+
+## 2026-05-20 - Preflight api_keys Block Fix (CHALLENGER_API_KEY not set)
+
+- Context: After workload.py fix, runner restart failed at preflight because `CHALLENGER_API_KEY` env var is not set (model TBD). `_check_api_keys` is a critical check → runner blocked in `_wait_for_live_preflight` loop indefinitely.
+- What changed:
+  - `src/operations/preflight.py` — `_check_api_keys` now skips agents whose `LLM_PROVIDER`, `LLM_MODEL`, or `LLM_BASE_URL` starts with `FILL_IN_`. These agents are placeholder-configured and their API keys don't need to exist yet.
+  - Runner restarted; preflight passed; cycle 85 ran cleanly (DeepSeek NO_TRADE, Challenger INTERNAL_ERROR as expected) and completed with checkpoint 85 saved.
+  - `next_cycle_at = 2026-05-19 19:40 UTC`; runner is `RUNNING / WAITING`.
+- Verification:
+  - `.\.venv\Scripts\python.exe -m pytest -q` -> 88 passed.
+  - `.\.venv\Scripts\python.exe -m py_compile src\operations\preflight.py` -> passed.
+
+## 2026-05-20 - Continuous Indefinite Trading Mode
+
+- User request: Convert project from fixed 7-day competition model to continuous, indefinite operation. No end date. Agents never stop trading due to elapsed time. Weekly KPI +7% (soft, never forces trades). Dashboard shows Project Uptime / Rolling 7d Return / Weekly Target Progress / Project Start instead of countdown metrics.
+- What changed:
+  - `config/settings.yaml` — `duration_days: 0`, added `weekly_target_pct: 0.07`.
+  - `src/config.py` — `CompetitionSettings`: `duration_days: int = 0`, new field `weekly_target_pct: float = 0.07`.
+  - `src/competition/runner.py` — Loop changed from `while datetime.now(UTC).timestamp() < ends_at` to `while True` with kill-switch file check at each iteration. Post-loop `COMPLETED` writes removed. `_competition_time_pct()` now uses unbounded rolling 7-day window (can exceed 1.0).
+  - `src/competition/evaluation.py` — Return benchmark normalization `0.10 → 0.07`.
+  - `config/rulebook.md` — Removed "Trial period: 1 week", "+10% target". Added continuous mode description, +7% soft KPI, updated agent list to `crypto-challenger`. Updated "Winner Criteria" → "Performance Criteria" for continuous operation.
+  - `prompts/system_prompt.md` — Added continuous mode preamble: no deadline, no final day, target +7% rolling 7-day as soft KPI, NO_TRADE always acceptable.
+  - `prompts/reflection_prompt.md` — Added rolling 7-day framing; added note not to reference competition endings.
+  - `src/dashboard/app.py` — `competition_times()` returns `(start, None)` when `duration_days==0`. `system_status()` guards `COMPLETED` behind `if end_time is not None`. Added `rolling_7d_return_pct()` helper. Replaced `elapsed/remaining/percent_complete` with `project_uptime/_rolling_7d/_weekly_progress`. Replaced 3 old banner metrics (Time remaining, Complete, Start/End) with Project Uptime, Rolling 7d Return, Project Start; `st.progress` now shows weekly target progress with label.
+  - `src/cloud/snapshot_exporter.py` — `_competition_window()` returns `(start, None)` when continuous. `_competition_status()` guards `COMPLETED` behind `if end_time is not None`. Payload `competition` block: `end_time` null-safe, added `continuous_mode`, `uptime_seconds`, `weekly_target_pct`.
+  - `tests/test_continuous_mode.py` — New test file: 14 tests covering config, runner time pct, snapshot status, rolling 7d return, prompt content.
+  - `PROJECT_BOOTSTRAP.md` — Updated Current State: continuous mode, kill-switch only stop, +7% soft KPI, new dashboard metrics.
+- Architecture notes:
+  - Kill-switch (`KILL_SWITCH` file) is the only way to stop the runner (besides SIGTERM/process kill).
+  - `competition_time_pct` DB field is preserved for compat; value is now unbounded rolling fraction (can exceed 1.0).
+  - All existing historical data (trades, checkpoints, signals) continues to work unchanged.
+- Verification: run `pytest -q` and `validate-update --no-smoke` after this session.
+

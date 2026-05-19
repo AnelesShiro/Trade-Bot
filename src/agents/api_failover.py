@@ -209,19 +209,29 @@ class ApiFailoverManager:
     def _apply_openclaw_route(self, agent_id: str, provider: str, model: str, base_url: str) -> None:
         binary = os.getenv("OPENCLAW_BIN", "openclaw")
         openclaw_model = model if "/" in model else f"{provider}/{model}"
-        completed = subprocess.run(
-            [binary, "models", "--agent", agent_id, "set", openclaw_model],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
-        if completed.returncode != 0:
-            subprocess.run(
-                [binary, "agents", "add", agent_id, "--model", openclaw_model],
+        _ROUTE_CMD_TIMEOUT = 30
+        try:
+            completed = subprocess.run(
+                [binary, "models", "--agent", agent_id, "set", openclaw_model],
                 capture_output=True,
                 text=True,
                 check=False,
+                timeout=_ROUTE_CMD_TIMEOUT,
             )
+            needs_add = completed.returncode != 0
+        except Exception:
+            needs_add = True
+        if needs_add:
+            try:
+                subprocess.run(
+                    [binary, "agents", "add", agent_id, "--model", openclaw_model],
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    timeout=_ROUTE_CMD_TIMEOUT,
+                )
+            except Exception:
+                logger.warning("failed to register openclaw route for {} → {}/{}; will retry next cycle", agent_id, provider, model)
         if base_url:
             self._sync_provider_base_url(provider, model, base_url)
         logger.info("failover route for {} uses provider {} model {}", agent_id, provider, model)

@@ -63,7 +63,8 @@ class AgentSettings(BaseModel):
 
 class CompetitionSettings(BaseModel):
     name: str
-    duration_days: int = 7
+    duration_days: int = 0
+    weekly_target_pct: float = 0.07
     poll_interval_seconds: int = 3600
     event_cooldown_seconds: int = 1800
     symbol: str = "BTC/USDT:USDT"

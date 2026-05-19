@@ -529,6 +529,106 @@ def show_failover_status() -> None:
     typer.echo(json.dumps(payload, indent=2))
 
 
+@app.command("reset-failover")
+def reset_failover(agent: str = typer.Argument(..., help="Agent ID to reset (e.g. crypto-deepseek)")) -> None:
+    """Reset a stuck API failover state back to the primary provider for an agent."""
+    settings = load_settings()
+    create_schema(settings.database_url)
+    repository = ArenaRepository(build_session_factory(settings.database_url))
+    from src.agents.api_failover import ApiFailoverManager
+
+    agent_cfg = next((a for a in settings.agents if a.id == agent), None)
+    if not agent_cfg:
+        typer.echo(f"Unknown agent: {agent}", err=True)
+        raise typer.Exit(code=1)
+
+    manager = ApiFailoverManager(settings, repository)
+    state = repository.get_agent_failover_state(agent)
+    if state and not state.using_fallback:
+        typer.echo(f"{agent} is already on primary ({state.active_provider}/{state.active_model})")
+        return
+
+    prev_provider = state.active_provider if state else "unknown"
+    prev_model = state.active_model if state else "unknown"
+    repository.upsert_agent_failover_state(
+        agent,
+        active_provider=agent_cfg.provider,
+        active_model=agent_cfg.model,
+        primary_provider=agent_cfg.provider,
+        primary_model=agent_cfg.model,
+        using_fallback=False,
+        primary_available=True,
+        fallback_index=-1,
+    )
+    repository.save_failover_event(
+        agent,
+        "RESTORE_PRIMARY",
+        from_provider=prev_provider,
+        from_model=prev_model,
+        to_provider=agent_cfg.provider,
+        to_model=agent_cfg.model,
+        message="Manual reset via reset-failover command",
+    )
+    manager._apply_openclaw_route(agent, agent_cfg.provider, agent_cfg.model, agent_cfg.llm.LLM_BASE_URL)
+    typer.echo(f"Reset {agent}: {prev_provider}/{prev_model} -> {agent_cfg.provider}/{agent_cfg.model}")
+
+
+@app.command("migrate-agent-lessons")
+def migrate_agent_lessons(
+    from_agent: str = typer.Argument(..., help="Source agent ID whose lessons to copy (e.g. crypto-qwen)"),
+    to_agent: str = typer.Argument(..., help="Target agent ID that will inherit the lessons (e.g. crypto-challenger)"),
+) -> None:
+    """Copy all private lessons from one agent to another for bot succession/inheritance.
+
+    Preserves the full lesson record (summary, category, sentiment, confidence, impact,
+    evidence_count) without re-canonicalizing. The source agent's lessons remain intact.
+    Shared lessons (cross-agent pool) are already visible to all agents automatically.
+
+    Run this once when replacing a bot so the successor starts with accumulated knowledge.
+    """
+    from datetime import UTC, datetime
+    from sqlalchemy import select, text
+    from src.storage.models import LessonRecord  # type: ignore[attr-defined]
+
+    settings = load_settings()
+    create_schema(settings.database_url)
+    factory = build_session_factory(settings.database_url)
+
+    with factory() as session:
+        stmt = select(LessonRecord).where(LessonRecord.agent_id == from_agent).order_by(LessonRecord.created_at)
+        source_records = list(session.scalars(stmt))
+
+    if not source_records:
+        typer.echo(f"No lessons found for {from_agent}; nothing to migrate.")
+        raise typer.Exit(code=0)
+
+    typer.echo(f"Migrating {len(source_records)} lessons from {from_agent} -> {to_agent} ...")
+    now = datetime.now(UTC)
+    migrated = 0
+    with factory() as session, session.begin():
+        for rec in source_records:
+            session.add(
+                LessonRecord(
+                    agent_id=to_agent,
+                    content=rec.content,
+                    raw_text=rec.raw_text,
+                    summary=rec.summary,
+                    category=rec.category,
+                    sentiment=rec.sentiment,
+                    confidence=rec.confidence,
+                    impact=rec.impact,
+                    evidence_count=rec.evidence_count,
+                    source_agents_json=rec.source_agents_json,
+                    last_updated=now,
+                )
+            )
+            migrated += 1
+
+    typer.echo(f"Done. {migrated} lessons now available to {to_agent}.")
+    typer.echo(f"Source lessons for {from_agent} are preserved and unchanged.")
+    typer.echo("Shared lessons (cross-agent pool) are automatically visible to all agents.")
+
+
 @app.command("list-risk-notifications")
 def list_risk_notifications(limit: int = typer.Option(50, "--limit")) -> None:
     """List recent risk automation notifications."""

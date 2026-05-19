@@ -1,6 +1,7 @@
 competition:
   name: crypto-paper-trading-arena
-  duration_days: 7
+  duration_days: 0
+  weekly_target_pct: 0.07
   poll_interval_seconds: 3600
   event_cooldown_seconds: 1800
   symbol: BTC/USDT:USDT
@@ -143,19 +144,25 @@ agents:
     api_failover:
       enabled: true
       retest_interval_seconds: 3600
+      # Update provider/model/LLM_BASE_URL below once challenger model is decided
       fallback_chain:
-        - provider: qwen
-          model: qwen3-max-2026-01-23
-          LLM_BASE_URL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-          LLM_API_KEY: QWEN_API_KEY
-  - id: crypto-qwen
-    name: Crypto Qwen
-    session_id: crypto-qwen
+        - provider: "FILL_IN_PROVIDER"
+          model: "FILL_IN_MODEL"
+          LLM_BASE_URL: "FILL_IN_BASE_URL"
+          LLM_API_KEY: CHALLENGER_API_KEY
+  # ── CHALLENGER BOT ────────────────────────────────────────────────────────────
+  # Successor to crypto-qwen. Inherits Qwen's accumulated lessons.
+  # To activate: fill in the four FILL_IN_* values below, add CHALLENGER_API_KEY
+  # to your .env file, then run: python -m src.cli init
+  # ─────────────────────────────────────────────────────────────────────────────
+  - id: crypto-challenger
+    name: Crypto Challenger
+    session_id: crypto-challenger
     llm:
-      LLM_PROVIDER: qwen
-      LLM_MODEL: qwen3-max-2026-01-23
-      LLM_BASE_URL: "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
-      LLM_API_KEY: QWEN_API_KEY
+      LLM_PROVIDER: "FILL_IN_PROVIDER"       # e.g. openai, anthropic, groq, mistral
+      LLM_MODEL: "FILL_IN_MODEL"             # e.g. gpt-4o, claude-opus-4-5, llama-3-70b
+      LLM_BASE_URL: "FILL_IN_BASE_URL"       # e.g. https://api.openai.com/v1  (or "" for providers that don't need it)
+      LLM_API_KEY: CHALLENGER_API_KEY        # env-var name — set CHALLENGER_API_KEY=<key> in .env
       LLM_ALLOW_FALLBACK: false
     api_failover:
       enabled: true

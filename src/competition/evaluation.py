@@ -36,7 +36,7 @@ def calculate_leaderboard(
         api_cost = usage["estimated_cost_usd"]
         api_efficiency = (summary.realized_pnl / api_cost) if api_cost > 0 else 1.0
         score = (
-            0.40 * _bounded(total_return_pct / 0.10)
+            0.40 * _bounded(total_return_pct / 0.07)
             + 0.20 * _bounded(sharpe / 2 if math.isfinite(sharpe) else 0)
             + 0.20 * _bounded(1 - max_drawdown_pct / 0.10)
             + 0.10 * rule_compliance
