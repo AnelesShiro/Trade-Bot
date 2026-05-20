@@ -1309,3 +1309,14 @@ Entry template:
 - Validation: No source code changed; no test run required.
 - Deployment notes: Active immediately for the current and all future sessions in this workspace.
 - Known limitations: File is outside the git repo (workspace root, not inside `crypto-paper-trading-arena/`); not version-controlled.
+
+## 2026-05-20 - Simplified Permission Allow-List (Bash/* + PowerShell/*)
+
+- Problem addressed: Thirteen specific Bash wildcard entries were verbose and could still trigger prompts for unlisted commands.
+- Root cause: Previous config used narrow per-command wildcards instead of catch-all entries.
+- Files changed:
+  - `d:\Project\OpenClaw\.claude\settings.json` — replaced 13 specific Bash entries + 5 tool entries with 7 catch-all rules: `Bash(*)`, `PowerShell(*)`, `Read(*)`, `Write(*)`, `Edit(*)`, `Glob(*)`, `Grep(*)`.
+- Key implementation details: New entries are a strict superset of the old allow-list. No previously-permitted operation is restricted.
+- Validation: No source code changed; no pytest run required.
+- Deployment notes: Active immediately. File is outside the git repo (workspace root) — not version-controlled.
+- Known limitations: `Bash(*)` and `PowerShell(*)` allow all shell commands without prompting. This is intentional for a trusted local dev environment.
