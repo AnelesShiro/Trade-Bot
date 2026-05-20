@@ -1252,6 +1252,28 @@ Entry template:
   - `validate-update --no-smoke` → all PASS. `preflight-check` → all PASS.
 - Notes: Debug logs are `loguru.DEBUG` level — visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.
 
+## 2026-05-21 - Live Qwen3-Max Verification + Runner Restart
+
+- User request: Verify crypto-qwen (qwen3-max) can produce valid signals immediately without waiting for next scheduled cycle.
+- Findings before restart:
+  - Runner state: WAITING, next_cycle_at 2026-05-20 17:35 UTC (~25 min away). Phase/status normal.
+  - Two Python processes (PID 21064 + PID 27896) confirmed to be one parent-child pair (normal Windows behavior), NOT two separate runners. Dashboard likewise one pair.
+  - Cycle 106 (first cycle after crypto-qwen activation) had `PARSE_ERROR` for crypto-qwen: `AGENT_RUNTIME_ERROR: Unable to verify OpenClaw response model; response model was not recorded` — confirmed as exactly Bug B fixed in the model verification commit.
+  - Live direct test via `OpenClawAgent.run_with_metadata()`: API responded in 39s, `actual_model=qwen3-max-2026-01-23`, prefix match PASS, JSON output valid (`NO_TRADE` signal with all required fields).
+- Runner restart (required because `.py` code changes are never hot-reloaded — only config/prompt/rulebook are):
+  - Created `KILL_SWITCH` file → runner did not respond within 30s (sleeping in WAITING loop).
+  - Force-killed parent PID 21064; child PID 27896 exited automatically.
+  - Removed `KILL_SWITCH`.
+  - Started new runner: `.venv\Scripts\python.exe -m src.cli run-live --resume` (background, PID 39592 + child 33648).
+  - Runner immediately started cycle 107 (run-live --resume runs one cycle on startup).
+- Cycle 107 result (first with new model verification code):
+  - `crypto-deepseek`: POSITION_UPDATE / HOLD → ACCEPTED ✅
+  - `crypto-qwen`: NO_TRADE / NONE → **ACCEPTED** ✅ (first successful Qwen signal since re-activation)
+  - Checkpoint 107 COMPLETED at 2026-05-20 17:16:01 UTC.
+  - Next cycle scheduled at 2026-05-20 18:16:01 UTC.
+- Notes:
+  - Rule clarified: sửa `.yaml`/`.md` → hot reload (no restart needed); sửa `.py` → bắt buộc restart runner.
+
 ## 2026-05-21 - Model Verification: Prefix Matching + Session File Miss Fallback
 
 - Problem addressed: Two distinct bugs caused false `AGENT_RUNTIME_ERROR` on valid provider responses:
