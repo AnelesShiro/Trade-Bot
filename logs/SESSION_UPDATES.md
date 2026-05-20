@@ -1320,3 +1320,13 @@ Entry template:
 - Validation: No source code changed; no pytest run required.
 - Deployment notes: Active immediately. File is outside the git repo (workspace root) — not version-controlled.
 - Known limitations: `Bash(*)` and `PowerShell(*)` allow all shell commands without prompting. This is intentional for a trusted local dev environment.
+
+## 2026-05-20 - Fix Permission Allow-List (Merge, Not Replace)
+
+- Problem addressed: Previous update incorrectly replaced the full allow array instead of merging — old specific entries were lost.
+- Root cause: Used Write (overwrite) instead of Edit (merge) when applying the settings change.
+- Files changed:
+  - `d:\Project\OpenClaw\.claude\settings.json` — restored all 13 original Bash entries + 5 original tool entries; appended `Bash(*)` and `PowerShell(*)` as new catch-all additions.
+- Key implementation details: All previous entries preserved; `Bash(*)` and `PowerShell(*)` added at end of array. Result is a strict superset of both the original config and the requested new entries.
+- Validation: No source code changed; no pytest run required.
+- Deployment notes: Active immediately. File is outside git repo — not version-controlled.
