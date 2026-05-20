@@ -1218,3 +1218,36 @@ Entry template:
   - All existing historical data (trades, checkpoints, signals) continues to work unchanged.
 - Verification: run `pytest -q` and `validate-update --no-smoke` after this session.
 
+
+## 2026-05-20 - Break-Even Stop: End-to-End Fix & Implementation
+
+- User request: Investigate and fix Break-Even Stop so it always activates correctly when a position reaches the configured profit threshold. Fix must cover trigger math, DB persistence, dashboard display, snapshot exporter, and agent context.
+- Root cause: Two issues found in `apply_break_even()` — variable `risk` was misleadingly named (price distance, not USDT risk), and the persistence condition in engine.py checked `updated_sl != position.stop_loss` AFTER overwriting `position.stop_loss = updated_sl`, so the condition was always False. Break-even SL change was saved only because `state != original_state` happened to also be True. Fixed both.
+- What changed:
+  - `src/trading/risk_automation/position_rules.py` — Renamed `risk` → `stop_price_distance`; confirmed r_multiple trigger math uses `calculate_pnl()` on both sides (dimensionally correct USDT comparison).
+  - `src/trading/risk_automation/engine.py` — Added `original_sl = position.stop_loss` before modifications; fixed persistence condition to `position.stop_loss != original_sl`; added `logger.info` + `save_risk_notification` on activation.
+  - `src/dashboard/tabs/risk_automation.py` — Added structured `be_enabled`, `be_activated`, `be_stop` columns parsed from JSON blobs instead of raw JSON display.
+  - `src/cloud/snapshot_exporter.py` — Added `be_stop_price` field to risk automation payload (float when activated, null otherwise).
+  - `prompts/system_prompt.md` — Added note: "Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth."
+  - `tests/test_risk_automation.py` — Added 5 new tests: SHORT position activation, below-1R guard, no-duplicate activation, no-regression guard, engine persistence + notification.
+- Verification:
+  - `py_compile` on all modified sources → passed.
+  - `pytest -q` → 120 passed (all existing + 5 new).
+  - `validate-update --no-smoke` → PASS. `preflight-check` → all PASS.
+
+## 2026-05-20 - Break-Even Stop: Diagnostic Logging & DCA Guard
+
+- User request: Dashboard still showed original stop loss after break-even fix. Investigate end-to-end and fix any remaining gaps.
+- Investigation: Data path (DB write → snapshot → dashboard) confirmed architecturally correct. Two new bugs found:
+  1. No diagnostic logging when break-even evaluates but does not trigger — impossible to distinguish "not yet +1R", "already activated", or "exception swallowed".
+  2. Agent DCA/ADD signal can overwrite break-even stop — `position_manager._add()` line 204 used `float(signal.stop_loss or position.stop_loss)` unconditionally, reverting break-even SL back to agent's original wider stop if agent recomputed it from scratch.
+- What changed:
+  - `src/trading/risk_automation/position_rules.py` — Added `from loguru import logger`; added `logger.debug` in every `apply_break_even` evaluation branch (r_multiple, tp1, percent) showing pnl/account_risk/threshold/hit on every tick; added `logger.debug` when skipping an already-activated position; added `logger.info` with full context (trigger, price, pnl, account_risk, old SL, new SL) on activation; removed unused `activated = False`.
+  - `src/trading/risk_automation/engine.py` — Removed duplicate `logger.info` block (logging now in position_rules.py with richer fields); updated `save_risk_notification` message to include direction, trigger type, and current price.
+  - `src/trading/position_manager.py` — Fixed `_add()` stop_loss guard: for LONG uses `max(signal_sl, position.stop_loss)`; for SHORT uses `min(signal_sl, position.stop_loss)`; zero/None signal leaves stop unchanged. Ensures break-even's tighter stop is never widened by a subsequent DCA signal.
+  - `tests/test_risk_automation.py` — Added 2 imports (`_position_payload`, `PaperAccount`); added 4 new tests: snapshot exporter stop_loss after break-even, agent context stop_loss after break-even, DCA cannot widen LONG stop, DCA cannot widen SHORT stop.
+- Verification:
+  - `py_compile` on all 3 modified sources → passed.
+  - `pytest -q` → 124 passed (all existing + 4 new, 0 regressions).
+  - `validate-update --no-smoke` → all PASS. `preflight-check` → all PASS.
+- Notes: Debug logs are `loguru.DEBUG` level — visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.

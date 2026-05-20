@@ -17,6 +17,8 @@ from src.trading.risk_automation.pending_order_view import pending_order_view, t
 from src.trading.risk_automation.triggers import evaluate_trigger
 from src.trading.risk_automation.types import BreakEvenConfig, TimeExitConfig, TrailingStopConfig
 from src.agents.api_failover import ActiveRoute, ApiFailoverManager
+from src.cloud.snapshot_exporter import _position_payload
+from src.trading.paper_account import PaperAccount
 
 
 def test_trigger_evaluation_and_logic() -> None:
@@ -430,3 +432,366 @@ def test_failover_preserves_primary_when_fallback_fails(test_settings, repositor
     assert state.active_provider == "deepseek-backup"
     assert events[0].from_provider == "qwen"
     assert events[0].to_provider == "deepseek-backup"
+
+
+# ---------------------------------------------------------------------------
+# Break-even additional tests
+# ---------------------------------------------------------------------------
+
+
+def test_break_even_r_multiple_short_position() -> None:
+    """SHORT position at exactly +1R activates break-even; new SL moves toward entry."""
+    position = PositionRecord(
+        id="p-short",
+        agent_id="crypto-deepseek",
+        symbol="BTC",
+        direction="SHORT",
+        status="OPEN",
+        leverage=5,
+        margin=1000,
+        notional=5000,
+        average_entry=100000,
+        stop_loss=101000,  # above entry for SHORT
+        take_profit_1=99000,
+        take_profit_2=97000,
+    )
+    config = BreakEvenConfig(enabled=True, trigger="r_multiple", r_multiple=1.0, fee_buffer_pct=0.0005)
+
+    # account_risk = 5000 * abs((100000 - 101000) / 100000) = 50 USDT
+    # pnl at 99000 = 5000 * (100000 - 99000) / 100000 = 50 USDT → exactly 1R
+    new_sl, state, applied = apply_break_even(position, 99000.0, config, {})
+
+    assert applied is True
+    assert state["break_even_applied"] is True
+    # break-even SL for SHORT must be at or below entry (not above)
+    assert new_sl <= position.average_entry
+
+
+def test_break_even_not_triggered_below_1r() -> None:
+    """LONG position below +1R threshold does NOT activate break-even."""
+    position = PositionRecord(
+        id="p2",
+        agent_id="crypto-deepseek",
+        symbol="BTC",
+        direction="LONG",
+        status="OPEN",
+        leverage=5,
+        margin=1000,
+        notional=5000,
+        average_entry=100000,
+        stop_loss=99000,  # 50 USDT risk
+        take_profit_1=103000,
+        take_profit_2=105000,
+    )
+    config = BreakEvenConfig(enabled=True, trigger="r_multiple", r_multiple=1.0, fee_buffer_pct=0.0005)
+
+    # account_risk = 50 USDT; 0.9R price = 100900 (pnl = 45 USDT < 50)
+    new_sl, state, applied = apply_break_even(position, 100900.0, config, {})
+
+    assert applied is False
+    assert not state.get("break_even_applied")
+    assert new_sl == position.stop_loss
+
+
+def test_break_even_r_multiple_no_duplicate_activation() -> None:
+    """r_multiple trigger fires only once; subsequent calls return applied=False."""
+    position = PositionRecord(
+        id="p3",
+        agent_id="crypto-deepseek",
+        symbol="BTC",
+        direction="LONG",
+        status="OPEN",
+        leverage=5,
+        margin=1000,
+        notional=5000,
+        average_entry=100000,
+        stop_loss=99000,
+        take_profit_1=103000,
+        take_profit_2=105000,
+    )
+    config = BreakEvenConfig(enabled=True, trigger="r_multiple", r_multiple=1.0, fee_buffer_pct=0.0005)
+
+    # First call at +1R should activate
+    new_sl, state, applied = apply_break_even(position, 101000.0, config, {})
+    assert applied is True
+
+    # Second call at higher price should NOT re-activate
+    position.stop_loss = new_sl
+    _, state2, applied2 = apply_break_even(position, 102000.0, config, state)
+    assert applied2 is False
+
+
+def test_break_even_stop_never_regresses() -> None:
+    """When trailing stop already moved SL above entry+buffer, break-even does not loosen it."""
+    position = PositionRecord(
+        id="p4",
+        agent_id="crypto-deepseek",
+        symbol="BTC",
+        direction="LONG",
+        status="OPEN",
+        leverage=5,
+        margin=1000,
+        notional=5000,
+        average_entry=100000,
+        stop_loss=100200,  # trailing already moved SL above entry + buffer
+        take_profit_1=103000,
+        take_profit_2=105000,
+    )
+    config = BreakEvenConfig(enabled=True, trigger="r_multiple", r_multiple=1.0, fee_buffer_pct=0.0005)
+
+    # fee_buffer_pct=0.0005 → entry + buffer = 100050, which is < 100200
+    # break-even new_sl before guard = 100050; max(100050, 100200) = 100200 → no regression
+    new_sl, state, applied = apply_break_even(position, 101000.0, config, {})
+
+    assert applied is True
+    assert new_sl >= position.stop_loss  # SL must not have moved backward
+
+
+def test_break_even_engine_persists_updated_sl(repository: ArenaRepository, test_settings) -> None:
+    """After run_market_tick fires break-even, the persisted stop_loss is above average_entry."""
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+
+    repository.add_or_update_position(
+        PositionRecord(
+            id="be-persist",
+            agent_id="crypto-deepseek",
+            symbol="BTC",
+            direction="LONG",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=100000,
+            stop_loss=99000,  # 50 USDT risk
+            take_profit_1=103000,
+            take_profit_2=105000,
+        )
+    )
+
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    # At 101000, pnl = 5000 * 1000/100000 = 50 USDT = account_risk → triggers BE
+    market = MarketState(
+        symbol="BTCUSDT",
+        exchange="binanceusdm",
+        current_price=101000.0,
+        timeframe="1h",
+        indicators=IndicatorSnapshot(rsi_14=50),
+    )
+    engine.run_market_tick(market)
+
+    persisted = repository.get_position("be-persist")
+    assert persisted is not None
+    assert persisted.stop_loss > persisted.average_entry
+
+    # Notification should have been recorded
+    notifications = repository.risk_notifications(limit=10)
+    event_types = [n.event_type for n in notifications]
+    assert "BREAK_EVEN_ACTIVATED" in event_types
+
+
+def test_snapshot_exporter_stop_loss_after_break_even(repository: ArenaRepository, test_settings) -> None:
+    """After break-even fires, _position_payload reflects the updated stop_loss."""
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+
+    entry = 100000.0
+    repository.add_or_update_position(
+        PositionRecord(
+            id="snap-be",
+            agent_id="crypto-deepseek",
+            symbol="BTC",
+            direction="LONG",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=entry,
+            stop_loss=99000,
+            take_profit_1=103000,
+            take_profit_2=105000,
+        )
+    )
+
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    market = MarketState(
+        symbol="BTCUSDT", exchange="binanceusdm", current_price=101000.0,
+        timeframe="1h", indicators=IndicatorSnapshot(rsi_14=50),
+    )
+    engine.run_market_tick(market)
+
+    position = repository.get_position("snap-be")
+    assert position is not None
+    payload = _position_payload(position, 101000.0)
+    assert payload["stop_loss"] > entry
+
+
+def test_agent_context_stop_loss_after_break_even(repository: ArenaRepository, test_settings) -> None:
+    """After break-even fires, PaperAccount.summary() shows the updated stop_loss."""
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+
+    entry = 100000.0
+    repository.add_or_update_position(
+        PositionRecord(
+            id="ctx-be",
+            agent_id="crypto-deepseek",
+            symbol="BTC",
+            direction="LONG",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=entry,
+            stop_loss=99000,
+            take_profit_1=103000,
+            take_profit_2=105000,
+        )
+    )
+
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    market = MarketState(
+        symbol="BTCUSDT", exchange="binanceusdm", current_price=101000.0,
+        timeframe="1h", indicators=IndicatorSnapshot(rsi_14=50),
+    )
+    engine.run_market_tick(market)
+
+    account = PaperAccount("crypto-deepseek", test_settings.accounts.initial_equity, repository)
+    summary = account.summary(101000.0)
+
+    assert len(summary.open_positions) == 1
+    assert summary.open_positions[0].stop_loss > entry
+
+
+def test_dca_signal_cannot_widen_break_even_stop_long(repository: ArenaRepository, test_settings) -> None:
+    """DCA signal with a wider stop_loss must not revert the break-even stop for a LONG."""
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+
+    entry = 100000.0
+    old_stop = 99000.0
+    repository.add_or_update_position(
+        PositionRecord(
+            id="dca-long",
+            agent_id="crypto-deepseek",
+            symbol="BTC",
+            direction="LONG",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=entry,
+            stop_loss=old_stop,
+            take_profit_1=103000,
+            take_profit_2=105000,
+        )
+    )
+
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    market = MarketState(
+        symbol="BTCUSDT", exchange="binanceusdm", current_price=101000.0,
+        timeframe="1h", indicators=IndicatorSnapshot(rsi_14=50),
+    )
+    engine.run_market_tick(market)
+
+    pos_after_be = repository.get_position("dca-long")
+    assert pos_after_be.stop_loss > entry, "break-even must have fired"
+    be_stop = pos_after_be.stop_loss
+
+    dca_signal = AgentSignal(
+        agent="crypto-deepseek",
+        decision=Decision.POSITION_UPDATE,
+        action=Action.DCA,
+        symbol="BTC",
+        direction=Direction.LONG,
+        position_id="dca-long",
+        entry=101000.0,
+        leverage=5,
+        margin_used_usdt=500,
+        notional_exposure_usdt=2500,
+        account_risk_usdt=50,
+        stop_loss=old_stop,
+        take_profit_1=103000,
+        take_profit_2=105000,
+        thesis="DCA test",
+        invalidation="n/a",
+        counterargument="n/a",
+        data_used=["test"],
+    )
+    position_manager.apply_signal(dca_signal, 101000.0)
+
+    pos_after_dca = repository.get_position("dca-long")
+    assert pos_after_dca.stop_loss >= be_stop, "DCA must not widen the break-even stop"
+
+
+def test_dca_signal_cannot_widen_break_even_stop_short(repository: ArenaRepository, test_settings) -> None:
+    """DCA signal with a wider stop_loss must not revert the break-even stop for a SHORT."""
+    position_manager = PositionManager(repository, active_agent_ids={"crypto-deepseek"})
+    execution = PaperExecutionEngine(position_manager)
+    engine = RiskAutomationEngine(test_settings, repository, position_manager, execution)
+
+    entry = 100000.0
+    old_stop = 101000.0
+    repository.add_or_update_position(
+        PositionRecord(
+            id="dca-short",
+            agent_id="crypto-deepseek",
+            symbol="BTC",
+            direction="SHORT",
+            status="OPEN",
+            leverage=5,
+            margin=1000,
+            notional=5000,
+            average_entry=entry,
+            stop_loss=old_stop,
+            take_profit_1=97000,
+            take_profit_2=95000,
+        )
+    )
+
+    from src.schemas import IndicatorSnapshot, MarketState
+
+    # account_risk = 5000 * |100000 - 101000| / 100000 = 50 USDT
+    # pnl at 99000 for SHORT = 5000 * (100000 - 99000) / 100000 = 50 USDT → 1R
+    market = MarketState(
+        symbol="BTCUSDT", exchange="binanceusdm", current_price=99000.0,
+        timeframe="1h", indicators=IndicatorSnapshot(rsi_14=50),
+    )
+    engine.run_market_tick(market)
+
+    pos_after_be = repository.get_position("dca-short")
+    assert pos_after_be.stop_loss < entry, "break-even must have fired for SHORT"
+    be_stop = pos_after_be.stop_loss
+
+    dca_signal = AgentSignal(
+        agent="crypto-deepseek",
+        decision=Decision.POSITION_UPDATE,
+        action=Action.DCA,
+        symbol="BTC",
+        direction=Direction.SHORT,
+        position_id="dca-short",
+        entry=99000.0,
+        leverage=5,
+        margin_used_usdt=500,
+        notional_exposure_usdt=2500,
+        account_risk_usdt=50,
+        stop_loss=old_stop,
+        take_profit_1=97000,
+        take_profit_2=95000,
+        thesis="DCA test SHORT",
+        invalidation="n/a",
+        counterargument="n/a",
+        data_used=["test"],
+    )
+    position_manager.apply_signal(dca_signal, 99000.0)
+
+    pos_after_dca = repository.get_position("dca-short")
+    assert pos_after_dca.stop_loss <= be_stop, "DCA must not widen the break-even stop for SHORT"

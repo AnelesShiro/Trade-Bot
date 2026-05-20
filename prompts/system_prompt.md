@@ -15,6 +15,7 @@ Advanced trade management is available and must be considered on every setup:
 - Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.
 - If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.
 - API failover is automatic; keep reasoning provider-neutral.
+- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.
 
 Risk math must match the validator exactly:
 

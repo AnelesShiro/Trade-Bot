@@ -4,6 +4,8 @@ import json
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
+from loguru import logger
+
 from src.schemas import Direction
 from src.storage.models import PositionRecord
 from src.trading.risk_automation.types import BreakEvenConfig, PositionRiskAutomation, TimeExitConfig, TrailingStopConfig
@@ -72,13 +74,16 @@ def apply_break_even(
     state: dict[str, Any],
 ) -> tuple[float, dict[str, Any], bool]:
     if not config.enabled or state.get("break_even_applied"):
+        if state.get("break_even_applied"):
+            logger.debug("break-even skip pos={}: already activated", position.id)
         return position.stop_loss, state, False
     entry = position.average_entry
-    risk = abs(entry - position.stop_loss)
-    if risk <= 0:
+    stop_price_distance = abs(entry - position.stop_loss)
+    if stop_price_distance <= 0:
         return position.stop_loss, state, False
-    activated = False
     buffer = entry * config.fee_buffer_pct
+    pnl = float("nan")
+    account_risk = float("nan")
     if config.trigger == "tp1":
         hit = (
             position.direction == Direction.LONG.value
@@ -86,15 +91,29 @@ def apply_break_even(
             or position.direction == Direction.SHORT.value
             and current_price <= position.take_profit_1
         )
+        logger.debug(
+            "break-even eval pos={} dir={} trigger=tp1 tp1={:.2f} price={:.2f} hit={}",
+            position.id, position.direction, position.take_profit_1, current_price, hit,
+        )
     elif config.trigger == "percent" and config.percent_gain:
         move = (current_price - entry) / entry
         if position.direction == Direction.SHORT.value:
             move = -move
         hit = move >= config.percent_gain
+        logger.debug(
+            "break-even eval pos={} dir={} trigger=percent move={:.4f} threshold={:.4f} hit={}",
+            position.id, position.direction, move, config.percent_gain, hit,
+        )
     else:
         pnl = calculate_pnl(position.direction, position.notional, entry, current_price)
         account_risk = abs(calculate_pnl(position.direction, position.notional, entry, position.stop_loss))
         hit = account_risk > 0 and pnl >= account_risk * (config.r_multiple or 1.0)
+        logger.debug(
+            "break-even eval pos={} dir={} trigger=r_multiple "
+            "pnl={:.4f} account_risk={:.4f} threshold={:.4f} hit={}",
+            position.id, position.direction, pnl, account_risk,
+            account_risk * (config.r_multiple or 1.0), hit,
+        )
     if not hit:
         return position.stop_loss, state, False
     if position.direction == Direction.LONG.value:
@@ -104,6 +123,19 @@ def apply_break_even(
         new_sl = entry - buffer
         new_sl = min(new_sl, position.stop_loss)
     state["break_even_applied"] = True
+    logger.info(
+        "break-even ACTIVATED pos={} agent={} trigger={} "
+        "price={:.2f} pnl={:.4f} account_risk={:.4f} "
+        "old_sl={:.2f} new_sl={:.2f}",
+        position.id,
+        position.agent_id,
+        config.trigger,
+        current_price,
+        pnl,
+        account_risk,
+        position.stop_loss,
+        new_sl,
+    )
     return new_sl, state, True
 
 

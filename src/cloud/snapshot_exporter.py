@@ -126,6 +126,7 @@ def _risk_automation_payload(settings: Settings, repository: ArenaRepository) ->
         for row in repository.list_cooldowns(active_only=True)
     ]
     trailing = []
+    position_sl_lookup = {p.id: p.stop_loss for p in repository.open_positions()}
     for row in repository.list_position_risk_states(limit=200):
         try:
             import json
@@ -134,12 +135,15 @@ def _risk_automation_payload(settings: Settings, repository: ArenaRepository) ->
             config = json.loads(row.config_json or "{}")
         except Exception:
             state, config = {}, {}
+        be_applied = bool(state.get("break_even_applied"))
+        pos_sl = position_sl_lookup.get(row.position_id)
         trailing.append(
             {
                 "position_id": row.position_id,
                 "trailing_active": bool(state.get("trailing_active")),
                 "trail_sl": state.get("trail_sl"),
-                "break_even_applied": bool(state.get("break_even_applied")),
+                "break_even_applied": be_applied,
+                "be_stop_price": float(pos_sl) if be_applied and pos_sl is not None else None,
                 "max_hold_until": state.get("max_hold_until"),
                 "config": config,
             }

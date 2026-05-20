@@ -201,7 +201,12 @@ class PositionManager:
         position.margin += margin
         position.notional = total_notional
         position.leverage = position.notional / position.margin if position.margin else leverage
-        position.stop_loss = float(signal.stop_loss or position.stop_loss)
+        signal_sl = float(signal.stop_loss or 0)
+        if signal_sl > 0:
+            if position.direction == Direction.LONG.value:
+                position.stop_loss = max(signal_sl, position.stop_loss)
+            else:
+                position.stop_loss = min(signal_sl, position.stop_loss)
         position.take_profit_1 = float(signal.take_profit_1 or position.take_profit_1)
         position.take_profit_2 = float(signal.take_profit_2 or position.take_profit_2)
         if signal.action == Action.DCA:

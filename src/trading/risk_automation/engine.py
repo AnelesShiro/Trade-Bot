@@ -180,6 +180,7 @@ class RiskAutomationEngine:
             original_state = dict(state)
             if atr_14 is not None:
                 state["atr_14"] = atr_14
+            original_sl = position.stop_loss
             updated_sl = position.stop_loss
             if automation.trailing_stop and self.cfg.trailing_stop.enabled:
                 updated_sl, state = apply_trailing_stop(position, current_price, automation.trailing_stop, state)
@@ -190,6 +191,18 @@ class RiskAutomationEngine:
                 updated_sl, state, applied = apply_break_even(position, current_price, automation.break_even, state)
                 if applied:
                     position.stop_loss = updated_sl
+                    try:
+                        self.repository.save_risk_notification(
+                            position.agent_id,
+                            "BREAK_EVEN_ACTIVATED",
+                            (
+                                f"Position {position.id} ({position.direction}): "
+                                f"SL {original_sl:.2f} → {updated_sl:.2f} | "
+                                f"trigger={automation.break_even.trigger} | price={current_price:.2f}"
+                            ),
+                        )
+                    except Exception as _notify_err:
+                        logger.warning("break-even notification failed: {}", _notify_err)
             if automation.time_exit and self.cfg.time_exit.enabled and time_exit_due(
                 position, current_price, automation.time_exit, state
             ):
@@ -214,7 +227,7 @@ class RiskAutomationEngine:
                 self.execution.execute(close_signal, current_price, execution_timestamp=datetime.now(UTC))
                 stats["time_exits"] += 1
                 continue
-            if updated_sl != position.stop_loss or state != original_state:
+            if position.stop_loss != original_sl or state != original_state:
                 self.repository.add_or_update_position(position)
             self.repository.upsert_position_risk_state(position.id, config_payload, state, merge_state=True)
         return stats
