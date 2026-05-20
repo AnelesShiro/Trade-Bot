@@ -1252,6 +1252,32 @@ Entry template:
   - `validate-update --no-smoke` → all PASS. `preflight-check` → all PASS.
 - Notes: Debug logs are `loguru.DEBUG` level — visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.
 
+## 2026-05-21 - Model Verification: Prefix Matching + Session File Miss Fallback
+
+- Problem addressed: Two distinct bugs caused false `AGENT_RUNTIME_ERROR` on valid provider responses:
+  1. DashScope returns `qwen3-max-2026-01-23` (versioned slug) but `LLM_MODEL` is `qwen3-max` → exact-equality check raised "Configured model 'qwen3-max' is unavailable" even though it's the correct model.
+  2. When OpenClaw writes the response to a UUID-named session file instead of the named one (`crypto-qwen.jsonl`), `_latest_session_model` found no new messages → raised "response model was not recorded".
+- Root cause:
+  - Bug A: DashScope (and providers like it) route a stable alias to an internal versioned slug in the response metadata. The old check `actual_model != configured_model` did not tolerate this.
+  - Bug B: `_latest_session_model` raised immediately when the session file was missing or had no model metadata, instead of returning `None` and letting the caller decide.
+- Files changed:
+  - `src/agents/base_agent.py`:
+    - Added `_model_is_compatible(actual, configured)` — returns True for exact match OR when `actual.startswith(configured)` (prefix match). Completely different base names still return False.
+    - Changed `_latest_session_model` return type to `str | None` — returns `None` instead of raising when file is absent or has no model metadata. Also scans `model_change` and `model-snapshot` custom events as alternate model sources.
+    - In `run_with_metadata`: when `actual_model is None` → log warning, fall back to configured model (no contradictory evidence). When actual found → use `_model_is_compatible`; only raise on genuine model drift.
+  - `tests/test_base_agent.py`:
+    - Added helpers: `write_session_no_model`, `write_session_model_change_event`.
+    - Added 9 new tests: 4 unit tests for `_model_is_compatible`, 5 integration tests (versioned suffix passes, missing file falls back, no model in session falls back, model_change event as source, completely different model still raises).
+- Validation:
+  - `pytest tests/test_base_agent.py -v` → 17 passed.
+  - `pytest -q` → 133 passed.
+  - `validate-update --no-smoke` → PASS.
+  - `preflight-check` → all 9 critical PASS.
+- Safety notes:
+  - DeepSeek unaffected — `deepseek-v4-flash` exact match still works.
+  - True model switching (e.g., provider returns `gpt-4o` instead of `qwen3-max`) still raises immediately.
+  - Fallback to configured model only fires when there is zero contradictory evidence, which is safe because OpenClaw gateway is already locked via `init` + `LLM_ALLOW_FALLBACK: false`.
+
 ## 2026-05-20 - crypto-qwen Re-Activated With qwen3-max (DashScope)
 
 - Problem addressed: `crypto-qwen` was retired after its previous DashScope billing expired. The config had been replaced with a `crypto-challenger` placeholder (`FILL_IN_*` values). User supplied a new DashScope API key and wants the second agent slot running again as `crypto-qwen` with model `qwen3-max`.

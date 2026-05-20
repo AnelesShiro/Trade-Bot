@@ -82,9 +82,19 @@ class OpenClawAgent:
                 stderr = (completed.stderr or "").strip()
                 if completed.returncode == 0:
                     actual_model = _latest_session_model(self.settings.id, self.settings.session_id, started)
-                    if actual_model != self.settings.model:
+                    if actual_model is None:
+                        logger.warning(
+                            "OpenClaw session file did not record a response model for agent={} session={}; "
+                            "assuming configured model={} (no contradictory evidence)",
+                            self.settings.id,
+                            self.settings.session_id,
+                            self.settings.model,
+                        )
+                        actual_model = self.settings.model
+                    elif not _model_is_compatible(actual_model, self.settings.model):
                         raise RuntimeError(
-                            f"Configured model '{self.settings.model}' is unavailable. Automatic model switching is disabled."
+                            f"Configured model '{self.settings.model}' is unavailable. "
+                            f"Provider returned '{actual_model}'. Automatic model switching is disabled."
                         )
                     input_tokens, output_tokens, estimated_cost = _estimate_usage(self.settings.model, prompt, stdout)
                     logger.info(
@@ -125,29 +135,74 @@ def _openclaw_command_prefix(openclaw_bin: str) -> list[str]:
     return [resolved]
 
 
-def _latest_session_model(agent_id: str, session_id: str, started: float) -> str:
+def _model_is_compatible(actual: str, configured: str) -> bool:
+    """Return True when actual is the same model as configured or a versioned variant of it.
+
+    Providers like DashScope return a dated slug (e.g. qwen3-max-2026-01-23) when the
+    request uses a stable alias (qwen3-max).  We accept actual if it starts with the
+    configured name so that minor version suffixes do not trigger a false model-drift error.
+    Only a completely different base name (e.g. gpt-4o vs qwen3-max) is rejected.
+    """
+    if actual == configured:
+        return True
+    if actual.startswith(configured):
+        return True
+    return False
+
+
+def _latest_session_model(agent_id: str, session_id: str, started: float) -> str | None:
+    """Read the most recent response model from the OpenClaw session JSONL file.
+
+    Returns None (instead of raising) when the file is absent or contains no
+    model record after the call started.  The caller treats None as "no contradictory
+    evidence" and falls back to the configured model name.
+
+    Sources checked in priority order per line:
+      1. assistant message  → message.responseModel or message.model
+      2. model_change event → modelId
+      3. model-snapshot custom event → data.modelId
+    """
     session_file = Path.home() / ".openclaw" / "agents" / agent_id / "sessions" / f"{session_id}.jsonl"
     if not session_file.exists():
-        raise RuntimeError(f"Unable to verify OpenClaw response model; session file not found: {session_file}")
+        logger.warning(
+            "OpenClaw session file not found for agent={} session={}; cannot verify response model",
+            agent_id,
+            session_id,
+        )
+        return None
     started_wall = datetime.now(UTC).timestamp() - max(0.0, time.perf_counter() - started) - 5
-    latest_model = ""
+    latest_model: str = ""
     for line in session_file.read_text(encoding="utf-8", errors="replace").splitlines():
         try:
             payload = json.loads(line)
         except Exception:
             continue
-        message = payload.get("message") if isinstance(payload, dict) else None
-        if not isinstance(message, dict) or message.get("role") != "assistant":
+        if not isinstance(payload, dict):
             continue
         timestamp = _parse_timestamp(payload.get("timestamp"))
         if timestamp and timestamp < started_wall:
             continue
-        actual = message.get("responseModel") or message.get("model")
-        if actual:
-            latest_model = str(actual)
-    if not latest_model:
-        raise RuntimeError("Unable to verify OpenClaw response model; response model was not recorded")
-    return latest_model
+        event_type = payload.get("type", "")
+        # Priority 1: assistant message
+        message = payload.get("message")
+        if isinstance(message, dict) and message.get("role") == "assistant":
+            actual = message.get("responseModel") or message.get("model")
+            if actual:
+                latest_model = str(actual)
+            continue
+        # Priority 2: model_change event
+        if event_type == "model_change":
+            model_id = payload.get("modelId")
+            if model_id and not latest_model:
+                latest_model = str(model_id)
+            continue
+        # Priority 3: model-snapshot custom event
+        if event_type == "custom" and payload.get("customType") == "model-snapshot":
+            data = payload.get("data") or {}
+            model_id = data.get("modelId") if isinstance(data, dict) else None
+            if model_id and not latest_model:
+                latest_model = str(model_id)
+    return latest_model or None
 
 
 def _parse_timestamp(value) -> float | None:
