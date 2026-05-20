@@ -5,39 +5,25 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 ## Current State
 
 - Project: `crypto-paper-trading-arena`, BTCUSDT continuous paper-trading system. **No end date — runs indefinitely.**
-- Active agents: `crypto-deepseek` (running) and `crypto-challenger` (**awaiting model config — see activation guide below**).
-- `crypto-qwen` retired (billing expired). Its 50 private lessons are already migrated to `crypto-challenger`.
-- Legacy `crypto-grok` and `crypto-qwen` data remain in SQLite for history/audit only.
+- Active agents: `crypto-deepseek` (running, model `deepseek-v4-flash`) and `crypto-qwen` (running, model `qwen3-max` via DashScope Standard Global URL).
+- Legacy `crypto-grok` data remains in SQLite for history/audit only.
 - Latest verified live cycle/checkpoint: `84` completed at `2026-05-19T15:51:10Z`.
 - Current live runner is one normal Windows parent-child process tree.
 - Current active open positions at last check: none.
-- DeepSeek currently works with strict model lock: `deepseek-v4-flash`.
-- `crypto-challenger` will fail gracefully (INTERNAL_ERROR, cycle continues) until activated.
+- DeepSeek model lock: `deepseek-v4-flash`. Qwen model lock: `qwen3-max`.
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
-- API failover is explicitly enabled per active agent. DeepSeek <-> Challenger fallback chain: fill in `FILL_IN_*` placeholders in `config/settings.yaml` when model is decided. This is separate from `LLM_ALLOW_FALLBACK`; silent model fallback remains impossible.
+- API failover is explicitly enabled per active agent. DeepSeek -> Qwen fallback; Qwen -> DeepSeek fallback. Silent model switching remains impossible (`LLM_ALLOW_FALLBACK: false`).
 - **Continuous mode**: `duration_days: 0` in config. The runner loops forever with `while True`; only a kill-switch file (`KILL_SWITCH`) or graceful restart stops it. No `COMPLETED` status is ever emitted.
 - **Soft weekly KPI**: `weekly_target_pct: 0.07` (+7% per rolling 7-day period). Never a hard requirement; never forces trades; never used as a validator rejection condition.
 - Dashboard shows **Project Uptime**, **Rolling 7d Return**, **Weekly Target Progress**, and **Project Start** instead of time-remaining/end-date metrics.
 
-## Activating crypto-challenger (do this when model is decided)
+## Re-activating crypto-qwen (already done as of 2026-05-20)
 
-**Step 1** — Edit `config/settings.yaml`. Find the `crypto-challenger` agent block and replace the four `FILL_IN_*` values:
+Both agents are active. To restore after a credential rotation:
 
-```yaml
-LLM_PROVIDER: "openai"           # e.g. openai / anthropic / groq / mistral / gemini
-LLM_MODEL: "gpt-4o"              # exact model ID for the provider
-LLM_BASE_URL: ""                 # base URL if required; "" for standard providers
-```
+**Step 1** — Update `QWEN_API_KEY` in `.env`.
 
-Also update the `crypto-deepseek` fallback chain (same four values).
-
-**Step 2** — Add the API key to `.env`:
-
-```
-CHALLENGER_API_KEY=sk-...your-key-here...
-```
-
-**Step 3** — Register the agent in OpenClaw and validate:
+**Step 2** — Re-register:
 
 ```powershell
 .\.venv\Scripts\python.exe -m src.cli init
@@ -45,14 +31,13 @@ CHALLENGER_API_KEY=sk-...your-key-here...
 .\.venv\Scripts\python.exe -m src.cli preflight-check
 ```
 
-**Step 4** — Smoke test the new agent directly:
+**Step 3** — Smoke test:
 
 ```powershell
-openclaw agent --agent crypto-challenger --session-id challenger-smoke --message "Return exactly OK." --timeout 120
+openclaw agent --agent crypto-qwen --session-id qwen-smoke --message "Return exactly OK." --timeout 120
 ```
 
-Runner will pick up `crypto-challenger` automatically on the next cycle after `init` completes.
-- Prompt/rulebook now include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, break-even is enforced locally around +1R on every open trade, use time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
+- Prompt/rulebook include validated signal templates, the exact risk formula, and concise guidance that agents must consider advanced trade management on every setup: prefer `PLACE_TRIGGER` for future conditions, break-even is enforced locally around +1R on every open trade, use time exits when useful, and trailing stops selectively for trends. Risk formula: `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`. Do not multiply leverage again after computing notional.
 - Runner now writes `runner_state` to SQLite during every live cycle (`CALLING_DEEPSEEK`, `CALLING_QWEN`, etc.). Dashboard/snapshot should show `TRADING` while bots are processing; `OVERDUE` should only appear when no active processing state exists and the next scheduled cycle is genuinely late.
 - Missed-cycle audit: on `run-live --resume`, the runner compares persisted `runner_state.next_cycle_at` with actual resume time. If a scheduled slot was missed during downtime, it records `MISSED_SCHEDULED_CYCLE` in downtime events, health checks, risk notifications, and snapshot `downtime.latest_missed_cycle`. This is audit-only and does not backfill trades.
 - Render/cloud dashboard snapshot mode mirrors the local risk automation tabs: Pending Orders, Risk Automation, and API Failover Events. Snapshot contract requires the `risk_automation` payload.
@@ -97,11 +82,11 @@ Runner will pick up `crypto-challenger` automatically on the next cycle after `i
 .\.venv\Scripts\python.exe -m src.cli preflight-check
 ```
 
-Challenger smoke (after activation):
+Qwen smoke test:
 
 ```powershell
 .\.venv\Scripts\python.exe -m src.cli init
-openclaw agent --agent crypto-challenger --session-id challenger-smoke --message "Return exactly OK." --timeout 120
+openclaw agent --agent crypto-qwen --session-id qwen-smoke --message "Return exactly OK." --timeout 120
 ```
 
 ## Read Next

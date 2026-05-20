@@ -1252,6 +1252,32 @@ Entry template:
   - `validate-update --no-smoke` → all PASS. `preflight-check` → all PASS.
 - Notes: Debug logs are `loguru.DEBUG` level — visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.
 
+## 2026-05-20 - crypto-qwen Re-Activated With qwen3-max (DashScope)
+
+- Problem addressed: `crypto-qwen` was retired after its previous DashScope billing expired. The config had been replaced with a `crypto-challenger` placeholder (`FILL_IN_*` values). User supplied a new DashScope API key and wants the second agent slot running again as `crypto-qwen` with model `qwen3-max`.
+- Root cause: Billing expiry of the previous `QWEN_API_KEY`; placeholder config was intentionally incomplete.
+- Files changed:
+  - `config/settings.yaml` — renamed `crypto-challenger` agent block back to `crypto-qwen` (id, name, session_id); set `LLM_PROVIDER: openai`, `LLM_MODEL: qwen3-max`, `LLM_BASE_URL: https://dashscope-intl.aliyuncs.com/compatible-mode/v1`, `LLM_API_KEY: QWEN_API_KEY`; updated `crypto-deepseek` fallback chain from `FILL_IN_*` to qwen3-max / DashScope.
+  - `.env` (local, not committed) — updated `QWEN_API_KEY` to new key.
+  - `PROJECT_BOOTSTRAP.md` — updated active agents, removed crypto-challenger placeholder guide, added qwen re-activation recovery notes, updated fast checks.
+  - `PROJECT_CONTEXT.md` — updated Quick Context model IDs; fixed stale known-issues entry for Qwen auth.
+  - `logs/SESSION_UPDATES.md` — this entry.
+- Key implementation details:
+  - OpenClaw agent registered via `python -m src.cli init` → confirmed `provider=openai model=qwen3-max fallback_allowed=False` logged for `crypto-qwen`.
+  - DashScope uses the OpenAI-compatible endpoint (`LLM_PROVIDER: openai`) with a custom `LLM_BASE_URL`.
+  - `LLM_ALLOW_FALLBACK: false` preserved; actual-model verification will fire if DashScope returns a versioned model ID (e.g. `qwen3-max-2026-*`). If that happens, update `LLM_MODEL` to the versioned slug and re-run `init`.
+  - Failover chain intact: DeepSeek → Qwen fallback; Qwen → DeepSeek fallback.
+- Validation:
+  - `python -m src.cli init` → OK, both agents registered.
+  - `validate-update --no-smoke` → all 4 checks PASS.
+  - `pytest -q` → 124 passed.
+  - `preflight-check` → all 9 critical checks PASS.
+  - Smoke: `openclaw agent --agent crypto-qwen --session-id qwen-smoke --message "Return exactly OK." --timeout 120` → `OK`.
+- Deployment notes: Runner will pick up `crypto-qwen` automatically on the next cycle. No runner restart required unless the runner is currently holding the old config in memory.
+- Known limitations / follow-ups:
+  - If the live runner is currently mid-cycle it will continue with the old config until the next `init` call. Running `init` again after cycle completion is safe.
+  - Monitor the first live cycle to confirm actual-model verification passes for `qwen3-max`. If model verification fails, update `LLM_MODEL` in `config/settings.yaml` to the exact versioned model ID returned by the API.
+
 ## 2026-05-20 - Mandatory Post-Task Workflow Setup
 
 - Context: User requested a permanent, session-spanning workflow: (1) pre-implementation analysis before touching any file, (2) mandatory post-task log update + validation + git commit + push after every completed implementation task.

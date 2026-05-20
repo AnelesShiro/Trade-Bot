@@ -5,7 +5,7 @@
 - Lowest-token entry point: read `PROJECT_BOOTSTRAP.md` first.
 - Startup automation: `AGENTS.md` instructs Codex sessions to read `PROJECT_BOOTSTRAP.md` proactively without waiting for the user to ask.
 - Read this section first, then skim `logs/SESSION_UPDATES.md` from the bottom upward.
-- Active agents are `crypto-deepseek` and `crypto-qwen`; legacy `crypto-grok` remains only for DB/history/audit.
+- Active agents are `crypto-deepseek` (model `deepseek-v4-flash`) and `crypto-qwen` (model `qwen3-max`, DashScope Standard Global URL); legacy `crypto-grok` remains only for DB/history/audit.
 - Current live runner process shape on Windows normally appears as two rows: `.venv\Scripts\python.exe` parent plus base Python child. Treat that as one runner process tree unless there are multiple unrelated parent trees.
 - Latest verified live cycle/checkpoint: cycle `82` completed at `2026-05-19T13:38:21Z`; runner is `RUNNING / WAITING`, next cycle is `2026-05-19T14:38:21Z`, and there were no active open positions at the latest check.
 - Latest overdue recovery: after a safe-restart exit left no live runner, `run-live --resume` was restarted manually. Both agents timed out through OpenClaw in cycle `82`, were recorded as rejected `INTERNAL_ERROR`, and the cycle still checkpointed/exported successfully.
@@ -13,7 +13,7 @@
 - **API failover** is explicitly enabled per active agent with configured DeepSeek <-> Qwen fallback chains, logged `api_failover_events`, active-route state, primary retests, and `risk_notifications`. It is separate from `LLM_ALLOW_FALLBACK`; silent model switching remains impossible.
 - Qwen model routing, OpenClaw agent registration, provider auth, and base URL routing are fixed. The working Qwen base URL is `https://dashscope-intl.aliyuncs.com/compatible-mode/v1`.
 - Model locking now works through OpenClaw agent registry plus post-response actual-model verification. Do not reintroduce per-request `--model` overrides; this Gateway rejects them.
-- `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max-2026-01-23`.
+- `LLM_MODEL` must match the provider response model id exactly, currently `deepseek-v4-flash` and `qwen3-max`.
 - `python -m src.cli init` syncs DB agents, OpenClaw agent registry, OpenClaw provider base URLs from `LLM_BASE_URL`, and OpenClaw auth profiles from `.env`.
 - Prompt/rulebook include validated examples for normal `OPEN`, `PLACE_TRIGGER`, `position_risk`, and `POSITION_UPDATE`. Agents are now explicitly told to consider advanced trade management on every setup: use `PLACE_TRIGGER` for future confirmation, break-even is enforced locally around +1R on every open trade, time exits when useful, and trailing stops selectively for trends. The required risk formula is `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`; leverage must not be multiplied again after notional is calculated.
 - Live runner phase is persisted in SQLite table `runner_state`. During active bot calls the dashboard/snapshot should display phases such as `CALLING_DEEPSEEK` or `CALLING_QWEN` and `IN PROGRESS`, not `OVERDUE`.
@@ -242,7 +242,7 @@
 # Known Issues
 
 - Current problems:
-  - `crypto-qwen` currently fails provider auth with `Provider qwen has auth issue`. The project config and OpenClaw agent registration are fixed; replace/repair the Qwen provider credential before expecting Qwen signals.
+  - `crypto-qwen` re-activated with `qwen3-max` via DashScope (2026-05-20). Smoke test passed; model lock is `qwen3-max`.
   - Cloud dashboard can become stale if the local runner is offline, Git sync fails, or Render deployment lags.
   - Runtime output files may be modified continuously by live runner.
 - Edge cases:
