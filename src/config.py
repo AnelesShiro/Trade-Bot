@@ -48,7 +48,7 @@ class ApiFailoverAgentSettings(BaseModel):
 class AgentSettings(BaseModel):
     id: str
     name: str
-    session_id: str
+    session_id: str = ""
     llm: LlmLockSettings
     api_failover: ApiFailoverAgentSettings = Field(default_factory=ApiFailoverAgentSettings)
 

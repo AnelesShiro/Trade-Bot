@@ -54,7 +54,7 @@ class OpenClawAgent:
         backoff_initial_seconds: float = 1.0,
         backoff_multiplier: float = 2.0,
     ) -> AgentRunResult:
-        effective_session_id = session_id or self.settings.session_id
+        effective_session_id = session_id or self.settings.session_id or self.settings.id
         command = [
             *_openclaw_command_prefix(self.openclaw_bin),
             "agent",

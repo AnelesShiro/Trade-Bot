@@ -1523,3 +1523,13 @@ Entry template:
 - Known limitations or follow-up items:
   - Fresh sessions mean the bot has no multi-turn "conversation memory" across cycles — but this was always the case (each cycle sends the full context in one message anyway)
   - Old session files from fixed session_id (`crypto-deepseek.jsonl` etc.) remain in ~/.openclaw/agents/*/sessions/ — harmless but can be deleted to reclaim disk space
+
+## 2026-05-22 - Cleanup: Remove dead session_id config from settings.yaml
+
+- Problem addressed: `session_id` còn hardcode trong `settings.yaml` cho 3 agents (crypto-deepseek, crypto-qwen, crypto-gemini) là dead config — runner luôn override bằng `cycle_session_id` per call, các giá trị này không bao giờ được dùng.
+- Root cause: Leftover từ trước khi có fix fresh-session-per-cycle.
+- Files changed:
+  - `config/settings.yaml` — xóa field `session_id:` khỏi cả 3 agent blocks
+  - `src/config.py` — đổi `session_id: str` → `session_id: str = ""` (optional, default rỗng) để agent không có field trong YAML vẫn parse được
+  - `src/agents/base_agent.py` — cập nhật fallback: `effective_session_id = session_id or self.settings.session_id or self.settings.id` (fallback cuối về agent id, tránh empty string)
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS

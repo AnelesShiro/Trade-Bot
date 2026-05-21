@@ -134,7 +134,6 @@ feature_flags:
 agents:
   - id: crypto-deepseek
     name: Crypto DeepSeek
-    session_id: crypto-deepseek
     llm:
       LLM_PROVIDER: deepseek
       LLM_MODEL: deepseek-v4-flash
@@ -151,7 +150,6 @@ agents:
           LLM_API_KEY: QWEN_API_KEY
   - id: crypto-qwen
     name: Crypto Qwen
-    session_id: crypto-qwen
     llm:
       LLM_PROVIDER: "openai"
       LLM_MODEL: "qwen3-max"
@@ -168,7 +166,6 @@ agents:
           LLM_API_KEY: DEEPSEEK_API_KEY
   - id: crypto-gemini
     name: Crypto Gemini
-    session_id: crypto-gemini
     llm:
       LLM_PROVIDER: "openai"
       LLM_MODEL: "gemini-3.5-flash"
