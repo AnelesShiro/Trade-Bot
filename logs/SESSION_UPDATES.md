@@ -1394,3 +1394,20 @@ Entry template:
   - `validate-update --no-smoke` → all 4 checks PASS.
 - Deployment notes: Qwen will participate in the next scheduled cycle. Future consecutive-loss cooldowns will skip exactly 1 cycle (~1.1 h) instead of 6.
 - Known limitations: If cycles run late (e.g. > 1.1 h gap), the cooldown may expire mid-wait and Qwen resumes on the next cycle boundary anyway — no impact on correctness.
+
+## 2026-05-21 - Fix Cooldown Streak Not Resetting After Served Cooldown
+
+- Problem addressed: After a cooldown expired or was cleared, `consecutive_losses()` still found the same old losing trades and immediately re-triggered a new cooldown, causing an infinite skip-1/run-1 alternating pattern.
+- Root cause: `consecutive_losses()` counted the N most recent closed trades with no time boundary. Once Qwen had 3 historical losses, every call to `evaluate_after_cycle` after a cooldown ended would see those same trades and re-trigger.
+- Files changed:
+  - `src/storage/risk_repository.py` — `consecutive_losses()` now calls `_last_cooldown_cleared_at()` to find the most recent `COOLDOWN_ENDED` notification for the agent. Only trades after that timestamp are counted. If no cooldown has ever been cleared, behaviour is unchanged (count all trades). Added `_last_cooldown_cleared_at()` helper using `RiskNotificationRecord`.
+  - `tests/test_risk_automation.py` — added 2 new tests: (1) old losses before a clear do not re-trigger cooldown; (2) new losses after a clear do correctly trigger.
+- Key implementation details:
+  - No schema changes. Uses existing `risk_notifications` table (`COOLDOWN_ENDED` events).
+  - Manual `clear-cooldown` also writes a `COOLDOWN_ENDED` notification, so manual resets are also treated as streak resets.
+  - `settings.yaml` is hot-reloaded; no runner restart required.
+- Validation:
+  - `pytest tests/test_risk_automation.py -q` → 29 passed.
+  - `pytest -q` → 135 passed (0 regressions).
+  - `validate-update --no-smoke` → all PASS.
+- Deployment notes: Hot-reload picks up no changes (Python-only fix in `.py`). Runner must be restarted for the fix to take effect in the live cycle.

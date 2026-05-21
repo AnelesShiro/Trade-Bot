@@ -795,3 +795,67 @@ def test_dca_signal_cannot_widen_break_even_stop_short(repository: ArenaReposito
 
     pos_after_dca = repository.get_position("dca-short")
     assert pos_after_dca.stop_loss <= be_stop, "DCA must not widen the break-even stop for SHORT"
+
+
+# ── Consecutive-loss streak reset after cooldown ────────────────────────────
+
+
+def _insert_closed_trade(repository: ArenaRepository, agent_id: str, pnl: float, ts: datetime | None = None) -> None:
+    """Insert a minimal closed trade record directly into the DB."""
+    import uuid
+    from src.storage.models import TradeRecord as TR
+    with repository.session_factory() as session, session.begin():
+        session.add(TR(
+            id=f"t-{uuid.uuid4().hex}",
+            agent_id=agent_id,
+            position_id="fake-pos",
+            action="CLOSE",
+            direction="LONG",
+            leverage=5,
+            margin=100.0,
+            notional=500.0,
+            entry=100000.0,
+            exit_price=99000.0,
+            realized_pnl=pnl,
+            execution_timestamp=ts or datetime.now(UTC),
+        ))
+
+
+def test_consecutive_losses_resets_after_cooldown_cleared(repository: ArenaRepository, test_settings) -> None:
+    """After a cooldown is cleared, old losses before the clear do not re-trigger a new cooldown."""
+    manager = CooldownManager(repository, test_settings.risk_automation.cooldown)
+    agent = "crypto-deepseek"
+
+    # 3 losses before the cooldown
+    t0 = datetime.now(UTC) - timedelta(hours=3)
+    for i in range(3):
+        _insert_closed_trade(repository, agent, -50.0, t0 + timedelta(minutes=i))
+
+    # Manually start + clear cooldown (simulates a served cooldown)
+    manager.start(agent, "3 consecutive losses", 0.001)
+    repository.clear_cooldown(agent)
+
+    # evaluate_after_cycle must NOT trigger a new cooldown based on the same old losses
+    manager.evaluate_after_cycle(agent, equity=10000, daily_pnl=0, weekly_pnl=0, rejection_rate=0, api_failures=0)
+    assert repository.active_cooldown(agent) is None, (
+        "Cooldown must not re-trigger from losses that occurred before the last clear"
+    )
+
+
+def test_consecutive_losses_retriggers_on_new_losses_after_clear(repository: ArenaRepository, test_settings) -> None:
+    """After a cooldown clear, fresh losses DO trigger a new cooldown."""
+    manager = CooldownManager(repository, test_settings.risk_automation.cooldown)
+    agent = "crypto-deepseek"
+
+    # Start + clear a cooldown (streak reset)
+    manager.start(agent, "initial", 0.001)
+    repository.clear_cooldown(agent)
+
+    # 3 new losses AFTER the clear
+    for i in range(3):
+        _insert_closed_trade(repository, agent, -50.0, datetime.now(UTC) + timedelta(seconds=i))
+
+    manager.evaluate_after_cycle(agent, equity=10000, daily_pnl=0, weekly_pnl=0, rejection_rate=0, api_failures=0)
+    assert repository.active_cooldown(agent) is not None, (
+        "New losses after cooldown clear must re-trigger the cooldown"
+    )

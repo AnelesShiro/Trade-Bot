@@ -186,11 +186,18 @@ class RiskAutomationRepositoryMixin:
         return True
 
     def consecutive_losses(self, agent_id: str, count: int) -> int:
+        # Only count losses that occurred after the most recent cooldown was cleared for
+        # this agent, so a served cooldown resets the streak to 0.
+        since = self._last_cooldown_cleared_at(agent_id)
         with self.session_factory() as session:
+            trade_time = func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at)
+            conditions = [TradeRecord.agent_id == agent_id, TradeRecord.exit_price.is_not(None)]
+            if since is not None:
+                conditions.append(trade_time > since)
             stmt = (
                 select(TradeRecord)
-                .where(TradeRecord.agent_id == agent_id, TradeRecord.exit_price.is_not(None))
-                .order_by(func.coalesce(TradeRecord.execution_timestamp, TradeRecord.created_at).desc())
+                .where(*conditions)
+                .order_by(trade_time.desc())
                 .limit(count)
             )
             trades = list(session.scalars(stmt))
@@ -201,6 +208,22 @@ class RiskAutomationRepositoryMixin:
             else:
                 break
         return streak
+
+    def _last_cooldown_cleared_at(self, agent_id: str) -> datetime | None:
+        with self.session_factory() as session:
+            stmt = (
+                select(RiskNotificationRecord.created_at)
+                .where(
+                    RiskNotificationRecord.agent_id == agent_id,
+                    RiskNotificationRecord.event_type == "COOLDOWN_ENDED",
+                )
+                .order_by(RiskNotificationRecord.created_at.desc())
+                .limit(1)
+            )
+            result = session.scalar(stmt)
+        if result is None:
+            return None
+        return result if result.tzinfo is not None else result.replace(tzinfo=UTC)
 
     def signal_counts(self, agent_id: str, limit: int = 50) -> tuple[int, int]:
         with self.session_factory() as session:
