@@ -1378,3 +1378,19 @@ Entry template:
 - Key implementation details: All previous entries preserved; `Bash(*)` and `PowerShell(*)` added at end of array. Result is a strict superset of both the original config and the requested new entries.
 - Validation: No source code changed; no pytest run required.
 - Deployment notes: Active immediately. File is outside git repo — not version-controlled.
+
+## 2026-05-21 - Qwen Cooldown Clear + Reduce Consecutive-Loss Pause To 1 Cycle
+
+- Problem addressed: `crypto-qwen` was being skipped every ~5-6 cycles because the consecutive-loss cooldown was 6 hours (`pause_hours_after_losses: 6.0`), equal to 6 poll intervals. Qwen kept re-triggering the cooldown on each return, causing a repeat skip pattern (cycles 107→113→119 each separated by 6 skipped cycles).
+- Root cause: `pause_hours_after_losses: 6.0` with `poll_interval_seconds: 3600` means 6 full cycles are skipped per cooldown trigger. With Qwen in a consecutive-loss streak, every return triggered a new 6-hour cooldown.
+- Files changed:
+  - `config/settings.yaml` — `risk_automation.cooldown.pause_hours_after_losses: 6.0 → 1.1` (slightly over one poll interval so the skip is reliably 1 cycle regardless of minor cycle timing drift).
+- Key implementation details:
+  - `settings.yaml` is hot-reloaded; no runner restart required.
+  - Cleared the active cooldown immediately via `python -m src.cli clear-cooldown --agent crypto-qwen`.
+  - All other cooldown thresholds unchanged (`consecutive_losses: 3`, `daily_loss_pct: 0.05`, `pause_hours_daily: 24.0`, `weekly_drawdown_pct: 0.10`, `pause_hours_weekly: 24.0`).
+- Validation:
+  - `list-cooldowns` → `[]` (cleared).
+  - `validate-update --no-smoke` → all 4 checks PASS.
+- Deployment notes: Qwen will participate in the next scheduled cycle. Future consecutive-loss cooldowns will skip exactly 1 cycle (~1.1 h) instead of 6.
+- Known limitations: If cycles run late (e.g. > 1.1 h gap), the cooldown may expire mid-wait and Qwen resumes on the next cycle boundary anyway — no impact on correctness.
