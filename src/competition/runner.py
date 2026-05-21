@@ -1026,6 +1026,7 @@ class CompetitionRunner:
         return self._call_agent_result(agent, prompt).output
 
     def _call_agent_result(self, agent: OpenClawAgent, prompt: str):
+        cycle_session_id = f"{agent.settings.id}-{int(time.time())}"
         if type(agent).run is not ORIGINAL_OPENCLAW_RUN:
             started = time.perf_counter()
             output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
@@ -1039,6 +1040,7 @@ class CompetitionRunner:
         try:
             return agent.run_with_metadata(
                 prompt,
+                session_id=cycle_session_id,
                 timeout_seconds=self.settings.api.timeout_seconds,
                 max_retries=self.settings.api.max_retries,
                 backoff_initial_seconds=self.settings.api.backoff_initial_seconds,
@@ -1050,6 +1052,7 @@ class CompetitionRunner:
                 fallback_agent = OpenClawAgent(self.failover_manager.settings_for_route(agent.settings, route))
                 return fallback_agent.run_with_metadata(
                     prompt,
+                    session_id=cycle_session_id,
                     timeout_seconds=self.settings.api.timeout_seconds,
                     max_retries=1,
                     backoff_initial_seconds=self.settings.api.backoff_initial_seconds,

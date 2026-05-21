@@ -30,6 +30,7 @@ class OpenClawAgent:
     def run(
         self,
         prompt: str,
+        session_id: str | None = None,
         timeout_seconds: int = 600,
         max_retries: int = 3,
         backoff_initial_seconds: float = 1.0,
@@ -37,6 +38,7 @@ class OpenClawAgent:
     ) -> str:
         return self.run_with_metadata(
             prompt,
+            session_id=session_id,
             timeout_seconds=timeout_seconds,
             max_retries=max_retries,
             backoff_initial_seconds=backoff_initial_seconds,
@@ -46,18 +48,20 @@ class OpenClawAgent:
     def run_with_metadata(
         self,
         prompt: str,
+        session_id: str | None = None,
         timeout_seconds: int = 600,
         max_retries: int = 3,
         backoff_initial_seconds: float = 1.0,
         backoff_multiplier: float = 2.0,
     ) -> AgentRunResult:
+        effective_session_id = session_id or self.settings.session_id
         command = [
             *_openclaw_command_prefix(self.openclaw_bin),
             "agent",
             "--agent",
             self.settings.id,
             "--session-id",
-            self.settings.session_id,
+            effective_session_id,
             "--message",
             prompt,
             "--timeout",
@@ -81,13 +85,13 @@ class OpenClawAgent:
                 stdout = (completed.stdout or "").strip()
                 stderr = (completed.stderr or "").strip()
                 if completed.returncode == 0:
-                    actual_model = _latest_session_model(self.settings.id, self.settings.session_id, started)
+                    actual_model = _latest_session_model(self.settings.id, effective_session_id, started)
                     if actual_model is None:
                         logger.warning(
                             "OpenClaw session file did not record a response model for agent={} session={}; "
                             "assuming configured model={} (no contradictory evidence)",
                             self.settings.id,
-                            self.settings.session_id,
+                            effective_session_id,
                             self.settings.model,
                         )
                         actual_model = self.settings.model

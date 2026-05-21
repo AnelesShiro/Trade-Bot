@@ -1501,3 +1501,25 @@ Entry template:
   - World Model + Calibration will show empty until structured_lessons has ≥3 entries per bucket (expected after first few real CLOSE cycles)
   - reflect_on_trade() still writes to legacy lessons table — can be phased out in a future cleanup once structured_lessons is populated
   - Shared lesson promotion now at 0.40 threshold — will still need ≥10 sample_size; may need to lower further after monitoring
+
+## 2026-05-22 - Token Optimization: Fresh Session Per Cycle + Minimal System Prompt
+
+- Problem addressed: Two token waste sources. (A) Fixed `session_id` in settings.yaml caused OpenClaw to accumulate 699k tokens of conversation history and resend it every API call (DeepSeek cached 94.6% of it, but still charged at cached rate). (B) OpenClaw's default system prompt added 7,054 tokens of irrelevant generic tool definitions (file/read/write/exec/web) injected into every API call.
+- Root cause: (A) `session_id: crypto-deepseek` hardcoded in settings.yaml → same session file reused indefinitely → history never cleared. (B) No `systemPromptOverride` configured per agent → OpenClaw injected its full default agent system prompt.
+- Files changed:
+  - `~/.openclaw/openclaw.json` — set `systemPromptOverride: "You are a crypto paper trading analyst. Output only valid JSON signals."` for agents at index 2–5 (crypto-deepseek, crypto-grok, crypto-qwen, crypto-gemini) via `openclaw config set`
+  - `src/agents/base_agent.py` — added `session_id: str | None = None` param to both `run()` and `run_with_metadata()`; `effective_session_id = session_id or self.settings.session_id` used for both command arg and `_latest_session_model()` lookup
+  - `src/competition/runner.py` — `_call_agent_result()` generates `cycle_session_id = f"{agent.settings.id}-{int(time.time())}"` per call; passes it to all `run_with_metadata()` and retry paths
+- Key implementation details:
+  - Fresh session_id per cycle = fresh session file per call = zero conversation history sent to provider
+  - Each session file is small (~2 messages); session files accumulate at 6/day per agent (manageable)
+  - `_latest_session_model()` still works correctly because it reads the session file just created by that call
+  - systemPromptOverride: default 7,054 tokens → 15 tokens (saves ~7k cached tokens per call)
+  - Session history accumulation: 699k tokens per call → 0 (each call starts fresh)
+  - Total estimated daily token reduction: ~17.5M → ~1M (94% reduction)
+  - Gateway restart required to apply systemPromptOverride
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS; gateway restarted; runner live
+- Deployment/restart notes: Gateway restarted (`openclaw daemon restart`). Runner restarted with `run-live`. No DB migrations required.
+- Known limitations or follow-up items:
+  - Fresh sessions mean the bot has no multi-turn "conversation memory" across cycles — but this was always the case (each cycle sends the full context in one message anyway)
+  - Old session files from fixed session_id (`crypto-deepseek.jsonl` etc.) remain in ~/.openclaw/agents/*/sessions/ — harmless but can be deleted to reclaim disk space
