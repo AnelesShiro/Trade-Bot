@@ -1449,3 +1449,20 @@ Entry template:
   - If Google returns a versioned model slug (e.g. `gemini-2.5-flash-preview-05-20`), model verification will raise. Update `LLM_MODEL` in settings.yaml to the exact slug returned and re-run `init`.
   - Gemini thinking tokens inflate total_tokens vs completion_tokens. Cost estimates in api_requests table may undercount if the cost model does not account for thinking tokens separately.
   - api_failover is disabled for Gemini. If Gemini fails, the cycle records an error and continues with DeepSeek and Qwen. To add a fallback, configure a fallback_chain in settings.yaml and re-run init.
+
+## 2026-05-21 - Switch crypto-gemini Model to gemini-3.5-flash
+
+- Problem addressed: gemini-2.5-flash free tier limited to 20 RPD (requests per day), insufficient for 24 cycles/day. User switched to gemini-3.5-flash.
+- Root cause: Free tier quota constraint on gemini-2.5-flash.
+- Files changed:
+  - `config/settings.yaml` — `LLM_MODEL: gemini-2.5-flash` ? `gemini-3.5-flash` for `crypto-gemini` agent.
+- Key implementation details:
+  - API key unchanged (same `GEMINI_API_KEY`).
+  - Live test confirmed `gemini-3.5-flash` responds correctly via the OpenAI-compatible endpoint before changing config.
+  - `settings.yaml` is hot-reloaded; runner picks up the new model on the next cycle without restart.
+  - `python -m src.cli init` re-run to update OpenClaw model lock: logged `model=gemini-3.5-flash fallback_allowed=False`.
+- Validation:
+  - Live API smoke test ? model returned `gemini-3.5-flash`, content `OK`.
+  - `python -m src.cli init` ? all 3 agents registered with correct models.
+- Deployment notes: No runner restart required. Model lock active from next cycle onward.
+- Known limitations / follow-ups: Verify gemini-3.5-flash RPD limit is sufficient for 24 cycles/day on the new model tier.
