@@ -1533,3 +1533,10 @@ Entry template:
   - `src/config.py` — đổi `session_id: str` → `session_id: str = ""` (optional, default rỗng) để agent không có field trong YAML vẫn parse được
   - `src/agents/base_agent.py` — cập nhật fallback: `effective_session_id = session_id or self.settings.session_id or self.settings.id` (fallback cuối về agent id, tránh empty string)
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
+
+## 2026-05-22 - Fix: Dashboard/Render crash — Pydantic ValidationError session_id required
+
+- Problem addressed: Streamlit dashboard (local + Render) crashed on startup với `pydantic_core.ValidationError: session_id Field required` sau khi xóa `session_id` khỏi `settings.yaml`.
+- Root cause: Stale `.pyc` cache giữ old pydantic validator (session_id required) dù `src/config.py` đã có `session_id: str = ""`. Dashboard process cần restart để pick up code mới.
+- Fix action: Xóa `__pycache__` toàn bộ `src/`, restart dashboard local (port 8501 OK), push log entry này để trigger Render auto-redeploy.
+- Validation: `AgentSettings.model_validate({...})` without session_id → `session_id=''` ✓; localhost:8501 running ✓; Render sẽ auto-deploy từ commit này.
