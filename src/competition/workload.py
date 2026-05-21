@@ -13,6 +13,7 @@ AGENT_ALIASES = {
     "crypto-grok": "grok",
     "crypto-qwen": "grok",
     "crypto-challenger": "grok",
+    "crypto-gemini": "gemini",
 }
 
 
@@ -42,7 +43,13 @@ class WorkloadTracker:
     local_reflections_processed: int = 0
     local_lessons_promoted: int = 0
     components: list[dict[str, Any]] = field(default_factory=list)
-    agents: dict[str, AgentWork] = field(default_factory=lambda: {"deepseek": AgentWork(), "grok": AgentWork()})
+    agents: dict[str, AgentWork] = field(
+        default_factory=lambda: {
+            "deepseek": AgentWork(),
+            "grok": AgentWork(),
+            "gemini": AgentWork(),
+        }
+    )
 
     def component(self, owner: str, category: str, metric_name: str, metric_value: float = 1.0, **details: Any) -> None:
         self.components.append(
@@ -106,12 +113,14 @@ class WorkloadTracker:
         total_cpu = max(0.0, time.process_time() - self.started_cpu)
         deepseek = self.agents["deepseek"]
         grok = self.agents["grok"]
-        agent_latency = deepseek.latency_seconds + grok.latency_seconds
+        gemini = self.agents["gemini"]
+        agent_latency = deepseek.latency_seconds + grok.latency_seconds + gemini.latency_seconds
         local_wall = max(0.0, total_wall - agent_latency)
         scores = workload_scores(
             local_wall_time_seconds=local_wall,
             deepseek=deepseek,
             grok=grok,
+            gemini=gemini,
             local_tool_calls=self.local_tool_calls,
             local_functions_executed=self.local_functions_executed,
             local_reflections_processed=self.local_reflections_processed,
@@ -121,14 +130,18 @@ class WorkloadTracker:
             "local_workload_pct": scores["local"] * 100,
             "deepseek_workload_pct": scores["deepseek"] * 100,
             "grok_workload_pct": scores["grok"] * 100,
+            "gemini_workload_pct": scores["gemini"] * 100,
             "local_wall_time_seconds": local_wall,
             "local_cpu_time_seconds": total_cpu,
             "deepseek_latency_seconds": deepseek.latency_seconds,
             "grok_latency_seconds": grok.latency_seconds,
+            "gemini_latency_seconds": gemini.latency_seconds,
             "deepseek_tokens": deepseek.total_tokens,
             "grok_tokens": grok.total_tokens,
+            "gemini_tokens": gemini.total_tokens,
             "deepseek_cost_usd": deepseek.api_cost_usd,
             "grok_cost_usd": grok.api_cost_usd,
+            "gemini_cost_usd": gemini.api_cost_usd,
             "payload": {
                 "total_wall_time_seconds": total_wall,
                 "local_tool_calls": self.local_tool_calls,
@@ -147,6 +160,12 @@ class WorkloadTracker:
                 "grok_reflections_generated": grok.reflections_generated,
                 "grok_lessons_generated": grok.lessons_generated,
                 "grok_api_cost_usd": grok.api_cost_usd,
+                "gemini_input_tokens": gemini.input_tokens,
+                "gemini_output_tokens": gemini.output_tokens,
+                "gemini_tool_requests": gemini.tool_requests,
+                "gemini_reflections_generated": gemini.reflections_generated,
+                "gemini_lessons_generated": gemini.lessons_generated,
+                "gemini_api_cost_usd": gemini.api_cost_usd,
             },
         }
         return cycle, self.components
@@ -157,40 +176,55 @@ def workload_scores(
     local_wall_time_seconds: float,
     deepseek: AgentWork,
     grok: AgentWork,
+    gemini: AgentWork = AgentWork(),
     local_tool_calls: int,
     local_functions_executed: int,
     local_reflections_processed: int,
     local_lessons_promoted: int,
 ) -> dict[str, float]:
-    total_time = max(0.000001, local_wall_time_seconds + deepseek.latency_seconds + grok.latency_seconds)
+    total_time = max(
+        0.000001,
+        local_wall_time_seconds + deepseek.latency_seconds + grok.latency_seconds + gemini.latency_seconds,
+    )
     wall = {
         "local": local_wall_time_seconds / total_time,
         "deepseek": deepseek.latency_seconds / total_time,
         "grok": grok.latency_seconds / total_time,
+        "gemini": gemini.latency_seconds / total_time,
     }
-    total_tokens = max(1, deepseek.total_tokens + grok.total_tokens)
+    total_tokens = max(1, deepseek.total_tokens + grok.total_tokens + gemini.total_tokens)
     tokens = {
         "local": 0.0,
         "deepseek": deepseek.total_tokens / total_tokens,
         "grok": grok.total_tokens / total_tokens,
+        "gemini": gemini.total_tokens / total_tokens,
     }
     decision = _decision_share(
         local_tool_calls=local_tool_calls,
         local_functions_executed=local_functions_executed,
         deepseek_tool_requests=deepseek.tool_requests,
         grok_tool_requests=grok.tool_requests,
+        gemini_tool_requests=gemini.tool_requests,
     )
-    total_reflections = max(1, local_reflections_processed + deepseek.reflections_generated + grok.reflections_generated)
+    total_reflections = max(
+        1,
+        local_reflections_processed + deepseek.reflections_generated + grok.reflections_generated + gemini.reflections_generated,
+    )
     reflection = {
         "local": local_reflections_processed / total_reflections,
         "deepseek": deepseek.reflections_generated / total_reflections,
         "grok": grok.reflections_generated / total_reflections,
+        "gemini": gemini.reflections_generated / total_reflections,
     }
-    total_lessons = max(1, local_lessons_promoted + deepseek.lessons_generated + grok.lessons_generated)
+    total_lessons = max(
+        1,
+        local_lessons_promoted + deepseek.lessons_generated + grok.lessons_generated + gemini.lessons_generated,
+    )
     lesson = {
         "local": local_lessons_promoted / total_lessons,
         "deepseek": deepseek.lessons_generated / total_lessons,
         "grok": grok.lessons_generated / total_lessons,
+        "gemini": gemini.lessons_generated / total_lessons,
     }
     raw = {
         owner: (
@@ -200,7 +234,7 @@ def workload_scores(
             + 0.10 * reflection[owner]
             + 0.05 * lesson[owner]
         )
-        for owner in ["local", "deepseek", "grok"]
+        for owner in ["local", "deepseek", "grok", "gemini"]
     }
     total = sum(raw.values()) or 1.0
     return {owner: raw[owner] / total for owner in raw}
@@ -212,11 +246,18 @@ def summarize_workload(repository: ArenaRepository, limit: int = 50) -> dict[str
     if not cycles:
         return {"latest": None, "averages": {}, "component_count": 0}
     latest = cycles[0]
+    gemini_workload_pct = getattr(latest, "gemini_workload_pct", 0.0) or 0.0
+    gemini_tokens = getattr(latest, "gemini_tokens", 0) or 0
+    gemini_cost = getattr(latest, "gemini_cost_usd", 0.0) or 0.0
     averages = {
         "local_workload_pct": sum(c.local_workload_pct for c in cycles) / len(cycles),
         "deepseek_workload_pct": sum(c.deepseek_workload_pct for c in cycles) / len(cycles),
         "grok_workload_pct": sum(c.grok_workload_pct for c in cycles) / len(cycles),
-        "total_api_cost_usd": sum(c.deepseek_cost_usd + c.grok_cost_usd for c in cycles),
+        "gemini_workload_pct": sum((getattr(c, "gemini_workload_pct", 0.0) or 0.0) for c in cycles) / len(cycles),
+        "total_api_cost_usd": sum(
+            c.deepseek_cost_usd + c.grok_cost_usd + (getattr(c, "gemini_cost_usd", 0.0) or 0.0)
+            for c in cycles
+        ),
     }
     return {
         "latest": {
@@ -224,9 +265,14 @@ def summarize_workload(repository: ArenaRepository, limit: int = 50) -> dict[str
             "local_workload_pct": latest.local_workload_pct,
             "deepseek_workload_pct": latest.deepseek_workload_pct,
             "grok_workload_pct": latest.grok_workload_pct,
+            "gemini_workload_pct": gemini_workload_pct,
             "deepseek_tokens": latest.deepseek_tokens,
             "grok_tokens": latest.grok_tokens,
-            "api_cost_usd": latest.deepseek_cost_usd + latest.grok_cost_usd,
+            "gemini_tokens": gemini_tokens,
+            "deepseek_cost_usd": latest.deepseek_cost_usd,
+            "grok_cost_usd": latest.grok_cost_usd,
+            "gemini_cost_usd": gemini_cost,
+            "api_cost_usd": latest.deepseek_cost_usd + latest.grok_cost_usd + gemini_cost,
             "payload": json.loads(latest.payload_json or "{}"),
         },
         "averages": averages,
@@ -240,17 +286,19 @@ def _decision_share(
     local_functions_executed: int,
     deepseek_tool_requests: int,
     grok_tool_requests: int,
+    gemini_tool_requests: int = 0,
 ) -> dict[str, float]:
     local = 0.85 + 0.01 * min(10, local_tool_calls + local_functions_executed)
     deepseek = 0.075 + 0.02 * deepseek_tool_requests
     grok = 0.075 + 0.02 * grok_tool_requests
-    total = local + deepseek + grok
-    return {"local": local / total, "deepseek": deepseek / total, "grok": grok / total}
+    gemini = 0.075 + 0.02 * gemini_tool_requests
+    total = local + deepseek + grok + gemini
+    return {"local": local / total, "deepseek": deepseek / total, "grok": grok / total, "gemini": gemini / total}
 
 
 def _agent_key(agent_id: str) -> str:
     lowered = agent_id.lower()
     return AGENT_ALIASES.get(
         agent_id,
-        "deepseek" if "deepseek" in lowered else "grok",
+        "gemini" if "gemini" in lowered else ("deepseek" if "deepseek" in lowered else "grok"),
     )

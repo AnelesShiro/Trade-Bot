@@ -68,7 +68,33 @@ def test_api_cost_summary_compares_agents(repository) -> None:
     summary = summarize_api_costs(repository)
 
     assert summary["by_agent"]["crypto-qwen"]["request_count"] == 1
-    assert any("Challenger estimated audit cost" in finding for finding in summary["diagnosis"])
+    assert any("crypto-qwen" in finding and "crypto-deepseek" in finding for finding in summary["diagnosis"])
+
+
+def test_api_cost_summary_includes_gemini(repository) -> None:
+    for agent_name, cost in [("crypto-deepseek", 0.001), ("crypto-qwen", 0.005), ("crypto-gemini", 0.02)]:
+        repository.save_api_request(
+            {
+                "agent_name": agent_name,
+                "model_name": "model",
+                "request_type": "signal",
+                "prompt_tokens": 100,
+                "completion_tokens": 20,
+                "total_tokens": 120,
+                "token_cost_usd": cost,
+                "total_cost_usd": cost,
+                "prompt_characters": 500,
+                "response_characters": 80,
+                "prompt_hash": agent_name,
+                "response_hash": agent_name,
+            }
+        )
+
+    summary = summarize_api_costs(repository)
+
+    assert "crypto-gemini" in summary["by_agent"]
+    assert summary["by_agent"]["crypto-gemini"]["request_count"] == 1
+    assert any("crypto-gemini" in finding for finding in summary["diagnosis"])
 
 
 def test_diagnosis_handles_empty_challenger_rows() -> None:

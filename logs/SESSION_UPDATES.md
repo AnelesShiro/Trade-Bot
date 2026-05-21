@@ -1411,3 +1411,41 @@ Entry template:
   - `pytest -q` â†’ 135 passed (0 regressions).
   - `validate-update --no-smoke` â†’ all PASS.
 - Deployment notes: Hot-reload picks up no changes (Python-only fix in `.py`). Runner must be restarted for the fix to take effect in the live cycle.
+
+## 2026-05-21 - Add crypto-gemini Third Agent (Gemini 2.5 Flash)
+
+- Problem addressed: Only two agents (DeepSeek, Qwen) competed. User requested a fully-isolated third agent using Google Gemini Flash.
+- Root cause: New feature addition. Five sub-systems hardcoded exactly two agents (workload.py buckets, models.py columns, repository.py writes, api_cost_audit.py string matching, dashboard.app.py challenger index assumption).
+- Files changed:
+  - `config/settings.yaml` — added `crypto-gemini` agent block (LLM_PROVIDER: openai, LLM_MODEL: gemini-2.5-flash, LLM_BASE_URL: Google OpenAI-compatible endpoint, LLM_ALLOW_FALLBACK: false, api_failover: disabled).
+  - `.env` (local, not committed) — added `GEMINI_API_KEY`.
+  - `src/competition/workload.py` — added `"crypto-gemini": "gemini"` to AGENT_ALIASES; added `"gemini"` bucket to WorkloadTracker.agents default; extended finalize(), workload_scores(), summarize_workload(), _decision_share(), _agent_key() for gemini.
+  - `src/storage/models.py` — added four nullable columns to WorkloadCycleRecord (gemini_workload_pct, gemini_latency_seconds, gemini_tokens, gemini_cost_usd); added migration block in _migrate_sqlite() using ALTER TABLE ADD COLUMN.
+  - `src/storage/repository.py` — updated save_workload_cycle() to write gemini_* values using .get() with 0.0 defaults for backward compatibility.
+  - `src/competition/api_cost_audit.py` — refactored diagnose_cost_spike() from hardcoded "grok/qwen vs deepseek" to generic N-agent comparison grouped by agent_name.
+  - `src/dashboard/app.py` — expanded workload KPI display from 5 to 6 columns (added Gemini); updated API cost audit challenger mask to non-deepseek generic; updated workload charts (pie split, trend line, token/latency/cost trends) to include gemini columns dynamically; updated per-cycle breakdown table.
+  - `tests/test_gemini_agent.py` (new) — 16 tests covering: config correctness, model lock, workload alias routing, tracker isolation, DB persistence, zero-state initialization, multi-agent leaderboard visibility, failure isolation.
+  - `tests/test_workload.py` — added 3 new tests including gemini in workload scores and tracker persistence; updated existing persistence test to verify 4-bucket total == 100%.
+  - `tests/test_api_cost_audit.py` — updated existing comparison test assertion; added test_api_cost_summary_includes_gemini covering 3-agent cost comparison.
+  - `tests/test_runner_integration.py` — updated workload-sum assertion to include gemini_workload_pct.
+  - `PROJECT_BOOTSTRAP.md` — updated active agents list and model locks.
+- Key implementation details:
+  - Gemini uses the OpenAI-compatible endpoint (LLM_PROVIDER: openai) — same pattern as Qwen/DashScope. No custom provider code needed.
+  - Gemini 2.5 Flash uses thinking tokens by default; max_tokens must be = 200. Confirmed via live API test (key verified before implementation).
+  - DB migration is additive-only (ALTER TABLE ADD COLUMN with DEFAULT 0.0). Historical rows remain valid with NULL/0 in gemini columns.
+  - Runner loop already iterates settings.agents generically — Gemini participates automatically with no runner changes.
+  - Account isolation: all DB tables filtered by agent_id. Gemini starts with zero trades, lessons, reflections, and PnL.
+  - Workload scores now sum across 4 buckets (local + deepseek + grok + gemini = 100%).
+  - api_failover disabled for Gemini (no fallback chain configured).
+  - LLM_ALLOW_FALLBACK: false preserved — model verification will reject if Google returns a versioned slug; update LLM_MODEL if needed.
+- Validation:
+  - `python -m src.cli init` ? all 3 agents registered (deepseek, qwen, gemini logged).
+  - `pytest -q` ? 153 passed, 0 failed.
+  - `validate-update --no-smoke` ? all 4 checks PASS.
+  - `preflight-check` ? all 9 critical checks PASS (including api_keys with GEMINI_API_KEY present).
+  - Live API smoke test: Gemini 2.5 Flash responded `OK` to a test prompt via the OpenAI-compatible endpoint.
+- Deployment notes: Runner restart required so it picks up the new agent from settings. Run `python -m src.cli init` then restart the live runner. Monitor the first live cycle to confirm Gemini model verification passes.
+- Known limitations / follow-ups:
+  - If Google returns a versioned model slug (e.g. `gemini-2.5-flash-preview-05-20`), model verification will raise. Update `LLM_MODEL` in settings.yaml to the exact slug returned and re-run `init`.
+  - Gemini thinking tokens inflate total_tokens vs completion_tokens. Cost estimates in api_requests table may undercount if the cost model does not account for thinking tokens separately.
+  - api_failover is disabled for Gemini. If Gemini fails, the cycle records an error and continues with DeepSeek and Qwen. To add a fallback, configure a fallback_chain in settings.yaml and re-run init.

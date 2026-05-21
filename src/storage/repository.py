@@ -505,14 +505,18 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
                 local_workload_pct=cycle["local_workload_pct"],
                 deepseek_workload_pct=cycle["deepseek_workload_pct"],
                 grok_workload_pct=cycle["grok_workload_pct"],
+                gemini_workload_pct=cycle.get("gemini_workload_pct", 0.0),
                 local_wall_time_seconds=cycle["local_wall_time_seconds"],
                 local_cpu_time_seconds=cycle["local_cpu_time_seconds"],
                 deepseek_latency_seconds=cycle["deepseek_latency_seconds"],
                 grok_latency_seconds=cycle["grok_latency_seconds"],
+                gemini_latency_seconds=cycle.get("gemini_latency_seconds", 0.0),
                 deepseek_tokens=int(cycle["deepseek_tokens"]),
                 grok_tokens=int(cycle["grok_tokens"]),
+                gemini_tokens=int(cycle.get("gemini_tokens", 0)),
                 deepseek_cost_usd=cycle["deepseek_cost_usd"],
                 grok_cost_usd=cycle["grok_cost_usd"],
+                gemini_cost_usd=cycle.get("gemini_cost_usd", 0.0),
                 payload_json=json.dumps(cycle.get("payload", {}), default=str),
             )
             session.add(record)

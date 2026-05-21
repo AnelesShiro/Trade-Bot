@@ -5,12 +5,12 @@ Read this file first in every new Codex session. `AGENTS.md` in this repo and in
 ## Current State
 
 - Project: `crypto-paper-trading-arena`, BTCUSDT continuous paper-trading system. **No end date — runs indefinitely.**
-- Active agents: `crypto-deepseek` (running, model `deepseek-v4-flash`) and `crypto-qwen` (running, model `qwen3-max` via DashScope Standard Global URL).
+- Active agents: `crypto-deepseek` (running, model `deepseek-v4-flash`), `crypto-qwen` (running, model `qwen3-max` via DashScope Standard Global URL), and `crypto-gemini` (running, model `gemini-2.5-flash` via Google Gemini OpenAI-compatible endpoint).
 - Legacy `crypto-grok` data remains in SQLite for history/audit only.
 - Latest verified live cycle/checkpoint: `84` completed at `2026-05-19T15:51:10Z`.
 - Current live runner is one normal Windows parent-child process tree.
 - Current active open positions at last check: none.
-- DeepSeek model lock: `deepseek-v4-flash`. Qwen model lock: `qwen3-max`.
+- DeepSeek model lock: `deepseek-v4-flash`. Qwen model lock: `qwen3-max`. Gemini model lock: `gemini-2.5-flash`.
 - Risk automation: enabled in `config/settings.yaml` (`risk_automation`). Optional agent fields: `PLACE_TRIGGER`, `trigger_order`, `position_risk`. Default trading unchanged without those fields.
 - API failover is explicitly enabled per active agent. DeepSeek -> Qwen fallback; Qwen -> DeepSeek fallback. Silent model switching remains impossible (`LLM_ALLOW_FALLBACK: false`).
 - **Continuous mode**: `duration_days: 0` in config. The runner loops forever with `while True`; only a kill-switch file (`KILL_SWITCH`) or graceful restart stops it. No `COMPLETED` status is ever emitted.

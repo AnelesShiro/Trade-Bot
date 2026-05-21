@@ -287,14 +287,18 @@ class WorkloadCycleRecord(Base):
     local_workload_pct: Mapped[float] = mapped_column(Float, default=0.0)
     deepseek_workload_pct: Mapped[float] = mapped_column(Float, default=0.0)
     grok_workload_pct: Mapped[float] = mapped_column(Float, default=0.0)
+    gemini_workload_pct: Mapped[float | None] = mapped_column(Float, nullable=True, default=0.0)
     local_wall_time_seconds: Mapped[float] = mapped_column(Float, default=0.0)
     local_cpu_time_seconds: Mapped[float] = mapped_column(Float, default=0.0)
     deepseek_latency_seconds: Mapped[float] = mapped_column(Float, default=0.0)
     grok_latency_seconds: Mapped[float] = mapped_column(Float, default=0.0)
+    gemini_latency_seconds: Mapped[float | None] = mapped_column(Float, nullable=True, default=0.0)
     deepseek_tokens: Mapped[int] = mapped_column(Integer, default=0)
     grok_tokens: Mapped[int] = mapped_column(Integer, default=0)
+    gemini_tokens: Mapped[int | None] = mapped_column(Integer, nullable=True, default=0)
     deepseek_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
     grok_cost_usd: Mapped[float] = mapped_column(Float, default=0.0)
+    gemini_cost_usd: Mapped[float | None] = mapped_column(Float, nullable=True, default=0.0)
     payload_json: Mapped[str] = mapped_column(Text, default="{}")
 
 
@@ -707,6 +711,17 @@ def _migrate_sqlite(engine) -> None:
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_timestamp ON api_requests(timestamp)"))
         connection.execute(text("CREATE INDEX IF NOT EXISTS ix_api_requests_cycle_number ON api_requests(cycle_number)"))
         _backfill_signal_audit_columns(connection)
+        workload_rows = connection.execute(text("PRAGMA table_info(workload_cycles)")).mappings().all()
+        workload_columns = {row["name"] for row in workload_rows}
+        workload_additions = {
+            "gemini_workload_pct": "FLOAT DEFAULT 0.0",
+            "gemini_latency_seconds": "FLOAT DEFAULT 0.0",
+            "gemini_tokens": "INTEGER DEFAULT 0",
+            "gemini_cost_usd": "FLOAT DEFAULT 0.0",
+        }
+        for column, ddl in workload_additions.items():
+            if workload_rows and column not in workload_columns:
+                connection.execute(text(f"ALTER TABLE workload_cycles ADD COLUMN {column} {ddl}"))
 
 
 def _backfill_lesson_canonical_columns(connection) -> None:

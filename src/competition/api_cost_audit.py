@@ -124,38 +124,50 @@ def summarize_api_costs(repository: ArenaRepository, limit: int = 1000) -> dict[
 
 
 def diagnose_cost_spike(requests: list[Any]) -> list[str]:
-    findings: list[str] = []
-    challenger = [
-        item
-        for item in requests
-        if "grok" in str(item.agent_name).lower() or "qwen" in str(item.agent_name).lower()
-    ]
-    deepseek = [item for item in requests if "deepseek" in str(item.agent_name).lower()]
-    if not challenger:
+    if not requests:
         return ["No challenger API audit rows are recorded yet."]
-    challenger_cost = sum(float(item.total_cost_usd or 0.0) for item in challenger)
-    deepseek_cost = sum(float(item.total_cost_usd or 0.0) for item in deepseek)
-    if deepseek_cost and challenger_cost > deepseek_cost * 3:
-        findings.append(f"Challenger estimated audit cost is {challenger_cost / deepseek_cost:.1f}x DeepSeek.")
-    if any("cost_gt_3x_previous" in _flags(item) for item in challenger):
-        findings.append("At least one challenger request cost exceeded 3x its previous challenger request.")
-    if any("tokens_gt_3x_previous" in _flags(item) for item in challenger):
-        findings.append("At least one challenger request token count exceeded 3x its previous challenger request.")
-    if any("prompt_size_gt_2x_previous" in _flags(item) for item in challenger):
-        findings.append("Challenger prompt size more than doubled between adjacent requests.")
-    retry_total = sum(int(item.retry_count or 0) for item in challenger)
-    if retry_total:
-        findings.append(f"Challenger had {retry_total} retry attempt(s), which can multiply provider-side spend.")
-    server_tool_cost = sum(float(item.server_tool_cost_usd or 0.0) for item in challenger)
-    if server_tool_cost:
-        findings.append(f"Challenger has ${server_tool_cost:.4f} recorded server-side tool cost.")
-    if len(challenger) >= 2:
-        first_prompt = float(challenger[0].prompt_characters or 0)
-        last_prompt = float(challenger[-1].prompt_characters or 0)
-        if first_prompt and last_prompt > first_prompt * 2:
-            findings.append(f"Challenger prompt characters grew from {int(first_prompt)} to {int(last_prompt)}.")
+    findings: list[str] = []
+    by_agent: dict[str, list[Any]] = {}
+    for item in requests:
+        name = str(item.agent_name or "unknown")
+        by_agent.setdefault(name, []).append(item)
+    if not by_agent:
+        return ["No challenger API audit rows are recorded yet."]
+    agent_costs = {
+        name: sum(float(item.total_cost_usd or 0.0) for item in rows)
+        for name, rows in by_agent.items()
+    }
+    if len(agent_costs) >= 2:
+        sorted_agents = sorted(agent_costs.items(), key=lambda kv: kv[1], reverse=True)
+        highest_name, highest_cost = sorted_agents[0]
+        lowest_name, lowest_cost = sorted_agents[-1]
+        if lowest_cost and highest_cost > lowest_cost * 3:
+            findings.append(
+                f"{highest_name} estimated audit cost (${highest_cost:.4f}) is "
+                f"{highest_cost / lowest_cost:.1f}x {lowest_name} (${lowest_cost:.4f})."
+            )
+    for agent_name, rows in by_agent.items():
+        if any("cost_gt_3x_previous" in _flags(item) for item in rows):
+            findings.append(f"{agent_name}: at least one request cost exceeded 3x its previous request.")
+        if any("tokens_gt_3x_previous" in _flags(item) for item in rows):
+            findings.append(f"{agent_name}: at least one request token count exceeded 3x its previous request.")
+        if any("prompt_size_gt_2x_previous" in _flags(item) for item in rows):
+            findings.append(f"{agent_name}: prompt size more than doubled between adjacent requests.")
+        retry_total = sum(int(item.retry_count or 0) for item in rows)
+        if retry_total:
+            findings.append(f"{agent_name}: {retry_total} retry attempt(s), which can multiply provider-side spend.")
+        server_tool_cost = sum(float(item.server_tool_cost_usd or 0.0) for item in rows)
+        if server_tool_cost:
+            findings.append(f"{agent_name}: ${server_tool_cost:.4f} recorded server-side tool cost.")
+        if len(rows) >= 2:
+            first_prompt = float(rows[0].prompt_characters or 0)
+            last_prompt = float(rows[-1].prompt_characters or 0)
+            if first_prompt and last_prompt > first_prompt * 2:
+                findings.append(
+                    f"{agent_name}: prompt characters grew from {int(first_prompt)} to {int(last_prompt)}."
+                )
     if not findings:
-        findings.append("No local audit anomaly explains the challenger spike yet; compare provider billing for hidden reasoning or server-side charges.")
+        findings.append("No local audit anomaly detected; compare provider billing for hidden reasoning or server-side charges.")
     return findings
 
 

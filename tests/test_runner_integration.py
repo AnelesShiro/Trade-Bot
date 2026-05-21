@@ -95,7 +95,8 @@ def test_runner_run_once_with_tool_request(monkeypatch, tmp_path, test_settings)
     assert runner.repository.response_usage("crypto-qwen")["requests"] >= 1
     assert len(runner.repository.workload_cycles()) == 1
     cycle = runner.repository.workload_cycles()[0]
-    assert round(cycle.local_workload_pct + cycle.deepseek_workload_pct + cycle.grok_workload_pct, 6) == 100.0
+    gemini_pct = float(cycle.gemini_workload_pct or 0.0) if hasattr(cycle, "gemini_workload_pct") else 0.0
+    assert round(cycle.local_workload_pct + cycle.deepseek_workload_pct + cycle.grok_workload_pct + gemini_pct, 4) == 100.0
     assert test_settings.resolve_path(test_settings.paths.ledger).exists()
     assert test_settings.resolve_path(test_settings.paths.evaluation).exists()
 

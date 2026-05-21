@@ -166,6 +166,17 @@ agents:
           model: deepseek-v4-flash
           LLM_BASE_URL: ""
           LLM_API_KEY: DEEPSEEK_API_KEY
+  - id: crypto-gemini
+    name: Crypto Gemini
+    session_id: crypto-gemini
+    llm:
+      LLM_PROVIDER: "openai"
+      LLM_MODEL: "gemini-2.5-flash"
+      LLM_BASE_URL: "https://generativelanguage.googleapis.com/v1beta/openai/"
+      LLM_API_KEY: GEMINI_API_KEY
+      LLM_ALLOW_FALLBACK: false
+    api_failover:
+      enabled: false
 
 paths:
   database: database/arena.db
