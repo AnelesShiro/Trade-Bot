@@ -1,14 +1,14 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": 35.68125998797704,
-      "equity": 10262.225959530238,
-      "open_margin": 1000.0,
-      "open_positions": 1,
-      "open_risk": 108.94444556592572,
-      "realized_pnl": 277.2105636728988,
-      "roi_pct": 2.622259595302385,
-      "unrealized_pnl": -14.984604142660825
+      "daily_pnl": 43.61698795409115,
+      "equity": 10270.161687496353,
+      "open_margin": 0.0,
+      "open_positions": 0,
+      "open_risk": 0.0,
+      "realized_pnl": 270.16168749635204,
+      "roi_pct": 2.7016168749635288,
+      "unrealized_pnl": 0.0
     },
     "crypto-qwen": {
       "daily_pnl": 0.0,
@@ -23,12 +23,12 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.10370164000000001,
+      "crypto-deepseek": 0.10467212000000001,
       "crypto-qwen": 0.16556436
     },
-    "total": 0.269266
+    "total": 0.27023648
   },
-  "btc_price": 76977.8,
+  "btc_price": 77260.0,
   "competition": {
     "continuous_mode": true,
     "duration_days": 0,
@@ -36,14 +36,14 @@
     "name": "crypto-paper-trading-arena",
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT",
-    "uptime_seconds": 510422.157444,
+    "uptime_seconds": 514355.436502,
     "weekly_target_pct": 0.07
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-05-21T14:47:02.083017Z",
+    "active_checkpoint_timestamp": "2026-05-21T15:52:35.384376Z",
     "active_versions_file": {
-      "code_version": "4e2ec5a3ae80",
+      "code_version": "a4078862058e",
       "config_version": "30b8df29e77ffeffb2daa62b39d7a23db0775e12f18c345f04231b983f0a949d",
       "rulebook": {
         "hash": "4981db04e29049ad2dabc279d0bef83afc43b15ae046a9908ed432f08f46acc2",
@@ -53,7 +53,7 @@
         "hash": "ce043dc3f0a477dfb3169f301230d31cbcbdc8676da9055656a364088e7566bf",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-21T13:41:11.391616Z"
+      "updated_at": "2026-05-21T14:47:06.604697Z"
     },
     "canary": {
       "enabled": false,
@@ -74,13 +74,13 @@
       "update_id": "a69d8865636a434bad93bc199be41a32"
     },
     "latest_checkpoint": {
-      "cycle_number": 128,
-      "id": 143,
+      "cycle_number": 129,
+      "id": 144,
       "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "4e2ec5a3ae80",
+      "code_version": "a4078862058e",
       "config_version": "30b8df29e77ffeffb2daa62b39d7a23db0775e12f18c345f04231b983f0a949d",
       "rulebook": {
         "hash": "4981db04e29049ad2dabc279d0bef83afc43b15ae046a9908ed432f08f46acc2",
@@ -90,7 +90,7 @@
         "hash": "ce043dc3f0a477dfb3169f301230d31cbcbdc8676da9055656a364088e7566bf",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-21T14:47:02.446573Z"
+      "updated_at": "2026-05-21T15:52:35.719656Z"
     }
   },
   "downtime": {
@@ -256,7 +256,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-21T14:47:01.202020Z"
+        "timestamp": "2026-05-21T15:52:34.473497Z"
       },
       {
         "drawdown": -0.0005,
@@ -315,14 +315,18 @@
         "timestamp": "2026-05-21T13:41:04.495423Z"
       },
       {
-        "drawdown": -0.002197283920284051,
-        "timestamp": "2026-05-21T14:47:02.202020Z"
+        "drawdown": -0.0014256880745206627,
+        "timestamp": "2026-05-21T15:51:48.160604Z"
+      },
+      {
+        "drawdown": -0.0014256880745206627,
+        "timestamp": "2026-05-21T15:52:35.473497Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-21T14:47:01.202020Z"
+        "timestamp": "2026-05-21T15:52:34.473497Z"
       },
       {
         "drawdown": -0.00025,
@@ -354,7 +358,7 @@
       },
       {
         "drawdown": -0.0055980040828151065,
-        "timestamp": "2026-05-21T14:47:02.202020Z"
+        "timestamp": "2026-05-21T15:52:35.473497Z"
       }
     ]
   },
@@ -362,7 +366,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-21T14:47:01.202020Z"
+        "timestamp": "2026-05-21T15:52:34.473497Z"
       },
       {
         "equity": 9995.0,
@@ -421,14 +425,18 @@
         "timestamp": "2026-05-21T13:41:04.495423Z"
       },
       {
-        "equity": 10262.225959530238,
-        "timestamp": "2026-05-21T14:47:02.202020Z"
+        "equity": 10270.161687496353,
+        "timestamp": "2026-05-21T15:51:48.160604Z"
+      },
+      {
+        "equity": 10270.161687496353,
+        "timestamp": "2026-05-21T15:52:35.473497Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-21T14:47:01.202020Z"
+        "timestamp": "2026-05-21T15:52:34.473497Z"
       },
       {
         "equity": 9997.5,
@@ -460,28 +468,28 @@
       },
       {
         "equity": 9965.975021885815,
-        "timestamp": "2026-05-21T14:47:02.202020Z"
+        "timestamp": "2026-05-21T15:52:35.473497Z"
       }
     ]
   },
-  "generated_at": "2026-05-21T14:47:02.157444Z",
+  "generated_at": "2026-05-21T15:52:35.436502Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.10370164000000001,
-      "equity": 10262.225959530238,
+      "api_cost_usd": 0.10467212000000001,
+      "equity": 10270.161687496353,
       "max_drawdown_pct": 0.0030626968563617326,
-      "profit_factor": 6.709000076145656,
-      "realized_pnl": 277.2105636728988,
+      "profit_factor": 5.858530384505614,
+      "realized_pnl": 270.16168749635204,
       "rejected_signals": 13,
-      "rule_compliance": 0.5185185185185186,
-      "score": 0.5508942097644983,
-      "sharpe": 0.5532434617951935,
-      "sortino": 12.109214607305985,
-      "total_return_pct": 0.02622259595302385,
-      "unrealized_pnl": -14.984604142660825,
-      "win_rate": 0.35714285714285715
+      "rule_compliance": 0.5357142857142857,
+      "score": 0.5529629470014608,
+      "sharpe": 0.5113880500198252,
+      "sortino": 11.058606557523014,
+      "total_return_pct": 0.027016168749635288,
+      "unrealized_pnl": 0.0,
+      "win_rate": 0.3333333333333333
     },
     {
       "agent_id": "crypto-qwen",
@@ -490,9 +498,9 @@
       "max_drawdown_pct": 0.0055980040828151065,
       "profit_factor": 0.41940501119771345,
       "realized_pnl": -34.02497811418421,
-      "rejected_signals": 23,
-      "rule_compliance": 0.23333333333333328,
-      "score": 0.21213732516770312,
+      "rejected_signals": 24,
+      "rule_compliance": 0.22580645161290325,
+      "score": 0.21138463699566012,
       "sharpe": -0.2855219276806619,
       "sortino": -0.37324226195785803,
       "total_return_pct": -0.0034024978114184706,
@@ -507,13 +515,22 @@
         "agents": [
           "crypto-deepseek"
         ],
-        "avg_pnl": 19.800754548064198,
+        "avg_pnl": 18.010779166423468,
         "badges": [
+          "High Confidence",
+          "Recently Improved",
           "Critical Warning"
         ],
         "category": "risk_management",
-        "confidence_score": 0.73,
+        "confidence_score": 0.89,
         "evidence": [
+          {
+            "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T15:51:48.177719Z",
+            "excerpt": "Pause new SHORT entries for one full cycle after a short stop-loss.",
+            "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
+            "type": "private_lesson"
+          },
           {
             "agent_id": "crypto-deepseek",
             "created_at": "2026-05-17T18:13:08.345691Z",
@@ -530,6 +547,13 @@
           },
           {
             "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T15:51:48.390778Z",
+            "excerpt": "Pause new SHORT entries for one full cycle after a short stop-loss.",
+            "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
+            "type": "reflection"
+          },
+          {
+            "agent_id": "crypto-deepseek",
             "created_at": "2026-05-17T18:13:08.578200Z",
             "excerpt": "Pause new SHORT entries for one full cycle after a short stop-loss.",
             "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-003. Estimated loss -16 to -21 USDT depending on fill. Combined PnL across all trades: DS-SHORT-001 (+103 USDT), DS-SHORT-002 (-7 USDT), DS-SHORT-003 (-21 USDT) = ~+75 USDT total. Account equity ~10,075 USDT (+0.75%). No positions. 2.5 days remaining. 9.25% to +10% weekly target. After-stop-loss wait rule in effect for shorts.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
@@ -543,51 +567,63 @@
             "type": "reflection"
           }
         ],
-        "evidence_count": 4,
-        "impact_score": 0.7194,
+        "evidence_count": 6,
+        "impact_score": 0.8134,
         "is_shared": false,
-        "last_updated": "2026-05-17T18:13:08.578200Z",
+        "last_updated": "2026-05-21T15:51:48.390778Z",
         "lesson_id": "derived-6818779703158647743",
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.6697,
-        "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-003. Estimated loss -16 to -21 USDT depending on fill. Combined PnL across all trades: DS-SHORT-001 (+103 USDT), DS-SHORT-002 (-7 USDT), DS-SHORT-003 (-21 USDT) = ~+75 USDT total. Account equity ~10,075 USDT (+0.75%). No positions. 2.5 days remaining. 9.25% to +10% weekly target. After-stop-loss wait rule in effect for shorts.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
+        "rank_score": 0.8188,
+        "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
         "summary": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "trend": [
           {
-            "confidence_score": 0.5931,
+            "confidence_score": 0.7046,
             "frequency": 1,
-            "impact_score": 0.1799,
-            "timestamp": "2026-05-14T18:13:08.578200+00:00"
+            "impact_score": 0.1356,
+            "timestamp": "2026-05-16T15:51:48.390778+00:00"
           },
           {
-            "confidence_score": 0.6387,
+            "confidence_score": 0.7417,
             "frequency": 2,
-            "impact_score": 0.3597,
-            "timestamp": "2026-05-15T18:13:08.578200+00:00"
+            "impact_score": 0.2711,
+            "timestamp": "2026-05-17T15:51:48.390778+00:00"
           },
           {
-            "confidence_score": 0.6844,
+            "confidence_score": 0.7788,
             "frequency": 3,
-            "impact_score": 0.5395,
-            "timestamp": "2026-05-16T18:13:08.578200+00:00"
+            "impact_score": 0.4067,
+            "timestamp": "2026-05-18T15:51:48.390778+00:00"
           },
           {
-            "confidence_score": 0.73,
+            "confidence_score": 0.8158,
             "frequency": 4,
-            "impact_score": 0.7194,
-            "timestamp": "2026-05-17T18:13:08.578200+00:00"
+            "impact_score": 0.5423,
+            "timestamp": "2026-05-19T15:51:48.390778+00:00"
+          },
+          {
+            "confidence_score": 0.8529,
+            "frequency": 5,
+            "impact_score": 0.6778,
+            "timestamp": "2026-05-20T15:51:48.390778+00:00"
+          },
+          {
+            "confidence_score": 0.89,
+            "frequency": 6,
+            "impact_score": 0.8134,
+            "timestamp": "2026-05-21T15:51:48.390778+00:00"
           }
         ],
-        "win_rate": 0.35714285714285715
+        "win_rate": 0.3333333333333333
       }
     ],
     "avoid_summary": {
-      "avg_confidence": 0.73,
-      "avg_impact": 0.7194,
+      "avg_confidence": 0.89,
+      "avg_impact": 0.8134,
       "most_influential_lesson": "Pause new SHORT entries for one full cycle after a short stop-loss.",
       "shared_count": 0,
       "total": 1
@@ -601,7 +637,7 @@
           "crypto-grok",
           "crypto-qwen"
         ],
-        "avg_pnl": -0.3599357779983161,
+        "avg_pnl": -0.8074296234084986,
         "badges": [
           "Shared",
           "High Confidence",
@@ -610,6 +646,20 @@
         "category": "risk_management",
         "confidence_score": 0.9,
         "evidence": [
+          {
+            "agent_id": "crypto-qwen",
+            "created_at": "2026-05-21T15:52:33.762338Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T15:52:33.544337Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
           {
             "agent_id": "crypto-qwen",
             "created_at": "2026-05-21T14:47:00.216132Z",
@@ -651,26 +701,12 @@
             "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
             "raw_text": "Daily review: equity=10282.21, realized_pnl=282.21, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
             "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-qwen",
-            "created_at": "2026-05-21T12:37:42.909683Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-deepseek",
-            "created_at": "2026-05-21T12:37:42.719822Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10282.21, realized_pnl=282.21, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
           }
         ],
-        "evidence_count": 627,
+        "evidence_count": 631,
         "impact_score": 1.0,
         "is_shared": true,
-        "last_updated": "2026-05-21T14:47:00.449829Z",
+        "last_updated": "2026-05-21T15:52:33.965505Z",
         "lesson_id": "derived-6405346482101543059",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
@@ -685,40 +721,40 @@
             "confidence_score": 0.7125,
             "frequency": 1,
             "impact_score": 0.1667,
-            "timestamp": "2026-05-16T14:47:00.449829+00:00"
+            "timestamp": "2026-05-16T15:52:33.965505+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
             "impact_score": 0.3333,
-            "timestamp": "2026-05-17T14:47:00.449829+00:00"
+            "timestamp": "2026-05-17T15:52:33.965505+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
             "impact_score": 0.5,
-            "timestamp": "2026-05-18T14:47:00.449829+00:00"
+            "timestamp": "2026-05-18T15:52:33.965505+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
             "impact_score": 0.6667,
-            "timestamp": "2026-05-19T14:47:00.449829+00:00"
+            "timestamp": "2026-05-19T15:52:33.965505+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
             "impact_score": 0.8333,
-            "timestamp": "2026-05-20T14:47:00.449829+00:00"
+            "timestamp": "2026-05-20T15:52:33.965505+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
             "impact_score": 1.0,
-            "timestamp": "2026-05-21T14:47:00.449829+00:00"
+            "timestamp": "2026-05-21T15:52:33.965505+00:00"
           }
         ],
-        "win_rate": 0.19642857142857142
+        "win_rate": 0.19047619047619047
       },
       {
         "agent_count": 3,
@@ -727,7 +763,7 @@
           "crypto-deepseek",
           "crypto-qwen"
         ],
-        "avg_pnl": 4.980014462965008,
+        "avg_pnl": 4.383356002418099,
         "badges": [
           "Shared",
           "High Confidence",
@@ -794,14 +830,14 @@
           }
         ],
         "evidence_count": 15,
-        "impact_score": 0.8831,
+        "impact_score": 0.8732,
         "is_shared": true,
         "last_updated": "2026-05-21T10:27:18.055263Z",
         "lesson_id": "derived-4000487803183390061",
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.9214,
+        "rank_score": 0.9168,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -810,41 +846,41 @@
           {
             "confidence_score": 0.7125,
             "frequency": 1,
-            "impact_score": 0.1472,
+            "impact_score": 0.1455,
             "timestamp": "2026-05-16T10:27:18.055263+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
-            "impact_score": 0.2944,
+            "impact_score": 0.2911,
             "timestamp": "2026-05-17T10:27:18.055263+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
-            "impact_score": 0.4415,
+            "impact_score": 0.4366,
             "timestamp": "2026-05-18T10:27:18.055263+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
-            "impact_score": 0.5887,
+            "impact_score": 0.5821,
             "timestamp": "2026-05-19T10:27:18.055263+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
-            "impact_score": 0.7359,
+            "impact_score": 0.7277,
             "timestamp": "2026-05-20T10:27:18.055263+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
-            "impact_score": 0.8831,
+            "impact_score": 0.8732,
             "timestamp": "2026-05-21T10:27:18.055263+00:00"
           }
         ],
-        "win_rate": 0.16666666666666666
+        "win_rate": 0.15873015873015872
       },
       {
         "agent_count": 2,
@@ -852,7 +888,7 @@
           "crypto-deepseek",
           "crypto-grok"
         ],
-        "avg_pnl": 1.710484023587954,
+        "avg_pnl": 0.815496332767589,
         "badges": [
           "Shared",
           "High Confidence"
@@ -918,14 +954,14 @@
           }
         ],
         "evidence_count": 10,
-        "impact_score": 0.6778,
+        "impact_score": 0.6629,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.338211Z",
         "lesson_id": "derived-3216145328220438037",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.8093,
+        "rank_score": 0.8027,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -934,41 +970,41 @@
           {
             "confidence_score": 0.7125,
             "frequency": 1,
-            "impact_score": 0.113,
+            "impact_score": 0.1105,
             "timestamp": "2026-05-12T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
-            "impact_score": 0.2259,
+            "impact_score": 0.221,
             "timestamp": "2026-05-13T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
-            "impact_score": 0.3389,
+            "impact_score": 0.3315,
             "timestamp": "2026-05-14T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
-            "impact_score": 0.4519,
+            "impact_score": 0.4419,
             "timestamp": "2026-05-15T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
-            "impact_score": 0.5648,
+            "impact_score": 0.5524,
             "timestamp": "2026-05-16T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
-            "impact_score": 0.6778,
+            "impact_score": 0.6629,
             "timestamp": "2026-05-17T23:41:50.338211+00:00"
           }
         ],
-        "win_rate": 0.3214285714285714
+        "win_rate": 0.30952380952380953
       },
       {
         "agent_count": 1,
@@ -1017,7 +1053,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.5757,
+        "rank_score": 0.5755,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -1053,7 +1089,7 @@
     ],
     "follow_summary": {
       "avg_confidence": 0.8575,
-      "avg_impact": 0.7669,
+      "avg_impact": 0.7607,
       "most_influential_lesson": "Trade only high-quality setups and maintain strict rule compliance.",
       "shared_count": 3,
       "total": 4
@@ -1061,14 +1097,6 @@
   },
   "market": {
     "candles": [
-      {
-        "close": 81403.4,
-        "high": 81434.8,
-        "low": 80796.4,
-        "open": 80917.4,
-        "timestamp": "2026-05-11T15:00:00Z",
-        "volume": 6794.771
-      },
       {
         "close": 81526.8,
         "high": 81880.0,
@@ -2974,52 +3002,40 @@
         "volume": 10674.629
       },
       {
-        "close": 76977.8,
+        "close": 76944.0,
         "high": 77220.0,
         "low": 76744.1,
         "open": 77090.0,
         "timestamp": "2026-05-21T14:00:00Z",
-        "volume": 5126.804
+        "volume": 5882.902
+      },
+      {
+        "close": 77260.0,
+        "high": 77379.1,
+        "low": 76861.7,
+        "open": 76944.0,
+        "timestamp": "2026-05-21T15:00:00Z",
+        "volume": 4349.32
       }
     ],
-    "current_price": 76977.8,
+    "current_price": 77260.0,
     "indicators": {
-      "atr_14": 366.307142857142,
-      "bb_high": 78237.09043324197,
-      "bb_low": 76943.72956675803,
-      "bb_mid": 77590.41,
-      "ema_20": 77440.82106998237,
-      "ema_50": 77376.17509008043,
-      "macd": -52.59020304615842,
-      "macd_signal": 61.730691435071456,
-      "rsi_14": 27.97202797202823
+      "atr_14": 375.39285714285717,
+      "bb_high": 78239.57502145522,
+      "bb_low": 76900.80497854478,
+      "bb_mid": 77570.19,
+      "ema_20": 77420.68754404759,
+      "ema_50": 77370.354041039,
+      "macd": -60.584712411946384,
+      "macd_signal": 36.83620176677099,
+      "rsi_14": 38.36370459947464
     },
     "regime": "range_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-05-21T14:45:40.223246Z"
+    "timestamp": "2026-05-21T15:51:12.229686Z"
   },
-  "open_positions": [
-    {
-      "agent_id": "crypto-deepseek",
-      "average_entry": 76862.6244,
-      "closed_at": null,
-      "dca_count": 0,
-      "direction": "SHORT",
-      "id": "DS-SHORT-005",
-      "leverage": 10.0,
-      "margin": 1000.0,
-      "notional": 10000.0,
-      "opened_at": "2026-05-21T13:41:04.495423Z",
-      "realized_pnl": 0.0,
-      "status": "OPEN",
-      "stop_loss": 77700.0,
-      "symbol": "BTC",
-      "take_profit_1": 75500.0,
-      "take_profit_2": 75000.0,
-      "unrealized_pnl": -14.984604142660825
-    }
-  ],
+  "open_positions": [],
   "recent_trades": [
     {
       "action": "OPEN",
@@ -3461,6 +3477,27 @@
       "notional": 10000.0,
       "position_id": "DS-SHORT-005",
       "realized_pnl": -5.0
+    },
+    {
+      "action": "CLOSE",
+      "agent_id": "crypto-deepseek",
+      "code_version": "3a873a1719f5",
+      "config_hash": "30b8df29e77ffeffb2daa62b39d7a23db0775e12f18c345f04231b983f0a949d",
+      "config_version_id": 38,
+      "created_at": "2026-05-21T15:51:48.160604Z",
+      "decision_timestamp": "2026-05-21T14:45:40Z",
+      "direction": "SHORT",
+      "displayed_timestamp": "2026-05-21T15:51:48.160604Z",
+      "entry": 76862.6244,
+      "execution_timestamp": "2026-05-21T15:51:48.160604Z",
+      "exit_price": 76878.3726,
+      "id": "trade-crypto-deepseek-8a9109f129",
+      "leverage": 10.0,
+      "margin": 1000.0,
+      "notes": "CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2",
+      "notional": 10000.0,
+      "position_id": "DS-SHORT-005",
+      "realized_pnl": -7.048876176546714
     }
   ],
   "reflections_summary": {
@@ -3470,6 +3507,24 @@
     },
     "count_recent": 50,
     "recent": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-05-21T15:52:33.965505Z",
+        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-21T15:52:33.753417Z",
+        "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-21T15:51:48.390778Z",
+        "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
+        "summary": "Pause new SHORT entries for one full cycle after a short stop-loss."
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-05-21T14:47:00.449829Z",
@@ -3571,27 +3626,45 @@
         "created_at": "2026-05-21T09:30:41.534431Z",
         "raw_text": "Daily review: equity=10332.26, realized_pnl=284.82, unrealized_pnl=47.44. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
+      }
+    ],
+    "recent_lessons": [
       {
         "agent_id": "crypto-qwen",
-        "created_at": "2026-05-21T08:26:01.107426Z",
+        "category": "risk_management",
+        "confidence": 0.53,
+        "created_at": "2026-05-21T15:52:33.762338Z",
+        "evidence_count": 1,
+        "impact": 0.51,
+        "last_updated": "2026-05-21T15:52:33.762338Z",
         "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "sentiment": "follow",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       },
       {
         "agent_id": "crypto-deepseek",
-        "created_at": "2026-05-21T08:26:00.887370Z",
-        "raw_text": "Daily review: equity=10338.85, realized_pnl=284.82, unrealized_pnl=54.03. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "category": "risk_management",
+        "confidence": 0.53,
+        "created_at": "2026-05-21T15:52:33.544337Z",
+        "evidence_count": 1,
+        "impact": 0.51,
+        "last_updated": "2026-05-21T15:52:33.544337Z",
+        "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "sentiment": "follow",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       },
       {
-        "agent_id": "crypto-qwen",
-        "created_at": "2026-05-21T07:20:35.550907Z",
-        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      }
-    ],
-    "recent_lessons": [
+        "agent_id": "crypto-deepseek",
+        "category": "risk_management",
+        "confidence": 0.53,
+        "created_at": "2026-05-21T15:51:48.177719Z",
+        "evidence_count": 1,
+        "impact": 0.51,
+        "last_updated": "2026-05-21T15:51:48.177719Z",
+        "raw_text": "CLOSE SHORT loss: notes=CLOSED DS-SHORT-005 at approx -52 USDT. Total realized PnL: +225.21 USDT (+2.25% equity). Equity ~10,225 USDT. No positions. After-stop-loss wait rule: no new SHORT next cycle. Failed breakdown pattern is now 0 for 3.; fee=5.0000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
+        "sentiment": "avoid",
+        "summary": "Pause new SHORT entries for one full cycle after a short stop-loss."
+      },
       {
         "agent_id": "crypto-qwen",
         "category": "risk_management",
@@ -3795,42 +3868,6 @@
         "raw_text": "Daily review: equity=10332.26, realized_pnl=284.82, unrealized_pnl=47.44. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "sentiment": "follow",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "category": "risk_management",
-        "confidence": 0.53,
-        "created_at": "2026-05-21T08:26:00.896395Z",
-        "evidence_count": 1,
-        "impact": 0.51,
-        "last_updated": "2026-05-21T08:26:00.896395Z",
-        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "sentiment": "follow",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "category": "risk_management",
-        "confidence": 0.53,
-        "created_at": "2026-05-21T08:26:00.648003Z",
-        "evidence_count": 1,
-        "impact": 0.51,
-        "last_updated": "2026-05-21T08:26:00.648003Z",
-        "raw_text": "Daily review: equity=10338.85, realized_pnl=284.82, unrealized_pnl=54.03. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "sentiment": "follow",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "category": "risk_management",
-        "confidence": 0.53,
-        "created_at": "2026-05-21T07:20:35.359088Z",
-        "evidence_count": 1,
-        "impact": 0.51,
-        "last_updated": "2026-05-21T07:20:35.359088Z",
-        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "sentiment": "follow",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
       }
     ]
   },
@@ -3839,9 +3876,23 @@
       "crypto-challenger": 23,
       "crypto-deepseek": 8,
       "crypto-grok": 4,
-      "crypto-qwen": 23
+      "crypto-qwen": 24
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-qwen",
+        "agent_name": "Crypto Qwen",
+        "confidence": null,
+        "created_at": "2026-05-21T15:52:33.506737Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-deepseek",
@@ -4177,23 +4228,9 @@
           "AGENT_RUNTIME_ERROR: Error: Unknown agent id \"crypto-challenger\". Use \"openclaw agents list\" to see configured agents."
         ],
         "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-challenger",
-        "agent_name": "Crypto Challenger",
-        "confidence": null,
-        "created_at": "2026-05-19T18:40:54.967177Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: Error: Unknown agent id \"crypto-challenger\". Use \"openclaw agents list\" to see configured agents.",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: Error: Unknown agent id \"crypto-challenger\". Use \"openclaw agents list\" to see configured agents."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
       }
     ],
-    "total_recent": 58
+    "total_recent": 59
   },
   "risk_automation": {
     "active_cooldown_count": 0,
@@ -4204,13 +4241,23 @@
         "using_fallback": false
       },
       "crypto-qwen": {
-        "active_model": "qwen3-max",
+        "active_model": "deepseek-v4-flash",
         "configured_model": "qwen3-max",
-        "using_fallback": false
+        "using_fallback": true
       }
     },
     "cooldowns": [],
     "failover_events": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-05-21T15:52:06.591816",
+        "event_type": "FAILOVER",
+        "from_model": "qwen3-max",
+        "from_provider": "openai",
+        "message": "GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.",
+        "to_model": "deepseek-v4-flash",
+        "to_provider": "deepseek"
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-05-20T16:34:36.740618",
@@ -4263,6 +4310,13 @@
       }
     ],
     "notifications": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-05-21T15:52:06.596834",
+        "event_type": "API_FAILOVER",
+        "message": "FAILOVER: openai/qwen3-max -> deepseek/deepseek-v4-flash",
+        "severity": "WARN"
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-05-21T14:46:13.088217",
@@ -4593,49 +4647,49 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 128,
-    "last_cycle_duration_seconds": 83.18571689998498,
-    "last_cycle_started_at": "2026-05-21T14:45:38.657824Z",
-    "next_cycle_at": "2026-05-21T15:47:02.114606Z",
+    "cycle_number": 129,
+    "last_cycle_duration_seconds": 84.55462249999982,
+    "last_cycle_started_at": "2026-05-21T15:51:10.605746Z",
+    "next_cycle_at": "2026-05-21T16:52:35.408189Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 128
+    "total_cycles_completed": 129
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.7455830388692579,
-    "accepted_signal_count": 211,
+    "acceptance_rate": 0.743859649122807,
+    "accepted_signal_count": 212,
     "latest_accepted_signal": {
-      "action": "NONE",
-      "agent_name": "Crypto Qwen",
-      "btc_price": 76977.8,
-      "confidence": null,
-      "cycle_number": 128,
-      "decision": "WATCHLIST",
-      "direction": "NONE",
-      "entry_price": null,
+      "action": "CLOSE",
+      "agent_name": "Crypto DeepSeek",
+      "btc_price": 77260.0,
+      "confidence": 3.0,
+      "cycle_number": 129,
+      "decision": "POSITION_UPDATE",
+      "direction": "SHORT",
+      "entry_price": 76863.0,
       "execution_result": {
-        "action": "NONE",
-        "decision": "WATCHLIST",
-        "executed": false,
-        "reason": "non_trade_decision"
+        "action": "CLOSE",
+        "decision": "POSITION_UPDATE",
+        "executed": true,
+        "position_id": "DS-SHORT-005"
       },
       "expected_rr": null,
-      "id": 283,
-      "leverage": null,
+      "id": 284,
+      "leverage": 10.0,
       "market_regime": "range_low_vol",
-      "model_name": "qwen3-max",
-      "notional_usdt": null,
-      "raw_snippet": "{\n  \"agent\": \"crypto-qwen\",\n  \"decision\": \"WATCHLIST\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"thesis\": \"Price has dropped to 76978 with RSI at 28.0, approaching oversold territory near t",
+      "model_name": "deepseek-v4-flash",
+      "notional_usdt": 10000.0,
+      "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"CLOSE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"MARKET\",\n  \"entry\": 76863,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_pe",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
-      "risk_pct": null,
+      "risk_pct": 0.0106,
       "signal_status": "ACCEPTED",
-      "stop_loss": null,
-      "take_profit_1": null,
-      "take_profit_2": null,
-      "thesis": "Price has dropped to 76978 with RSI at 28.0, approaching oversold territory near the lower Bollinger Band (76944). MACD (-53) remains well below signal line (62), indicating strong bearish momentum despite potential exhaustion signals.",
-      "timestamp_local": "2026-05-21T21:46:59.922242+07:00",
-      "timestamp_utc": "2026-05-21T14:46:59.922242Z",
+      "stop_loss": 77700.0,
+      "take_profit_1": 75500.0,
+      "take_profit_2": 75000.0,
+      "thesis": "Closing DS-SHORT-005 at a loss of ~-52 USDT. The breakdown below BB_low triggered on 10,675 BTC volume was the strongest volume confirmation of any short attempt. However, the bounce has been persistent for 2 candles, retracing from 76,697 to 77,260. The MACD remains bearish (-61/+37) but price action is failing to follow through. The pattern matches DS-SHORT-002 and DS-SHORT-003 where breakdowns were immediately faded. Cutting the loss at -52 USDT vs the max stop loss of -109 USDT preserves ~57 USDT of capital. Combined PnL on DS-SHORT-005: approximately -57 USDT. Total combined PnL across all trades: approximately +225 USDT.",
+      "timestamp_local": "2026-05-21T22:51:48.153093+07:00",
+      "timestamp_utc": "2026-05-21T15:51:48.153093Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -4644,44 +4698,83 @@
     },
     "latest_rejected_signal": {
       "action": "NONE",
-      "agent_name": "Crypto DeepSeek",
-      "btc_price": 77591.9,
+      "agent_name": "Crypto Qwen",
+      "btc_price": 77260.0,
       "confidence": null,
-      "cycle_number": 111,
+      "cycle_number": 129,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
       "execution_result": {
+        "action": "NONE",
+        "decision": "AGENT_RUNTIME_ERROR",
         "executed": false,
-        "position_id": null,
-        "reason": "not evaluated yet"
+        "reason": "agent_runtime_error"
       },
       "expected_rr": null,
-      "id": 258,
+      "id": 285,
       "leverage": null,
-      "market_regime": "uptrend_low_vol",
-      "model_name": "deepseek-v4-flash",
+      "market_regime": "range_low_vol",
+      "model_name": "qwen3-max",
       "notional_usdt": null,
-      "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"DS-LONG-001\",\n  \"position_context\": \"Existing LONG at 77,151.43, unrealized +57.09 USDT (+0.68R). Stop at 76,5",
-      "rejection_reason_code": "PARSE_ERROR",
-      "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\naverage_entry\n  Extra inputs are not permitted [type=extra_forbidden, input_value=77151.43, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
+      "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management conso",
+      "rejection_reason_code": "INTERNAL_ERROR",
+      "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.",
       "risk_pct": null,
       "signal_status": "REJECTED",
       "stop_loss": null,
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-05-21T04:36:58.965739+07:00",
-      "timestamp_utc": "2026-05-20T21:36:58.965739Z",
+      "timestamp_local": "2026-05-21T22:52:33.505737+07:00",
+      "timestamp_utc": "2026-05-21T15:52:33.505737Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
-          "parse/schema error: 1 validation error for AgentSignal\naverage_entry\n  Extra inputs are not permitted [type=extra_forbidden, input_value=77151.43, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
         ],
-        "rejection_code": "PARSE_ERROR"
+        "rejection_code": "INTERNAL_ERROR"
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "CLOSE",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 77260.0,
+        "confidence": 3.0,
+        "cycle_number": 129,
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "entry_price": 76863.0,
+        "execution_result": {
+          "action": "CLOSE",
+          "decision": "POSITION_UPDATE",
+          "executed": true,
+          "position_id": "DS-SHORT-005"
+        },
+        "expected_rr": null,
+        "id": 284,
+        "leverage": 10.0,
+        "market_regime": "range_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": 10000.0,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"CLOSE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"MARKET\",\n  \"entry\": 76863,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_pe",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": 0.0106,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 77700.0,
+        "take_profit_1": 75500.0,
+        "take_profit_2": 75000.0,
+        "thesis": "Closing DS-SHORT-005 at a loss of ~-52 USDT. The breakdown below BB_low triggered on 10,675 BTC volume was the strongest volume confirmation of any short attempt. However, the bounce has been persistent for 2 candles, retracing from 76,697 to 77,260. The MACD remains bearish (-61/+37) but price action is failing to follow through. The pattern matches DS-SHORT-002 and DS-SHORT-003 where breakdowns were immediately faded. Cutting the loss at -52 USDT vs the max stop loss of -109 USDT preserves ~57 USDT of capital. Combined PnL on DS-SHORT-005: approximately -57 USDT. Total combined PnL across all trades: approximately +225 USDT.",
+        "timestamp_local": "2026-05-21T22:51:48.153093+07:00",
+        "timestamp_utc": "2026-05-21T15:51:48.153093Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto Qwen",
@@ -8440,47 +8533,49 @@
           "reasons": [],
           "rejection_code": null
         }
-      },
-      {
-        "action": "HOLD",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 76888.6,
-        "confidence": 4.0,
-        "cycle_number": 60,
-        "decision": "POSITION_UPDATE",
-        "direction": "SHORT",
-        "entry_price": 77993.0,
-        "execution_result": {
-          "action": "HOLD",
-          "decision": "POSITION_UPDATE",
-          "executed": false,
-          "position_id": null
-        },
-        "expected_rr": 4.08,
-        "id": 141,
-        "leverage": 10.0,
-        "market_regime": "downtrend_low_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": 5000.0,
-        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"NONE\",\n  \"entry\": 77993,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 500,\n  \"margin_used_percen",
-        "rejection_reason_code": null,
-        "rejection_reason_message": null,
-        "risk_pct": 0.0,
-        "signal_status": "ACCEPTED",
-        "stop_loss": 78000.0,
-        "take_profit_1": 77000.0,
-        "take_profit_2": 76500.0,
-        "thesis": "Runner holding near 76,889 with +69.82 USDT unrealized. Price rangebound in the 76,740-77,060 zone. MACD at -353 continues widening. OI stable at 101,618. Volume declining - cascade exhaustion. Runner remains risk-free with breakeven stop. TP2 at 76,500 is 0.51% away. Holding for the fill.",
-        "timestamp_local": "2026-05-18T12:42:33.267761+07:00",
-        "timestamp_utc": "2026-05-18T05:42:33.267761Z",
-        "validation_details": {
-          "accepted": true,
-          "reasons": [],
-          "rejection_code": null
-        }
       }
     ],
     "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Qwen",
+        "btc_price": 77260.0,
+        "confidence": null,
+        "cycle_number": 129,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 285,
+        "leverage": null,
+        "market_regime": "range_low_vol",
+        "model_name": "qwen3-max",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management conso",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-21T22:52:33.505737+07:00",
+        "timestamp_utc": "2026-05-21T15:52:33.505737Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto DeepSeek",
@@ -11321,9 +11416,9 @@
         }
       }
     ],
-    "rejected_signal_count": 72,
+    "rejected_signal_count": 73,
     "rejection_breakdown": {
-      "INTERNAL_ERROR": 41,
+      "INTERNAL_ERROR": 42,
       "INVALID_DIRECTION": 4,
       "LEVERAGE_LIMIT_EXCEEDED": 7,
       "PARSE_ERROR": 13,
@@ -11332,30 +11427,30 @@
   },
   "strategy_diversity_metrics": {
     "action_agreement_rate": 0.48,
-    "confidence_correlation": -0.19142164969328349,
+    "confidence_correlation": 0.09304259586558154,
     "convergence_warning": false,
-    "created_at": "2026-05-21T14:47:01.721358Z",
+    "created_at": "2026-05-21T15:52:35.038312Z",
     "directional_agreement_rate": 0.5,
-    "leverage_similarity": 0.44,
+    "leverage_similarity": 0.43,
     "shared_ratio_applied": 0.3,
     "thesis_embedding_similarity": 0.05669499093311872
   },
   "sync": {
-    "generated_at": "2026-05-21T14:47:02.157444Z",
+    "generated_at": "2026-05-21T15:52:35.436502Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-21T14:47:01.843541Z",
+    "latest_cycle_at": "2026-05-21T15:52:35.160368Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.10370164000000001,
-      "input_tokens": 573350.0,
-      "output_tokens": 83688.0,
-      "requests": 136.0
+      "estimated_cost_usd": 0.10467212000000001,
+      "input_tokens": 578838.0,
+      "output_tokens": 84410.0,
+      "requests": 137.0
     },
     "crypto-qwen": {
       "estimated_cost_usd": 0.16556436,
@@ -11366,11 +11461,11 @@
   },
   "trade_history_summary": {
     "crypto-deepseek": {
-      "closed_or_fee_events": 14,
-      "losses": 9,
-      "realized_pnl": 277.2105636728988,
-      "trade_count": 14,
-      "win_rate": 0.35714285714285715,
+      "closed_or_fee_events": 15,
+      "losses": 10,
+      "realized_pnl": 270.16168749635204,
+      "trade_count": 15,
+      "win_rate": 0.3333333333333333,
       "wins": 5
     },
     "crypto-qwen": {
@@ -11384,41 +11479,41 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 52.83634587280519,
-      "grok_workload_pct": 13.804838340436635,
-      "local_workload_pct": 33.35881578675818,
-      "total_api_cost_usd": 0.06053336000000001
+      "deepseek_workload_pct": 53.3595938381146,
+      "grok_workload_pct": 12.836563904293754,
+      "local_workload_pct": 33.803842257591654,
+      "total_api_cost_usd": 0.05133244000000001
     },
-    "deepseek_pct": 34.92431824486468,
-    "grok_pct": 40.647508106749505,
+    "deepseek_pct": 49.87872604820961,
+    "grok_pct": 4.696969696969696,
     "latest": {
-      "api_cost_usd": 0.0009458400000000001,
-      "deepseek_tokens": 6122,
-      "deepseek_workload_pct": 34.92431824486468,
-      "grok_tokens": 5559,
-      "grok_workload_pct": 40.647508106749505,
-      "local_workload_pct": 24.428173648385826,
+      "api_cost_usd": 0.0009704800000000001,
+      "deepseek_tokens": 6210,
+      "deepseek_workload_pct": 49.87872604820961,
+      "grok_tokens": 0,
+      "grok_workload_pct": 4.696969696969696,
+      "local_workload_pct": 45.4243042548207,
       "payload": {
-        "deepseek_api_cost_usd": 0.0009458400000000001,
+        "deepseek_api_cost_usd": 0.0009704800000000001,
         "deepseek_input_tokens": 5488,
-        "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 634,
-        "deepseek_reflections_generated": 1,
+        "deepseek_lessons_generated": 2,
+        "deepseek_output_tokens": 722,
+        "deepseek_reflections_generated": 2,
         "deepseek_tool_requests": 0,
         "grok_api_cost_usd": 0.0,
-        "grok_input_tokens": 5356,
+        "grok_input_tokens": 0,
         "grok_lessons_generated": 1,
-        "grok_output_tokens": 203,
+        "grok_output_tokens": 0,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 17,
-        "local_functions_executed": 22,
+        "local_database_queries": 16,
+        "local_functions_executed": 20,
         "local_memory_retrievals": 4,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 83.18571689998498
+        "total_wall_time_seconds": 84.55462249999982
       },
-      "timestamp": "2026-05-21T14:47:02.104548"
+      "timestamp": "2026-05-21T15:52:35.400467"
     },
-    "local_pct": 24.428173648385826
+    "local_pct": 45.4243042548207
   }
 }
