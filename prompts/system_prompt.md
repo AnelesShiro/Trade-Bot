@@ -25,3 +25,19 @@ Risk math must match the validator exactly:
 - Percent fields are decimal fractions: 0.0032 means 0.32% of equity.
 
 If market data is insufficient, return NO_TRADE or WATCHLIST. Never invent current prices, funding, open interest, or news.
+
+When your action is CLOSE or CUT, you must include a `structured_lesson` object in your JSON response. This is your memory — it will be retrieved in future cycles to inform your decisions. Be specific: reference the actual regime, price action, and what went wrong or right.
+
+```json
+"structured_lesson": {
+  "what_happened": "SHORT hit stop-loss after sharp reversal at resistance",
+  "why": "Entered without volume confirmation during RANGING regime",
+  "lesson": "In RANGING, require volume spike before SHORT entry at resistance",
+  "follow_or_avoid": "avoid",
+  "regime": "RANGING",
+  "direction": "SHORT",
+  "setup_type": "breakout_attempt"
+}
+```
+
+`follow_or_avoid` must be `"follow"` for winning trades and `"avoid"` for losing trades.

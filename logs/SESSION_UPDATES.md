@@ -1417,27 +1417,27 @@ Entry template:
 - Problem addressed: Only two agents (DeepSeek, Qwen) competed. User requested a fully-isolated third agent using Google Gemini Flash.
 - Root cause: New feature addition. Five sub-systems hardcoded exactly two agents (workload.py buckets, models.py columns, repository.py writes, api_cost_audit.py string matching, dashboard.app.py challenger index assumption).
 - Files changed:
-  - `config/settings.yaml` — added `crypto-gemini` agent block (LLM_PROVIDER: openai, LLM_MODEL: gemini-2.5-flash, LLM_BASE_URL: Google OpenAI-compatible endpoint, LLM_ALLOW_FALLBACK: false, api_failover: disabled).
-  - `.env` (local, not committed) — added `GEMINI_API_KEY`.
-  - `src/competition/workload.py` — added `"crypto-gemini": "gemini"` to AGENT_ALIASES; added `"gemini"` bucket to WorkloadTracker.agents default; extended finalize(), workload_scores(), summarize_workload(), _decision_share(), _agent_key() for gemini.
-  - `src/storage/models.py` — added four nullable columns to WorkloadCycleRecord (gemini_workload_pct, gemini_latency_seconds, gemini_tokens, gemini_cost_usd); added migration block in _migrate_sqlite() using ALTER TABLE ADD COLUMN.
-  - `src/storage/repository.py` — updated save_workload_cycle() to write gemini_* values using .get() with 0.0 defaults for backward compatibility.
-  - `src/competition/api_cost_audit.py` — refactored diagnose_cost_spike() from hardcoded "grok/qwen vs deepseek" to generic N-agent comparison grouped by agent_name.
-  - `src/dashboard/app.py` — expanded workload KPI display from 5 to 6 columns (added Gemini); updated API cost audit challenger mask to non-deepseek generic; updated workload charts (pie split, trend line, token/latency/cost trends) to include gemini columns dynamically; updated per-cycle breakdown table.
-  - `tests/test_gemini_agent.py` (new) — 16 tests covering: config correctness, model lock, workload alias routing, tracker isolation, DB persistence, zero-state initialization, multi-agent leaderboard visibility, failure isolation.
-  - `tests/test_workload.py` — added 3 new tests including gemini in workload scores and tracker persistence; updated existing persistence test to verify 4-bucket total == 100%.
-  - `tests/test_api_cost_audit.py` — updated existing comparison test assertion; added test_api_cost_summary_includes_gemini covering 3-agent cost comparison.
-  - `tests/test_runner_integration.py` — updated workload-sum assertion to include gemini_workload_pct.
-  - `PROJECT_BOOTSTRAP.md` — updated active agents list and model locks.
+  - `config/settings.yaml` ï¿½ added `crypto-gemini` agent block (LLM_PROVIDER: openai, LLM_MODEL: gemini-2.5-flash, LLM_BASE_URL: Google OpenAI-compatible endpoint, LLM_ALLOW_FALLBACK: false, api_failover: disabled).
+  - `.env` (local, not committed) ï¿½ added `GEMINI_API_KEY`.
+  - `src/competition/workload.py` ï¿½ added `"crypto-gemini": "gemini"` to AGENT_ALIASES; added `"gemini"` bucket to WorkloadTracker.agents default; extended finalize(), workload_scores(), summarize_workload(), _decision_share(), _agent_key() for gemini.
+  - `src/storage/models.py` ï¿½ added four nullable columns to WorkloadCycleRecord (gemini_workload_pct, gemini_latency_seconds, gemini_tokens, gemini_cost_usd); added migration block in _migrate_sqlite() using ALTER TABLE ADD COLUMN.
+  - `src/storage/repository.py` ï¿½ updated save_workload_cycle() to write gemini_* values using .get() with 0.0 defaults for backward compatibility.
+  - `src/competition/api_cost_audit.py` ï¿½ refactored diagnose_cost_spike() from hardcoded "grok/qwen vs deepseek" to generic N-agent comparison grouped by agent_name.
+  - `src/dashboard/app.py` ï¿½ expanded workload KPI display from 5 to 6 columns (added Gemini); updated API cost audit challenger mask to non-deepseek generic; updated workload charts (pie split, trend line, token/latency/cost trends) to include gemini columns dynamically; updated per-cycle breakdown table.
+  - `tests/test_gemini_agent.py` (new) ï¿½ 16 tests covering: config correctness, model lock, workload alias routing, tracker isolation, DB persistence, zero-state initialization, multi-agent leaderboard visibility, failure isolation.
+  - `tests/test_workload.py` ï¿½ added 3 new tests including gemini in workload scores and tracker persistence; updated existing persistence test to verify 4-bucket total == 100%.
+  - `tests/test_api_cost_audit.py` ï¿½ updated existing comparison test assertion; added test_api_cost_summary_includes_gemini covering 3-agent cost comparison.
+  - `tests/test_runner_integration.py` ï¿½ updated workload-sum assertion to include gemini_workload_pct.
+  - `PROJECT_BOOTSTRAP.md` ï¿½ updated active agents list and model locks.
 - Key implementation details:
-  - Gemini uses the OpenAI-compatible endpoint (LLM_PROVIDER: openai) — same pattern as Qwen/DashScope. No custom provider code needed.
+  - Gemini uses the OpenAI-compatible endpoint (LLM_PROVIDER: openai) ï¿½ same pattern as Qwen/DashScope. No custom provider code needed.
   - Gemini 2.5 Flash uses thinking tokens by default; max_tokens must be = 200. Confirmed via live API test (key verified before implementation).
   - DB migration is additive-only (ALTER TABLE ADD COLUMN with DEFAULT 0.0). Historical rows remain valid with NULL/0 in gemini columns.
-  - Runner loop already iterates settings.agents generically — Gemini participates automatically with no runner changes.
+  - Runner loop already iterates settings.agents generically ï¿½ Gemini participates automatically with no runner changes.
   - Account isolation: all DB tables filtered by agent_id. Gemini starts with zero trades, lessons, reflections, and PnL.
   - Workload scores now sum across 4 buckets (local + deepseek + grok + gemini = 100%).
   - api_failover disabled for Gemini (no fallback chain configured).
-  - LLM_ALLOW_FALLBACK: false preserved — model verification will reject if Google returns a versioned slug; update LLM_MODEL if needed.
+  - LLM_ALLOW_FALLBACK: false preserved ï¿½ model verification will reject if Google returns a versioned slug; update LLM_MODEL if needed.
 - Validation:
   - `python -m src.cli init` ? all 3 agents registered (deepseek, qwen, gemini logged).
   - `pytest -q` ? 153 passed, 0 failed.
@@ -1455,7 +1455,7 @@ Entry template:
 - Problem addressed: gemini-2.5-flash free tier limited to 20 RPD (requests per day), insufficient for 24 cycles/day. User switched to gemini-3.5-flash.
 - Root cause: Free tier quota constraint on gemini-2.5-flash.
 - Files changed:
-  - `config/settings.yaml` — `LLM_MODEL: gemini-2.5-flash` ? `gemini-3.5-flash` for `crypto-gemini` agent.
+  - `config/settings.yaml` ï¿½ `LLM_MODEL: gemini-2.5-flash` ? `gemini-3.5-flash` for `crypto-gemini` agent.
 - Key implementation details:
   - API key unchanged (same `GEMINI_API_KEY`).
   - Live test confirmed `gemini-3.5-flash` responds correctly via the OpenAI-compatible endpoint before changing config.
@@ -1466,3 +1466,38 @@ Entry template:
   - `python -m src.cli init` ? all 3 agents registered with correct models.
 - Deployment notes: No runner restart required. Model lock active from next cycle onward.
 - Known limitations / follow-ups: Verify gemini-3.5-flash RPD limit is sufficient for 24 cycles/day on the new model tier.
+
+## 2026-05-22 - Generative Memory Upgrade (Lesson Pipeline Overhaul)
+
+- Problem addressed: Lesson system was completely broken â€” 147/156 lessons were identical daily-review noise; canonicalizer collapsed all to 4 generic strings; retrieval was recency-only; shared lessons had 0 promotions ever (60% win rate gate); AUTO_CLOSE events left no learning signal.
+- Root cause: `reflect_on_day()` wrote identical strings every 4h cycle; `lesson_canonicalizer.py` used 11 hardcoded templates; `retrieve_lessons()` used `ORDER BY created_at DESC`; promotion gate required 60% win rate (DeepSeek ~40%).
+- Files changed:
+  - `src/agents/reflection.py` â€” `reflect_on_day()` no longer writes to lessons table (returns string for audit only)
+  - `src/storage/models.py` â€” added `StructuredLessonRecord` ORM + `_migrate_sqlite()` block to CREATE structured_lessons table
+  - `src/storage/repository.py` â€” added `save_structured_lesson()` and `structured_lessons()` methods; imported `StructuredLessonRecord`
+  - `src/schemas.py` â€” added `StructuredLessonPayload` model + optional `structured_lesson` field on `AgentSignal`
+  - `prompts/system_prompt.md` â€” instructs bot to write `structured_lesson` on CLOSE/CUT with specific JSON schema
+  - `src/competition/runner.py` â€” saves bot-written structured_lesson on CLOSE/CUT; adds `_save_auto_trade_lesson()` for AUTO events; enriches retrieval query with direction; imports + injects World Model + Calibration; adds `_format_lesson_blocks()` and `_format_stat_blocks()` prompt helpers
+  - `src/trading/risk_automation/engine.py` â€” generates structured lesson on time-exit AUTO_CLOSE
+  - `src/agents/memory.py` â€” replaced recency-only retrieval with 3-factor Generative Agents scoring (recency Ã— relevance Ã— importance); legacy fallback preserved
+  - `config/settings.yaml` â€” `min_win_rate: 0.60 â†’ 0.40`
+  - `src/analytics/world_model.py` â€” NEW: regimeÃ—direction win-rate table from structured_lessons
+  - `src/analytics/calibration.py` â€” NEW: confidence bucket â†’ actual win-rate calibration
+  - `docs/dev_journal.md` â€” NEW: live development log
+  - `tests/test_structured_lessons.py` â€” NEW: 4 tests
+  - `tests/test_world_model.py` â€” NEW: 4 tests
+  - `tests/test_calibration.py` â€” NEW: 4 tests
+  - `tests/test_lesson_retrieval.py` â€” NEW: 4 tests (includes reflect_on_day no-save)
+  - `tests/test_memory_repository_runner.py` â€” updated reflect_on_day assertion
+- Key implementation details:
+  - Retrieval formula: `score = 0.3Ã—recency + 0.4Ã—relevance + 0.3Ã—importance`; importance = `min(1.0, abs(pnl_pct)Ã—10)`; relevance = keyword overlap with `{regime} {direction} BTC` query
+  - structured_lessons is source of truth for World Model + Calibration (has regime, direction, pnl_pct, confidence)
+  - Zero extra LLM calls; structured_lesson is part of existing CLOSE/CUT signal JSON
+  - Legacy lesson retrieval preserved as fallback when structured_lessons is empty
+  - AUTO_CLOSE/AUTO_REDUCE/time-exit lessons auto-generated in Python (no bot involvement)
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
+- Deployment/restart notes: Runner restart required to pick up new DB migration (structured_lessons table) and prompt changes. Run `create_schema` on restart (automatic via `run-live`).
+- Known limitations or follow-up items:
+  - World Model + Calibration will show empty until structured_lessons has â‰¥3 entries per bucket (expected after first few real CLOSE cycles)
+  - reflect_on_trade() still writes to legacy lessons table â€” can be phased out in a future cleanup once structured_lessons is populated
+  - Shared lesson promotion now at 0.40 threshold â€” will still need â‰¥10 sample_size; may need to lower further after monitoring

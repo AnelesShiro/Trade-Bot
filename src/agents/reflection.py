@@ -27,6 +27,7 @@ def reflect_on_day(memory: AgentMemory, agent_id: str, equity: float, realized_p
         f"unrealized_pnl={unrealized_pnl:.2f}. Keep valid setups only, preserve rule compliance, "
         "and note whether conditional entries, profit protection, or stale-trade exits would help."
     )
-    memory.save_lesson(agent_id, lesson)
+    # Intentionally NOT saved to lessons table — daily review strings are noise (identical every cycle).
+    # Written to reflections table only for audit trail.
     memory.repository.save_reflection(agent_id, lesson)
     return lesson

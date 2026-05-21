@@ -126,6 +126,16 @@ class AccountSummary(BaseModel):
     open_positions: list[PositionView] = Field(default_factory=list)
 
 
+class StructuredLessonPayload(BaseModel):
+    what_happened: str = ""
+    why: str = ""
+    lesson: str = ""
+    follow_or_avoid: Literal["follow", "avoid"] = "avoid"
+    regime: str | None = None
+    direction: str | None = None
+    setup_type: str | None = None
+
+
 class AgentSignal(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -168,6 +178,7 @@ class AgentSignal(BaseModel):
     notes_for_ledger: str | None = None
     trigger_order: dict[str, Any] | None = None
     position_risk: dict[str, Any] | None = None
+    structured_lesson: StructuredLessonPayload | None = None
 
     @field_validator("margin_used_percent", "account_risk_percent", "total_account_risk_after_action_percent")
     @classmethod

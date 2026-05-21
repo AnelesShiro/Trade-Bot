@@ -28,6 +28,8 @@ from src.storage.models import build_session_factory, create_schema
 from src.storage.repository import ArenaRepository
 from src.storage.vector_store import LocalVectorStore
 from src.tools.backtest_pattern import backtest_pattern
+from src.analytics.world_model import get_world_model
+from src.analytics.calibration import get_calibration
 from src.tools.get_market_state import get_market_state
 from src.tools.retrieve_similar_trades import retrieve_similar_trades
 from src.tools.toolbox import ALLOWED_TOOLS, execute_local_tool
@@ -128,6 +130,7 @@ class CompetitionRunner:
         for trade in self.position_manager.update_stops_and_targets(market_state.current_price):
             reflect_on_trade(self.memory, trade)
             workload.reflection(trade.agent_id)
+            _save_auto_trade_lesson(self.repository, trade, market_state.regime)
         for agent in self.settings.agents:
             self._run_agent_round(agent_id=agent.id, market_state=market_state, workload=workload)
         self._mark_runner_state("RUNNING", "POST_PROCESSING", cycle_number, started_at=cycle_started_at, message="Persisting metrics and lessons")
@@ -334,6 +337,7 @@ class CompetitionRunner:
         )
         for trade in exit_trades:
             reflect_on_trade(self.memory, trade)
+            _save_auto_trade_lesson(self.repository, trade, market_state.regime)
         self._persist_daily_metrics(market_state)
         self._write_outputs(market_state)
         self._save_checkpoint(market_state, status="MONITOR", cycle_number=self._current_completed_cycle_number())
@@ -368,7 +372,9 @@ class CompetitionRunner:
         summary = account.summary(market_state.current_price)
         if workload:
             workload.memory_retrieval(agent_id=agent_id)
-        private_lessons = self.memory.retrieve_lessons(agent_id, f"{market_state.regime} BTC")
+        open_pos = summary.open_positions
+        lesson_query_dir = open_pos[0].direction.value if open_pos else "NONE"
+        private_lessons = self.memory.retrieve_lessons(agent_id, f"{market_state.regime} {lesson_query_dir} BTC")
         if workload:
             workload.memory_retrieval(agent_id=agent_id, memory_type="shared_learning")
         retrieved_lessons = self.shared_learning.retrieve_for_prompt(
@@ -383,6 +389,8 @@ class CompetitionRunner:
         profile = self.shared_learning.profile(agent_id)
         if workload:
             workload.local_function("analytics", "backtest_pattern", agent_id=agent_id)
+        world_model_text = get_world_model(self.repository, agent_id)
+        calibration_text = get_calibration(self.repository, agent_id)
         tool_context = {
             "market_state": market_state.compact(),
             "account_summary": summary.model_dump(mode="json"),
@@ -397,6 +405,8 @@ class CompetitionRunner:
                 "shared_lesson_ids": retrieved_lessons.shared_lesson_ids,
                 "shared_lessons_are_advisory_only": True,
             },
+            "historical_performance": world_model_text or None,
+            "confidence_calibration": calibration_text or None,
             "feature_flags": self._feature_flags_for_agent(agent_id),
             "version_context": {
                 "config_version_id": self.config_manager.config_version_id,
@@ -500,6 +510,26 @@ class CompetitionRunner:
                     reflect_on_trade(self.memory, trade)
                     if workload:
                         workload.reflection(agent_id)
+                if signal.structured_lesson is not None:
+                    try:
+                        sl = signal.structured_lesson
+                        pnl_pct = (trade.realized_pnl / trade.margin) if trade and trade.margin else None
+                        conf = (signal.confidence / 5.0) if signal.confidence is not None else None
+                        self.repository.save_structured_lesson(
+                            agent_id=agent_id,
+                            what_happened=sl.what_happened,
+                            why=sl.why,
+                            lesson=sl.lesson,
+                            follow_or_avoid=sl.follow_or_avoid,
+                            regime=sl.regime or market_state.regime,
+                            direction=sl.direction or signal.direction.value,
+                            setup_type=sl.setup_type,
+                            realized_pnl_pct=pnl_pct,
+                            confidence_at_entry=conf,
+                            source="bot_signal",
+                        )
+                    except Exception as error:
+                        logger.warning("save structured_lesson failed for {}: {}", agent_id, error)
         else:
             self._record_signal_execution(
                 signal_record_id,
@@ -898,19 +928,22 @@ class CompetitionRunner:
             if shared_context.get("convergence_warning")
             else "Diversity status: normal. Maintain your own strategy identity."
         )
+        lesson_blocks = _format_lesson_blocks(context)
+        stat_blocks = _format_stat_blocks(context)
         prompt = "\n\n".join(
-            [
+            filter(None, [
                 self._system_prompt_for_agent(agent_id),
                 "RULEBOOK:\n" + self.rulebook,
                 "STRATEGY IDENTITY:\n" + profile.strategy_identity_statement() + "\n\n" + IDENTITY_BLOCK + "\n" + convergence_note,
-                "PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(context.get("private_lessons", []), separators=(",", ":"), default=str),
+                lesson_blocks,
+                stat_blocks,
                 "SHARED LESSONS (advisory, max 30% unless anti-convergence reduces it):\n"
                 + SHARED_LESSON_DISCLAIMER
                 + "\n"
                 + json.dumps(context.get("shared_lessons", []), separators=(",", ":"), default=str),
                 "STRICT JSON SCHEMA HINT:\n" + json.dumps(schema_hint, separators=(",", ":")),
                 "CURRENT CONTEXT:\n" + json.dumps(context, separators=(",", ":"), default=str),
-            ]
+            ])
         )
         if len(prompt) <= MAX_OPENCLAW_MESSAGE_CHARS:
             return prompt
@@ -1423,3 +1456,59 @@ def _sha256(value: str) -> str:
 
 def _now_utc7_iso() -> str:
     return datetime.now(UTC).astimezone(timezone(timedelta(hours=7))).isoformat()
+
+
+def _format_lesson_blocks(context: dict) -> str:
+    lessons: list[str] = context.get("private_lessons", [])
+    if not lessons:
+        return ""
+    follow = [l for l in lessons if l.startswith("[FOLLOW]")]
+    avoid = [l for l in lessons if l.startswith("[AVOID]")]
+    other = [l for l in lessons if not l.startswith("[FOLLOW]") and not l.startswith("[AVOID]")]
+    parts: list[str] = []
+    if follow:
+        parts.append("LESSONS TO FOLLOW (replicate these setups):\n" + "\n".join(f"• {l[9:].strip()}" for l in follow))
+    if avoid:
+        parts.append("LESSONS TO AVOID (do not repeat these mistakes):\n" + "\n".join(f"• {l[7:].strip()}" for l in avoid))
+    if other:
+        parts.append("PRIVATE LESSONS (primary memory, highest weight):\n" + json.dumps(other, separators=(",", ":"), default=str))
+    return "\n\n".join(parts)
+
+
+def _format_stat_blocks(context: dict) -> str:
+    parts: list[str] = []
+    if context.get("historical_performance"):
+        parts.append(context["historical_performance"])
+    if context.get("confidence_calibration"):
+        parts.append(context["confidence_calibration"])
+    return "\n\n".join(parts)
+
+
+def _save_auto_trade_lesson(repository: ArenaRepository, trade, regime: str) -> None:
+    try:
+        action = (trade.action or "").upper()
+        if action not in {"AUTO_CLOSE", "AUTO_REDUCE", "AUTO_CUT"}:
+            return
+        pnl_pct = (trade.realized_pnl / trade.margin) if trade.margin else None
+        outcome = "win" if (trade.realized_pnl or 0) > 0 else "loss"
+        follow_or_avoid = "follow" if outcome == "win" else "avoid"
+        what = f"{action} on {trade.direction} position — {outcome} (pnl={trade.realized_pnl:.2f})"
+        why = f"Risk automation triggered {action}; position did not reach bot-managed close"
+        lesson = (
+            f"{'Risk automation protected capital' if outcome == 'win' else 'Position required system intervention'}. "
+            f"Consider tighter stop-loss or time_exit rules to avoid {action}."
+        )
+        repository.save_structured_lesson(
+            agent_id=trade.agent_id,
+            what_happened=what,
+            why=why,
+            lesson=lesson,
+            follow_or_avoid=follow_or_avoid,
+            regime=regime,
+            direction=trade.direction,
+            setup_type=action.lower(),
+            realized_pnl_pct=pnl_pct,
+            source="auto_close" if "CLOSE" in action or "CUT" in action else "auto_reduce",
+        )
+    except Exception as err:
+        logger.warning("_save_auto_trade_lesson failed: {}", err)

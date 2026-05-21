@@ -37,6 +37,7 @@ from src.storage.models import (
     SharedLessonRecord,
     SignalRecord,
     StrategyProfileRecord,
+    StructuredLessonRecord,
     ToolCallRecord,
     TradeRecord,
     WorkloadComponentRecord,
@@ -413,6 +414,48 @@ class ArenaRepository(RiskAutomationRepositoryMixin):
     def save_lesson_promotion(self, source_agent: str, lesson_id: int | None, status: str, reason: str) -> None:
         with self.session_factory() as session, session.begin():
             session.add(LessonPromotionRecord(source_agent=source_agent, lesson_id=lesson_id, status=status, reason=reason))
+
+    def save_structured_lesson(
+        self,
+        agent_id: str,
+        what_happened: str,
+        why: str,
+        lesson: str,
+        follow_or_avoid: str,
+        *,
+        regime: str | None = None,
+        direction: str | None = None,
+        setup_type: str | None = None,
+        realized_pnl_pct: float | None = None,
+        confidence_at_entry: float | None = None,
+        source: str = "bot_signal",
+    ) -> None:
+        with self.session_factory() as session, session.begin():
+            session.add(
+                StructuredLessonRecord(
+                    agent_id=agent_id,
+                    what_happened=what_happened[:500],
+                    why=why[:500],
+                    lesson=lesson[:500],
+                    follow_or_avoid=follow_or_avoid if follow_or_avoid in ("follow", "avoid") else "avoid",
+                    regime=regime,
+                    direction=direction,
+                    setup_type=setup_type,
+                    realized_pnl_pct=realized_pnl_pct,
+                    confidence_at_entry=confidence_at_entry,
+                    source=source,
+                )
+            )
+
+    def structured_lessons(self, agent_id: str, limit: int = 100) -> list[StructuredLessonRecord]:
+        with self.session_factory() as session:
+            stmt = (
+                select(StructuredLessonRecord)
+                .where(StructuredLessonRecord.agent_id == agent_id)
+                .order_by(StructuredLessonRecord.created_at.desc())
+                .limit(limit)
+            )
+            return list(session.scalars(stmt))
 
     def shared_lessons(self, exclude_source_agent: str | None = None, limit: int = 100) -> list[SharedLessonRecord]:
         with self.session_factory() as session:

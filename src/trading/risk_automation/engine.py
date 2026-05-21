@@ -224,8 +224,27 @@ class RiskAutomationEngine:
                     counterargument="N/A",
                     data_used=["risk_automation_time_exit"],
                 )
-                self.execution.execute(close_signal, current_price, execution_timestamp=datetime.now(UTC))
+                exec_time = datetime.now(UTC)
+                self.execution.execute(close_signal, current_price, execution_timestamp=exec_time)
                 stats["time_exits"] += 1
+                try:
+                    trade = self.repository.latest_trade_for_position(position.id)
+                    pnl_pct = (trade.realized_pnl / trade.margin) if trade and trade.margin else None
+                    held_hours = round((exec_time - position.opened_at.replace(tzinfo=UTC)).total_seconds() / 3600, 1) if position.opened_at else "?"
+                    self.repository.save_structured_lesson(
+                        agent_id=position.agent_id,
+                        what_happened=f"AUTO time-exit after {held_hours}h hold on {position.direction} position",
+                        why="Position held until max_hold_until without hitting TP or manual close",
+                        lesson="Set explicit time_exit in position_risk to avoid holding stale positions",
+                        follow_or_avoid="avoid",
+                        regime=market_state.regime,
+                        direction=position.direction,
+                        setup_type="time_exit",
+                        realized_pnl_pct=pnl_pct,
+                        source="auto_close",
+                    )
+                except Exception as _err:
+                    logger.warning("structured lesson save failed after time_exit: {}", _err)
                 continue
             if position.stop_loss != original_sl or state != original_state:
                 self.repository.add_or_update_position(position)

@@ -34,8 +34,10 @@ def test_repository_memory_and_reflection(repository, tmp_path) -> None:
     repository.add_trade(trade)
     lesson = reflect_on_trade(memory, trade)
     assert "win" in lesson
+    count_before = len(repository.lessons("crypto-deepseek", limit=10))
     reflect_on_day(memory, "crypto-deepseek", 10050, 50, 0)
-    assert len(repository.lessons("crypto-deepseek", limit=10)) >= 3
+    # reflect_on_day intentionally does NOT write to lessons table (noise reduction)
+    assert len(repository.lessons("crypto-deepseek", limit=10)) == count_before
 
 
 def test_tool_request_parser() -> None:

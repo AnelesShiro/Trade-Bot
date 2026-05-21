@@ -244,6 +244,24 @@ class SharedLessonRecord(Base):
     promoted_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC))
 
 
+class StructuredLessonRecord(Base):
+    __tablename__ = "structured_lessons"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    agent_id: Mapped[str] = mapped_column(String, ForeignKey("agents.id"), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(UTC), index=True)
+    what_happened: Mapped[str] = mapped_column(Text, default="")
+    why: Mapped[str] = mapped_column(Text, default="")
+    lesson: Mapped[str] = mapped_column(Text, default="")
+    follow_or_avoid: Mapped[str] = mapped_column(String, default="avoid")
+    regime: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    direction: Mapped[str | None] = mapped_column(String, nullable=True, index=True)
+    setup_type: Mapped[str | None] = mapped_column(String, nullable=True)
+    realized_pnl_pct: Mapped[float | None] = mapped_column(Float, nullable=True)
+    confidence_at_entry: Mapped[float | None] = mapped_column(Float, nullable=True)
+    source: Mapped[str] = mapped_column(String, default="bot_signal")
+
+
 class StrategyProfileRecord(Base):
     __tablename__ = "strategy_profiles"
 
@@ -722,6 +740,31 @@ def _migrate_sqlite(engine) -> None:
         for column, ddl in workload_additions.items():
             if workload_rows and column not in workload_columns:
                 connection.execute(text(f"ALTER TABLE workload_cycles ADD COLUMN {column} {ddl}"))
+        connection.execute(
+            text(
+                """
+                CREATE TABLE IF NOT EXISTS structured_lessons (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    agent_id VARCHAR NOT NULL REFERENCES agents(id),
+                    created_at DATETIME NOT NULL DEFAULT (datetime('now')),
+                    what_happened TEXT NOT NULL DEFAULT '',
+                    why TEXT NOT NULL DEFAULT '',
+                    lesson TEXT NOT NULL DEFAULT '',
+                    follow_or_avoid VARCHAR NOT NULL DEFAULT 'avoid',
+                    regime VARCHAR,
+                    direction VARCHAR,
+                    setup_type VARCHAR,
+                    realized_pnl_pct FLOAT,
+                    confidence_at_entry FLOAT,
+                    source VARCHAR NOT NULL DEFAULT 'bot_signal'
+                )
+                """
+            )
+        )
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_structured_lessons_agent_id ON structured_lessons(agent_id)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_structured_lessons_created_at ON structured_lessons(created_at)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_structured_lessons_regime ON structured_lessons(regime)"))
+        connection.execute(text("CREATE INDEX IF NOT EXISTS ix_structured_lessons_direction ON structured_lessons(direction)"))
 
 
 def _backfill_lesson_canonical_columns(connection) -> None:
