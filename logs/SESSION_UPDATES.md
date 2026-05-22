@@ -1605,3 +1605,13 @@ Entry template:
   - crypto-qwen: auth profile still missing in OpenClaw (403 free tier + missing key). Needs `python -m src.cli init` to re-register when key is available.
   - crypto-gemini: HTTP 401 each cycle (model: gemini-3.5-flash, key may be invalid). Needs investigation separately.
   - Future prevention: always use `run-live --resume` to continue. Never use bare `run-live` on an existing competition DB.
+
+## 2026-05-22 - Generate PROJECT_MASTER_CONTEXT.md (AI-to-AI handoff document)
+
+- Problem addressed: No single comprehensive document existed for AI-to-AI project handoff. Each new session required re-reading multiple scattered files (AGENTS.md, PROJECT_BOOTSTRAP.md, PROJECT_CONTEXT.md, SESSION_UPDATES.md) and still missed runtime details.
+- Root cause: Project complexity (3 agents, 30+ DB tables, cloud dashboard, risk automation, hot-reload, cycle counter mechanics) exceeds what any single existing document covers.
+- Files changed: PROJECT_MASTER_CONTEXT.md (created, ~500 lines, 18 sections)
+- Key implementation details: Read runner.py, storage/models.py, config.py, schemas.py, base_agent.py, system_prompt.md, snapshot_exporter.py, risk_automation/engine.py, rulebook.md, settings.yaml before writing. Document covers: Executive Summary, Architecture diagram, Folder map, Runtime flow (step-by-step cycle), AI System Design (agents/models/signal format/prompt), Memory & State, Database (all 30+ tables), APIs & Integrations, Configuration System, Deployment, Observability, Important Workflows, Coding Standards, Known Problems/Tech Debt, Future Roadmap, Safe Development Guide, Dependency Analysis, Glossary.
+- Validation: 169 passed in 55.77s; validate-update --no-smoke: all PASS
+- Deployment/restart notes: No runner restart needed (documentation only).
+- Known limitations or follow-up items: rulebook.md still references `crypto-challenger` (removed agent); should be updated separately.
