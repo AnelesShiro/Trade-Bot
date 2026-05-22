@@ -1579,3 +1579,29 @@ Entry template:
 - Deployment/restart notes: Runner restart tự động sync systemPromptOverride. Không cần `openclaw config set` thủ công nữa.
 - Known limitations or follow-up items:
   - `_sync_openclaw_system_prompt_overrides()` không tạo agent mới trong openclaw.json nếu chưa có — chỉ update existing entries. Bot phải đã được `openclaw agent create` hoặc qua gateway setup.
+
+## 2026-05-22 - Duplicate Runner Kill + Cycle Counter Restore (133-147)
+
+- Problem addressed: Dashboard showing OVERDUE; cycle counter reset to 1 (showing cycle 12 instead of 144+); 2 independent runner process trees running simultaneously.
+- Root cause: `run-live` without `--resume` was executed at 2026-05-21 19:25 UTC (02:25 AM Bangkok local), resetting the in-memory cycle counter to 1. Historical DB data (cycles 1-132) was intact. A second runner pair spawned later (3:23 AM) without killing the first (3:14 AM), creating 2 concurrent runners writing duplicate checkpoints and race-conditioning runner_state → OVERDUE.
+- Files changed:
+  - `database/arena.db` — DB-only migration: `cycle_number + 132` applied in two passes to `checkpoints`, `signals`, `api_requests`, `runner_state` for all rows with `created_at >= '2026-05-21 19:30:00'` (new-run cycles 1-13 → 133-145) and `created_at >= '2026-05-22 09:00:00'` (post-migration cycles 13-14 → 145-146). One double-migrated signal row (cycle 277 → 145) corrected via targeted subtraction.
+  - `state/checkpoints/latest.json` — `cycle_number` updated from 14 → 146; `deployment.latest_checkpoint.cycle_number` updated 13 → 145 so runner resumes correctly.
+  - `cloud/dashboard_snapshot.json` — regenerated after cycle 147 completed; pushed to GitHub.
+- Key implementation details:
+  - Killed older runner pair (PIDs 38516+6412) first; waited for newer runner (2932+39424) to finish its current cycle before killing to avoid mid-cycle DB corruption.
+  - Migration ran during WAITING phase (no concurrent DB writes).
+  - Two migration passes required: first pass (cutoff 2026-05-21 19:30) caught cycles 1-12/13; second pass (cutoff 2026-05-22 09:00) caught cycles 13-14 written after first pass. One signal from Runner 1's cycle 13 (~09:10 UTC) was double-migrated to 277; fixed by subtracting 132.
+  - Restarted with `run-live --resume`; runner read checkpoint 146 from both DB and latest.json → started cycle 147 correctly.
+  - `run-live` without `--resume` is the confirmed root cause of cycle resets. Always use `--resume` to continue an existing competition.
+- Validation:
+  - `validate-update --no-smoke` → all 4 PASS.
+  - `preflight-check` → all 9 critical PASS.
+  - DB: checkpoints range 1-147, signals anomaly (>147) = 0, runner_state cycle=147 WAITING.
+  - Snapshot exported and pushed to GitHub: runner_state cycle=147, phase=WAITING.
+  - Process tree: 1 runner pair (45536+15564) + 1 dashboard pair (30320+38732).
+- Deployment/restart notes: Runner is live, cycle 147 completed, next cycle at 2026-05-22T10:19:40Z.
+- Known limitations or follow-up items:
+  - crypto-qwen: auth profile still missing in OpenClaw (403 free tier + missing key). Needs `python -m src.cli init` to re-register when key is available.
+  - crypto-gemini: HTTP 401 each cycle (model: gemini-3.5-flash, key may be invalid). Needs investigation separately.
+  - Future prevention: always use `run-live --resume` to continue. Never use bare `run-live` on an existing competition DB.
