@@ -20,6 +20,7 @@ class AgentRunResult:
     latency_ms: int
     configured_model: str
     actual_model: str
+    session_usage: dict | None = None
 
 
 @dataclass
@@ -100,9 +101,15 @@ class OpenClawAgent:
                             f"Configured model '{self.settings.model}' is unavailable. "
                             f"Provider returned '{actual_model}'. Automatic model switching is disabled."
                         )
-                    input_tokens, output_tokens, estimated_cost = _estimate_usage(self.settings.model, prompt, stdout)
+                    session_usage = _latest_session_usage(self.settings.id, effective_session_id, started)
+                    if session_usage:
+                        input_tokens = session_usage["input"] + session_usage["cacheRead"]
+                        output_tokens = session_usage["output"]
+                        estimated_cost = session_usage["cost"]
+                    else:
+                        input_tokens, output_tokens, estimated_cost = _estimate_usage(self.settings.model, prompt, stdout)
                     logger.info(
-                        "OpenClaw model lock agent={} provider={} configured_model={} actual_model={} input_tokens={} output_tokens={} estimated_cost_usd={:.6f}",
+                        "OpenClaw model lock agent={} provider={} configured_model={} actual_model={} input_tokens={} output_tokens={} estimated_cost_usd={:.6f} usage_source={}",
                         self.settings.id,
                         self.settings.provider,
                         self.settings.model,
@@ -110,6 +117,7 @@ class OpenClawAgent:
                         input_tokens,
                         output_tokens,
                         estimated_cost,
+                        "session_file" if session_usage else "estimate",
                     )
                     return AgentRunResult(
                         output=stdout,
@@ -117,6 +125,7 @@ class OpenClawAgent:
                         latency_ms=int((time.perf_counter() - started) * 1000),
                         configured_model=self.settings.model,
                         actual_model=actual_model,
+                        session_usage=session_usage,
                     )
                 last_error = stderr or stdout or f"OpenClaw exited with code {completed.returncode}"
             except subprocess.TimeoutExpired as error:
@@ -207,6 +216,53 @@ def _latest_session_model(agent_id: str, session_id: str, started: float) -> str
             if model_id and not latest_model:
                 latest_model = str(model_id)
     return latest_model or None
+
+
+def _latest_session_usage(agent_id: str, session_id: str, started: float) -> dict | None:
+    """Sum actual token usage across all assistant turns in the session that started after `started`.
+
+    Returns a dict with keys input, output, cacheRead, cacheWrite, cost (float USD),
+    or None if the session file is absent or contains no usage records after start time.
+    """
+    session_file = Path.home() / ".openclaw" / "agents" / agent_id / "sessions" / f"{session_id}.jsonl"
+    if not session_file.exists():
+        return None
+    started_wall = datetime.now(UTC).timestamp() - max(0.0, time.perf_counter() - started) - 5
+    totals: dict = {"input": 0, "output": 0, "cacheRead": 0, "cacheWrite": 0, "cost": 0.0}
+    found = False
+    for line in session_file.read_text(encoding="utf-8", errors="replace").splitlines():
+        try:
+            payload = json.loads(line)
+        except Exception:
+            continue
+        if not isinstance(payload, dict):
+            continue
+        ts = _parse_timestamp(payload.get("timestamp"))
+        if ts and ts < started_wall:
+            continue
+        msg = payload.get("message")
+        if not isinstance(msg, dict) or msg.get("role") != "assistant":
+            continue
+        usage_raw = msg.get("usage")
+        if not usage_raw:
+            continue
+        try:
+            usage = usage_raw if isinstance(usage_raw, dict) else json.loads(str(usage_raw))
+            if not isinstance(usage, dict):
+                continue
+            totals["input"] += int(usage.get("input") or 0)
+            totals["output"] += int(usage.get("output") or 0)
+            totals["cacheRead"] += int(usage.get("cacheRead") or 0)
+            totals["cacheWrite"] += int(usage.get("cacheWrite") or 0)
+            cost_val = usage.get("cost") or 0
+            if isinstance(cost_val, dict):
+                totals["cost"] += float(sum(v for v in cost_val.values() if isinstance(v, (int, float))))
+            else:
+                totals["cost"] += float(cost_val)
+            found = True
+        except Exception:
+            continue
+    return totals if found else None
 
 
 def _parse_timestamp(value) -> float | None:

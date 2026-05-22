@@ -1540,3 +1540,21 @@ Entry template:
 - Root cause: Stale `.pyc` cache giữ old pydantic validator (session_id required) dù `src/config.py` đã có `session_id: str = ""`. Dashboard process cần restart để pick up code mới.
 - Fix action: Xóa `__pycache__` toàn bộ `src/`, restart dashboard local (port 8501 OK), push log entry này để trigger Render auto-redeploy.
 - Validation: `AgentSettings.model_validate({...})` without session_id → `session_id=''` ✓; localhost:8501 running ✓; Render sẽ auto-deploy từ commit này.
+
+## 2026-05-22 - Feature: Actual token tracking from OpenClaw session files
+
+- Problem addressed: DB `api_requests` token counts were `chars//4` estimates — up to 143x off vs provider dashboard (DeepSeek showed 830k tokens while DB recorded ~6k).
+- Root cause: `_save_api_request_audit()` called `estimate_cost_usd()` (char-based approximation) because `AgentRunResult` never carried actual token data.
+- Files changed:
+  - `src/agents/base_agent.py` — added `session_usage: dict | None = None` field to `AgentRunResult`; added `_latest_session_usage()` function (reads `usage` field from each assistant message in session `.jsonl`); in `run_with_metadata()`, call `_latest_session_usage()` after successful run and include in returned result; log `usage_source=session_file|estimate`
+  - `src/competition/runner.py` — added `session_usage: dict | None = None` param to `_save_api_request_audit()`; branch: when `session_usage` present use actual `input`/`output`/`cacheRead`/`cacheWrite`/`cost` values, else fall back to `estimate_cost_usd()`; added `cache_read_tokens`/`cache_write_tokens` to `cost_breakdown`; pass `call.session_usage` at both success-path audit call sites in `_run_agent_with_tools()`
+- Key implementation details:
+  - Session file path: `~/.openclaw/agents/{agent_id}/sessions/{session_id}.jsonl`
+  - Each assistant message contains `usage: {input, output, cacheRead, cacheWrite, totalTokens, cost}`
+  - `prompt_tokens` stored = `input + cacheRead` (total context tokens); `completion_tokens` = `output`
+  - Failure paths (no `call` object) retain estimate as fallback — zero regression risk
+  - `cost` field in session usage can be a dict or number — handled both cases
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
+- Deployment/restart notes: No DB migration needed. Runner restart picks up new fields automatically.
+- Known limitations or follow-up items:
+  - Line 567 in runner.py (`save_response` call) still uses `estimate_cost_usd()` for workload tracking — could be updated in a future pass if granular response-level accuracy is needed

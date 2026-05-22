@@ -798,6 +798,7 @@ class CompetitionRunner:
             local_tool_invocation_count=0,
             actual_model_name=call.actual_model,
             configured_model_name=call.configured_model,
+            session_usage=call.session_usage,
         )
         for step in range(2):
             request = _parse_tool_request(raw)
@@ -870,6 +871,7 @@ class CompetitionRunner:
                 local_tool_invocation_count=len(request),
                 actual_model_name=call.actual_model,
                 configured_model_name=call.configured_model,
+                session_usage=call.session_usage,
             )
             self.repository.save_response(agent_id, raw, prompt_id=followup_prompt_id)
         return raw
@@ -1086,11 +1088,23 @@ class CompetitionRunner:
         error_message: str | None = None,
         actual_model_name: str | None = None,
         configured_model_name: str | None = None,
+        session_usage: dict | None = None,
     ) -> None:
         try:
             model_name = configured_model_name or agent.settings.model
-            prompt_tokens, completion_tokens, token_cost = estimate_cost_usd(model_name, prompt, response)
+            if session_usage:
+                prompt_tokens = session_usage.get("input", 0) + session_usage.get("cacheRead", 0)
+                completion_tokens = session_usage.get("output", 0)
+                token_cost = float(session_usage.get("cost") or 0.0)
+                cache_read = session_usage.get("cacheRead", 0)
+                cache_write = session_usage.get("cacheWrite", 0)
+            else:
+                prompt_tokens, completion_tokens, token_cost = estimate_cost_usd(model_name, prompt, response)
+                cache_read = 0
+                cache_write = 0
             breakdown = self._cost_breakdown(prompt, response, token_cost)
+            breakdown["cache_read_tokens"] = cache_read
+            breakdown["cache_write_tokens"] = cache_write
             context = dict(self._prompt_audit_context.get(agent_id, {}))
             self.repository.save_api_request(
                 {
