@@ -1558,3 +1558,24 @@ Entry template:
 - Deployment/restart notes: No DB migration needed. Runner restart picks up new fields automatically.
 - Known limitations or follow-up items:
   - Line 567 in runner.py (`save_response` call) still uses `estimate_cost_usd()` for workload tracking — could be updated in a future pass if granular response-level accuracy is needed
+
+## 2026-05-22 - Feature: Universal token tracking + auto-sync systemPromptOverride for all bots
+
+- Problem addressed: Token tracking từ session files chỉ hoạt động cho standard path; custom-run và TypeError fallback paths không có `session_usage`. `systemPromptOverride` phải set thủ công trong openclaw.json mỗi khi thêm bot mới.
+- Root cause: (1) Custom-run path gọi `agent.run()` không pass `session_id`, không đọc session file sau đó. (2) TypeError fallback không đọc session file. (3) `systemPromptOverride` là daemon config, không tự động sync từ `settings.yaml`.
+- Files changed:
+  - `src/config.py` — thêm `system_prompt_override: str = ""` vào `AgentSettings`
+  - `config/settings.yaml` — thêm `system_prompt_override: "You are a crypto paper trading analyst. Output only valid JSON signals."` cho tất cả 3 agent blocks (deepseek, qwen, gemini)
+  - `src/competition/runner.py`:
+    - Import `Path` và `_latest_session_usage` từ `base_agent`
+    - Thêm `_sync_openclaw_system_prompt_overrides()`: đọc `~/.openclaw/openclaw.json`, compare `systemPromptOverride` với `system_prompt_override` trong settings, update nếu khác — gọi ở `_apply_settings()` nên chạy lúc startup và hot-reload
+    - Custom-run path: try gọi `agent.run()` với `session_id=cycle_session_id`, đọc `_latest_session_usage()` sau call
+    - TypeError fallback path: đọc `_latest_session_usage()` với `agent.settings.id` làm session_id fallback
+- Key implementation details:
+  - `_sync_openclaw_system_prompt_overrides()` là idempotent — chỉ write khi có thay đổi thực sự, wrap trong try/except để không làm crash runner nếu openclaw.json bị lock
+  - Custom-run path try `session_id` kwarg trước, fallback về không có nếu custom `run()` không nhận
+  - Future agent mới: chỉ cần thêm `system_prompt_override:` vào settings.yaml → tự động apply vào openclaw.json khi runner khởi động
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
+- Deployment/restart notes: Runner restart tự động sync systemPromptOverride. Không cần `openclaw config set` thủ công nữa.
+- Known limitations or follow-up items:
+  - `_sync_openclaw_system_prompt_overrides()` không tạo agent mới trong openclaw.json nếu chưa có — chỉ update existing entries. Bot phải đã được `openclaw agent create` hoặc qua gateway setup.

@@ -49,6 +49,7 @@ class AgentSettings(BaseModel):
     id: str
     name: str
     session_id: str = ""
+    system_prompt_override: str = ""
     llm: LlmLockSettings
     api_failover: ApiFailoverAgentSettings = Field(default_factory=ApiFailoverAgentSettings)
 

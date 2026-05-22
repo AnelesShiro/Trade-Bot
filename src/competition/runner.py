@@ -6,13 +6,14 @@ import json
 import os
 import time
 from datetime import UTC, datetime, timedelta, timezone
+from pathlib import Path
 from json import JSONDecodeError
 
 from src.cloud.git_sync import sync_dashboard_snapshot
 from src.cloud.snapshot_exporter import write_dashboard_snapshot
 from src.agents.reflection import reflect_on_day, reflect_on_trade
 from src.agents.api_failover import ApiFailoverManager
-from src.agents.base_agent import AgentRunResult, OpenClawAgent
+from src.agents.base_agent import AgentRunResult, OpenClawAgent, _latest_session_usage
 from src.agents.memory import AgentMemory
 from src.agents.shared_learning import IDENTITY_BLOCK, SHARED_LESSON_DISCLAIMER, SharedLearningManager
 from src.competition.api_cost_audit import prompt_audit_context, prompt_component_breakdown
@@ -101,6 +102,33 @@ class CompetitionRunner:
             self._last_cloud_push_at: float | None = None
         if not hasattr(self, "_prompt_audit_context"):
             self._prompt_audit_context: dict[str, dict[str, int]] = {}
+        self._sync_openclaw_system_prompt_overrides(settings)
+
+    def _sync_openclaw_system_prompt_overrides(self, settings) -> None:
+        """Ensure systemPromptOverride is set in ~/.openclaw/openclaw.json for every agent
+        that declares system_prompt_override in settings.yaml. Runs at startup and on hot-reload
+        so new agents added to settings are automatically configured without manual openclaw commands."""
+        openclaw_config_path = Path.home() / ".openclaw" / "openclaw.json"
+        if not openclaw_config_path.exists():
+            return
+        agents_needing_override = {a.id: a.system_prompt_override for a in settings.agents if a.system_prompt_override}
+        if not agents_needing_override:
+            return
+        try:
+            config = json.loads(openclaw_config_path.read_text(encoding="utf-8"))
+            openclaw_agents = config.get("agents", {}).get("list", [])
+            changed = False
+            for entry in openclaw_agents:
+                agent_id = entry.get("id", "")
+                desired = agents_needing_override.get(agent_id)
+                if desired and entry.get("systemPromptOverride") != desired:
+                    entry["systemPromptOverride"] = desired
+                    changed = True
+                    logger.info("synced systemPromptOverride for agent={}", agent_id)
+            if changed:
+                openclaw_config_path.write_text(json.dumps(config, indent=2, ensure_ascii=False), encoding="utf-8")
+        except Exception as error:
+            logger.warning("failed to sync openclaw systemPromptOverride (non-fatal): {}", error)
 
     def run_once(self) -> None:
         cycle_number = self._cycle_count + 1
@@ -1031,13 +1059,18 @@ class CompetitionRunner:
         cycle_session_id = f"{agent.settings.id}-{int(time.time())}"
         if type(agent).run is not ORIGINAL_OPENCLAW_RUN:
             started = time.perf_counter()
-            output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            try:
+                output = agent.run(prompt, session_id=cycle_session_id, timeout_seconds=self.settings.api.timeout_seconds)
+            except TypeError:
+                output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            session_usage = _latest_session_usage(agent.settings.id, cycle_session_id, started)
             return AgentRunResult(
                 output=output,
                 retry_count=0,
                 latency_ms=int((time.perf_counter() - started) * 1000),
                 configured_model=agent.settings.model,
                 actual_model=agent.settings.model,
+                session_usage=session_usage,
             )
         try:
             return agent.run_with_metadata(
@@ -1064,13 +1097,17 @@ class CompetitionRunner:
         except TypeError as error:
             if "unexpected keyword" not in str(error):
                 raise
+            fallback_started = time.perf_counter()
             output = agent.run(prompt, timeout_seconds=self.settings.api.timeout_seconds)
+            # Use agent.settings.id as the session fallback — that is what run() defaults to
+            session_usage = _latest_session_usage(agent.settings.id, agent.settings.id, fallback_started)
             return AgentRunResult(
                 output=output,
                 retry_count=0,
                 latency_ms=0,
                 configured_model=agent.settings.model,
                 actual_model=agent.settings.model,
+                session_usage=session_usage,
             )
 
     def _save_api_request_audit(
