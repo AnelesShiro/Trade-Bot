@@ -1513,7 +1513,7 @@ def _now_utc7_iso() -> str:
 
 
 def _format_lesson_blocks(context: dict) -> str:
-    lessons: list[str] = context.get("private_lessons", [])
+    lessons: list[str] = [l for l in context.get("private_lessons", []) if isinstance(l, str)]
     if not lessons:
         return ""
     follow = [l for l in lessons if l.startswith("[FOLLOW]")]

@@ -1,4 +1,4 @@
-# Session Updates
+﻿# Session Updates
 
 This file is the human/Codex project memory log. Read it after `PROJECT_CONTEXT.md` at the start of every future session.
 
@@ -285,7 +285,7 @@ Entry template:
 - Why this was done: New Cursor/Codex session onboarding per repo `AGENTS.md` / workspace `AGENTS.md` startup protocol; user wanted a human-readable handoff without digging through the whole repo first.
 - Discussion / deliverable summary:
   - **`AGENTS.md` role**: Codex startup instructions only (read `PROJECT_BOOTSTRAP.md` first, then deeper context as needed). It is not the trading product spec.
-  - **Project purpose**: `crypto-paper-trading-arena` — BTCUSDT perpetual **paper** competition between `crypto-deepseek` and `crypto-qwen` via OpenClaw; CCXT market data, rulebook validation, paper execution, SQLite + `outputs/`, Streamlit local dashboard, Git snapshot -> Render read-only cloud dashboard.
+  - **Project purpose**: `crypto-paper-trading-arena` â€” BTCUSDT perpetual **paper** competition between `crypto-deepseek` and `crypto-qwen` via OpenClaw; CCXT market data, rulebook validation, paper execution, SQLite + `outputs/`, Streamlit local dashboard, Git snapshot -> Render read-only cloud dashboard.
   - **Major work already in repo** (from prior sessions, summarized for user): project handoff files (`PROJECT_CONTEXT.md`, `PROJECT_BOOTSTRAP.md`, `SESSION_UPDATES.md`); Grok API cost forensics; Grok $5 credit root-cause analysis; strict model locking; Grok -> Qwen challenger migration with fresh 10k paper account; OpenClaw registry fix (no per-request `--model`); Qwen Standard Global DashScope endpoint + key verification; competition health check at cycle 46.
   - **Bugs/fixes highlighted**: silent model redirect blocked; Gateway `--model` rejection; unregistered `crypto-qwen`; Qwen 401/wrong endpoint; Windows double-process confusion (one runner tree); legacy Grok rows filtered from active competition views; snapshot contract validation.
   - **Doc drift called out**: Repo `AGENTS.md` still mentions `Provider qwen has auth issue`, but `PROJECT_BOOTSTRAP.md` and session `2026-05-17 22:40` record Qwen auth/endpoint as fixed after Standard Global key + `dashscope-intl` base URL. Prefer bootstrap/context over stale `AGENTS.md` line until `AGENTS.md` is updated.
@@ -295,14 +295,14 @@ Entry template:
   - `PROJECT_CONTEXT.md` (partial)
   - `logs/SESSION_UPDATES.md` (recent entries)
 - Verification: Documentation-only briefing; no commands required.
-- Notes / follow-ups: Optional housekeeping — sync `AGENTS.md` "Current High-Signal State" with `PROJECT_BOOTSTRAP.md` when user wants doc consistency.
+- Notes / follow-ups: Optional housekeeping â€” sync `AGENTS.md` "Current High-Signal State" with `PROJECT_BOOTSTRAP.md` when user wants doc consistency.
 
 ## 2026-05-18 01:35 Asia/Bangkok - Restarted Local Streamlit Dashboard
 
 - User request (Vietnamese): Re-host the local web because local was broken but Render (Git snapshot source) still worked.
 - Why this was done: User could not use the full local SQLite dashboard while cloud read-only dashboard remained healthy; needed operational recovery without changing trading rules or cloud deploy.
 - Discussion:
-  - **Expected behavior**: Local Streamlit uses `database/arena.db` and live `outputs/` when `ARENA_DASHBOARD_MODE` is `auto` and DB exists. Render sets `RENDER` env and/or uses snapshot mode via `cloud/dashboard_snapshot.json` pushed to Git — explains why cloud could work while local failed.
+  - **Expected behavior**: Local Streamlit uses `database/arena.db` and live `outputs/` when `ARENA_DASHBOARD_MODE` is `auto` and DB exists. Render sets `RENDER` env and/or uses snapshot mode via `cloud/dashboard_snapshot.json` pushed to Git â€” explains why cloud could work while local failed.
   - **Hypothesis before fix**: Stale or wrong Python interpreter serving port 8501, not necessarily broken app code or DB.
 - Finding:
   - Port `8501` was `LISTENING` with HTTP `200` on root, but owner was stale `C:\Users\Admin\AppData\Local\Programs\Python\Python312\python.exe` (system Python), **not** `D:\Project\OpenClaw\crypto-paper-trading-arena\.venv\Scripts\python.exe`.
@@ -327,7 +327,7 @@ Entry template:
 ## 2026-05-18 01:40 Asia/Bangkok - Recorded Full Cursor Session Handoff In Project Log
 
 - User request (Vietnamese): Remember to update everything done, reasons, and discussion content into the project log.
-- Why this was done: Per `AGENTS.md` / `PROJECT_CONTEXT.md` — curated `logs/SESSION_UPDATES.md` is the canonical handoff so future sessions reconstruct context without re-reading the whole chat.
+- Why this was done: Per `AGENTS.md` / `PROJECT_CONTEXT.md` â€” curated `logs/SESSION_UPDATES.md` is the canonical handoff so future sessions reconstruct context without re-reading the whole chat.
 - What changed:
   - Expanded this file with the two session entries above (context briefing + local dashboard restart) including user language, rationale, discussion points, findings, commands, and follow-ups.
 - Files touched:
@@ -1103,20 +1103,20 @@ Entry template:
   - `crypto-qwen` billing failure confirmed as intentional (not fixed per user request). Failover to DeepSeek already configured.
   - DeepSeek API itself is healthy (direct REST test returned OK).
 - What changed:
-  - Ran `.\.venv\Scripts\python.exe -m src.cli init` → re-registered OpenClaw agents, refreshed gateway routing; DeepSeek calls now work via gateway.
+  - Ran `.\.venv\Scripts\python.exe -m src.cli init` â†’ re-registered OpenClaw agents, refreshed gateway routing; DeepSeek calls now work via gateway.
   - Directly reset `agent_failover_state` for `crypto-deepseek`: `using_fallback=0, active_provider=deepseek, primary_available=1, fallback_index=-1`.
   - Applied `openclaw agents` model back to `deepseek/deepseek-v4-flash` for `crypto-deepseek`.
   - Logged `RESTORE_PRIMARY` event to `api_failover_events` audit trail.
   - Added `reset-failover <agent-id>` CLI command to `src/cli.py` so future stuck failover states can be manually reset without direct DB edits.
 - Final state:
-  - `crypto-deepseek`: primary DeepSeek, `using_fallback=False` ✅
-  - `crypto-qwen`: using DeepSeek fallback (Qwen billing failed), `using_fallback=True` ✅
+  - `crypto-deepseek`: primary DeepSeek, `using_fallback=False` âœ…
+  - `crypto-qwen`: using DeepSeek fallback (Qwen billing failed), `using_fallback=True` âœ…
   - Both agents will produce signals via DeepSeek; runner continues normally.
 - Verification:
-  - Smoke test: `openclaw agent --agent crypto-deepseek --session-id smoke-ds-2 --message "Reply OK" --timeout 60` → OK, model `deepseek-v4-flash` ✅
-  - `show-failover-status`: crypto-deepseek primary deepseek, crypto-qwen fallback deepseek ✅
-  - `.\.venv\Scripts\python.exe -m pytest -q` → 88 passed ✅
-  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` → passed ✅
+  - Smoke test: `openclaw agent --agent crypto-deepseek --session-id smoke-ds-2 --message "Reply OK" --timeout 60` â†’ OK, model `deepseek-v4-flash` âœ…
+  - `show-failover-status`: crypto-deepseek primary deepseek, crypto-qwen fallback deepseek âœ…
+  - `.\.venv\Scripts\python.exe -m pytest -q` â†’ 88 passed âœ…
+  - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` â†’ passed âœ…
 - Notes:
   - If DeepSeek gateway fails again in future, run `python -m src.cli init` then `python -m src.cli reset-failover crypto-deepseek`.
   - Runner was already handling individual bot failures gracefully (records INTERNAL_ERROR, continues cycle). The issue was BOTH bots failing because DeepSeek's failover was stuck pointing to Qwen (billing).
@@ -1124,7 +1124,7 @@ Entry template:
 
 ## 2026-05-19 - Graceful Degradation Hardening: Subprocess Timeout In Route Switching
 
-- User request (Vietnamese): Ensure the competition keeps running normally as long as not ALL bots are dead — no hanging, no timeouts, no blocking issues from a dead bot.
+- User request (Vietnamese): Ensure the competition keeps running normally as long as not ALL bots are dead â€” no hanging, no timeouts, no blocking issues from a dead bot.
 - Analysis:
   - crypto-qwen is dead (billing expired) and runs on DeepSeek fallback.
   - Each Qwen cycle currently exits fast via INTERNAL_ERROR (RuntimeError caught by `_run_agent_round`); no repair loop runs.
@@ -1132,10 +1132,10 @@ Entry template:
   - Root risk: `_apply_openclaw_route` (called twice inside `_probe_primary` and once in `handle_failure`) used `subprocess.run` with NO timeout. If the `openclaw` binary hangs at that moment, the live runner blocks forever.
   - Secondary checks: `base_agent.py` already has `timeout=timeout_seconds` (180 s) on the actual agent call subprocess; `_probe_primary` already has `timeout=75`; `_run_agent_round` catches all exceptions. These are safe.
 - What changed:
-  - `src/agents/api_failover.py` — `_apply_openclaw_route()` now uses `timeout=30` on both `subprocess.run` calls (`models set` and fallback `agents add`) and wraps them in try/except. If either command hangs or errors out, it logs a warning and continues; the runner does not block.
+  - `src/agents/api_failover.py` â€” `_apply_openclaw_route()` now uses `timeout=30` on both `subprocess.run` calls (`models set` and fallback `agents add`) and wraps them in try/except. If either command hangs or errors out, it logs a warning and continues; the runner does not block.
 - Worst-case overhead per hour with a dead Qwen:
   - Probe (`maybe_restore_primary`): up to 30 s + 75 s + 30 s = 135 s, once per 3600 s.
-  - Per-cycle Qwen failure: fast HTTP 400 on billing → INTERNAL_ERROR in seconds.
+  - Per-cycle Qwen failure: fast HTTP 400 on billing â†’ INTERNAL_ERROR in seconds.
   - DeepSeek (primary) cycles: unaffected.
 - Verification:
   - `.\.venv\Scripts\python.exe -m py_compile src\agents\api_failover.py` -> passed.
@@ -1147,7 +1147,7 @@ Entry template:
 - What changed:
   - `config/settings.yaml`: `crypto-qwen` agent entry replaced with `crypto-challenger` (with `FILL_IN_PROVIDER`, `FILL_IN_MODEL`, `FILL_IN_BASE_URL`, `CHALLENGER_API_KEY` placeholders). `crypto-deepseek` fallback chain also updated to point to challenger placeholders (was Qwen, now TBD).
   - `src/cli.py`: added `migrate-agent-lessons <from_agent> <to_agent>` command that copies all private lesson records (preserving summary, category, sentiment, confidence, impact, evidence_count, raw_text) from one agent to another without re-canonicalizing. Source lessons remain intact.
-  - Migration executed: `python -m src.cli migrate-agent-lessons crypto-qwen crypto-challenger` → 50 lessons copied to `crypto-challenger`.
+  - Migration executed: `python -m src.cli migrate-agent-lessons crypto-qwen crypto-challenger` â†’ 50 lessons copied to `crypto-challenger`.
   - `PROJECT_BOOTSTRAP.md`: updated Current State section and added Activating crypto-challenger guide (4-step: fill YAML, set .env, run init + validate, smoke test).
   - `PROJECT_BOOTSTRAP.md`: updated smoke test command from Qwen to Challenger.
 - Inheritance model:
@@ -1156,12 +1156,12 @@ Entry template:
   - Shared lessons (cross-agent pool) are automatically visible to all agents once promoted.
   - `crypto-qwen` data preserved in SQLite for history/audit.
 - Current state until activation:
-  - `crypto-challenger` will call agent with placeholder model → OpenClaw will fail → `INTERNAL_ERROR` → cycle continues normally.
+  - `crypto-challenger` will call agent with placeholder model â†’ OpenClaw will fail â†’ `INTERNAL_ERROR` â†’ cycle continues normally.
   - `crypto-deepseek` is unaffected and runs normally every cycle.
 - Activation steps (when model is decided):
   1. Fill `FILL_IN_*` in `config/settings.yaml` (challenger block + deepseek fallback).
   2. Add `CHALLENGER_API_KEY=<key>` to `.env`.
-  3. `python -m src.cli init` → registers agent in OpenClaw.
+  3. `python -m src.cli init` â†’ registers agent in OpenClaw.
   4. `python -m src.cli validate-update --no-smoke` + `preflight-check`.
   5. Smoke: `openclaw agent --agent crypto-challenger --session-id challenger-smoke --message "Return exactly OK." --timeout 120`.
 - Verification:
@@ -1176,21 +1176,21 @@ Entry template:
 - Root cause: `runner_state` was stuck in ERROR/ERROR with `message="'crypto-challenger'"`. This was a `KeyError: 'crypto-challenger'` crashing `run_once` at the post-processing phase, preventing cycle counter increment (cycle 85 ran twice). Crash site: `workload.reflection("crypto-challenger")` in `_persist_daily_metrics`, which is outside `_run_agent_round`'s try-except.
 - Specific bug: `_agent_key("crypto-challenger")` fell through all alias/substring checks and returned `"crypto-challenger"` as-is. Then `self.agents["crypto-challenger"]` raised `KeyError` because `WorkloadTracker.agents` is a fixed dict `{"deepseek": AgentWork(), "grok": AgentWork()}`.
 - What changed:
-  - `src/competition/workload.py` — added `"crypto-challenger": "grok"` to `AGENT_ALIASES`.
-  - `_agent_key()` fallback changed from `else agent_id` (raw ID → crash) to `else "grok"` (safe second slot for any unknown agent, including future bots).
+  - `src/competition/workload.py` â€” added `"crypto-challenger": "grok"` to `AGENT_ALIASES`.
+  - `_agent_key()` fallback changed from `else agent_id` (raw ID â†’ crash) to `else "grok"` (safe second slot for any unknown agent, including future bots).
   - Cleared `runner_state` ERROR row directly in SQLite to restore dashboard visibility.
 - Any future bot with a non-deepseek name automatically maps to the `"grok"` telemetry slot without crashing.
 - Verification:
-  - `_agent_key` + `WorkloadTracker.reflection()` tested for all current and hypothetical agent IDs — no KeyError.
+  - `_agent_key` + `WorkloadTracker.reflection()` tested for all current and hypothetical agent IDs â€” no KeyError.
   - `.\.venv\Scripts\python.exe -m pytest -q` -> 88 passed.
   - `.\.venv\Scripts\python.exe -m src.cli validate-update --no-smoke` -> passed.
   - Cycle 85 completed successfully after restart; checkpoint 85 saved; `runner_state = RUNNING/WAITING`.
 
 ## 2026-05-20 - Preflight api_keys Block Fix (CHALLENGER_API_KEY not set)
 
-- Context: After workload.py fix, runner restart failed at preflight because `CHALLENGER_API_KEY` env var is not set (model TBD). `_check_api_keys` is a critical check → runner blocked in `_wait_for_live_preflight` loop indefinitely.
+- Context: After workload.py fix, runner restart failed at preflight because `CHALLENGER_API_KEY` env var is not set (model TBD). `_check_api_keys` is a critical check â†’ runner blocked in `_wait_for_live_preflight` loop indefinitely.
 - What changed:
-  - `src/operations/preflight.py` — `_check_api_keys` now skips agents whose `LLM_PROVIDER`, `LLM_MODEL`, or `LLM_BASE_URL` starts with `FILL_IN_`. These agents are placeholder-configured and their API keys don't need to exist yet.
+  - `src/operations/preflight.py` â€” `_check_api_keys` now skips agents whose `LLM_PROVIDER`, `LLM_MODEL`, or `LLM_BASE_URL` starts with `FILL_IN_`. These agents are placeholder-configured and their API keys don't need to exist yet.
   - Runner restarted; preflight passed; cycle 85 ran cleanly (DeepSeek NO_TRADE, Challenger INTERNAL_ERROR as expected) and completed with checkpoint 85 saved.
   - `next_cycle_at = 2026-05-19 19:40 UTC`; runner is `RUNNING / WAITING`.
 - Verification:
@@ -1201,17 +1201,17 @@ Entry template:
 
 - User request: Convert project from fixed 7-day competition model to continuous, indefinite operation. No end date. Agents never stop trading due to elapsed time. Weekly KPI +7% (soft, never forces trades). Dashboard shows Project Uptime / Rolling 7d Return / Weekly Target Progress / Project Start instead of countdown metrics.
 - What changed:
-  - `config/settings.yaml` — `duration_days: 0`, added `weekly_target_pct: 0.07`.
-  - `src/config.py` — `CompetitionSettings`: `duration_days: int = 0`, new field `weekly_target_pct: float = 0.07`.
-  - `src/competition/runner.py` — Loop changed from `while datetime.now(UTC).timestamp() < ends_at` to `while True` with kill-switch file check at each iteration. Post-loop `COMPLETED` writes removed. `_competition_time_pct()` now uses unbounded rolling 7-day window (can exceed 1.0).
-  - `src/competition/evaluation.py` — Return benchmark normalization `0.10 → 0.07`.
-  - `config/rulebook.md` — Removed "Trial period: 1 week", "+10% target". Added continuous mode description, +7% soft KPI, updated agent list to `crypto-challenger`. Updated "Winner Criteria" → "Performance Criteria" for continuous operation.
-  - `prompts/system_prompt.md` — Added continuous mode preamble: no deadline, no final day, target +7% rolling 7-day as soft KPI, NO_TRADE always acceptable.
-  - `prompts/reflection_prompt.md` — Added rolling 7-day framing; added note not to reference competition endings.
-  - `src/dashboard/app.py` — `competition_times()` returns `(start, None)` when `duration_days==0`. `system_status()` guards `COMPLETED` behind `if end_time is not None`. Added `rolling_7d_return_pct()` helper. Replaced `elapsed/remaining/percent_complete` with `project_uptime/_rolling_7d/_weekly_progress`. Replaced 3 old banner metrics (Time remaining, Complete, Start/End) with Project Uptime, Rolling 7d Return, Project Start; `st.progress` now shows weekly target progress with label.
-  - `src/cloud/snapshot_exporter.py` — `_competition_window()` returns `(start, None)` when continuous. `_competition_status()` guards `COMPLETED` behind `if end_time is not None`. Payload `competition` block: `end_time` null-safe, added `continuous_mode`, `uptime_seconds`, `weekly_target_pct`.
-  - `tests/test_continuous_mode.py` — New test file: 14 tests covering config, runner time pct, snapshot status, rolling 7d return, prompt content.
-  - `PROJECT_BOOTSTRAP.md` — Updated Current State: continuous mode, kill-switch only stop, +7% soft KPI, new dashboard metrics.
+  - `config/settings.yaml` â€” `duration_days: 0`, added `weekly_target_pct: 0.07`.
+  - `src/config.py` â€” `CompetitionSettings`: `duration_days: int = 0`, new field `weekly_target_pct: float = 0.07`.
+  - `src/competition/runner.py` â€” Loop changed from `while datetime.now(UTC).timestamp() < ends_at` to `while True` with kill-switch file check at each iteration. Post-loop `COMPLETED` writes removed. `_competition_time_pct()` now uses unbounded rolling 7-day window (can exceed 1.0).
+  - `src/competition/evaluation.py` â€” Return benchmark normalization `0.10 â†’ 0.07`.
+  - `config/rulebook.md` â€” Removed "Trial period: 1 week", "+10% target". Added continuous mode description, +7% soft KPI, updated agent list to `crypto-challenger`. Updated "Winner Criteria" â†’ "Performance Criteria" for continuous operation.
+  - `prompts/system_prompt.md` â€” Added continuous mode preamble: no deadline, no final day, target +7% rolling 7-day as soft KPI, NO_TRADE always acceptable.
+  - `prompts/reflection_prompt.md` â€” Added rolling 7-day framing; added note not to reference competition endings.
+  - `src/dashboard/app.py` â€” `competition_times()` returns `(start, None)` when `duration_days==0`. `system_status()` guards `COMPLETED` behind `if end_time is not None`. Added `rolling_7d_return_pct()` helper. Replaced `elapsed/remaining/percent_complete` with `project_uptime/_rolling_7d/_weekly_progress`. Replaced 3 old banner metrics (Time remaining, Complete, Start/End) with Project Uptime, Rolling 7d Return, Project Start; `st.progress` now shows weekly target progress with label.
+  - `src/cloud/snapshot_exporter.py` â€” `_competition_window()` returns `(start, None)` when continuous. `_competition_status()` guards `COMPLETED` behind `if end_time is not None`. Payload `competition` block: `end_time` null-safe, added `continuous_mode`, `uptime_seconds`, `weekly_target_pct`.
+  - `tests/test_continuous_mode.py` â€” New test file: 14 tests covering config, runner time pct, snapshot status, rolling 7d return, prompt content.
+  - `PROJECT_BOOTSTRAP.md` â€” Updated Current State: continuous mode, kill-switch only stop, +7% soft KPI, new dashboard metrics.
 - Architecture notes:
   - Kill-switch (`KILL_SWITCH` file) is the only way to stop the runner (besides SIGTERM/process kill).
   - `competition_time_pct` DB field is preserved for compat; value is now unbounded rolling fraction (can exceed 1.0).
@@ -1222,35 +1222,35 @@ Entry template:
 ## 2026-05-20 - Break-Even Stop: End-to-End Fix & Implementation
 
 - User request: Investigate and fix Break-Even Stop so it always activates correctly when a position reaches the configured profit threshold. Fix must cover trigger math, DB persistence, dashboard display, snapshot exporter, and agent context.
-- Root cause: Two issues found in `apply_break_even()` — variable `risk` was misleadingly named (price distance, not USDT risk), and the persistence condition in engine.py checked `updated_sl != position.stop_loss` AFTER overwriting `position.stop_loss = updated_sl`, so the condition was always False. Break-even SL change was saved only because `state != original_state` happened to also be True. Fixed both.
+- Root cause: Two issues found in `apply_break_even()` â€” variable `risk` was misleadingly named (price distance, not USDT risk), and the persistence condition in engine.py checked `updated_sl != position.stop_loss` AFTER overwriting `position.stop_loss = updated_sl`, so the condition was always False. Break-even SL change was saved only because `state != original_state` happened to also be True. Fixed both.
 - What changed:
-  - `src/trading/risk_automation/position_rules.py` — Renamed `risk` → `stop_price_distance`; confirmed r_multiple trigger math uses `calculate_pnl()` on both sides (dimensionally correct USDT comparison).
-  - `src/trading/risk_automation/engine.py` — Added `original_sl = position.stop_loss` before modifications; fixed persistence condition to `position.stop_loss != original_sl`; added `logger.info` + `save_risk_notification` on activation.
-  - `src/dashboard/tabs/risk_automation.py` — Added structured `be_enabled`, `be_activated`, `be_stop` columns parsed from JSON blobs instead of raw JSON display.
-  - `src/cloud/snapshot_exporter.py` — Added `be_stop_price` field to risk automation payload (float when activated, null otherwise).
-  - `prompts/system_prompt.md` — Added note: "Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth."
-  - `tests/test_risk_automation.py` — Added 5 new tests: SHORT position activation, below-1R guard, no-duplicate activation, no-regression guard, engine persistence + notification.
+  - `src/trading/risk_automation/position_rules.py` â€” Renamed `risk` â†’ `stop_price_distance`; confirmed r_multiple trigger math uses `calculate_pnl()` on both sides (dimensionally correct USDT comparison).
+  - `src/trading/risk_automation/engine.py` â€” Added `original_sl = position.stop_loss` before modifications; fixed persistence condition to `position.stop_loss != original_sl`; added `logger.info` + `save_risk_notification` on activation.
+  - `src/dashboard/tabs/risk_automation.py` â€” Added structured `be_enabled`, `be_activated`, `be_stop` columns parsed from JSON blobs instead of raw JSON display.
+  - `src/cloud/snapshot_exporter.py` â€” Added `be_stop_price` field to risk automation payload (float when activated, null otherwise).
+  - `prompts/system_prompt.md` â€” Added note: "Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth."
+  - `tests/test_risk_automation.py` â€” Added 5 new tests: SHORT position activation, below-1R guard, no-duplicate activation, no-regression guard, engine persistence + notification.
 - Verification:
-  - `py_compile` on all modified sources → passed.
-  - `pytest -q` → 120 passed (all existing + 5 new).
-  - `validate-update --no-smoke` → PASS. `preflight-check` → all PASS.
+  - `py_compile` on all modified sources â†’ passed.
+  - `pytest -q` â†’ 120 passed (all existing + 5 new).
+  - `validate-update --no-smoke` â†’ PASS. `preflight-check` â†’ all PASS.
 
 ## 2026-05-20 - Break-Even Stop: Diagnostic Logging & DCA Guard
 
 - User request: Dashboard still showed original stop loss after break-even fix. Investigate end-to-end and fix any remaining gaps.
-- Investigation: Data path (DB write → snapshot → dashboard) confirmed architecturally correct. Two new bugs found:
-  1. No diagnostic logging when break-even evaluates but does not trigger — impossible to distinguish "not yet +1R", "already activated", or "exception swallowed".
-  2. Agent DCA/ADD signal can overwrite break-even stop — `position_manager._add()` line 204 used `float(signal.stop_loss or position.stop_loss)` unconditionally, reverting break-even SL back to agent's original wider stop if agent recomputed it from scratch.
+- Investigation: Data path (DB write â†’ snapshot â†’ dashboard) confirmed architecturally correct. Two new bugs found:
+  1. No diagnostic logging when break-even evaluates but does not trigger â€” impossible to distinguish "not yet +1R", "already activated", or "exception swallowed".
+  2. Agent DCA/ADD signal can overwrite break-even stop â€” `position_manager._add()` line 204 used `float(signal.stop_loss or position.stop_loss)` unconditionally, reverting break-even SL back to agent's original wider stop if agent recomputed it from scratch.
 - What changed:
-  - `src/trading/risk_automation/position_rules.py` — Added `from loguru import logger`; added `logger.debug` in every `apply_break_even` evaluation branch (r_multiple, tp1, percent) showing pnl/account_risk/threshold/hit on every tick; added `logger.debug` when skipping an already-activated position; added `logger.info` with full context (trigger, price, pnl, account_risk, old SL, new SL) on activation; removed unused `activated = False`.
-  - `src/trading/risk_automation/engine.py` — Removed duplicate `logger.info` block (logging now in position_rules.py with richer fields); updated `save_risk_notification` message to include direction, trigger type, and current price.
-  - `src/trading/position_manager.py` — Fixed `_add()` stop_loss guard: for LONG uses `max(signal_sl, position.stop_loss)`; for SHORT uses `min(signal_sl, position.stop_loss)`; zero/None signal leaves stop unchanged. Ensures break-even's tighter stop is never widened by a subsequent DCA signal.
-  - `tests/test_risk_automation.py` — Added 2 imports (`_position_payload`, `PaperAccount`); added 4 new tests: snapshot exporter stop_loss after break-even, agent context stop_loss after break-even, DCA cannot widen LONG stop, DCA cannot widen SHORT stop.
+  - `src/trading/risk_automation/position_rules.py` â€” Added `from loguru import logger`; added `logger.debug` in every `apply_break_even` evaluation branch (r_multiple, tp1, percent) showing pnl/account_risk/threshold/hit on every tick; added `logger.debug` when skipping an already-activated position; added `logger.info` with full context (trigger, price, pnl, account_risk, old SL, new SL) on activation; removed unused `activated = False`.
+  - `src/trading/risk_automation/engine.py` â€” Removed duplicate `logger.info` block (logging now in position_rules.py with richer fields); updated `save_risk_notification` message to include direction, trigger type, and current price.
+  - `src/trading/position_manager.py` â€” Fixed `_add()` stop_loss guard: for LONG uses `max(signal_sl, position.stop_loss)`; for SHORT uses `min(signal_sl, position.stop_loss)`; zero/None signal leaves stop unchanged. Ensures break-even's tighter stop is never widened by a subsequent DCA signal.
+  - `tests/test_risk_automation.py` â€” Added 2 imports (`_position_payload`, `PaperAccount`); added 4 new tests: snapshot exporter stop_loss after break-even, agent context stop_loss after break-even, DCA cannot widen LONG stop, DCA cannot widen SHORT stop.
 - Verification:
-  - `py_compile` on all 3 modified sources → passed.
-  - `pytest -q` → 124 passed (all existing + 4 new, 0 regressions).
-  - `validate-update --no-smoke` → all PASS. `preflight-check` → all PASS.
-- Notes: Debug logs are `loguru.DEBUG` level — visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.
+  - `py_compile` on all 3 modified sources â†’ passed.
+  - `pytest -q` â†’ 124 passed (all existing + 4 new, 0 regressions).
+  - `validate-update --no-smoke` â†’ all PASS. `preflight-check` â†’ all PASS.
+- Notes: Debug logs are `loguru.DEBUG` level â€” visible in dev with `LOGURU_LEVEL=DEBUG`, silent in prod default. The DCA guard is intentionally non-blocking: it preserves the agent's intent to update the stop, while ensuring the tighter of agent vs. break-even always wins.
 
 ## 2026-05-21 - Live Qwen3-Max Verification + Runner Restart
 
@@ -1258,45 +1258,45 @@ Entry template:
 - Findings before restart:
   - Runner state: WAITING, next_cycle_at 2026-05-20 17:35 UTC (~25 min away). Phase/status normal.
   - Two Python processes (PID 21064 + PID 27896) confirmed to be one parent-child pair (normal Windows behavior), NOT two separate runners. Dashboard likewise one pair.
-  - Cycle 106 (first cycle after crypto-qwen activation) had `PARSE_ERROR` for crypto-qwen: `AGENT_RUNTIME_ERROR: Unable to verify OpenClaw response model; response model was not recorded` — confirmed as exactly Bug B fixed in the model verification commit.
+  - Cycle 106 (first cycle after crypto-qwen activation) had `PARSE_ERROR` for crypto-qwen: `AGENT_RUNTIME_ERROR: Unable to verify OpenClaw response model; response model was not recorded` â€” confirmed as exactly Bug B fixed in the model verification commit.
   - Live direct test via `OpenClawAgent.run_with_metadata()`: API responded in 39s, `actual_model=qwen3-max-2026-01-23`, prefix match PASS, JSON output valid (`NO_TRADE` signal with all required fields).
-- Runner restart (required because `.py` code changes are never hot-reloaded — only config/prompt/rulebook are):
-  - Created `KILL_SWITCH` file → runner did not respond within 30s (sleeping in WAITING loop).
+- Runner restart (required because `.py` code changes are never hot-reloaded â€” only config/prompt/rulebook are):
+  - Created `KILL_SWITCH` file â†’ runner did not respond within 30s (sleeping in WAITING loop).
   - Force-killed parent PID 21064; child PID 27896 exited automatically.
   - Removed `KILL_SWITCH`.
   - Started new runner: `.venv\Scripts\python.exe -m src.cli run-live --resume` (background, PID 39592 + child 33648).
   - Runner immediately started cycle 107 (run-live --resume runs one cycle on startup).
 - Cycle 107 result (first with new model verification code):
-  - `crypto-deepseek`: POSITION_UPDATE / HOLD → ACCEPTED ✅
-  - `crypto-qwen`: NO_TRADE / NONE → **ACCEPTED** ✅ (first successful Qwen signal since re-activation)
+  - `crypto-deepseek`: POSITION_UPDATE / HOLD â†’ ACCEPTED âœ…
+  - `crypto-qwen`: NO_TRADE / NONE â†’ **ACCEPTED** âœ… (first successful Qwen signal since re-activation)
   - Checkpoint 107 COMPLETED at 2026-05-20 17:16:01 UTC.
   - Next cycle scheduled at 2026-05-20 18:16:01 UTC.
 - Notes:
-  - Rule clarified: sửa `.yaml`/`.md` → hot reload (no restart needed); sửa `.py` → bắt buộc restart runner.
+  - Rule clarified: sá»­a `.yaml`/`.md` â†’ hot reload (no restart needed); sá»­a `.py` â†’ báº¯t buá»™c restart runner.
 
 ## 2026-05-21 - Model Verification: Prefix Matching + Session File Miss Fallback
 
 - Problem addressed: Two distinct bugs caused false `AGENT_RUNTIME_ERROR` on valid provider responses:
-  1. DashScope returns `qwen3-max-2026-01-23` (versioned slug) but `LLM_MODEL` is `qwen3-max` → exact-equality check raised "Configured model 'qwen3-max' is unavailable" even though it's the correct model.
-  2. When OpenClaw writes the response to a UUID-named session file instead of the named one (`crypto-qwen.jsonl`), `_latest_session_model` found no new messages → raised "response model was not recorded".
+  1. DashScope returns `qwen3-max-2026-01-23` (versioned slug) but `LLM_MODEL` is `qwen3-max` â†’ exact-equality check raised "Configured model 'qwen3-max' is unavailable" even though it's the correct model.
+  2. When OpenClaw writes the response to a UUID-named session file instead of the named one (`crypto-qwen.jsonl`), `_latest_session_model` found no new messages â†’ raised "response model was not recorded".
 - Root cause:
   - Bug A: DashScope (and providers like it) route a stable alias to an internal versioned slug in the response metadata. The old check `actual_model != configured_model` did not tolerate this.
   - Bug B: `_latest_session_model` raised immediately when the session file was missing or had no model metadata, instead of returning `None` and letting the caller decide.
 - Files changed:
   - `src/agents/base_agent.py`:
-    - Added `_model_is_compatible(actual, configured)` — returns True for exact match OR when `actual.startswith(configured)` (prefix match). Completely different base names still return False.
-    - Changed `_latest_session_model` return type to `str | None` — returns `None` instead of raising when file is absent or has no model metadata. Also scans `model_change` and `model-snapshot` custom events as alternate model sources.
-    - In `run_with_metadata`: when `actual_model is None` → log warning, fall back to configured model (no contradictory evidence). When actual found → use `_model_is_compatible`; only raise on genuine model drift.
+    - Added `_model_is_compatible(actual, configured)` â€” returns True for exact match OR when `actual.startswith(configured)` (prefix match). Completely different base names still return False.
+    - Changed `_latest_session_model` return type to `str | None` â€” returns `None` instead of raising when file is absent or has no model metadata. Also scans `model_change` and `model-snapshot` custom events as alternate model sources.
+    - In `run_with_metadata`: when `actual_model is None` â†’ log warning, fall back to configured model (no contradictory evidence). When actual found â†’ use `_model_is_compatible`; only raise on genuine model drift.
   - `tests/test_base_agent.py`:
     - Added helpers: `write_session_no_model`, `write_session_model_change_event`.
     - Added 9 new tests: 4 unit tests for `_model_is_compatible`, 5 integration tests (versioned suffix passes, missing file falls back, no model in session falls back, model_change event as source, completely different model still raises).
 - Validation:
-  - `pytest tests/test_base_agent.py -v` → 17 passed.
-  - `pytest -q` → 133 passed.
-  - `validate-update --no-smoke` → PASS.
-  - `preflight-check` → all 9 critical PASS.
+  - `pytest tests/test_base_agent.py -v` â†’ 17 passed.
+  - `pytest -q` â†’ 133 passed.
+  - `validate-update --no-smoke` â†’ PASS.
+  - `preflight-check` â†’ all 9 critical PASS.
 - Safety notes:
-  - DeepSeek unaffected — `deepseek-v4-flash` exact match still works.
+  - DeepSeek unaffected â€” `deepseek-v4-flash` exact match still works.
   - True model switching (e.g., provider returns `gpt-4o` instead of `qwen3-max`) still raises immediately.
   - Fallback to configured model only fires when there is zero contradictory evidence, which is safe because OpenClaw gateway is already locked via `init` + `LLM_ALLOW_FALLBACK: false`.
 
@@ -1305,22 +1305,22 @@ Entry template:
 - Problem addressed: `crypto-qwen` was retired after its previous DashScope billing expired. The config had been replaced with a `crypto-challenger` placeholder (`FILL_IN_*` values). User supplied a new DashScope API key and wants the second agent slot running again as `crypto-qwen` with model `qwen3-max`.
 - Root cause: Billing expiry of the previous `QWEN_API_KEY`; placeholder config was intentionally incomplete.
 - Files changed:
-  - `config/settings.yaml` — renamed `crypto-challenger` agent block back to `crypto-qwen` (id, name, session_id); set `LLM_PROVIDER: openai`, `LLM_MODEL: qwen3-max`, `LLM_BASE_URL: https://dashscope-intl.aliyuncs.com/compatible-mode/v1`, `LLM_API_KEY: QWEN_API_KEY`; updated `crypto-deepseek` fallback chain from `FILL_IN_*` to qwen3-max / DashScope.
-  - `.env` (local, not committed) — updated `QWEN_API_KEY` to new key.
-  - `PROJECT_BOOTSTRAP.md` — updated active agents, removed crypto-challenger placeholder guide, added qwen re-activation recovery notes, updated fast checks.
-  - `PROJECT_CONTEXT.md` — updated Quick Context model IDs; fixed stale known-issues entry for Qwen auth.
-  - `logs/SESSION_UPDATES.md` — this entry.
+  - `config/settings.yaml` â€” renamed `crypto-challenger` agent block back to `crypto-qwen` (id, name, session_id); set `LLM_PROVIDER: openai`, `LLM_MODEL: qwen3-max`, `LLM_BASE_URL: https://dashscope-intl.aliyuncs.com/compatible-mode/v1`, `LLM_API_KEY: QWEN_API_KEY`; updated `crypto-deepseek` fallback chain from `FILL_IN_*` to qwen3-max / DashScope.
+  - `.env` (local, not committed) â€” updated `QWEN_API_KEY` to new key.
+  - `PROJECT_BOOTSTRAP.md` â€” updated active agents, removed crypto-challenger placeholder guide, added qwen re-activation recovery notes, updated fast checks.
+  - `PROJECT_CONTEXT.md` â€” updated Quick Context model IDs; fixed stale known-issues entry for Qwen auth.
+  - `logs/SESSION_UPDATES.md` â€” this entry.
 - Key implementation details:
-  - OpenClaw agent registered via `python -m src.cli init` → confirmed `provider=openai model=qwen3-max fallback_allowed=False` logged for `crypto-qwen`.
+  - OpenClaw agent registered via `python -m src.cli init` â†’ confirmed `provider=openai model=qwen3-max fallback_allowed=False` logged for `crypto-qwen`.
   - DashScope uses the OpenAI-compatible endpoint (`LLM_PROVIDER: openai`) with a custom `LLM_BASE_URL`.
   - `LLM_ALLOW_FALLBACK: false` preserved; actual-model verification will fire if DashScope returns a versioned model ID (e.g. `qwen3-max-2026-*`). If that happens, update `LLM_MODEL` to the versioned slug and re-run `init`.
-  - Failover chain intact: DeepSeek → Qwen fallback; Qwen → DeepSeek fallback.
+  - Failover chain intact: DeepSeek â†’ Qwen fallback; Qwen â†’ DeepSeek fallback.
 - Validation:
-  - `python -m src.cli init` → OK, both agents registered.
-  - `validate-update --no-smoke` → all 4 checks PASS.
-  - `pytest -q` → 124 passed.
-  - `preflight-check` → all 9 critical checks PASS.
-  - Smoke: `openclaw agent --agent crypto-qwen --session-id qwen-smoke --message "Return exactly OK." --timeout 120` → `OK`.
+  - `python -m src.cli init` â†’ OK, both agents registered.
+  - `validate-update --no-smoke` â†’ all 4 checks PASS.
+  - `pytest -q` â†’ 124 passed.
+  - `preflight-check` â†’ all 9 critical checks PASS.
+  - Smoke: `openclaw agent --agent crypto-qwen --session-id qwen-smoke --message "Return exactly OK." --timeout 120` â†’ `OK`.
 - Deployment notes: Runner will pick up `crypto-qwen` automatically on the next cycle. No runner restart required unless the runner is currently holding the old config in memory.
 - Known limitations / follow-ups:
   - If the live runner is currently mid-cycle it will continue with the old config until the next `init` call. Running `init` again after cycle completion is safe.
@@ -1332,18 +1332,18 @@ Entry template:
 - Problem addressed: No enforced audit trail or commit discipline existed across sessions. Startup token cost could grow unbounded as SESSION_UPDATES.md grew.
 - Root cause: Workflow rules were never written into a form that persists across sessions (memory or always-loaded config file).
 - Files changed:
-  - `d:\Project\OpenClaw\CLAUDE.md` (new) — always-loaded project-level instructions containing the full pre-implementation analysis requirement and the 7-step mandatory post-task workflow (update log → rotate if >500KB/1000 entries → update docs → run validation → git commit → push → final report).
-  - `d:\Project\OpenClaw\.claude\settings.json` (updated) — replaced narrow specific allow entries with broad wildcard permissions covering git, Python/pytest, PowerShell file ops, Read/Write/Edit/Glob/Grep tools; avoids per-prompt permission prompts for standard dev operations.
-  - `C:\Users\Admin\.claude\projects\d--Project-OpenClaw\memory\feedback_post_task_workflow.md` (new) — persistent auto-memory entry so the workflow rules survive future sessions even if CLAUDE.md is missed.
+  - `d:\Project\OpenClaw\CLAUDE.md` (new) â€” always-loaded project-level instructions containing the full pre-implementation analysis requirement and the 7-step mandatory post-task workflow (update log â†’ rotate if >500KB/1000 entries â†’ update docs â†’ run validation â†’ git commit â†’ push â†’ final report).
+  - `d:\Project\OpenClaw\.claude\settings.json` (updated) â€” replaced narrow specific allow entries with broad wildcard permissions covering git, Python/pytest, PowerShell file ops, Read/Write/Edit/Glob/Grep tools; avoids per-prompt permission prompts for standard dev operations.
+  - `C:\Users\Admin\.claude\projects\d--Project-OpenClaw\memory\feedback_post_task_workflow.md` (new) â€” persistent auto-memory entry so the workflow rules survive future sessions even if CLAUDE.md is missed.
 - Key implementation details:
-  - CLAUDE.md is automatically loaded by Claude Code at session start — no user action required. It is the primary enforcement mechanism.
+  - CLAUDE.md is automatically loaded by Claude Code at session start â€” no user action required. It is the primary enforcement mechanism.
   - The feedback memory entry backs up the rules and is consulted by Claude when memory is loaded.
   - No hook was configured: the post-task workflow requires Claude's reasoning (writing contextual summaries, choosing what to stage, authoring commit messages). Shell hooks can only run blind commands; CLAUDE.md is the correct mechanism for Claude's own behavioral rules.
   - CLAUDE.md and .claude/settings.json reside in `d:\Project\OpenClaw\` (workspace root), which is NOT inside the crypto-paper-trading-arena git repo. These files cannot be tracked by git.
 - Validation: No source code was changed; no pytest run required.
 - Deployment notes: Rules are immediately active. No restart needed.
 - Known limitations:
-  - CLAUDE.md and .claude/settings.json are outside the git repo — not version-controlled. If the workspace is cloned fresh these files must be recreated.
+  - CLAUDE.md and .claude/settings.json are outside the git repo â€” not version-controlled. If the workspace is cloned fresh these files must be recreated.
   - The workflow is enforced by Claude's behavioral instructions, not by a hard technical lock. The user can bypass it with "do not commit" / "draft only" etc.
 
 ## 2026-05-20 - Project-Wide Permission Allow-List
@@ -1352,8 +1352,8 @@ Entry template:
 - Problem addressed: Excessive permission prompts for routine, safe dev operations.
 - Root cause: `.claude/settings.json` only had three narrow, specific `Bash(...)` allow entries for previously-approved one-off commands.
 - Files changed:
-  - `d:\Project\OpenClaw\.claude\settings.json` — replaced the three specific entries with a broad wildcard allow-list covering: `Bash(git *)`, `Bash(.venv\Scripts\python.exe *)`, `Bash(python *)`, `Bash(pytest *)`, all PowerShell file-manipulation cmdlets (`Get-Content`, `Set-Content`, `Add-Content`, `Copy-Item`, `Move-Item`, `Remove-Item`, `Get-ChildItem`, `Test-Path`, `New-Item`), and all `Read(*)`, `Write(*)`, `Edit(*)`, `Glob(*)`, `Grep(*)` tool uses.
-- Key implementation details: The three old specific entries are fully subsumed by the new wildcards — no previously-approved operation was removed.
+  - `d:\Project\OpenClaw\.claude\settings.json` â€” replaced the three specific entries with a broad wildcard allow-list covering: `Bash(git *)`, `Bash(.venv\Scripts\python.exe *)`, `Bash(python *)`, `Bash(pytest *)`, all PowerShell file-manipulation cmdlets (`Get-Content`, `Set-Content`, `Add-Content`, `Copy-Item`, `Move-Item`, `Remove-Item`, `Get-ChildItem`, `Test-Path`, `New-Item`), and all `Read(*)`, `Write(*)`, `Edit(*)`, `Glob(*)`, `Grep(*)` tool uses.
+- Key implementation details: The three old specific entries are fully subsumed by the new wildcards â€” no previously-approved operation was removed.
 - Validation: No source code changed; no test run required.
 - Deployment notes: Active immediately for the current and all future sessions in this workspace.
 - Known limitations: File is outside the git repo (workspace root, not inside `crypto-paper-trading-arena/`); not version-controlled.
@@ -1363,53 +1363,53 @@ Entry template:
 - Problem addressed: Thirteen specific Bash wildcard entries were verbose and could still trigger prompts for unlisted commands.
 - Root cause: Previous config used narrow per-command wildcards instead of catch-all entries.
 - Files changed:
-  - `d:\Project\OpenClaw\.claude\settings.json` — replaced 13 specific Bash entries + 5 tool entries with 7 catch-all rules: `Bash(*)`, `PowerShell(*)`, `Read(*)`, `Write(*)`, `Edit(*)`, `Glob(*)`, `Grep(*)`.
+  - `d:\Project\OpenClaw\.claude\settings.json` â€” replaced 13 specific Bash entries + 5 tool entries with 7 catch-all rules: `Bash(*)`, `PowerShell(*)`, `Read(*)`, `Write(*)`, `Edit(*)`, `Glob(*)`, `Grep(*)`.
 - Key implementation details: New entries are a strict superset of the old allow-list. No previously-permitted operation is restricted.
 - Validation: No source code changed; no pytest run required.
-- Deployment notes: Active immediately. File is outside the git repo (workspace root) — not version-controlled.
+- Deployment notes: Active immediately. File is outside the git repo (workspace root) â€” not version-controlled.
 - Known limitations: `Bash(*)` and `PowerShell(*)` allow all shell commands without prompting. This is intentional for a trusted local dev environment.
 
 ## 2026-05-20 - Fix Permission Allow-List (Merge, Not Replace)
 
-- Problem addressed: Previous update incorrectly replaced the full allow array instead of merging — old specific entries were lost.
+- Problem addressed: Previous update incorrectly replaced the full allow array instead of merging â€” old specific entries were lost.
 - Root cause: Used Write (overwrite) instead of Edit (merge) when applying the settings change.
 - Files changed:
-  - `d:\Project\OpenClaw\.claude\settings.json` — restored all 13 original Bash entries + 5 original tool entries; appended `Bash(*)` and `PowerShell(*)` as new catch-all additions.
+  - `d:\Project\OpenClaw\.claude\settings.json` â€” restored all 13 original Bash entries + 5 original tool entries; appended `Bash(*)` and `PowerShell(*)` as new catch-all additions.
 - Key implementation details: All previous entries preserved; `Bash(*)` and `PowerShell(*)` added at end of array. Result is a strict superset of both the original config and the requested new entries.
 - Validation: No source code changed; no pytest run required.
-- Deployment notes: Active immediately. File is outside git repo — not version-controlled.
+- Deployment notes: Active immediately. File is outside git repo â€” not version-controlled.
 
 ## 2026-05-21 - Qwen Cooldown Clear + Reduce Consecutive-Loss Pause To 1 Cycle
 
-- Problem addressed: `crypto-qwen` was being skipped every ~5-6 cycles because the consecutive-loss cooldown was 6 hours (`pause_hours_after_losses: 6.0`), equal to 6 poll intervals. Qwen kept re-triggering the cooldown on each return, causing a repeat skip pattern (cycles 107→113→119 each separated by 6 skipped cycles).
+- Problem addressed: `crypto-qwen` was being skipped every ~5-6 cycles because the consecutive-loss cooldown was 6 hours (`pause_hours_after_losses: 6.0`), equal to 6 poll intervals. Qwen kept re-triggering the cooldown on each return, causing a repeat skip pattern (cycles 107â†’113â†’119 each separated by 6 skipped cycles).
 - Root cause: `pause_hours_after_losses: 6.0` with `poll_interval_seconds: 3600` means 6 full cycles are skipped per cooldown trigger. With Qwen in a consecutive-loss streak, every return triggered a new 6-hour cooldown.
 - Files changed:
-  - `config/settings.yaml` — `risk_automation.cooldown.pause_hours_after_losses: 6.0 → 1.1` (slightly over one poll interval so the skip is reliably 1 cycle regardless of minor cycle timing drift).
+  - `config/settings.yaml` â€” `risk_automation.cooldown.pause_hours_after_losses: 6.0 â†’ 1.1` (slightly over one poll interval so the skip is reliably 1 cycle regardless of minor cycle timing drift).
 - Key implementation details:
   - `settings.yaml` is hot-reloaded; no runner restart required.
   - Cleared the active cooldown immediately via `python -m src.cli clear-cooldown --agent crypto-qwen`.
   - All other cooldown thresholds unchanged (`consecutive_losses: 3`, `daily_loss_pct: 0.05`, `pause_hours_daily: 24.0`, `weekly_drawdown_pct: 0.10`, `pause_hours_weekly: 24.0`).
 - Validation:
-  - `list-cooldowns` → `[]` (cleared).
-  - `validate-update --no-smoke` → all 4 checks PASS.
+  - `list-cooldowns` â†’ `[]` (cleared).
+  - `validate-update --no-smoke` â†’ all 4 checks PASS.
 - Deployment notes: Qwen will participate in the next scheduled cycle. Future consecutive-loss cooldowns will skip exactly 1 cycle (~1.1 h) instead of 6.
-- Known limitations: If cycles run late (e.g. > 1.1 h gap), the cooldown may expire mid-wait and Qwen resumes on the next cycle boundary anyway — no impact on correctness.
+- Known limitations: If cycles run late (e.g. > 1.1 h gap), the cooldown may expire mid-wait and Qwen resumes on the next cycle boundary anyway â€” no impact on correctness.
 
 ## 2026-05-21 - Fix Cooldown Streak Not Resetting After Served Cooldown
 
 - Problem addressed: After a cooldown expired or was cleared, `consecutive_losses()` still found the same old losing trades and immediately re-triggered a new cooldown, causing an infinite skip-1/run-1 alternating pattern.
 - Root cause: `consecutive_losses()` counted the N most recent closed trades with no time boundary. Once Qwen had 3 historical losses, every call to `evaluate_after_cycle` after a cooldown ended would see those same trades and re-trigger.
 - Files changed:
-  - `src/storage/risk_repository.py` — `consecutive_losses()` now calls `_last_cooldown_cleared_at()` to find the most recent `COOLDOWN_ENDED` notification for the agent. Only trades after that timestamp are counted. If no cooldown has ever been cleared, behaviour is unchanged (count all trades). Added `_last_cooldown_cleared_at()` helper using `RiskNotificationRecord`.
-  - `tests/test_risk_automation.py` — added 2 new tests: (1) old losses before a clear do not re-trigger cooldown; (2) new losses after a clear do correctly trigger.
+  - `src/storage/risk_repository.py` â€” `consecutive_losses()` now calls `_last_cooldown_cleared_at()` to find the most recent `COOLDOWN_ENDED` notification for the agent. Only trades after that timestamp are counted. If no cooldown has ever been cleared, behaviour is unchanged (count all trades). Added `_last_cooldown_cleared_at()` helper using `RiskNotificationRecord`.
+  - `tests/test_risk_automation.py` â€” added 2 new tests: (1) old losses before a clear do not re-trigger cooldown; (2) new losses after a clear do correctly trigger.
 - Key implementation details:
   - No schema changes. Uses existing `risk_notifications` table (`COOLDOWN_ENDED` events).
   - Manual `clear-cooldown` also writes a `COOLDOWN_ENDED` notification, so manual resets are also treated as streak resets.
   - `settings.yaml` is hot-reloaded; no runner restart required.
 - Validation:
-  - `pytest tests/test_risk_automation.py -q` → 29 passed.
-  - `pytest -q` → 135 passed (0 regressions).
-  - `validate-update --no-smoke` → all PASS.
+  - `pytest tests/test_risk_automation.py -q` â†’ 29 passed.
+  - `pytest -q` â†’ 135 passed (0 regressions).
+  - `validate-update --no-smoke` â†’ all PASS.
 - Deployment notes: Hot-reload picks up no changes (Python-only fix in `.py`). Runner must be restarted for the fix to take effect in the live cycle.
 
 ## 2026-05-21 - Add crypto-gemini Third Agent (Gemini 2.5 Flash)
@@ -1417,27 +1417,27 @@ Entry template:
 - Problem addressed: Only two agents (DeepSeek, Qwen) competed. User requested a fully-isolated third agent using Google Gemini Flash.
 - Root cause: New feature addition. Five sub-systems hardcoded exactly two agents (workload.py buckets, models.py columns, repository.py writes, api_cost_audit.py string matching, dashboard.app.py challenger index assumption).
 - Files changed:
-  - `config/settings.yaml` � added `crypto-gemini` agent block (LLM_PROVIDER: openai, LLM_MODEL: gemini-2.5-flash, LLM_BASE_URL: Google OpenAI-compatible endpoint, LLM_ALLOW_FALLBACK: false, api_failover: disabled).
-  - `.env` (local, not committed) � added `GEMINI_API_KEY`.
-  - `src/competition/workload.py` � added `"crypto-gemini": "gemini"` to AGENT_ALIASES; added `"gemini"` bucket to WorkloadTracker.agents default; extended finalize(), workload_scores(), summarize_workload(), _decision_share(), _agent_key() for gemini.
-  - `src/storage/models.py` � added four nullable columns to WorkloadCycleRecord (gemini_workload_pct, gemini_latency_seconds, gemini_tokens, gemini_cost_usd); added migration block in _migrate_sqlite() using ALTER TABLE ADD COLUMN.
-  - `src/storage/repository.py` � updated save_workload_cycle() to write gemini_* values using .get() with 0.0 defaults for backward compatibility.
-  - `src/competition/api_cost_audit.py` � refactored diagnose_cost_spike() from hardcoded "grok/qwen vs deepseek" to generic N-agent comparison grouped by agent_name.
-  - `src/dashboard/app.py` � expanded workload KPI display from 5 to 6 columns (added Gemini); updated API cost audit challenger mask to non-deepseek generic; updated workload charts (pie split, trend line, token/latency/cost trends) to include gemini columns dynamically; updated per-cycle breakdown table.
-  - `tests/test_gemini_agent.py` (new) � 16 tests covering: config correctness, model lock, workload alias routing, tracker isolation, DB persistence, zero-state initialization, multi-agent leaderboard visibility, failure isolation.
-  - `tests/test_workload.py` � added 3 new tests including gemini in workload scores and tracker persistence; updated existing persistence test to verify 4-bucket total == 100%.
-  - `tests/test_api_cost_audit.py` � updated existing comparison test assertion; added test_api_cost_summary_includes_gemini covering 3-agent cost comparison.
-  - `tests/test_runner_integration.py` � updated workload-sum assertion to include gemini_workload_pct.
-  - `PROJECT_BOOTSTRAP.md` � updated active agents list and model locks.
+  - `config/settings.yaml` ï¿½ added `crypto-gemini` agent block (LLM_PROVIDER: openai, LLM_MODEL: gemini-2.5-flash, LLM_BASE_URL: Google OpenAI-compatible endpoint, LLM_ALLOW_FALLBACK: false, api_failover: disabled).
+  - `.env` (local, not committed) ï¿½ added `GEMINI_API_KEY`.
+  - `src/competition/workload.py` ï¿½ added `"crypto-gemini": "gemini"` to AGENT_ALIASES; added `"gemini"` bucket to WorkloadTracker.agents default; extended finalize(), workload_scores(), summarize_workload(), _decision_share(), _agent_key() for gemini.
+  - `src/storage/models.py` ï¿½ added four nullable columns to WorkloadCycleRecord (gemini_workload_pct, gemini_latency_seconds, gemini_tokens, gemini_cost_usd); added migration block in _migrate_sqlite() using ALTER TABLE ADD COLUMN.
+  - `src/storage/repository.py` ï¿½ updated save_workload_cycle() to write gemini_* values using .get() with 0.0 defaults for backward compatibility.
+  - `src/competition/api_cost_audit.py` ï¿½ refactored diagnose_cost_spike() from hardcoded "grok/qwen vs deepseek" to generic N-agent comparison grouped by agent_name.
+  - `src/dashboard/app.py` ï¿½ expanded workload KPI display from 5 to 6 columns (added Gemini); updated API cost audit challenger mask to non-deepseek generic; updated workload charts (pie split, trend line, token/latency/cost trends) to include gemini columns dynamically; updated per-cycle breakdown table.
+  - `tests/test_gemini_agent.py` (new) ï¿½ 16 tests covering: config correctness, model lock, workload alias routing, tracker isolation, DB persistence, zero-state initialization, multi-agent leaderboard visibility, failure isolation.
+  - `tests/test_workload.py` ï¿½ added 3 new tests including gemini in workload scores and tracker persistence; updated existing persistence test to verify 4-bucket total == 100%.
+  - `tests/test_api_cost_audit.py` ï¿½ updated existing comparison test assertion; added test_api_cost_summary_includes_gemini covering 3-agent cost comparison.
+  - `tests/test_runner_integration.py` ï¿½ updated workload-sum assertion to include gemini_workload_pct.
+  - `PROJECT_BOOTSTRAP.md` ï¿½ updated active agents list and model locks.
 - Key implementation details:
-  - Gemini uses the OpenAI-compatible endpoint (LLM_PROVIDER: openai) � same pattern as Qwen/DashScope. No custom provider code needed.
+  - Gemini uses the OpenAI-compatible endpoint (LLM_PROVIDER: openai) ï¿½ same pattern as Qwen/DashScope. No custom provider code needed.
   - Gemini 2.5 Flash uses thinking tokens by default; max_tokens must be = 200. Confirmed via live API test (key verified before implementation).
   - DB migration is additive-only (ALTER TABLE ADD COLUMN with DEFAULT 0.0). Historical rows remain valid with NULL/0 in gemini columns.
-  - Runner loop already iterates settings.agents generically � Gemini participates automatically with no runner changes.
+  - Runner loop already iterates settings.agents generically ï¿½ Gemini participates automatically with no runner changes.
   - Account isolation: all DB tables filtered by agent_id. Gemini starts with zero trades, lessons, reflections, and PnL.
   - Workload scores now sum across 4 buckets (local + deepseek + grok + gemini = 100%).
   - api_failover disabled for Gemini (no fallback chain configured).
-  - LLM_ALLOW_FALLBACK: false preserved � model verification will reject if Google returns a versioned slug; update LLM_MODEL if needed.
+  - LLM_ALLOW_FALLBACK: false preserved ï¿½ model verification will reject if Google returns a versioned slug; update LLM_MODEL if needed.
 - Validation:
   - `python -m src.cli init` ? all 3 agents registered (deepseek, qwen, gemini logged).
   - `pytest -q` ? 153 passed, 0 failed.
@@ -1455,7 +1455,7 @@ Entry template:
 - Problem addressed: gemini-2.5-flash free tier limited to 20 RPD (requests per day), insufficient for 24 cycles/day. User switched to gemini-3.5-flash.
 - Root cause: Free tier quota constraint on gemini-2.5-flash.
 - Files changed:
-  - `config/settings.yaml` � `LLM_MODEL: gemini-2.5-flash` ? `gemini-3.5-flash` for `crypto-gemini` agent.
+  - `config/settings.yaml` ï¿½ `LLM_MODEL: gemini-2.5-flash` ? `gemini-3.5-flash` for `crypto-gemini` agent.
 - Key implementation details:
   - API key unchanged (same `GEMINI_API_KEY`).
   - Live test confirmed `gemini-3.5-flash` responds correctly via the OpenAI-compatible endpoint before changing config.
@@ -1469,28 +1469,28 @@ Entry template:
 
 ## 2026-05-22 - Generative Memory Upgrade (Lesson Pipeline Overhaul)
 
-- Problem addressed: Lesson system was completely broken — 147/156 lessons were identical daily-review noise; canonicalizer collapsed all to 4 generic strings; retrieval was recency-only; shared lessons had 0 promotions ever (60% win rate gate); AUTO_CLOSE events left no learning signal.
+- Problem addressed: Lesson system was completely broken â€” 147/156 lessons were identical daily-review noise; canonicalizer collapsed all to 4 generic strings; retrieval was recency-only; shared lessons had 0 promotions ever (60% win rate gate); AUTO_CLOSE events left no learning signal.
 - Root cause: `reflect_on_day()` wrote identical strings every 4h cycle; `lesson_canonicalizer.py` used 11 hardcoded templates; `retrieve_lessons()` used `ORDER BY created_at DESC`; promotion gate required 60% win rate (DeepSeek ~40%).
 - Files changed:
-  - `src/agents/reflection.py` — `reflect_on_day()` no longer writes to lessons table (returns string for audit only)
-  - `src/storage/models.py` — added `StructuredLessonRecord` ORM + `_migrate_sqlite()` block to CREATE structured_lessons table
-  - `src/storage/repository.py` — added `save_structured_lesson()` and `structured_lessons()` methods; imported `StructuredLessonRecord`
-  - `src/schemas.py` — added `StructuredLessonPayload` model + optional `structured_lesson` field on `AgentSignal`
-  - `prompts/system_prompt.md` — instructs bot to write `structured_lesson` on CLOSE/CUT with specific JSON schema
-  - `src/competition/runner.py` — saves bot-written structured_lesson on CLOSE/CUT; adds `_save_auto_trade_lesson()` for AUTO events; enriches retrieval query with direction; imports + injects World Model + Calibration; adds `_format_lesson_blocks()` and `_format_stat_blocks()` prompt helpers
-  - `src/trading/risk_automation/engine.py` — generates structured lesson on time-exit AUTO_CLOSE
-  - `src/agents/memory.py` — replaced recency-only retrieval with 3-factor Generative Agents scoring (recency × relevance × importance); legacy fallback preserved
-  - `config/settings.yaml` — `min_win_rate: 0.60 → 0.40`
-  - `src/analytics/world_model.py` — NEW: regime×direction win-rate table from structured_lessons
-  - `src/analytics/calibration.py` — NEW: confidence bucket → actual win-rate calibration
-  - `docs/dev_journal.md` — NEW: live development log
-  - `tests/test_structured_lessons.py` — NEW: 4 tests
-  - `tests/test_world_model.py` — NEW: 4 tests
-  - `tests/test_calibration.py` — NEW: 4 tests
-  - `tests/test_lesson_retrieval.py` — NEW: 4 tests (includes reflect_on_day no-save)
-  - `tests/test_memory_repository_runner.py` — updated reflect_on_day assertion
+  - `src/agents/reflection.py` â€” `reflect_on_day()` no longer writes to lessons table (returns string for audit only)
+  - `src/storage/models.py` â€” added `StructuredLessonRecord` ORM + `_migrate_sqlite()` block to CREATE structured_lessons table
+  - `src/storage/repository.py` â€” added `save_structured_lesson()` and `structured_lessons()` methods; imported `StructuredLessonRecord`
+  - `src/schemas.py` â€” added `StructuredLessonPayload` model + optional `structured_lesson` field on `AgentSignal`
+  - `prompts/system_prompt.md` â€” instructs bot to write `structured_lesson` on CLOSE/CUT with specific JSON schema
+  - `src/competition/runner.py` â€” saves bot-written structured_lesson on CLOSE/CUT; adds `_save_auto_trade_lesson()` for AUTO events; enriches retrieval query with direction; imports + injects World Model + Calibration; adds `_format_lesson_blocks()` and `_format_stat_blocks()` prompt helpers
+  - `src/trading/risk_automation/engine.py` â€” generates structured lesson on time-exit AUTO_CLOSE
+  - `src/agents/memory.py` â€” replaced recency-only retrieval with 3-factor Generative Agents scoring (recency Ã— relevance Ã— importance); legacy fallback preserved
+  - `config/settings.yaml` â€” `min_win_rate: 0.60 â†’ 0.40`
+  - `src/analytics/world_model.py` â€” NEW: regimeÃ—direction win-rate table from structured_lessons
+  - `src/analytics/calibration.py` â€” NEW: confidence bucket â†’ actual win-rate calibration
+  - `docs/dev_journal.md` â€” NEW: live development log
+  - `tests/test_structured_lessons.py` â€” NEW: 4 tests
+  - `tests/test_world_model.py` â€” NEW: 4 tests
+  - `tests/test_calibration.py` â€” NEW: 4 tests
+  - `tests/test_lesson_retrieval.py` â€” NEW: 4 tests (includes reflect_on_day no-save)
+  - `tests/test_memory_repository_runner.py` â€” updated reflect_on_day assertion
 - Key implementation details:
-  - Retrieval formula: `score = 0.3×recency + 0.4×relevance + 0.3×importance`; importance = `min(1.0, abs(pnl_pct)×10)`; relevance = keyword overlap with `{regime} {direction} BTC` query
+  - Retrieval formula: `score = 0.3Ã—recency + 0.4Ã—relevance + 0.3Ã—importance`; importance = `min(1.0, abs(pnl_pct)Ã—10)`; relevance = keyword overlap with `{regime} {direction} BTC` query
   - structured_lessons is source of truth for World Model + Calibration (has regime, direction, pnl_pct, confidence)
   - Zero extra LLM calls; structured_lesson is part of existing CLOSE/CUT signal JSON
   - Legacy lesson retrieval preserved as fallback when structured_lessons is empty
@@ -1498,105 +1498,105 @@ Entry template:
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
 - Deployment/restart notes: Runner restart required to pick up new DB migration (structured_lessons table) and prompt changes. Run `create_schema` on restart (automatic via `run-live`).
 - Known limitations or follow-up items:
-  - World Model + Calibration will show empty until structured_lessons has ≥3 entries per bucket (expected after first few real CLOSE cycles)
-  - reflect_on_trade() still writes to legacy lessons table — can be phased out in a future cleanup once structured_lessons is populated
-  - Shared lesson promotion now at 0.40 threshold — will still need ≥10 sample_size; may need to lower further after monitoring
+  - World Model + Calibration will show empty until structured_lessons has â‰¥3 entries per bucket (expected after first few real CLOSE cycles)
+  - reflect_on_trade() still writes to legacy lessons table â€” can be phased out in a future cleanup once structured_lessons is populated
+  - Shared lesson promotion now at 0.40 threshold â€” will still need â‰¥10 sample_size; may need to lower further after monitoring
 
 ## 2026-05-22 - Token Optimization: Fresh Session Per Cycle + Minimal System Prompt
 
 - Problem addressed: Two token waste sources. (A) Fixed `session_id` in settings.yaml caused OpenClaw to accumulate 699k tokens of conversation history and resend it every API call (DeepSeek cached 94.6% of it, but still charged at cached rate). (B) OpenClaw's default system prompt added 7,054 tokens of irrelevant generic tool definitions (file/read/write/exec/web) injected into every API call.
-- Root cause: (A) `session_id: crypto-deepseek` hardcoded in settings.yaml → same session file reused indefinitely → history never cleared. (B) No `systemPromptOverride` configured per agent → OpenClaw injected its full default agent system prompt.
+- Root cause: (A) `session_id: crypto-deepseek` hardcoded in settings.yaml â†’ same session file reused indefinitely â†’ history never cleared. (B) No `systemPromptOverride` configured per agent â†’ OpenClaw injected its full default agent system prompt.
 - Files changed:
-  - `~/.openclaw/openclaw.json` — set `systemPromptOverride: "You are a crypto paper trading analyst. Output only valid JSON signals."` for agents at index 2–5 (crypto-deepseek, crypto-grok, crypto-qwen, crypto-gemini) via `openclaw config set`
-  - `src/agents/base_agent.py` — added `session_id: str | None = None` param to both `run()` and `run_with_metadata()`; `effective_session_id = session_id or self.settings.session_id` used for both command arg and `_latest_session_model()` lookup
-  - `src/competition/runner.py` — `_call_agent_result()` generates `cycle_session_id = f"{agent.settings.id}-{int(time.time())}"` per call; passes it to all `run_with_metadata()` and retry paths
+  - `~/.openclaw/openclaw.json` â€” set `systemPromptOverride: "You are a crypto paper trading analyst. Output only valid JSON signals."` for agents at index 2â€“5 (crypto-deepseek, crypto-grok, crypto-qwen, crypto-gemini) via `openclaw config set`
+  - `src/agents/base_agent.py` â€” added `session_id: str | None = None` param to both `run()` and `run_with_metadata()`; `effective_session_id = session_id or self.settings.session_id` used for both command arg and `_latest_session_model()` lookup
+  - `src/competition/runner.py` â€” `_call_agent_result()` generates `cycle_session_id = f"{agent.settings.id}-{int(time.time())}"` per call; passes it to all `run_with_metadata()` and retry paths
 - Key implementation details:
   - Fresh session_id per cycle = fresh session file per call = zero conversation history sent to provider
   - Each session file is small (~2 messages); session files accumulate at 6/day per agent (manageable)
   - `_latest_session_model()` still works correctly because it reads the session file just created by that call
-  - systemPromptOverride: default 7,054 tokens → 15 tokens (saves ~7k cached tokens per call)
-  - Session history accumulation: 699k tokens per call → 0 (each call starts fresh)
-  - Total estimated daily token reduction: ~17.5M → ~1M (94% reduction)
+  - systemPromptOverride: default 7,054 tokens â†’ 15 tokens (saves ~7k cached tokens per call)
+  - Session history accumulation: 699k tokens per call â†’ 0 (each call starts fresh)
+  - Total estimated daily token reduction: ~17.5M â†’ ~1M (94% reduction)
   - Gateway restart required to apply systemPromptOverride
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS; gateway restarted; runner live
 - Deployment/restart notes: Gateway restarted (`openclaw daemon restart`). Runner restarted with `run-live`. No DB migrations required.
 - Known limitations or follow-up items:
-  - Fresh sessions mean the bot has no multi-turn "conversation memory" across cycles — but this was always the case (each cycle sends the full context in one message anyway)
-  - Old session files from fixed session_id (`crypto-deepseek.jsonl` etc.) remain in ~/.openclaw/agents/*/sessions/ — harmless but can be deleted to reclaim disk space
+  - Fresh sessions mean the bot has no multi-turn "conversation memory" across cycles â€” but this was always the case (each cycle sends the full context in one message anyway)
+  - Old session files from fixed session_id (`crypto-deepseek.jsonl` etc.) remain in ~/.openclaw/agents/*/sessions/ â€” harmless but can be deleted to reclaim disk space
 
 ## 2026-05-22 - Cleanup: Remove dead session_id config from settings.yaml
 
-- Problem addressed: `session_id` còn hardcode trong `settings.yaml` cho 3 agents (crypto-deepseek, crypto-qwen, crypto-gemini) là dead config — runner luôn override bằng `cycle_session_id` per call, các giá trị này không bao giờ được dùng.
-- Root cause: Leftover từ trước khi có fix fresh-session-per-cycle.
+- Problem addressed: `session_id` cÃ²n hardcode trong `settings.yaml` cho 3 agents (crypto-deepseek, crypto-qwen, crypto-gemini) lÃ  dead config â€” runner luÃ´n override báº±ng `cycle_session_id` per call, cÃ¡c giÃ¡ trá»‹ nÃ y khÃ´ng bao giá» Ä‘Æ°á»£c dÃ¹ng.
+- Root cause: Leftover tá»« trÆ°á»›c khi cÃ³ fix fresh-session-per-cycle.
 - Files changed:
-  - `config/settings.yaml` — xóa field `session_id:` khỏi cả 3 agent blocks
-  - `src/config.py` — đổi `session_id: str` → `session_id: str = ""` (optional, default rỗng) để agent không có field trong YAML vẫn parse được
-  - `src/agents/base_agent.py` — cập nhật fallback: `effective_session_id = session_id or self.settings.session_id or self.settings.id` (fallback cuối về agent id, tránh empty string)
+  - `config/settings.yaml` â€” xÃ³a field `session_id:` khá»i cáº£ 3 agent blocks
+  - `src/config.py` â€” Ä‘á»•i `session_id: str` â†’ `session_id: str = ""` (optional, default rá»—ng) Ä‘á»ƒ agent khÃ´ng cÃ³ field trong YAML váº«n parse Ä‘Æ°á»£c
+  - `src/agents/base_agent.py` â€” cáº­p nháº­t fallback: `effective_session_id = session_id or self.settings.session_id or self.settings.id` (fallback cuá»‘i vá» agent id, trÃ¡nh empty string)
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
 
-## 2026-05-22 - Fix: Dashboard/Render crash — Pydantic ValidationError session_id required
+## 2026-05-22 - Fix: Dashboard/Render crash â€” Pydantic ValidationError session_id required
 
-- Problem addressed: Streamlit dashboard (local + Render) crashed on startup với `pydantic_core.ValidationError: session_id Field required` sau khi xóa `session_id` khỏi `settings.yaml`.
-- Root cause: Stale `.pyc` cache giữ old pydantic validator (session_id required) dù `src/config.py` đã có `session_id: str = ""`. Dashboard process cần restart để pick up code mới.
-- Fix action: Xóa `__pycache__` toàn bộ `src/`, restart dashboard local (port 8501 OK), push log entry này để trigger Render auto-redeploy.
-- Validation: `AgentSettings.model_validate({...})` without session_id → `session_id=''` ✓; localhost:8501 running ✓; Render sẽ auto-deploy từ commit này.
+- Problem addressed: Streamlit dashboard (local + Render) crashed on startup vá»›i `pydantic_core.ValidationError: session_id Field required` sau khi xÃ³a `session_id` khá»i `settings.yaml`.
+- Root cause: Stale `.pyc` cache giá»¯ old pydantic validator (session_id required) dÃ¹ `src/config.py` Ä‘Ã£ cÃ³ `session_id: str = ""`. Dashboard process cáº§n restart Ä‘á»ƒ pick up code má»›i.
+- Fix action: XÃ³a `__pycache__` toÃ n bá»™ `src/`, restart dashboard local (port 8501 OK), push log entry nÃ y Ä‘á»ƒ trigger Render auto-redeploy.
+- Validation: `AgentSettings.model_validate({...})` without session_id â†’ `session_id=''` âœ“; localhost:8501 running âœ“; Render sáº½ auto-deploy tá»« commit nÃ y.
 
 ## 2026-05-22 - Feature: Actual token tracking from OpenClaw session files
 
-- Problem addressed: DB `api_requests` token counts were `chars//4` estimates — up to 143x off vs provider dashboard (DeepSeek showed 830k tokens while DB recorded ~6k).
+- Problem addressed: DB `api_requests` token counts were `chars//4` estimates â€” up to 143x off vs provider dashboard (DeepSeek showed 830k tokens while DB recorded ~6k).
 - Root cause: `_save_api_request_audit()` called `estimate_cost_usd()` (char-based approximation) because `AgentRunResult` never carried actual token data.
 - Files changed:
-  - `src/agents/base_agent.py` — added `session_usage: dict | None = None` field to `AgentRunResult`; added `_latest_session_usage()` function (reads `usage` field from each assistant message in session `.jsonl`); in `run_with_metadata()`, call `_latest_session_usage()` after successful run and include in returned result; log `usage_source=session_file|estimate`
-  - `src/competition/runner.py` — added `session_usage: dict | None = None` param to `_save_api_request_audit()`; branch: when `session_usage` present use actual `input`/`output`/`cacheRead`/`cacheWrite`/`cost` values, else fall back to `estimate_cost_usd()`; added `cache_read_tokens`/`cache_write_tokens` to `cost_breakdown`; pass `call.session_usage` at both success-path audit call sites in `_run_agent_with_tools()`
+  - `src/agents/base_agent.py` â€” added `session_usage: dict | None = None` field to `AgentRunResult`; added `_latest_session_usage()` function (reads `usage` field from each assistant message in session `.jsonl`); in `run_with_metadata()`, call `_latest_session_usage()` after successful run and include in returned result; log `usage_source=session_file|estimate`
+  - `src/competition/runner.py` â€” added `session_usage: dict | None = None` param to `_save_api_request_audit()`; branch: when `session_usage` present use actual `input`/`output`/`cacheRead`/`cacheWrite`/`cost` values, else fall back to `estimate_cost_usd()`; added `cache_read_tokens`/`cache_write_tokens` to `cost_breakdown`; pass `call.session_usage` at both success-path audit call sites in `_run_agent_with_tools()`
 - Key implementation details:
   - Session file path: `~/.openclaw/agents/{agent_id}/sessions/{session_id}.jsonl`
   - Each assistant message contains `usage: {input, output, cacheRead, cacheWrite, totalTokens, cost}`
   - `prompt_tokens` stored = `input + cacheRead` (total context tokens); `completion_tokens` = `output`
-  - Failure paths (no `call` object) retain estimate as fallback — zero regression risk
-  - `cost` field in session usage can be a dict or number — handled both cases
+  - Failure paths (no `call` object) retain estimate as fallback â€” zero regression risk
+  - `cost` field in session usage can be a dict or number â€” handled both cases
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
 - Deployment/restart notes: No DB migration needed. Runner restart picks up new fields automatically.
 - Known limitations or follow-up items:
-  - Line 567 in runner.py (`save_response` call) still uses `estimate_cost_usd()` for workload tracking — could be updated in a future pass if granular response-level accuracy is needed
+  - Line 567 in runner.py (`save_response` call) still uses `estimate_cost_usd()` for workload tracking â€” could be updated in a future pass if granular response-level accuracy is needed
 
 ## 2026-05-22 - Feature: Universal token tracking + auto-sync systemPromptOverride for all bots
 
-- Problem addressed: Token tracking từ session files chỉ hoạt động cho standard path; custom-run và TypeError fallback paths không có `session_usage`. `systemPromptOverride` phải set thủ công trong openclaw.json mỗi khi thêm bot mới.
-- Root cause: (1) Custom-run path gọi `agent.run()` không pass `session_id`, không đọc session file sau đó. (2) TypeError fallback không đọc session file. (3) `systemPromptOverride` là daemon config, không tự động sync từ `settings.yaml`.
+- Problem addressed: Token tracking tá»« session files chá»‰ hoáº¡t Ä‘á»™ng cho standard path; custom-run vÃ  TypeError fallback paths khÃ´ng cÃ³ `session_usage`. `systemPromptOverride` pháº£i set thá»§ cÃ´ng trong openclaw.json má»—i khi thÃªm bot má»›i.
+- Root cause: (1) Custom-run path gá»i `agent.run()` khÃ´ng pass `session_id`, khÃ´ng Ä‘á»c session file sau Ä‘Ã³. (2) TypeError fallback khÃ´ng Ä‘á»c session file. (3) `systemPromptOverride` lÃ  daemon config, khÃ´ng tá»± Ä‘á»™ng sync tá»« `settings.yaml`.
 - Files changed:
-  - `src/config.py` — thêm `system_prompt_override: str = ""` vào `AgentSettings`
-  - `config/settings.yaml` — thêm `system_prompt_override: "You are a crypto paper trading analyst. Output only valid JSON signals."` cho tất cả 3 agent blocks (deepseek, qwen, gemini)
+  - `src/config.py` â€” thÃªm `system_prompt_override: str = ""` vÃ o `AgentSettings`
+  - `config/settings.yaml` â€” thÃªm `system_prompt_override: "You are a crypto paper trading analyst. Output only valid JSON signals."` cho táº¥t cáº£ 3 agent blocks (deepseek, qwen, gemini)
   - `src/competition/runner.py`:
-    - Import `Path` và `_latest_session_usage` từ `base_agent`
-    - Thêm `_sync_openclaw_system_prompt_overrides()`: đọc `~/.openclaw/openclaw.json`, compare `systemPromptOverride` với `system_prompt_override` trong settings, update nếu khác — gọi ở `_apply_settings()` nên chạy lúc startup và hot-reload
-    - Custom-run path: try gọi `agent.run()` với `session_id=cycle_session_id`, đọc `_latest_session_usage()` sau call
-    - TypeError fallback path: đọc `_latest_session_usage()` với `agent.settings.id` làm session_id fallback
+    - Import `Path` vÃ  `_latest_session_usage` tá»« `base_agent`
+    - ThÃªm `_sync_openclaw_system_prompt_overrides()`: Ä‘á»c `~/.openclaw/openclaw.json`, compare `systemPromptOverride` vá»›i `system_prompt_override` trong settings, update náº¿u khÃ¡c â€” gá»i á»Ÿ `_apply_settings()` nÃªn cháº¡y lÃºc startup vÃ  hot-reload
+    - Custom-run path: try gá»i `agent.run()` vá»›i `session_id=cycle_session_id`, Ä‘á»c `_latest_session_usage()` sau call
+    - TypeError fallback path: Ä‘á»c `_latest_session_usage()` vá»›i `agent.settings.id` lÃ m session_id fallback
 - Key implementation details:
-  - `_sync_openclaw_system_prompt_overrides()` là idempotent — chỉ write khi có thay đổi thực sự, wrap trong try/except để không làm crash runner nếu openclaw.json bị lock
-  - Custom-run path try `session_id` kwarg trước, fallback về không có nếu custom `run()` không nhận
-  - Future agent mới: chỉ cần thêm `system_prompt_override:` vào settings.yaml → tự động apply vào openclaw.json khi runner khởi động
+  - `_sync_openclaw_system_prompt_overrides()` lÃ  idempotent â€” chá»‰ write khi cÃ³ thay Ä‘á»•i thá»±c sá»±, wrap trong try/except Ä‘á»ƒ khÃ´ng lÃ m crash runner náº¿u openclaw.json bá»‹ lock
+  - Custom-run path try `session_id` kwarg trÆ°á»›c, fallback vá» khÃ´ng cÃ³ náº¿u custom `run()` khÃ´ng nháº­n
+  - Future agent má»›i: chá»‰ cáº§n thÃªm `system_prompt_override:` vÃ o settings.yaml â†’ tá»± Ä‘á»™ng apply vÃ o openclaw.json khi runner khá»Ÿi Ä‘á»™ng
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
-- Deployment/restart notes: Runner restart tự động sync systemPromptOverride. Không cần `openclaw config set` thủ công nữa.
+- Deployment/restart notes: Runner restart tá»± Ä‘á»™ng sync systemPromptOverride. KhÃ´ng cáº§n `openclaw config set` thá»§ cÃ´ng ná»¯a.
 - Known limitations or follow-up items:
-  - `_sync_openclaw_system_prompt_overrides()` không tạo agent mới trong openclaw.json nếu chưa có — chỉ update existing entries. Bot phải đã được `openclaw agent create` hoặc qua gateway setup.
+  - `_sync_openclaw_system_prompt_overrides()` khÃ´ng táº¡o agent má»›i trong openclaw.json náº¿u chÆ°a cÃ³ â€” chá»‰ update existing entries. Bot pháº£i Ä‘Ã£ Ä‘Æ°á»£c `openclaw agent create` hoáº·c qua gateway setup.
 
 ## 2026-05-22 - Duplicate Runner Kill + Cycle Counter Restore (133-147)
 
 - Problem addressed: Dashboard showing OVERDUE; cycle counter reset to 1 (showing cycle 12 instead of 144+); 2 independent runner process trees running simultaneously.
-- Root cause: `run-live` without `--resume` was executed at 2026-05-21 19:25 UTC (02:25 AM Bangkok local), resetting the in-memory cycle counter to 1. Historical DB data (cycles 1-132) was intact. A second runner pair spawned later (3:23 AM) without killing the first (3:14 AM), creating 2 concurrent runners writing duplicate checkpoints and race-conditioning runner_state → OVERDUE.
+- Root cause: `run-live` without `--resume` was executed at 2026-05-21 19:25 UTC (02:25 AM Bangkok local), resetting the in-memory cycle counter to 1. Historical DB data (cycles 1-132) was intact. A second runner pair spawned later (3:23 AM) without killing the first (3:14 AM), creating 2 concurrent runners writing duplicate checkpoints and race-conditioning runner_state â†’ OVERDUE.
 - Files changed:
-  - `database/arena.db` — DB-only migration: `cycle_number + 132` applied in two passes to `checkpoints`, `signals`, `api_requests`, `runner_state` for all rows with `created_at >= '2026-05-21 19:30:00'` (new-run cycles 1-13 → 133-145) and `created_at >= '2026-05-22 09:00:00'` (post-migration cycles 13-14 → 145-146). One double-migrated signal row (cycle 277 → 145) corrected via targeted subtraction.
-  - `state/checkpoints/latest.json` — `cycle_number` updated from 14 → 146; `deployment.latest_checkpoint.cycle_number` updated 13 → 145 so runner resumes correctly.
-  - `cloud/dashboard_snapshot.json` — regenerated after cycle 147 completed; pushed to GitHub.
+  - `database/arena.db` â€” DB-only migration: `cycle_number + 132` applied in two passes to `checkpoints`, `signals`, `api_requests`, `runner_state` for all rows with `created_at >= '2026-05-21 19:30:00'` (new-run cycles 1-13 â†’ 133-145) and `created_at >= '2026-05-22 09:00:00'` (post-migration cycles 13-14 â†’ 145-146). One double-migrated signal row (cycle 277 â†’ 145) corrected via targeted subtraction.
+  - `state/checkpoints/latest.json` â€” `cycle_number` updated from 14 â†’ 146; `deployment.latest_checkpoint.cycle_number` updated 13 â†’ 145 so runner resumes correctly.
+  - `cloud/dashboard_snapshot.json` â€” regenerated after cycle 147 completed; pushed to GitHub.
 - Key implementation details:
   - Killed older runner pair (PIDs 38516+6412) first; waited for newer runner (2932+39424) to finish its current cycle before killing to avoid mid-cycle DB corruption.
   - Migration ran during WAITING phase (no concurrent DB writes).
   - Two migration passes required: first pass (cutoff 2026-05-21 19:30) caught cycles 1-12/13; second pass (cutoff 2026-05-22 09:00) caught cycles 13-14 written after first pass. One signal from Runner 1's cycle 13 (~09:10 UTC) was double-migrated to 277; fixed by subtracting 132.
-  - Restarted with `run-live --resume`; runner read checkpoint 146 from both DB and latest.json → started cycle 147 correctly.
+  - Restarted with `run-live --resume`; runner read checkpoint 146 from both DB and latest.json â†’ started cycle 147 correctly.
   - `run-live` without `--resume` is the confirmed root cause of cycle resets. Always use `--resume` to continue an existing competition.
 - Validation:
-  - `validate-update --no-smoke` → all 4 PASS.
-  - `preflight-check` → all 9 critical PASS.
+  - `validate-update --no-smoke` â†’ all 4 PASS.
+  - `preflight-check` â†’ all 9 critical PASS.
   - DB: checkpoints range 1-147, signals anomaly (>147) = 0, runner_state cycle=147 WAITING.
   - Snapshot exported and pushed to GitHub: runner_state cycle=147, phase=WAITING.
   - Process tree: 1 runner pair (45536+15564) + 1 dashboard pair (30320+38732).
@@ -1615,3 +1615,13 @@ Entry template:
 - Validation: 169 passed in 55.77s; validate-update --no-smoke: all PASS
 - Deployment/restart notes: No runner restart needed (documentation only).
 - Known limitations or follow-up items: rulebook.md still references `crypto-challenger` (removed agent); should be updated separately.
+
+## 2026-05-24 - Fix: Runner crash AttributeError in _format_lesson_blocks
+
+- Problem addressed: Runner crashed on every cycle with AttributeError: 'dict' object has no attribute 'startswith' inside _format_lesson_blocks, preventing all trading cycles from completing.
+- Root cause: _compose_prompt calls _compact_prompt_context(context) at line 908 before _format_lesson_blocks at line 961. When private_lessons has >=6 items, _compact_json_value (list_limit=5) appends {"truncated_items": N} dict to the list. _format_lesson_blocks then iterated this mixed list and called .startswith() on the dict, crashing.
+- Files changed:
+  - src/competition/runner.py — _format_lesson_blocks: filter to isinstance(l, str) before startswith checks (one-line fix)
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS; runner restarted with --resume (PID 9856+34156)
+- Deployment/restart notes: Runner killed and restarted with un-live --resume. Checkpoint state preserved at cycle 181.
+- Known limitations or follow-up items: None. Fix is additive and safe.
