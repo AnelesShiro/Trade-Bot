@@ -86,7 +86,7 @@ class RiskSettings(BaseModel):
     max_open_positions: int = 3
     max_dca_per_position: int = 2
     daily_loss_limit_pct: float = 0.03
-    min_rr_tp1: float = 1.5
+    min_rr_tp1: float = 1.19
     min_rr_tp2: float = 2.0
 
 

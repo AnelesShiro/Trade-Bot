@@ -1625,3 +1625,17 @@ Entry template:
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS; runner restarted with --resume (PID 9856+34156)
 - Deployment/restart notes: Runner killed and restarted with un-live --resume. Checkpoint state preserved at cycle 181.
 - Known limitations or follow-up items: None. Fix is additive and safe.
+
+## 2026-05-25 - Config: Lower min R:R for TP1 from 1.5 to 1.19
+
+- Problem addressed: Min R:R threshold for TP1 (1.5) was rejecting setups with TP1 close enough to be realistic but below the floor.
+- Root cause: Threshold was a fixed rule; user decided to lower the acceptance floor.
+- Files changed:
+  - `config/settings.yaml` — `min_rr_tp1: 1.5` -> `1.19`
+  - `src/config.py` — default `min_rr_tp1: float = 1.5` -> `1.19`
+  - `src/validation/rule_engine.py` — rejection message updated to "below 1:1.19"
+  - `config/rulebook.md` — rule text updated to "at least 1:1.19"
+- Key implementation details: Change is a constraint relaxation only. TP2 floor (1:2.0) unchanged. Validator logic untouched.
+- Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
+- Deployment/restart notes: No runner restart required — settings.yaml is hot-reloaded at next cycle.
+- Known limitations or follow-up items: None.

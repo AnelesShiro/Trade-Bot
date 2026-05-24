@@ -78,7 +78,7 @@ A trade idea is valid only if:
 - Action is stated: `OPEN`, `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.
 - Any `OPEN`, `ADD`, or `DCA` action uses 10% account margin or less.
 - Total account risk after the action is 2% of equity or less.
-- Risk/reward to TP1 is at least 1:1.5.
+- Risk/reward to TP1 is at least 1:1.19.
 - Risk/reward to TP2 is at least 1:2.0.
 - Stop loss is defined before take profit.
 - Margin used is stated in USDT and as percent of account.

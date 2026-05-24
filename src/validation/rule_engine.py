@@ -105,7 +105,7 @@ class RuleEngine:
             reasons.append("risk at stop must be positive")
             return
         if reward1 / risk < self.risk.min_rr_tp1:
-            reasons.append("risk/reward to TP1 below 1:1.5")
+            reasons.append("risk/reward to TP1 below 1:1.19")
         if reward2 / risk < self.risk.min_rr_tp2:
             reasons.append("risk/reward to TP2 below 1:2.0")
 
