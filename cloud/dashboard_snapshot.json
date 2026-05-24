@@ -1,14 +1,14 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": 60.560200068296595,
-      "equity": 10191.18369463888,
-      "open_margin": 0.0,
-      "open_positions": 0,
-      "open_risk": 0.0,
-      "realized_pnl": 191.1836946388802,
-      "roi_pct": 1.9118369463887939,
-      "unrealized_pnl": 0.0
+      "daily_pnl": 46.774997400257696,
+      "equity": 10235.458692039138,
+      "open_margin": 1000.0,
+      "open_positions": 1,
+      "open_risk": 2.5000000000000218,
+      "realized_pnl": 188.6836946388802,
+      "roi_pct": 2.3545869203913754,
+      "unrealized_pnl": 46.774997400257696
     },
     "crypto-gemini": {
       "daily_pnl": 0.0,
@@ -33,13 +33,13 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.18133962,
+      "crypto-deepseek": 0.18251898000000003,
       "crypto-gemini": 0.0,
       "crypto-qwen": 0.16556436
     },
-    "total": 0.34690398
+    "total": 0.34808334
   },
-  "btc_price": 76484.7,
+  "btc_price": 76776.8,
   "competition": {
     "continuous_mode": true,
     "duration_days": 0,
@@ -47,14 +47,14 @@
     "name": "crypto-paper-trading-arena",
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT",
-    "uptime_seconds": 704261.953714,
+    "uptime_seconds": 740826.414064,
     "weekly_target_pct": 0.07
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-05-23T20:37:41.909965Z",
+    "active_checkpoint_timestamp": "2026-05-24T06:47:06.220651Z",
     "active_versions_file": {
-      "code_version": "fb599979a361",
+      "code_version": "7d9d5ee1cad6",
       "config_version": "06377498aa910a4c53e432906fbf979560fd14d1789938413ac5a318f80bbfc1",
       "rulebook": {
         "hash": "4981db04e29049ad2dabc279d0bef83afc43b15ae046a9908ed432f08f46acc2",
@@ -64,7 +64,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-23T20:37:41.750881Z"
+      "updated_at": "2026-05-24T06:47:06.034030Z"
     },
     "canary": {
       "enabled": false,
@@ -85,13 +85,13 @@
       "update_id": "a69d8865636a434bad93bc199be41a32"
     },
     "latest_checkpoint": {
-      "cycle_number": 181,
-      "id": 218,
-      "status": "MONITOR"
+      "cycle_number": 182,
+      "id": 219,
+      "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "fb599979a361",
+      "code_version": "7d9d5ee1cad6",
       "config_version": "06377498aa910a4c53e432906fbf979560fd14d1789938413ac5a318f80bbfc1",
       "rulebook": {
         "hash": "4981db04e29049ad2dabc279d0bef83afc43b15ae046a9908ed432f08f46acc2",
@@ -101,16 +101,16 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-05-23T20:37:42.231829Z"
+      "updated_at": "2026-05-24T06:47:06.726093Z"
     }
   },
   "downtime": {
     "latest": {
-      "duration_seconds": 2508.647125,
-      "ended_at": "2026-05-22T19:18:29.683570Z",
+      "duration_seconds": 36434.171209,
+      "ended_at": "2026-05-24T06:44:55.879140Z",
       "missed_scheduled_cycle": false,
       "reason": "automatic resume from latest checkpoint",
-      "started_at": "2026-05-22T18:36:41.036445Z"
+      "started_at": "2026-05-23T20:37:41.707931Z"
     },
     "latest_missed_cycle": {
       "duration_seconds": 482.56528,
@@ -121,6 +121,13 @@
     },
     "missed_cycle_count_recent": 3,
     "recent": [
+      {
+        "duration_seconds": 36434.171209,
+        "ended_at": "2026-05-24T06:44:55.879140Z",
+        "missed_scheduled_cycle": false,
+        "reason": "automatic resume from latest checkpoint",
+        "started_at": "2026-05-23T20:37:41.707931Z"
+      },
       {
         "duration_seconds": 2508.647125,
         "ended_at": "2026-05-22T19:18:29.683570Z",
@@ -253,13 +260,6 @@
         "missed_scheduled_cycle": false,
         "reason": "automatic resume from latest checkpoint",
         "started_at": "2026-05-17T14:52:28.179974Z"
-      },
-      {
-        "duration_seconds": 15812.17085,
-        "ended_at": "2026-05-17T14:51:42.653876Z",
-        "missed_scheduled_cycle": false,
-        "reason": "automatic resume from latest checkpoint",
-        "started_at": "2026-05-17T10:28:10.483026Z"
       }
     ]
   },
@@ -267,7 +267,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "drawdown": -0.0005,
@@ -370,24 +370,28 @@
         "timestamp": "2026-05-23T20:37:41.314072Z"
       },
       {
-        "drawdown": -0.009104768236513005,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "drawdown": -0.009347844816587807,
+        "timestamp": "2026-05-23T21:26:31.814428Z"
+      },
+      {
+        "drawdown": -0.004799882256159653,
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ],
     "crypto-gemini": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "drawdown": -0.00025,
@@ -427,7 +431,7 @@
       },
       {
         "drawdown": -0.005951268191319757,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ]
   },
@@ -435,7 +439,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "equity": 9995.0,
@@ -538,24 +542,28 @@
         "timestamp": "2026-05-23T20:37:41.314072Z"
       },
       {
-        "equity": 10191.18369463888,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "equity": 10188.683694638881,
+        "timestamp": "2026-05-23T21:26:31.814428Z"
+      },
+      {
+        "equity": 10235.458692039138,
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ],
     "crypto-gemini": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-05-23T20:37:41.004777Z"
+        "timestamp": "2026-05-24T06:47:05.475069Z"
       },
       {
         "equity": 9997.5,
@@ -595,28 +603,28 @@
       },
       {
         "equity": 9962.434581202931,
-        "timestamp": "2026-05-23T20:37:42.004777Z"
+        "timestamp": "2026-05-24T06:47:06.475069Z"
       }
     ]
   },
-  "generated_at": "2026-05-23T20:37:41.953714Z",
+  "generated_at": "2026-05-24T06:47:06.414064Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.18133962,
-      "equity": 10191.18369463888,
+      "api_cost_usd": 0.18251898000000003,
+      "equity": 10235.458692039138,
       "max_drawdown_pct": 0.015065997739038472,
-      "profit_factor": 1.966092235449733,
-      "realized_pnl": 191.1836946388802,
-      "rejected_signals": 57,
-      "rule_compliance": 0.30487804878048785,
-      "score": 0.4310521023665175,
-      "sharpe": 0.21448467458614517,
-      "sortino": 0.38276303355431157,
-      "total_return_pct": 0.019118369463887938,
-      "unrealized_pnl": 0.0,
-      "win_rate": 0.36
+      "profit_factor": 1.941564381787659,
+      "realized_pnl": 188.6836946388802,
+      "rejected_signals": 58,
+      "rule_compliance": 0.30952380952380953,
+      "score": 0.4560928824885724,
+      "sharpe": 0.2072467299190407,
+      "sortino": 0.3717496135996043,
+      "total_return_pct": 0.023545869203913754,
+      "unrealized_pnl": 46.774997400257696,
+      "win_rate": 0.34615384615384615
     },
     {
       "agent_id": "crypto-gemini",
@@ -625,9 +633,9 @@
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 66,
-      "rule_compliance": 0.014925373134328401,
-      "score": 0.20249253731343286,
+      "rejected_signals": 67,
+      "rule_compliance": 0.014705882352941124,
+      "score": 0.20247058823529412,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -641,9 +649,9 @@
       "max_drawdown_pct": 0.005951268191319939,
       "profit_factor": 0.3955108830105893,
       "realized_pnl": -37.56541879706944,
-      "rejected_signals": 92,
-      "rule_compliance": 0.08910891089108908,
-      "score": 0.19700835470646905,
+      "rejected_signals": 93,
+      "rule_compliance": 0.08823529411764708,
+      "score": 0.19692099302912483,
       "sharpe": -0.27692359799556665,
       "sortino": -0.35361922297283216,
       "total_return_pct": -0.003756541879706856,
@@ -658,7 +666,7 @@
         "agents": [
           "crypto-deepseek"
         ],
-        "avg_pnl": 7.647347785555208,
+        "avg_pnl": 7.25706517841847,
         "badges": [
           "High Confidence",
           "Recently Improved",
@@ -725,14 +733,14 @@
           }
         ],
         "evidence_count": 8,
-        "impact_score": 0.7965,
+        "impact_score": 0.7995,
         "is_shared": false,
         "last_updated": "2026-05-23T10:34:40.703229Z",
-        "lesson_id": "derived-8481509160553961046",
+        "lesson_id": "derived-1055803789612492328",
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.847,
+        "rank_score": 0.8448,
         "raw_text": "AUTO_CLOSE SHORT win: notes=stop_loss; fee=0.3750; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -741,51 +749,179 @@
           {
             "confidence_score": 0.7125,
             "frequency": 1,
-            "impact_score": 0.1327,
+            "impact_score": 0.1332,
             "timestamp": "2026-05-18T10:34:40.703229+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
-            "impact_score": 0.2655,
+            "impact_score": 0.2665,
             "timestamp": "2026-05-19T10:34:40.703229+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
-            "impact_score": 0.3982,
+            "impact_score": 0.3997,
             "timestamp": "2026-05-20T10:34:40.703229+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
-            "impact_score": 0.531,
+            "impact_score": 0.533,
             "timestamp": "2026-05-21T10:34:40.703229+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
-            "impact_score": 0.6638,
+            "impact_score": 0.6663,
             "timestamp": "2026-05-22T10:34:40.703229+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
-            "impact_score": 0.7965,
+            "impact_score": 0.7995,
             "timestamp": "2026-05-23T10:34:40.703229+00:00"
           }
         ],
-        "win_rate": 0.36
+        "win_rate": 0.34615384615384615
       }
     ],
     "avoid_summary": {
       "avg_confidence": 0.9,
-      "avg_impact": 0.7965,
+      "avg_impact": 0.7995,
       "most_influential_lesson": "Pause new SHORT entries for one full cycle after a short stop-loss.",
       "shared_count": 0,
       "total": 1
     },
     "follow": [
+      {
+        "agent_count": 5,
+        "agents": [
+          "crypto-challenger",
+          "crypto-deepseek",
+          "crypto-gemini",
+          "crypto-grok",
+          "crypto-qwen"
+        ],
+        "avg_pnl": -2.659331348873285,
+        "badges": [
+          "Shared",
+          "High Confidence",
+          "Recently Improved"
+        ],
+        "category": "risk_management",
+        "confidence_score": 0.9,
+        "evidence": [
+          {
+            "agent_id": "crypto-qwen",
+            "created_at": "2026-05-21T17:39:16.858300Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-gemini",
+            "created_at": "2026-05-21T17:39:16.662479Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T17:39:16.462546Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-qwen",
+            "created_at": "2026-05-21T16:36:49.482669Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-gemini",
+            "created_at": "2026-05-21T16:36:49.261383Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T16:36:49.051753Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-qwen",
+            "created_at": "2026-05-21T15:52:33.762338Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          },
+          {
+            "agent_id": "crypto-deepseek",
+            "created_at": "2026-05-21T15:52:33.544337Z",
+            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
+            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+            "type": "private_lesson"
+          }
+        ],
+        "evidence_count": 862,
+        "impact_score": 1.0,
+        "is_shared": true,
+        "last_updated": "2026-05-24T06:47:04.642916Z",
+        "lesson_id": "derived-1542977447605988155",
+        "lesson_kind": "follow",
+        "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
+        "market_regime": "unknown",
+        "rank_score": 0.972,
+        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "sentiment": "follow",
+        "source_type": "derived",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance.",
+        "trend": [
+          {
+            "confidence_score": 0.7125,
+            "frequency": 1,
+            "impact_score": 0.1667,
+            "timestamp": "2026-05-19T06:47:04.642916+00:00"
+          },
+          {
+            "confidence_score": 0.75,
+            "frequency": 2,
+            "impact_score": 0.3333,
+            "timestamp": "2026-05-20T06:47:04.642916+00:00"
+          },
+          {
+            "confidence_score": 0.7875,
+            "frequency": 3,
+            "impact_score": 0.5,
+            "timestamp": "2026-05-21T06:47:04.642916+00:00"
+          },
+          {
+            "confidence_score": 0.825,
+            "frequency": 4,
+            "impact_score": 0.6667,
+            "timestamp": "2026-05-22T06:47:04.642916+00:00"
+          },
+          {
+            "confidence_score": 0.8625,
+            "frequency": 5,
+            "impact_score": 0.8333,
+            "timestamp": "2026-05-23T06:47:04.642916+00:00"
+          },
+          {
+            "confidence_score": 0.9,
+            "frequency": 6,
+            "impact_score": 1.0,
+            "timestamp": "2026-05-24T06:47:04.642916+00:00"
+          }
+        ],
+        "win_rate": 0.1485958485958486
+      },
       {
         "agent_count": 3,
         "agents": [
@@ -793,7 +929,7 @@
           "crypto-deepseek",
           "crypto-qwen"
         ],
-        "avg_pnl": 1.1578041212195345,
+        "avg_pnl": 1.0277099188406218,
         "badges": [
           "Shared",
           "High Confidence",
@@ -863,11 +999,11 @@
         "impact_score": 1.0,
         "is_shared": true,
         "last_updated": "2026-05-23T20:37:41.535085Z",
-        "lesson_id": "derived-8873185257208381551",
+        "lesson_id": "derived-5862909242818076898",
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.972,
+        "rank_score": 0.9684,
         "raw_text": "AUTO_CLOSE LONG win: notes=take_profit_2; fee=1.0000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -910,135 +1046,7 @@
             "timestamp": "2026-05-23T20:37:41.535085+00:00"
           }
         ],
-        "win_rate": 0.15703703703703703
-      },
-      {
-        "agent_count": 5,
-        "agents": [
-          "crypto-challenger",
-          "crypto-deepseek",
-          "crypto-gemini",
-          "crypto-grok",
-          "crypto-qwen"
-        ],
-        "avg_pnl": -2.581274827445937,
-        "badges": [
-          "Shared",
-          "High Confidence",
-          "Recently Improved"
-        ],
-        "category": "risk_management",
-        "confidence_score": 0.9,
-        "evidence": [
-          {
-            "agent_id": "crypto-qwen",
-            "created_at": "2026-05-21T17:39:16.858300Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-gemini",
-            "created_at": "2026-05-21T17:39:16.662479Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-deepseek",
-            "created_at": "2026-05-21T17:39:16.462546Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-qwen",
-            "created_at": "2026-05-21T16:36:49.482669Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-gemini",
-            "created_at": "2026-05-21T16:36:49.261383Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-deepseek",
-            "created_at": "2026-05-21T16:36:49.051753Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-qwen",
-            "created_at": "2026-05-21T15:52:33.762338Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          },
-          {
-            "agent_id": "crypto-deepseek",
-            "created_at": "2026-05-21T15:52:33.544337Z",
-            "excerpt": "Trade only high-quality setups and maintain strict rule compliance.",
-            "raw_text": "Daily review: equity=10270.16, realized_pnl=270.16, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-            "type": "private_lesson"
-          }
-        ],
-        "evidence_count": 859,
-        "impact_score": 1.0,
-        "is_shared": true,
-        "last_updated": "2026-05-23T20:37:41.590537Z",
-        "lesson_id": "derived-2636939641332714862",
-        "lesson_kind": "follow",
-        "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
-        "market_regime": "unknown",
-        "rank_score": 0.972,
-        "raw_text": "Daily review: equity=9965.98, realized_pnl=-34.02, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "sentiment": "follow",
-        "source_type": "derived",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance.",
-        "trend": [
-          {
-            "confidence_score": 0.7125,
-            "frequency": 1,
-            "impact_score": 0.1667,
-            "timestamp": "2026-05-18T20:37:41.590537+00:00"
-          },
-          {
-            "confidence_score": 0.75,
-            "frequency": 2,
-            "impact_score": 0.3333,
-            "timestamp": "2026-05-19T20:37:41.590537+00:00"
-          },
-          {
-            "confidence_score": 0.7875,
-            "frequency": 3,
-            "impact_score": 0.5,
-            "timestamp": "2026-05-20T20:37:41.590537+00:00"
-          },
-          {
-            "confidence_score": 0.825,
-            "frequency": 4,
-            "impact_score": 0.6667,
-            "timestamp": "2026-05-21T20:37:41.590537+00:00"
-          },
-          {
-            "confidence_score": 0.8625,
-            "frequency": 5,
-            "impact_score": 0.8333,
-            "timestamp": "2026-05-22T20:37:41.590537+00:00"
-          },
-          {
-            "confidence_score": 0.9,
-            "frequency": 6,
-            "impact_score": 1.0,
-            "timestamp": "2026-05-23T20:37:41.590537+00:00"
-          }
-        ],
-        "win_rate": 0.15136507936507937
+        "win_rate": 0.15242165242165243
       },
       {
         "agent_count": 2,
@@ -1046,7 +1054,7 @@
           "crypto-deepseek",
           "crypto-grok"
         ],
-        "avg_pnl": -4.366219357666541,
+        "avg_pnl": -4.56136066123491,
         "badges": [
           "Shared",
           "High Confidence"
@@ -1112,14 +1120,14 @@
           }
         ],
         "evidence_count": 10,
-        "impact_score": 0.7051,
+        "impact_score": 0.7036,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.338211Z",
-        "lesson_id": "derived-1482098978427202336",
+        "lesson_id": "derived-4970160982192159751",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.807,
+        "rank_score": 0.804,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -1128,41 +1136,41 @@
           {
             "confidence_score": 0.7125,
             "frequency": 1,
-            "impact_score": 0.1175,
+            "impact_score": 0.1173,
             "timestamp": "2026-05-12T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
-            "impact_score": 0.235,
+            "impact_score": 0.2345,
             "timestamp": "2026-05-13T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
-            "impact_score": 0.3525,
+            "impact_score": 0.3518,
             "timestamp": "2026-05-14T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
-            "impact_score": 0.4701,
+            "impact_score": 0.4691,
             "timestamp": "2026-05-15T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
-            "impact_score": 0.5876,
+            "impact_score": 0.5863,
             "timestamp": "2026-05-16T23:41:50.338211+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
-            "impact_score": 0.7051,
+            "impact_score": 0.7036,
             "timestamp": "2026-05-17T23:41:50.338211+00:00"
           }
         ],
-        "win_rate": 0.32285714285714284
+        "win_rate": 0.3159340659340659
       },
       {
         "agent_count": 1,
@@ -1207,11 +1215,11 @@
         "impact_score": 0.5067,
         "is_shared": false,
         "last_updated": "2026-05-17T00:58:53.117439Z",
-        "lesson_id": "derived-1055297081531648565",
+        "lesson_id": "derived-8358079167279602874",
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.5629,
+        "rank_score": 0.5607,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -1247,2182 +1255,14 @@
     ],
     "follow_summary": {
       "avg_confidence": 0.8575,
-      "avg_impact": 0.80295,
-      "most_influential_lesson": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
+      "avg_impact": 0.802575,
+      "most_influential_lesson": "Trade only high-quality setups and maintain strict rule compliance.",
       "shared_count": 3,
       "total": 4
     }
   },
   "market": {
     "candles": [
-      {
-        "close": 78499.9,
-        "high": 78740.5,
-        "low": 78437.8,
-        "open": 78652.8,
-        "timestamp": "2026-05-03T00:00:00Z",
-        "volume": 3340.415
-      },
-      {
-        "close": 78200.0,
-        "high": 78500.0,
-        "low": 78100.0,
-        "open": 78499.9,
-        "timestamp": "2026-05-03T01:00:00Z",
-        "volume": 4310.343
-      },
-      {
-        "close": 78131.3,
-        "high": 78272.0,
-        "low": 78069.0,
-        "open": 78200.0,
-        "timestamp": "2026-05-03T02:00:00Z",
-        "volume": 3527.589
-      },
-      {
-        "close": 78162.4,
-        "high": 78185.0,
-        "low": 78075.1,
-        "open": 78131.4,
-        "timestamp": "2026-05-03T03:00:00Z",
-        "volume": 2031.354
-      },
-      {
-        "close": 78132.3,
-        "high": 78202.6,
-        "low": 78075.8,
-        "open": 78162.3,
-        "timestamp": "2026-05-03T04:00:00Z",
-        "volume": 1381.549
-      },
-      {
-        "close": 78208.5,
-        "high": 78227.7,
-        "low": 78121.1,
-        "open": 78132.3,
-        "timestamp": "2026-05-03T05:00:00Z",
-        "volume": 1139.456
-      },
-      {
-        "close": 78249.0,
-        "high": 78318.7,
-        "low": 78027.0,
-        "open": 78208.5,
-        "timestamp": "2026-05-03T06:00:00Z",
-        "volume": 2139.475
-      },
-      {
-        "close": 78316.6,
-        "high": 78415.4,
-        "low": 78248.9,
-        "open": 78249.0,
-        "timestamp": "2026-05-03T07:00:00Z",
-        "volume": 2420.464
-      },
-      {
-        "close": 78343.5,
-        "high": 78475.3,
-        "low": 78316.5,
-        "open": 78316.6,
-        "timestamp": "2026-05-03T08:00:00Z",
-        "volume": 1313.598
-      },
-      {
-        "close": 78496.5,
-        "high": 78579.0,
-        "low": 78295.1,
-        "open": 78343.5,
-        "timestamp": "2026-05-03T09:00:00Z",
-        "volume": 2342.27
-      },
-      {
-        "close": 78369.4,
-        "high": 78499.9,
-        "low": 78358.3,
-        "open": 78496.6,
-        "timestamp": "2026-05-03T10:00:00Z",
-        "volume": 1126.267
-      },
-      {
-        "close": 78620.5,
-        "high": 78814.7,
-        "low": 78340.0,
-        "open": 78369.3,
-        "timestamp": "2026-05-03T11:00:00Z",
-        "volume": 4413.802
-      },
-      {
-        "close": 78715.4,
-        "high": 78850.0,
-        "low": 78620.6,
-        "open": 78620.6,
-        "timestamp": "2026-05-03T12:00:00Z",
-        "volume": 3638.846
-      },
-      {
-        "close": 78634.3,
-        "high": 78739.8,
-        "low": 78522.9,
-        "open": 78715.3,
-        "timestamp": "2026-05-03T13:00:00Z",
-        "volume": 2282.92
-      },
-      {
-        "close": 78700.6,
-        "high": 78750.0,
-        "low": 78577.0,
-        "open": 78634.4,
-        "timestamp": "2026-05-03T14:00:00Z",
-        "volume": 1937.694
-      },
-      {
-        "close": 78625.2,
-        "high": 78787.7,
-        "low": 78584.1,
-        "open": 78700.6,
-        "timestamp": "2026-05-03T15:00:00Z",
-        "volume": 1990.431
-      },
-      {
-        "close": 78619.1,
-        "high": 78749.5,
-        "low": 78550.0,
-        "open": 78625.2,
-        "timestamp": "2026-05-03T16:00:00Z",
-        "volume": 1400.374
-      },
-      {
-        "close": 78693.7,
-        "high": 78790.0,
-        "low": 78514.2,
-        "open": 78619.2,
-        "timestamp": "2026-05-03T17:00:00Z",
-        "volume": 1981.687
-      },
-      {
-        "close": 78706.7,
-        "high": 78730.6,
-        "low": 78588.2,
-        "open": 78693.7,
-        "timestamp": "2026-05-03T18:00:00Z",
-        "volume": 984.952
-      },
-      {
-        "close": 78729.1,
-        "high": 78832.2,
-        "low": 78637.8,
-        "open": 78706.7,
-        "timestamp": "2026-05-03T19:00:00Z",
-        "volume": 1376.932
-      },
-      {
-        "close": 78889.0,
-        "high": 79266.0,
-        "low": 78690.0,
-        "open": 78729.1,
-        "timestamp": "2026-05-03T20:00:00Z",
-        "volume": 7057.354
-      },
-      {
-        "close": 78794.5,
-        "high": 79026.0,
-        "low": 78608.8,
-        "open": 78889.0,
-        "timestamp": "2026-05-03T21:00:00Z",
-        "volume": 3120.386
-      },
-      {
-        "close": 79141.4,
-        "high": 79428.9,
-        "low": 78794.6,
-        "open": 78794.6,
-        "timestamp": "2026-05-03T22:00:00Z",
-        "volume": 10542.259
-      },
-      {
-        "close": 78529.0,
-        "high": 79260.3,
-        "low": 78440.0,
-        "open": 79141.5,
-        "timestamp": "2026-05-03T23:00:00Z",
-        "volume": 6233.204
-      },
-      {
-        "close": 78504.9,
-        "high": 78538.3,
-        "low": 78235.4,
-        "open": 78529.0,
-        "timestamp": "2026-05-04T00:00:00Z",
-        "volume": 5606.024
-      },
-      {
-        "close": 79755.9,
-        "high": 79849.8,
-        "low": 78374.9,
-        "open": 78505.0,
-        "timestamp": "2026-05-04T01:00:00Z",
-        "volume": 18031.254
-      },
-      {
-        "close": 80136.6,
-        "high": 80400.0,
-        "low": 79493.0,
-        "open": 79756.0,
-        "timestamp": "2026-05-04T02:00:00Z",
-        "volume": 26000.914
-      },
-      {
-        "close": 80278.7,
-        "high": 80426.0,
-        "low": 79873.3,
-        "open": 80136.6,
-        "timestamp": "2026-05-04T03:00:00Z",
-        "volume": 9846.02
-      },
-      {
-        "close": 80300.0,
-        "high": 80590.2,
-        "low": 80184.8,
-        "open": 80278.7,
-        "timestamp": "2026-05-04T04:00:00Z",
-        "volume": 9960.785
-      },
-      {
-        "close": 79983.9,
-        "high": 80370.0,
-        "low": 79905.0,
-        "open": 80300.0,
-        "timestamp": "2026-05-04T05:00:00Z",
-        "volume": 8772.023
-      },
-      {
-        "close": 79824.7,
-        "high": 80005.8,
-        "low": 79440.0,
-        "open": 79984.0,
-        "timestamp": "2026-05-04T06:00:00Z",
-        "volume": 8760.329
-      },
-      {
-        "close": 79663.5,
-        "high": 79907.6,
-        "low": 79633.0,
-        "open": 79824.7,
-        "timestamp": "2026-05-04T07:00:00Z",
-        "volume": 3303.354
-      },
-      {
-        "close": 79666.5,
-        "high": 79768.6,
-        "low": 79555.8,
-        "open": 79663.4,
-        "timestamp": "2026-05-04T08:00:00Z",
-        "volume": 3890.024
-      },
-      {
-        "close": 79800.1,
-        "high": 79900.0,
-        "low": 79600.2,
-        "open": 79666.6,
-        "timestamp": "2026-05-04T09:00:00Z",
-        "volume": 3658.996
-      },
-      {
-        "close": 78894.8,
-        "high": 79851.3,
-        "low": 78128.3,
-        "open": 79800.1,
-        "timestamp": "2026-05-04T10:00:00Z",
-        "volume": 48091.994
-      },
-      {
-        "close": 78753.5,
-        "high": 79080.0,
-        "low": 78658.1,
-        "open": 78894.9,
-        "timestamp": "2026-05-04T11:00:00Z",
-        "volume": 9358.674
-      },
-      {
-        "close": 78816.1,
-        "high": 78993.7,
-        "low": 78670.6,
-        "open": 78753.5,
-        "timestamp": "2026-05-04T12:00:00Z",
-        "volume": 4486.148
-      },
-      {
-        "close": 78747.6,
-        "high": 79099.7,
-        "low": 78532.9,
-        "open": 78816.1,
-        "timestamp": "2026-05-04T13:00:00Z",
-        "volume": 10649.286
-      },
-      {
-        "close": 80160.1,
-        "high": 80528.9,
-        "low": 78450.0,
-        "open": 78747.6,
-        "timestamp": "2026-05-04T14:00:00Z",
-        "volume": 28439.342
-      },
-      {
-        "close": 79976.7,
-        "high": 80332.8,
-        "low": 79246.7,
-        "open": 80165.2,
-        "timestamp": "2026-05-04T15:00:00Z",
-        "volume": 32330.021
-      },
-      {
-        "close": 79982.4,
-        "high": 80352.0,
-        "low": 79562.0,
-        "open": 79976.6,
-        "timestamp": "2026-05-04T16:00:00Z",
-        "volume": 13490.048
-      },
-      {
-        "close": 80339.8,
-        "high": 80771.7,
-        "low": 79978.6,
-        "open": 79982.3,
-        "timestamp": "2026-05-04T17:00:00Z",
-        "volume": 13498.969
-      },
-      {
-        "close": 80080.9,
-        "high": 80395.9,
-        "low": 80001.0,
-        "open": 80339.8,
-        "timestamp": "2026-05-04T18:00:00Z",
-        "volume": 7363.536
-      },
-      {
-        "close": 80018.4,
-        "high": 80108.0,
-        "low": 79848.5,
-        "open": 80080.9,
-        "timestamp": "2026-05-04T19:00:00Z",
-        "volume": 4571.725
-      },
-      {
-        "close": 79896.5,
-        "high": 80124.7,
-        "low": 79846.5,
-        "open": 80018.3,
-        "timestamp": "2026-05-04T20:00:00Z",
-        "volume": 2597.615
-      },
-      {
-        "close": 80216.9,
-        "high": 80349.6,
-        "low": 79896.4,
-        "open": 79896.5,
-        "timestamp": "2026-05-04T21:00:00Z",
-        "volume": 2456.981
-      },
-      {
-        "close": 80031.9,
-        "high": 80363.2,
-        "low": 80003.6,
-        "open": 80216.9,
-        "timestamp": "2026-05-04T22:00:00Z",
-        "volume": 2463.022
-      },
-      {
-        "close": 79826.1,
-        "high": 80032.0,
-        "low": 79715.9,
-        "open": 80031.9,
-        "timestamp": "2026-05-04T23:00:00Z",
-        "volume": 3289.498
-      },
-      {
-        "close": 80130.9,
-        "high": 80150.0,
-        "low": 79761.2,
-        "open": 79826.1,
-        "timestamp": "2026-05-05T00:00:00Z",
-        "volume": 3195.753
-      },
-      {
-        "close": 80310.9,
-        "high": 80343.0,
-        "low": 80031.5,
-        "open": 80130.9,
-        "timestamp": "2026-05-05T01:00:00Z",
-        "volume": 3348.09
-      },
-      {
-        "close": 80514.4,
-        "high": 80871.4,
-        "low": 80255.5,
-        "open": 80310.9,
-        "timestamp": "2026-05-05T02:00:00Z",
-        "volume": 8623.726
-      },
-      {
-        "close": 80836.9,
-        "high": 81050.0,
-        "low": 80411.1,
-        "open": 80514.4,
-        "timestamp": "2026-05-05T03:00:00Z",
-        "volume": 8859.476
-      },
-      {
-        "close": 80850.8,
-        "high": 80941.9,
-        "low": 80671.4,
-        "open": 80836.8,
-        "timestamp": "2026-05-05T04:00:00Z",
-        "volume": 4460.61
-      },
-      {
-        "close": 80924.1,
-        "high": 81278.2,
-        "low": 80783.8,
-        "open": 80850.9,
-        "timestamp": "2026-05-05T05:00:00Z",
-        "volume": 13806.146
-      },
-      {
-        "close": 80934.6,
-        "high": 80973.8,
-        "low": 80750.0,
-        "open": 80924.2,
-        "timestamp": "2026-05-05T06:00:00Z",
-        "volume": 3804.971
-      },
-      {
-        "close": 80815.8,
-        "high": 81111.0,
-        "low": 80793.7,
-        "open": 80934.7,
-        "timestamp": "2026-05-05T07:00:00Z",
-        "volume": 4895.19
-      },
-      {
-        "close": 80776.0,
-        "high": 80837.9,
-        "low": 80674.7,
-        "open": 80815.8,
-        "timestamp": "2026-05-05T08:00:00Z",
-        "volume": 5268.223
-      },
-      {
-        "close": 80551.0,
-        "high": 80776.0,
-        "low": 80480.6,
-        "open": 80776.0,
-        "timestamp": "2026-05-05T09:00:00Z",
-        "volume": 4744.606
-      },
-      {
-        "close": 80786.8,
-        "high": 80789.0,
-        "low": 80488.0,
-        "open": 80551.0,
-        "timestamp": "2026-05-05T10:00:00Z",
-        "volume": 3965.855
-      },
-      {
-        "close": 80973.0,
-        "high": 81071.0,
-        "low": 80735.8,
-        "open": 80786.7,
-        "timestamp": "2026-05-05T11:00:00Z",
-        "volume": 7935.593
-      },
-      {
-        "close": 81223.3,
-        "high": 81258.0,
-        "low": 80879.5,
-        "open": 80973.1,
-        "timestamp": "2026-05-05T12:00:00Z",
-        "volume": 7294.89
-      },
-      {
-        "close": 81278.3,
-        "high": 81656.6,
-        "low": 81138.0,
-        "open": 81223.3,
-        "timestamp": "2026-05-05T13:00:00Z",
-        "volume": 23631.782
-      },
-      {
-        "close": 81284.1,
-        "high": 81458.8,
-        "low": 80890.0,
-        "open": 81278.3,
-        "timestamp": "2026-05-05T14:00:00Z",
-        "volume": 10606.334
-      },
-      {
-        "close": 81488.7,
-        "high": 81640.7,
-        "low": 81184.0,
-        "open": 81284.0,
-        "timestamp": "2026-05-05T15:00:00Z",
-        "volume": 7558.484
-      },
-      {
-        "close": 81250.7,
-        "high": 81578.1,
-        "low": 81000.0,
-        "open": 81488.7,
-        "timestamp": "2026-05-05T16:00:00Z",
-        "volume": 9912.893
-      },
-      {
-        "close": 81223.6,
-        "high": 81420.0,
-        "low": 81133.3,
-        "open": 81250.6,
-        "timestamp": "2026-05-05T17:00:00Z",
-        "volume": 3484.672
-      },
-      {
-        "close": 81463.6,
-        "high": 81577.4,
-        "low": 81223.6,
-        "open": 81223.6,
-        "timestamp": "2026-05-05T18:00:00Z",
-        "volume": 3167.069
-      },
-      {
-        "close": 81554.4,
-        "high": 81636.4,
-        "low": 81347.5,
-        "open": 81463.6,
-        "timestamp": "2026-05-05T19:00:00Z",
-        "volume": 3810.26
-      },
-      {
-        "close": 81607.2,
-        "high": 81729.3,
-        "low": 81458.0,
-        "open": 81554.3,
-        "timestamp": "2026-05-05T20:00:00Z",
-        "volume": 8236.403
-      },
-      {
-        "close": 81363.3,
-        "high": 81745.4,
-        "low": 81266.5,
-        "open": 81607.2,
-        "timestamp": "2026-05-05T21:00:00Z",
-        "volume": 4414.086
-      },
-      {
-        "close": 81076.7,
-        "high": 81564.4,
-        "low": 80752.8,
-        "open": 81363.4,
-        "timestamp": "2026-05-05T22:00:00Z",
-        "volume": 10927.281
-      },
-      {
-        "close": 80861.9,
-        "high": 81176.9,
-        "low": 80716.8,
-        "open": 81076.7,
-        "timestamp": "2026-05-05T23:00:00Z",
-        "volume": 4969.135
-      },
-      {
-        "close": 80980.5,
-        "high": 81228.4,
-        "low": 80651.2,
-        "open": 80861.9,
-        "timestamp": "2026-05-06T00:00:00Z",
-        "volume": 6787.966
-      },
-      {
-        "close": 81390.4,
-        "high": 81490.0,
-        "low": 80942.7,
-        "open": 80980.4,
-        "timestamp": "2026-05-06T01:00:00Z",
-        "volume": 4493.266
-      },
-      {
-        "close": 81319.5,
-        "high": 81400.0,
-        "low": 81000.0,
-        "open": 81390.4,
-        "timestamp": "2026-05-06T02:00:00Z",
-        "volume": 2928.988
-      },
-      {
-        "close": 81535.9,
-        "high": 81716.3,
-        "low": 81308.7,
-        "open": 81319.5,
-        "timestamp": "2026-05-06T03:00:00Z",
-        "volume": 5125.641
-      },
-      {
-        "close": 81285.1,
-        "high": 81599.0,
-        "low": 81223.6,
-        "open": 81535.9,
-        "timestamp": "2026-05-06T04:00:00Z",
-        "volume": 3240.989
-      },
-      {
-        "close": 81277.8,
-        "high": 81307.3,
-        "low": 81005.6,
-        "open": 81285.0,
-        "timestamp": "2026-05-06T05:00:00Z",
-        "volume": 3446.87
-      },
-      {
-        "close": 81431.7,
-        "high": 81474.9,
-        "low": 81154.6,
-        "open": 81277.9,
-        "timestamp": "2026-05-06T06:00:00Z",
-        "volume": 2787.037
-      },
-      {
-        "close": 81333.3,
-        "high": 81571.4,
-        "low": 81269.5,
-        "open": 81431.7,
-        "timestamp": "2026-05-06T07:00:00Z",
-        "volume": 3593.762
-      },
-      {
-        "close": 81903.6,
-        "high": 81945.0,
-        "low": 81280.0,
-        "open": 81333.4,
-        "timestamp": "2026-05-06T08:00:00Z",
-        "volume": 11607.808
-      },
-      {
-        "close": 81959.3,
-        "high": 82019.2,
-        "low": 81618.7,
-        "open": 81903.7,
-        "timestamp": "2026-05-06T09:00:00Z",
-        "volume": 12700.462
-      },
-      {
-        "close": 82242.1,
-        "high": 82360.9,
-        "low": 81929.9,
-        "open": 81959.2,
-        "timestamp": "2026-05-06T10:00:00Z",
-        "volume": 13253.165
-      },
-      {
-        "close": 82485.4,
-        "high": 82828.7,
-        "low": 82211.3,
-        "open": 82242.0,
-        "timestamp": "2026-05-06T11:00:00Z",
-        "volume": 15315.668
-      },
-      {
-        "close": 82188.0,
-        "high": 82508.7,
-        "low": 82120.0,
-        "open": 82485.3,
-        "timestamp": "2026-05-06T12:00:00Z",
-        "volume": 9116.091
-      },
-      {
-        "close": 81621.1,
-        "high": 82187.9,
-        "low": 81539.4,
-        "open": 82187.9,
-        "timestamp": "2026-05-06T13:00:00Z",
-        "volume": 14320.789
-      },
-      {
-        "close": 81471.6,
-        "high": 81934.6,
-        "low": 81073.1,
-        "open": 81621.4,
-        "timestamp": "2026-05-06T14:00:00Z",
-        "volume": 16993.761
-      },
-      {
-        "close": 81656.4,
-        "high": 81780.0,
-        "low": 81257.1,
-        "open": 81471.6,
-        "timestamp": "2026-05-06T15:00:00Z",
-        "volume": 6583.026
-      },
-      {
-        "close": 81575.3,
-        "high": 81855.0,
-        "low": 81372.6,
-        "open": 81656.4,
-        "timestamp": "2026-05-06T16:00:00Z",
-        "volume": 5659.811
-      },
-      {
-        "close": 81401.5,
-        "high": 81667.3,
-        "low": 81335.0,
-        "open": 81575.4,
-        "timestamp": "2026-05-06T17:00:00Z",
-        "volume": 3115.004
-      },
-      {
-        "close": 81300.0,
-        "high": 81520.9,
-        "low": 81213.2,
-        "open": 81401.6,
-        "timestamp": "2026-05-06T18:00:00Z",
-        "volume": 3202.617
-      },
-      {
-        "close": 81416.5,
-        "high": 81470.4,
-        "low": 81137.8,
-        "open": 81300.0,
-        "timestamp": "2026-05-06T19:00:00Z",
-        "volume": 2722.756
-      },
-      {
-        "close": 81378.5,
-        "high": 81655.0,
-        "low": 81251.7,
-        "open": 81416.5,
-        "timestamp": "2026-05-06T20:00:00Z",
-        "volume": 3420.381
-      },
-      {
-        "close": 81494.6,
-        "high": 81579.0,
-        "low": 81250.0,
-        "open": 81378.6,
-        "timestamp": "2026-05-06T21:00:00Z",
-        "volume": 1471.516
-      },
-      {
-        "close": 81295.8,
-        "high": 81502.7,
-        "low": 81192.3,
-        "open": 81494.7,
-        "timestamp": "2026-05-06T22:00:00Z",
-        "volume": 1996.033
-      },
-      {
-        "close": 81390.1,
-        "high": 81404.0,
-        "low": 80929.8,
-        "open": 81295.8,
-        "timestamp": "2026-05-06T23:00:00Z",
-        "volume": 4317.101
-      },
-      {
-        "close": 80966.9,
-        "high": 81450.5,
-        "low": 80925.6,
-        "open": 81390.0,
-        "timestamp": "2026-05-07T00:00:00Z",
-        "volume": 4684.83
-      },
-      {
-        "close": 81121.2,
-        "high": 81245.9,
-        "low": 80767.1,
-        "open": 80967.0,
-        "timestamp": "2026-05-07T01:00:00Z",
-        "volume": 6285.66
-      },
-      {
-        "close": 81076.8,
-        "high": 81134.1,
-        "low": 80836.0,
-        "open": 81121.2,
-        "timestamp": "2026-05-07T02:00:00Z",
-        "volume": 4769.925
-      },
-      {
-        "close": 80797.3,
-        "high": 81076.7,
-        "low": 80780.0,
-        "open": 81076.7,
-        "timestamp": "2026-05-07T03:00:00Z",
-        "volume": 2629.383
-      },
-      {
-        "close": 80939.9,
-        "high": 80961.8,
-        "low": 80675.8,
-        "open": 80797.4,
-        "timestamp": "2026-05-07T04:00:00Z",
-        "volume": 4053.29
-      },
-      {
-        "close": 81047.4,
-        "high": 81145.7,
-        "low": 80930.0,
-        "open": 80939.9,
-        "timestamp": "2026-05-07T05:00:00Z",
-        "volume": 2984.082
-      },
-      {
-        "close": 81395.3,
-        "high": 81400.0,
-        "low": 80842.4,
-        "open": 81047.4,
-        "timestamp": "2026-05-07T06:00:00Z",
-        "volume": 5453.313
-      },
-      {
-        "close": 81480.1,
-        "high": 81680.6,
-        "low": 81350.0,
-        "open": 81395.3,
-        "timestamp": "2026-05-07T07:00:00Z",
-        "volume": 7065.961
-      },
-      {
-        "close": 81195.9,
-        "high": 81564.6,
-        "low": 81161.6,
-        "open": 81480.0,
-        "timestamp": "2026-05-07T08:00:00Z",
-        "volume": 4516.181
-      },
-      {
-        "close": 80888.9,
-        "high": 81196.0,
-        "low": 80803.0,
-        "open": 81196.0,
-        "timestamp": "2026-05-07T09:00:00Z",
-        "volume": 5990.831
-      },
-      {
-        "close": 80800.0,
-        "high": 80970.7,
-        "low": 80521.8,
-        "open": 80888.8,
-        "timestamp": "2026-05-07T10:00:00Z",
-        "volume": 6040.833
-      },
-      {
-        "close": 80827.9,
-        "high": 81028.7,
-        "low": 80738.0,
-        "open": 80800.1,
-        "timestamp": "2026-05-07T11:00:00Z",
-        "volume": 3470.722
-      },
-      {
-        "close": 81118.5,
-        "high": 81158.7,
-        "low": 80800.0,
-        "open": 80827.9,
-        "timestamp": "2026-05-07T12:00:00Z",
-        "volume": 3425.996
-      },
-      {
-        "close": 80457.5,
-        "high": 81123.9,
-        "low": 80187.9,
-        "open": 81118.4,
-        "timestamp": "2026-05-07T13:00:00Z",
-        "volume": 11703.803
-      },
-      {
-        "close": 80130.1,
-        "high": 80656.2,
-        "low": 80000.1,
-        "open": 80457.6,
-        "timestamp": "2026-05-07T14:00:00Z",
-        "volume": 12818.532
-      },
-      {
-        "close": 79861.6,
-        "high": 80242.3,
-        "low": 79605.0,
-        "open": 80130.2,
-        "timestamp": "2026-05-07T15:00:00Z",
-        "volume": 13029.125
-      },
-      {
-        "close": 79763.3,
-        "high": 79991.7,
-        "low": 79667.4,
-        "open": 79861.5,
-        "timestamp": "2026-05-07T16:00:00Z",
-        "volume": 6606.246
-      },
-      {
-        "close": 80053.3,
-        "high": 80094.7,
-        "low": 79461.5,
-        "open": 79763.3,
-        "timestamp": "2026-05-07T17:00:00Z",
-        "volume": 7873.508
-      },
-      {
-        "close": 80160.1,
-        "high": 80235.0,
-        "low": 79952.7,
-        "open": 80053.3,
-        "timestamp": "2026-05-07T18:00:00Z",
-        "volume": 5178.866
-      },
-      {
-        "close": 80103.1,
-        "high": 80175.6,
-        "low": 79885.9,
-        "open": 80160.1,
-        "timestamp": "2026-05-07T19:00:00Z",
-        "volume": 3311.416
-      },
-      {
-        "close": 79838.2,
-        "high": 80331.6,
-        "low": 79809.3,
-        "open": 80103.1,
-        "timestamp": "2026-05-07T20:00:00Z",
-        "volume": 3633.55
-      },
-      {
-        "close": 79683.7,
-        "high": 79888.0,
-        "low": 79576.3,
-        "open": 79838.3,
-        "timestamp": "2026-05-07T21:00:00Z",
-        "volume": 3777.471
-      },
-      {
-        "close": 79872.1,
-        "high": 79946.3,
-        "low": 79531.1,
-        "open": 79683.7,
-        "timestamp": "2026-05-07T22:00:00Z",
-        "volume": 3732.548
-      },
-      {
-        "close": 79969.4,
-        "high": 80026.4,
-        "low": 79820.0,
-        "open": 79872.1,
-        "timestamp": "2026-05-07T23:00:00Z",
-        "volume": 1691.58
-      },
-      {
-        "close": 79796.1,
-        "high": 80106.3,
-        "low": 79671.0,
-        "open": 79969.5,
-        "timestamp": "2026-05-08T00:00:00Z",
-        "volume": 3436.384
-      },
-      {
-        "close": 79699.9,
-        "high": 79871.0,
-        "low": 79566.0,
-        "open": 79796.2,
-        "timestamp": "2026-05-08T01:00:00Z",
-        "volume": 2388.101
-      },
-      {
-        "close": 79449.7,
-        "high": 79715.2,
-        "low": 79288.0,
-        "open": 79700.0,
-        "timestamp": "2026-05-08T02:00:00Z",
-        "volume": 6526.98
-      },
-      {
-        "close": 79540.0,
-        "high": 79634.6,
-        "low": 79137.4,
-        "open": 79449.7,
-        "timestamp": "2026-05-08T03:00:00Z",
-        "volume": 5128.074
-      },
-      {
-        "close": 79619.0,
-        "high": 79723.3,
-        "low": 79506.4,
-        "open": 79539.9,
-        "timestamp": "2026-05-08T04:00:00Z",
-        "volume": 2337.291
-      },
-      {
-        "close": 79560.2,
-        "high": 79743.8,
-        "low": 79557.0,
-        "open": 79618.9,
-        "timestamp": "2026-05-08T05:00:00Z",
-        "volume": 1893.804
-      },
-      {
-        "close": 79484.1,
-        "high": 79616.0,
-        "low": 79370.0,
-        "open": 79560.2,
-        "timestamp": "2026-05-08T06:00:00Z",
-        "volume": 2652.384
-      },
-      {
-        "close": 79635.0,
-        "high": 79690.0,
-        "low": 79208.0,
-        "open": 79484.1,
-        "timestamp": "2026-05-08T07:00:00Z",
-        "volume": 5630.974
-      },
-      {
-        "close": 79849.3,
-        "high": 79951.5,
-        "low": 79626.0,
-        "open": 79635.0,
-        "timestamp": "2026-05-08T08:00:00Z",
-        "volume": 4927.268
-      },
-      {
-        "close": 79826.3,
-        "high": 80044.6,
-        "low": 79743.3,
-        "open": 79849.2,
-        "timestamp": "2026-05-08T09:00:00Z",
-        "volume": 4308.926
-      },
-      {
-        "close": 80162.3,
-        "high": 80252.9,
-        "low": 79729.5,
-        "open": 79826.2,
-        "timestamp": "2026-05-08T10:00:00Z",
-        "volume": 5670.134
-      },
-      {
-        "close": 80181.9,
-        "high": 80287.0,
-        "low": 80080.3,
-        "open": 80162.3,
-        "timestamp": "2026-05-08T11:00:00Z",
-        "volume": 4339.445
-      },
-      {
-        "close": 79987.6,
-        "high": 80478.0,
-        "low": 79922.0,
-        "open": 80181.8,
-        "timestamp": "2026-05-08T12:00:00Z",
-        "volume": 6909.317
-      },
-      {
-        "close": 79612.4,
-        "high": 80053.9,
-        "low": 79507.6,
-        "open": 79987.7,
-        "timestamp": "2026-05-08T13:00:00Z",
-        "volume": 10296.964
-      },
-      {
-        "close": 80114.4,
-        "high": 80424.4,
-        "low": 79612.3,
-        "open": 79612.3,
-        "timestamp": "2026-05-08T14:00:00Z",
-        "volume": 10748.764
-      },
-      {
-        "close": 80119.1,
-        "high": 80173.2,
-        "low": 79585.0,
-        "open": 80114.3,
-        "timestamp": "2026-05-08T15:00:00Z",
-        "volume": 7570.867
-      },
-      {
-        "close": 79768.7,
-        "high": 80164.6,
-        "low": 79706.0,
-        "open": 80119.1,
-        "timestamp": "2026-05-08T16:00:00Z",
-        "volume": 4154.568
-      },
-      {
-        "close": 80030.5,
-        "high": 80230.0,
-        "low": 79692.4,
-        "open": 79768.7,
-        "timestamp": "2026-05-08T17:00:00Z",
-        "volume": 5374.958
-      },
-      {
-        "close": 80044.4,
-        "high": 80266.6,
-        "low": 80024.1,
-        "open": 80030.4,
-        "timestamp": "2026-05-08T18:00:00Z",
-        "volume": 3460.621
-      },
-      {
-        "close": 80147.7,
-        "high": 80152.1,
-        "low": 79903.8,
-        "open": 80044.4,
-        "timestamp": "2026-05-08T19:00:00Z",
-        "volume": 2214.693
-      },
-      {
-        "close": 80104.0,
-        "high": 80260.9,
-        "low": 80044.7,
-        "open": 80147.9,
-        "timestamp": "2026-05-08T20:00:00Z",
-        "volume": 1607.586
-      },
-      {
-        "close": 80222.1,
-        "high": 80225.0,
-        "low": 80072.9,
-        "open": 80104.0,
-        "timestamp": "2026-05-08T21:00:00Z",
-        "volume": 1014.531
-      },
-      {
-        "close": 80234.1,
-        "high": 80376.0,
-        "low": 80187.4,
-        "open": 80222.2,
-        "timestamp": "2026-05-08T22:00:00Z",
-        "volume": 2472.108
-      },
-      {
-        "close": 80155.2,
-        "high": 80254.5,
-        "low": 80063.8,
-        "open": 80234.2,
-        "timestamp": "2026-05-08T23:00:00Z",
-        "volume": 1698.171
-      },
-      {
-        "close": 80193.3,
-        "high": 80200.0,
-        "low": 80080.0,
-        "open": 80155.2,
-        "timestamp": "2026-05-09T00:00:00Z",
-        "volume": 1134.298
-      },
-      {
-        "close": 80280.0,
-        "high": 80405.0,
-        "low": 80177.4,
-        "open": 80193.3,
-        "timestamp": "2026-05-09T01:00:00Z",
-        "volume": 2050.67
-      },
-      {
-        "close": 80379.2,
-        "high": 80448.2,
-        "low": 80280.0,
-        "open": 80280.1,
-        "timestamp": "2026-05-09T02:00:00Z",
-        "volume": 1892.314
-      },
-      {
-        "close": 80340.6,
-        "high": 80542.0,
-        "low": 80261.2,
-        "open": 80379.2,
-        "timestamp": "2026-05-09T03:00:00Z",
-        "volume": 2345.466
-      },
-      {
-        "close": 80345.0,
-        "high": 80641.8,
-        "low": 80325.7,
-        "open": 80340.7,
-        "timestamp": "2026-05-09T04:00:00Z",
-        "volume": 3766.222
-      },
-      {
-        "close": 80331.4,
-        "high": 80445.0,
-        "low": 80303.1,
-        "open": 80345.0,
-        "timestamp": "2026-05-09T05:00:00Z",
-        "volume": 1474.842
-      },
-      {
-        "close": 80214.9,
-        "high": 80393.4,
-        "low": 80154.5,
-        "open": 80331.4,
-        "timestamp": "2026-05-09T06:00:00Z",
-        "volume": 3218.227
-      },
-      {
-        "close": 80181.7,
-        "high": 80268.4,
-        "low": 80084.3,
-        "open": 80215.0,
-        "timestamp": "2026-05-09T07:00:00Z",
-        "volume": 2522.361
-      },
-      {
-        "close": 80378.1,
-        "high": 80422.3,
-        "low": 80171.6,
-        "open": 80181.6,
-        "timestamp": "2026-05-09T08:00:00Z",
-        "volume": 2869.702
-      },
-      {
-        "close": 80199.9,
-        "high": 80383.0,
-        "low": 80166.1,
-        "open": 80378.0,
-        "timestamp": "2026-05-09T09:00:00Z",
-        "volume": 1828.419
-      },
-      {
-        "close": 80232.7,
-        "high": 80317.6,
-        "low": 80124.8,
-        "open": 80199.9,
-        "timestamp": "2026-05-09T10:00:00Z",
-        "volume": 1662.459
-      },
-      {
-        "close": 80310.4,
-        "high": 80349.9,
-        "low": 80220.0,
-        "open": 80232.8,
-        "timestamp": "2026-05-09T11:00:00Z",
-        "volume": 997.632
-      },
-      {
-        "close": 80367.2,
-        "high": 80388.0,
-        "low": 80235.3,
-        "open": 80310.4,
-        "timestamp": "2026-05-09T12:00:00Z",
-        "volume": 1275.419
-      },
-      {
-        "close": 80359.4,
-        "high": 80382.0,
-        "low": 80274.7,
-        "open": 80367.2,
-        "timestamp": "2026-05-09T13:00:00Z",
-        "volume": 978.258
-      },
-      {
-        "close": 80292.4,
-        "high": 80395.0,
-        "low": 80200.2,
-        "open": 80359.4,
-        "timestamp": "2026-05-09T14:00:00Z",
-        "volume": 2838.423
-      },
-      {
-        "close": 80488.3,
-        "high": 80566.0,
-        "low": 80190.0,
-        "open": 80292.3,
-        "timestamp": "2026-05-09T15:00:00Z",
-        "volume": 4497.106
-      },
-      {
-        "close": 80576.1,
-        "high": 80796.9,
-        "low": 80440.0,
-        "open": 80488.3,
-        "timestamp": "2026-05-09T16:00:00Z",
-        "volume": 4825.568
-      },
-      {
-        "close": 80766.0,
-        "high": 80891.0,
-        "low": 80576.1,
-        "open": 80576.1,
-        "timestamp": "2026-05-09T17:00:00Z",
-        "volume": 4922.273
-      },
-      {
-        "close": 80865.1,
-        "high": 81043.2,
-        "low": 80744.3,
-        "open": 80765.8,
-        "timestamp": "2026-05-09T18:00:00Z",
-        "volume": 4483.974
-      },
-      {
-        "close": 80896.9,
-        "high": 80928.3,
-        "low": 80733.3,
-        "open": 80865.1,
-        "timestamp": "2026-05-09T19:00:00Z",
-        "volume": 1733.971
-      },
-      {
-        "close": 80764.6,
-        "high": 80900.0,
-        "low": 80688.0,
-        "open": 80897.1,
-        "timestamp": "2026-05-09T20:00:00Z",
-        "volume": 1305.423
-      },
-      {
-        "close": 80735.8,
-        "high": 80856.9,
-        "low": 80700.0,
-        "open": 80764.6,
-        "timestamp": "2026-05-09T21:00:00Z",
-        "volume": 849.114
-      },
-      {
-        "close": 80731.0,
-        "high": 80788.0,
-        "low": 80632.2,
-        "open": 80735.9,
-        "timestamp": "2026-05-09T22:00:00Z",
-        "volume": 1247.104
-      },
-      {
-        "close": 80634.0,
-        "high": 80817.0,
-        "low": 80569.0,
-        "open": 80730.9,
-        "timestamp": "2026-05-09T23:00:00Z",
-        "volume": 1238.089
-      },
-      {
-        "close": 80634.9,
-        "high": 80739.9,
-        "low": 80588.1,
-        "open": 80634.0,
-        "timestamp": "2026-05-10T00:00:00Z",
-        "volume": 2017.527
-      },
-      {
-        "close": 80654.0,
-        "high": 80660.2,
-        "low": 80533.7,
-        "open": 80635.0,
-        "timestamp": "2026-05-10T01:00:00Z",
-        "volume": 1816.55
-      },
-      {
-        "close": 80748.6,
-        "high": 80760.8,
-        "low": 80576.0,
-        "open": 80653.9,
-        "timestamp": "2026-05-10T02:00:00Z",
-        "volume": 1153.086
-      },
-      {
-        "close": 80735.1,
-        "high": 80859.9,
-        "low": 80667.0,
-        "open": 80748.9,
-        "timestamp": "2026-05-10T03:00:00Z",
-        "volume": 1252.522
-      },
-      {
-        "close": 80717.8,
-        "high": 80809.4,
-        "low": 80688.5,
-        "open": 80735.2,
-        "timestamp": "2026-05-10T04:00:00Z",
-        "volume": 751.361
-      },
-      {
-        "close": 80660.8,
-        "high": 80778.4,
-        "low": 80631.0,
-        "open": 80717.7,
-        "timestamp": "2026-05-10T05:00:00Z",
-        "volume": 950.52
-      },
-      {
-        "close": 80700.0,
-        "high": 80725.0,
-        "low": 80619.6,
-        "open": 80660.9,
-        "timestamp": "2026-05-10T06:00:00Z",
-        "volume": 1259.232
-      },
-      {
-        "close": 80695.9,
-        "high": 80766.0,
-        "low": 80680.1,
-        "open": 80700.0,
-        "timestamp": "2026-05-10T07:00:00Z",
-        "volume": 957.256
-      },
-      {
-        "close": 80797.1,
-        "high": 80873.6,
-        "low": 80671.0,
-        "open": 80695.9,
-        "timestamp": "2026-05-10T08:00:00Z",
-        "volume": 1549.874
-      },
-      {
-        "close": 80766.9,
-        "high": 80880.0,
-        "low": 80713.0,
-        "open": 80797.1,
-        "timestamp": "2026-05-10T09:00:00Z",
-        "volume": 927.115
-      },
-      {
-        "close": 80836.5,
-        "high": 80857.9,
-        "low": 80641.5,
-        "open": 80766.8,
-        "timestamp": "2026-05-10T10:00:00Z",
-        "volume": 2767.29
-      },
-      {
-        "close": 80782.1,
-        "high": 80939.5,
-        "low": 80711.8,
-        "open": 80836.5,
-        "timestamp": "2026-05-10T11:00:00Z",
-        "volume": 1929.416
-      },
-      {
-        "close": 80891.1,
-        "high": 80918.0,
-        "low": 80743.2,
-        "open": 80782.1,
-        "timestamp": "2026-05-10T12:00:00Z",
-        "volume": 1263.623
-      },
-      {
-        "close": 80932.2,
-        "high": 80970.0,
-        "low": 80825.0,
-        "open": 80891.0,
-        "timestamp": "2026-05-10T13:00:00Z",
-        "volume": 1459.079
-      },
-      {
-        "close": 80944.2,
-        "high": 80980.0,
-        "low": 80771.0,
-        "open": 80932.3,
-        "timestamp": "2026-05-10T14:00:00Z",
-        "volume": 2282.117
-      },
-      {
-        "close": 81381.4,
-        "high": 81423.2,
-        "low": 80893.0,
-        "open": 80944.3,
-        "timestamp": "2026-05-10T15:00:00Z",
-        "volume": 10734.822
-      },
-      {
-        "close": 81338.7,
-        "high": 81475.0,
-        "low": 81151.0,
-        "open": 81381.5,
-        "timestamp": "2026-05-10T16:00:00Z",
-        "volume": 6334.735
-      },
-      {
-        "close": 81441.5,
-        "high": 81587.9,
-        "low": 81179.8,
-        "open": 81338.8,
-        "timestamp": "2026-05-10T17:00:00Z",
-        "volume": 4353.713
-      },
-      {
-        "close": 81235.1,
-        "high": 81472.7,
-        "low": 81194.8,
-        "open": 81441.4,
-        "timestamp": "2026-05-10T18:00:00Z",
-        "volume": 2318.995
-      },
-      {
-        "close": 81398.0,
-        "high": 81467.2,
-        "low": 81105.6,
-        "open": 81235.2,
-        "timestamp": "2026-05-10T19:00:00Z",
-        "volume": 2373.468
-      },
-      {
-        "close": 80691.2,
-        "high": 81432.2,
-        "low": 80225.1,
-        "open": 81398.0,
-        "timestamp": "2026-05-10T20:00:00Z",
-        "volume": 12943.246
-      },
-      {
-        "close": 80674.0,
-        "high": 80911.0,
-        "low": 80528.9,
-        "open": 80691.1,
-        "timestamp": "2026-05-10T21:00:00Z",
-        "volume": 5670.107
-      },
-      {
-        "close": 82013.3,
-        "high": 82138.9,
-        "low": 80614.0,
-        "open": 80674.0,
-        "timestamp": "2026-05-10T22:00:00Z",
-        "volume": 17281.489
-      },
-      {
-        "close": 82177.7,
-        "high": 82460.5,
-        "low": 82009.4,
-        "open": 82013.2,
-        "timestamp": "2026-05-10T23:00:00Z",
-        "volume": 10603.66
-      },
-      {
-        "close": 81430.3,
-        "high": 82350.0,
-        "low": 81230.0,
-        "open": 82177.7,
-        "timestamp": "2026-05-11T00:00:00Z",
-        "volume": 12936.41
-      },
-      {
-        "close": 81463.2,
-        "high": 81724.5,
-        "low": 81242.9,
-        "open": 81430.5,
-        "timestamp": "2026-05-11T01:00:00Z",
-        "volume": 4976.807
-      },
-      {
-        "close": 81136.6,
-        "high": 81527.2,
-        "low": 81067.2,
-        "open": 81463.2,
-        "timestamp": "2026-05-11T02:00:00Z",
-        "volume": 4701.696
-      },
-      {
-        "close": 80693.4,
-        "high": 81152.3,
-        "low": 80470.1,
-        "open": 81136.6,
-        "timestamp": "2026-05-11T03:00:00Z",
-        "volume": 11522.22
-      },
-      {
-        "close": 80782.3,
-        "high": 80848.0,
-        "low": 80597.8,
-        "open": 80693.4,
-        "timestamp": "2026-05-11T04:00:00Z",
-        "volume": 3122.216
-      },
-      {
-        "close": 80799.9,
-        "high": 80948.4,
-        "low": 80708.1,
-        "open": 80782.2,
-        "timestamp": "2026-05-11T05:00:00Z",
-        "volume": 2892.382
-      },
-      {
-        "close": 80790.7,
-        "high": 81033.3,
-        "low": 80713.8,
-        "open": 80799.9,
-        "timestamp": "2026-05-11T06:00:00Z",
-        "volume": 2579.719
-      },
-      {
-        "close": 80708.9,
-        "high": 80803.4,
-        "low": 80614.9,
-        "open": 80790.8,
-        "timestamp": "2026-05-11T07:00:00Z",
-        "volume": 2667.858
-      },
-      {
-        "close": 80723.7,
-        "high": 80829.9,
-        "low": 80580.0,
-        "open": 80708.8,
-        "timestamp": "2026-05-11T08:00:00Z",
-        "volume": 2639.153
-      },
-      {
-        "close": 80923.3,
-        "high": 80965.4,
-        "low": 80716.6,
-        "open": 80723.6,
-        "timestamp": "2026-05-11T09:00:00Z",
-        "volume": 1865.061
-      },
-      {
-        "close": 80900.8,
-        "high": 81162.4,
-        "low": 80889.9,
-        "open": 80923.3,
-        "timestamp": "2026-05-11T10:00:00Z",
-        "volume": 3424.195
-      },
-      {
-        "close": 81167.1,
-        "high": 81172.6,
-        "low": 80860.0,
-        "open": 80900.8,
-        "timestamp": "2026-05-11T11:00:00Z",
-        "volume": 2745.014
-      },
-      {
-        "close": 81013.5,
-        "high": 81320.0,
-        "low": 80983.5,
-        "open": 81167.1,
-        "timestamp": "2026-05-11T12:00:00Z",
-        "volume": 5130.927
-      },
-      {
-        "close": 81032.9,
-        "high": 81299.7,
-        "low": 80716.0,
-        "open": 81013.5,
-        "timestamp": "2026-05-11T13:00:00Z",
-        "volume": 7340.647
-      },
-      {
-        "close": 80917.5,
-        "high": 81221.0,
-        "low": 80394.0,
-        "open": 81032.8,
-        "timestamp": "2026-05-11T14:00:00Z",
-        "volume": 10192.16
-      },
-      {
-        "close": 81403.4,
-        "high": 81434.8,
-        "low": 80796.4,
-        "open": 80917.4,
-        "timestamp": "2026-05-11T15:00:00Z",
-        "volume": 6794.771
-      },
-      {
-        "close": 81526.8,
-        "high": 81880.0,
-        "low": 81297.5,
-        "open": 81403.4,
-        "timestamp": "2026-05-11T16:00:00Z",
-        "volume": 10551.693
-      },
-      {
-        "close": 81894.0,
-        "high": 82033.8,
-        "low": 81322.3,
-        "open": 81526.9,
-        "timestamp": "2026-05-11T17:00:00Z",
-        "volume": 6762.573
-      },
-      {
-        "close": 81819.2,
-        "high": 82098.9,
-        "low": 81784.3,
-        "open": 81894.1,
-        "timestamp": "2026-05-11T18:00:00Z",
-        "volume": 5085.299
-      },
-      {
-        "close": 81917.1,
-        "high": 82055.0,
-        "low": 81691.7,
-        "open": 81819.3,
-        "timestamp": "2026-05-11T19:00:00Z",
-        "volume": 5030.178
-      },
-      {
-        "close": 81778.5,
-        "high": 82051.1,
-        "low": 81707.6,
-        "open": 81917.8,
-        "timestamp": "2026-05-11T20:00:00Z",
-        "volume": 2841.064
-      },
-      {
-        "close": 81784.6,
-        "high": 81885.5,
-        "low": 81555.0,
-        "open": 81778.5,
-        "timestamp": "2026-05-11T21:00:00Z",
-        "volume": 2099.166
-      },
-      {
-        "close": 81788.4,
-        "high": 81937.3,
-        "low": 81689.0,
-        "open": 81784.6,
-        "timestamp": "2026-05-11T22:00:00Z",
-        "volume": 2227.72
-      },
-      {
-        "close": 81699.1,
-        "high": 81788.4,
-        "low": 81521.5,
-        "open": 81788.4,
-        "timestamp": "2026-05-11T23:00:00Z",
-        "volume": 1861.492
-      },
-      {
-        "close": 81508.7,
-        "high": 81757.3,
-        "low": 81429.9,
-        "open": 81699.1,
-        "timestamp": "2026-05-12T00:00:00Z",
-        "volume": 3316.101
-      },
-      {
-        "close": 81148.4,
-        "high": 81581.5,
-        "low": 80661.2,
-        "open": 81508.7,
-        "timestamp": "2026-05-12T01:00:00Z",
-        "volume": 11795.954
-      },
-      {
-        "close": 81223.5,
-        "high": 81298.9,
-        "low": 81030.1,
-        "open": 81148.4,
-        "timestamp": "2026-05-12T02:00:00Z",
-        "volume": 3004.215
-      },
-      {
-        "close": 81028.3,
-        "high": 81255.2,
-        "low": 80988.9,
-        "open": 81223.5,
-        "timestamp": "2026-05-12T03:00:00Z",
-        "volume": 2840.74
-      },
-      {
-        "close": 81194.9,
-        "high": 81270.2,
-        "low": 80964.4,
-        "open": 81028.3,
-        "timestamp": "2026-05-12T04:00:00Z",
-        "volume": 3436.103
-      },
-      {
-        "close": 81186.8,
-        "high": 81270.2,
-        "low": 81140.4,
-        "open": 81194.9,
-        "timestamp": "2026-05-12T05:00:00Z",
-        "volume": 1928.061
-      },
-      {
-        "close": 80989.9,
-        "high": 81269.5,
-        "low": 80979.8,
-        "open": 81186.8,
-        "timestamp": "2026-05-12T06:00:00Z",
-        "volume": 2977.394
-      },
-      {
-        "close": 80809.2,
-        "high": 81101.9,
-        "low": 80756.0,
-        "open": 80989.9,
-        "timestamp": "2026-05-12T07:00:00Z",
-        "volume": 6380.894
-      },
-      {
-        "close": 80797.5,
-        "high": 80930.7,
-        "low": 80719.3,
-        "open": 80809.2,
-        "timestamp": "2026-05-12T08:00:00Z",
-        "volume": 3827.0
-      },
-      {
-        "close": 80799.1,
-        "high": 80925.0,
-        "low": 80670.0,
-        "open": 80797.5,
-        "timestamp": "2026-05-12T09:00:00Z",
-        "volume": 4292.249
-      },
-      {
-        "close": 80634.0,
-        "high": 80806.5,
-        "low": 80560.0,
-        "open": 80799.1,
-        "timestamp": "2026-05-12T10:00:00Z",
-        "volume": 3443.489
-      },
-      {
-        "close": 80742.7,
-        "high": 80754.6,
-        "low": 80444.0,
-        "open": 80634.0,
-        "timestamp": "2026-05-12T11:00:00Z",
-        "volume": 4833.637
-      },
-      {
-        "close": 80846.3,
-        "high": 80968.6,
-        "low": 80577.8,
-        "open": 80742.7,
-        "timestamp": "2026-05-12T12:00:00Z",
-        "volume": 7670.628
-      },
-      {
-        "close": 80433.6,
-        "high": 80897.3,
-        "low": 80360.9,
-        "open": 80846.4,
-        "timestamp": "2026-05-12T13:00:00Z",
-        "volume": 8491.521
-      },
-      {
-        "close": 80511.0,
-        "high": 80859.9,
-        "low": 80360.0,
-        "open": 80433.6,
-        "timestamp": "2026-05-12T14:00:00Z",
-        "volume": 9825.647
-      },
-      {
-        "close": 80301.6,
-        "high": 80639.8,
-        "low": 80143.0,
-        "open": 80511.0,
-        "timestamp": "2026-05-12T15:00:00Z",
-        "volume": 10196.046
-      },
-      {
-        "close": 79967.1,
-        "high": 80400.0,
-        "low": 79801.0,
-        "open": 80301.6,
-        "timestamp": "2026-05-12T16:00:00Z",
-        "volume": 11633.264
-      },
-      {
-        "close": 80492.9,
-        "high": 80588.3,
-        "low": 79907.6,
-        "open": 79967.1,
-        "timestamp": "2026-05-12T17:00:00Z",
-        "volume": 7443.427
-      },
-      {
-        "close": 80641.2,
-        "high": 80733.3,
-        "low": 80385.9,
-        "open": 80493.0,
-        "timestamp": "2026-05-12T18:00:00Z",
-        "volume": 3966.691
-      },
-      {
-        "close": 80799.5,
-        "high": 80836.5,
-        "low": 80639.0,
-        "open": 80641.3,
-        "timestamp": "2026-05-12T19:00:00Z",
-        "volume": 2563.775
-      },
-      {
-        "close": 80656.8,
-        "high": 80848.6,
-        "low": 80601.0,
-        "open": 80799.6,
-        "timestamp": "2026-05-12T20:00:00Z",
-        "volume": 1861.8
-      },
-      {
-        "close": 80550.0,
-        "high": 80700.0,
-        "low": 80454.3,
-        "open": 80656.9,
-        "timestamp": "2026-05-12T21:00:00Z",
-        "volume": 1798.247
-      },
-      {
-        "close": 80613.4,
-        "high": 80763.0,
-        "low": 80549.9,
-        "open": 80549.9,
-        "timestamp": "2026-05-12T22:00:00Z",
-        "volume": 1516.763
-      },
-      {
-        "close": 80461.0,
-        "high": 80679.3,
-        "low": 80393.9,
-        "open": 80613.5,
-        "timestamp": "2026-05-12T23:00:00Z",
-        "volume": 2270.31
-      },
-      {
-        "close": 80673.4,
-        "high": 80735.1,
-        "low": 80364.5,
-        "open": 80461.0,
-        "timestamp": "2026-05-13T00:00:00Z",
-        "volume": 2549.773
-      },
-      {
-        "close": 80960.1,
-        "high": 81168.4,
-        "low": 80635.1,
-        "open": 80673.4,
-        "timestamp": "2026-05-13T01:00:00Z",
-        "volume": 5772.717
-      },
-      {
-        "close": 81018.1,
-        "high": 81239.1,
-        "low": 80882.7,
-        "open": 80960.1,
-        "timestamp": "2026-05-13T02:00:00Z",
-        "volume": 3027.334
-      },
-      {
-        "close": 81217.1,
-        "high": 81268.0,
-        "low": 80941.9,
-        "open": 81018.1,
-        "timestamp": "2026-05-13T03:00:00Z",
-        "volume": 2831.866
-      },
-      {
-        "close": 81199.9,
-        "high": 81253.5,
-        "low": 81078.0,
-        "open": 81217.0,
-        "timestamp": "2026-05-13T04:00:00Z",
-        "volume": 2398.252
-      },
-      {
-        "close": 80985.5,
-        "high": 81203.4,
-        "low": 80958.1,
-        "open": 81200.0,
-        "timestamp": "2026-05-13T05:00:00Z",
-        "volume": 2698.326
-      },
-      {
-        "close": 80945.6,
-        "high": 81126.0,
-        "low": 80929.0,
-        "open": 80985.6,
-        "timestamp": "2026-05-13T06:00:00Z",
-        "volume": 2231.558
-      },
-      {
-        "close": 80981.9,
-        "high": 81015.7,
-        "low": 80847.0,
-        "open": 80945.6,
-        "timestamp": "2026-05-13T07:00:00Z",
-        "volume": 2309.579
-      },
-      {
-        "close": 81161.0,
-        "high": 81166.7,
-        "low": 80903.8,
-        "open": 80981.9,
-        "timestamp": "2026-05-13T08:00:00Z",
-        "volume": 2553.111
-      },
-      {
-        "close": 81255.5,
-        "high": 81270.2,
-        "low": 81094.0,
-        "open": 81160.9,
-        "timestamp": "2026-05-13T09:00:00Z",
-        "volume": 4233.662
-      },
-      {
-        "close": 80766.2,
-        "high": 81266.6,
-        "low": 80763.8,
-        "open": 81255.4,
-        "timestamp": "2026-05-13T10:00:00Z",
-        "volume": 4637.605
-      },
-      {
-        "close": 80460.1,
-        "high": 80809.7,
-        "low": 80444.0,
-        "open": 80766.2,
-        "timestamp": "2026-05-13T11:00:00Z",
-        "volume": 6288.426
-      },
-      {
-        "close": 80160.1,
-        "high": 80558.0,
-        "low": 79801.1,
-        "open": 80460.0,
-        "timestamp": "2026-05-13T12:00:00Z",
-        "volume": 15655.334
-      },
-      {
-        "close": 79617.9,
-        "high": 80316.6,
-        "low": 79540.0,
-        "open": 80160.0,
-        "timestamp": "2026-05-13T13:00:00Z",
-        "volume": 13369.333
-      },
-      {
-        "close": 79727.3,
-        "high": 79868.0,
-        "low": 79431.7,
-        "open": 79617.8,
-        "timestamp": "2026-05-13T14:00:00Z",
-        "volume": 9456.011
-      },
-      {
-        "close": 78794.7,
-        "high": 79832.4,
-        "low": 78753.1,
-        "open": 79727.3,
-        "timestamp": "2026-05-13T15:00:00Z",
-        "volume": 19297.477
-      },
-      {
-        "close": 79069.5,
-        "high": 79199.1,
-        "low": 78713.8,
-        "open": 78794.7,
-        "timestamp": "2026-05-13T16:00:00Z",
-        "volume": 13331.653
-      },
-      {
-        "close": 79470.1,
-        "high": 79541.2,
-        "low": 79043.2,
-        "open": 79069.5,
-        "timestamp": "2026-05-13T17:00:00Z",
-        "volume": 6341.514
-      },
-      {
-        "close": 79554.9,
-        "high": 79776.2,
-        "low": 79470.1,
-        "open": 79470.1,
-        "timestamp": "2026-05-13T18:00:00Z",
-        "volume": 5474.637
-      },
-      {
-        "close": 79604.8,
-        "high": 79610.1,
-        "low": 79353.9,
-        "open": 79554.9,
-        "timestamp": "2026-05-13T19:00:00Z",
-        "volume": 3983.766
-      },
-      {
-        "close": 79671.4,
-        "high": 79729.1,
-        "low": 79575.9,
-        "open": 79604.8,
-        "timestamp": "2026-05-13T20:00:00Z",
-        "volume": 2261.986
-      },
-      {
-        "close": 79363.2,
-        "high": 79675.0,
-        "low": 79279.6,
-        "open": 79671.4,
-        "timestamp": "2026-05-13T21:00:00Z",
-        "volume": 3106.53
-      },
-      {
-        "close": 79395.1,
-        "high": 79442.1,
-        "low": 79188.0,
-        "open": 79363.1,
-        "timestamp": "2026-05-13T22:00:00Z",
-        "volume": 3208.323
-      },
-      {
-        "close": 79288.3,
-        "high": 79464.2,
-        "low": 79191.0,
-        "open": 79395.1,
-        "timestamp": "2026-05-13T23:00:00Z",
-        "volume": 2681.872
-      },
-      {
-        "close": 79540.0,
-        "high": 79656.7,
-        "low": 79272.9,
-        "open": 79288.2,
-        "timestamp": "2026-05-14T00:00:00Z",
-        "volume": 3463.788
-      },
-      {
-        "close": 79565.9,
-        "high": 79659.9,
-        "low": 79370.1,
-        "open": 79540.1,
-        "timestamp": "2026-05-14T01:00:00Z",
-        "volume": 2787.076
-      },
-      {
-        "close": 79329.0,
-        "high": 79648.0,
-        "low": 79171.1,
-        "open": 79565.8,
-        "timestamp": "2026-05-14T02:00:00Z",
-        "volume": 4764.253
-      },
-      {
-        "close": 79005.3,
-        "high": 79427.8,
-        "low": 78869.4,
-        "open": 79328.9,
-        "timestamp": "2026-05-14T03:00:00Z",
-        "volume": 7656.568
-      },
-      {
-        "close": 79403.7,
-        "high": 79440.0,
-        "low": 78934.8,
-        "open": 79005.4,
-        "timestamp": "2026-05-14T04:00:00Z",
-        "volume": 3677.318
-      },
-      {
-        "close": 79771.5,
-        "high": 79962.5,
-        "low": 79333.3,
-        "open": 79403.6,
-        "timestamp": "2026-05-14T05:00:00Z",
-        "volume": 7732.266
-      },
-      {
-        "close": 79769.7,
-        "high": 79909.9,
-        "low": 79723.5,
-        "open": 79771.6,
-        "timestamp": "2026-05-14T06:00:00Z",
-        "volume": 3623.461
-      },
       {
         "close": 79699.9,
         "high": 79900.0,
@@ -5248,32 +3088,140 @@
         "volume": 6282.486
       },
       {
-        "close": 75779.6,
-        "high": 75843.7,
+        "close": 75949.5,
+        "high": 76000.2,
         "low": 75737.7,
         "open": 75812.4,
         "timestamp": "2026-05-23T19:00:00Z",
-        "volume": 393.197
+        "volume": 3412.532
+      },
+      {
+        "close": 77246.9,
+        "high": 77284.2,
+        "low": 75913.9,
+        "open": 75949.5,
+        "timestamp": "2026-05-23T20:00:00Z",
+        "volume": 20428.29
+      },
+      {
+        "close": 76778.0,
+        "high": 77427.0,
+        "low": 76505.7,
+        "open": 77246.9,
+        "timestamp": "2026-05-23T21:00:00Z",
+        "volume": 11701.129
+      },
+      {
+        "close": 76553.0,
+        "high": 76864.1,
+        "low": 76362.9,
+        "open": 76778.0,
+        "timestamp": "2026-05-23T22:00:00Z",
+        "volume": 5535.193
+      },
+      {
+        "close": 76715.2,
+        "high": 76799.0,
+        "low": 76501.1,
+        "open": 76553.0,
+        "timestamp": "2026-05-23T23:00:00Z",
+        "volume": 4137.729
+      },
+      {
+        "close": 76812.5,
+        "high": 76920.4,
+        "low": 76596.9,
+        "open": 76715.3,
+        "timestamp": "2026-05-24T00:00:00Z",
+        "volume": 3293.468
+      },
+      {
+        "close": 76855.9,
+        "high": 76899.7,
+        "low": 76720.8,
+        "open": 76812.6,
+        "timestamp": "2026-05-24T01:00:00Z",
+        "volume": 2375.273
+      },
+      {
+        "close": 76790.0,
+        "high": 76936.0,
+        "low": 76665.5,
+        "open": 76855.9,
+        "timestamp": "2026-05-24T02:00:00Z",
+        "volume": 2239.859
+      },
+      {
+        "close": 76702.8,
+        "high": 76983.1,
+        "low": 76672.3,
+        "open": 76790.1,
+        "timestamp": "2026-05-24T03:00:00Z",
+        "volume": 2969.001
+      },
+      {
+        "close": 76748.0,
+        "high": 76823.9,
+        "low": 76685.1,
+        "open": 76702.8,
+        "timestamp": "2026-05-24T04:00:00Z",
+        "volume": 1681.603
+      },
+      {
+        "close": 76780.4,
+        "high": 76831.2,
+        "low": 76611.0,
+        "open": 76747.9,
+        "timestamp": "2026-05-24T05:00:00Z",
+        "volume": 2226.391
+      },
+      {
+        "close": 76776.8,
+        "high": 76832.0,
+        "low": 76684.4,
+        "open": 76780.3,
+        "timestamp": "2026-05-24T06:00:00Z",
+        "volume": 1001.757
       }
     ],
-    "current_price": 76484.7,
+    "current_price": 76776.8,
     "indicators": {
-      "atr_14": null,
-      "bb_high": null,
-      "bb_low": null,
-      "bb_mid": null,
-      "ema_20": null,
-      "ema_50": null,
-      "macd": null,
-      "macd_signal": null,
-      "rsi_14": null
+      "atr_14": 404.2857142857143,
+      "bb_high": 77729.50174709043,
+      "bb_low": 74574.71825290957,
+      "bb_mid": 76152.11,
+      "ema_20": 76357.30957433321,
+      "ema_50": 76319.2446966463,
+      "macd": 280.90563167550135,
+      "macd_signal": 196.33359821470634,
+      "rsi_14": 72.30759213439292
     },
-    "regime": "unknown",
+    "regime": "uptrend_low_vol",
     "symbol": "BTCUSDT",
-    "timeframe": "ticker",
-    "timestamp": "2026-05-23T20:37:41.303403Z"
+    "timeframe": "1h",
+    "timestamp": "2026-05-24T06:44:56.685474Z"
   },
-  "open_positions": [],
+  "open_positions": [
+    {
+      "agent_id": "crypto-deepseek",
+      "average_entry": 76065.20999999999,
+      "closed_at": null,
+      "dca_count": 0,
+      "direction": "LONG",
+      "id": "crypto-deepseek-61bd8ed9e7",
+      "leverage": 5.0,
+      "margin": 1000.0,
+      "notional": 5000.0,
+      "opened_at": "2026-05-23T21:26:31.814428Z",
+      "realized_pnl": 0.0,
+      "status": "OPEN",
+      "stop_loss": 76103.24260499999,
+      "symbol": "BTC",
+      "take_profit_1": 77750.0,
+      "take_profit_2": 78700.0,
+      "unrealized_pnl": 46.774997400257696
+    }
+  ],
   "recent_trades": [
     {
       "action": "OPEN",
@@ -5988,6 +3936,27 @@
       "notional": 2000.0,
       "position_id": "crypto-deepseek-a9686fe785",
       "realized_pnl": 26.960536805105694
+    },
+    {
+      "action": "OPEN",
+      "agent_id": "crypto-deepseek",
+      "code_version": "67c87847226a",
+      "config_hash": "06377498aa910a4c53e432906fbf979560fd14d1789938413ac5a318f80bbfc1",
+      "config_version_id": 49,
+      "created_at": "2026-05-23T21:26:31.814428Z",
+      "decision_timestamp": "2026-05-23T06:37:50.262646Z",
+      "direction": "LONG",
+      "displayed_timestamp": "2026-05-23T21:26:31.814428Z",
+      "entry": 76065.20999999999,
+      "execution_timestamp": "2026-05-23T21:26:31.814428Z",
+      "exit_price": null,
+      "id": "trade-crypto-deepseek-aefb4e1b41",
+      "leverage": 5.0,
+      "margin": 1000.0,
+      "notes": "fee=2.5000; slippage_bps=2",
+      "notional": 5000.0,
+      "position_id": "crypto-deepseek-61bd8ed9e7",
+      "realized_pnl": -2.5
     }
   ],
   "reflections_summary": {
@@ -5998,6 +3967,24 @@
     },
     "count_recent": 50,
     "recent": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-05-24T06:47:04.642916Z",
+        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-gemini",
+        "created_at": "2026-05-24T06:47:04.633895Z",
+        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-24T06:47:04.625697Z",
+        "raw_text": "Daily review: equity=10235.46, realized_pnl=188.68, unrealized_pnl=46.77. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-05-23T20:37:41.590537Z",
@@ -6098,24 +4085,6 @@
         "agent_id": "crypto-deepseek",
         "created_at": "2026-05-23T18:16:57.199098Z",
         "raw_text": "Daily review: equity=10158.47, realized_pnl=144.15, unrealized_pnl=14.32. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "created_at": "2026-05-23T17:12:39.470475Z",
-        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-gemini",
-        "created_at": "2026-05-23T17:12:39.460855Z",
-        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-05-23T17:12:39.451830Z",
-        "raw_text": "Daily review: equity=10144.91, realized_pnl=144.15, unrealized_pnl=0.76. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       }
     ],
@@ -6364,11 +4333,53 @@
   },
   "rejected_signals_summary": {
     "by_agent": {
-      "crypto-deepseek": 32,
+      "crypto-deepseek": 33,
       "crypto-gemini": 56,
-      "crypto-qwen": 56
+      "crypto-qwen": 55
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-gemini",
+        "agent_name": "Crypto Gemini",
+        "confidence": null,
+        "created_at": "2026-05-24T06:47:04.574741Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-qwen",
+        "agent_name": "Crypto Qwen",
+        "confidence": null,
+        "created_at": "2026-05-24T06:46:49.551242Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "HOLD",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-05-24T06:45:31.357195Z",
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "message": "leverage must be <= 10.0x",
+        "reasons": [
+          "leverage must be <= 10.0x"
+        ],
+        "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-gemini",
@@ -6676,48 +4687,6 @@
           "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
         ],
         "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-05-23T10:54:36.807452Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-qwen",
-        "agent_name": "Crypto Qwen",
-        "confidence": null,
-        "created_at": "2026-05-23T10:54:23.920235Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-05-23T09:51:30.078652Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
       }
     ],
     "total_recent": 144
@@ -6805,6 +4774,13 @@
       }
     ],
     "notifications": [
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-05-24T03:08:24.616202",
+        "event_type": "BREAK_EVEN_ACTIVATED",
+        "message": "Position crypto-deepseek-61bd8ed9e7 (LONG): SL 75200.00 \u2192 76103.24 | trigger=r_multiple | price=76931.90",
+        "severity": "INFO"
+      },
       {
         "agent_id": "crypto-deepseek",
         "created_at": "2026-05-23T18:20:41.804110",
@@ -7006,204 +4982,6 @@
       {
         "action": "OPEN",
         "agent_id": "crypto-deepseek",
-        "created_at": "2026-05-23T03:33:01.735629",
-        "direction": "SHORT",
-        "entry_price": 76200.0,
-        "expires_at": "2026-05-24T03:32:00",
-        "id": "po-crypto-deepseek-2b8b8f9c48",
-        "intent": "OPEN SHORT",
-        "leverage": 5.0,
-        "normalized_signal": {
-          "account_risk_percent": 0.001619,
-          "account_risk_usdt": 16.4,
-          "action": "OPEN",
-          "agent": "crypto-deepseek",
-          "average_entry_after_action": null,
-          "confidence": 3,
-          "counterargument": "The bounce may have enough momentum to break through EMA_20 and continue higher, trapping the SHORT.",
-          "daily_loss_status": null,
-          "data_used": [
-            "market_state",
-            "indicators",
-            "recent_candles",
-            "trigger_order"
-          ],
-          "dca_count_after_action": null,
-          "decision": "PAPER_TRADE",
-          "direction": "SHORT",
-          "entry": 76200.0,
-          "execution_type": "MARKET",
-          "invalidation": "Price breaks above 76,700 or holds above EMA_50 after trigger.",
-          "leverage": 5.0,
-          "liquidation_risk_note": "5x simulated paper leverage with wide stop; liquidation at ~68,580 which is far below stop at 76,700.",
-          "margin_used_percent": 0.04935,
-          "margin_used_usdt": 500.0,
-          "notes_for_ledger": null,
-          "notional_exposure_usdt": 2500.0,
-          "open_positions_after_action": null,
-          "position_context": null,
-          "position_id": null,
-          "position_risk": {
-            "break_even": {
-              "enabled": true,
-              "fee_buffer_pct": 0.0005,
-              "r_multiple": 1.0,
-              "trigger": "r_multiple"
-            },
-            "time_exit": {
-              "enabled": true,
-              "max_hold_hours": 24,
-              "only_if_profit_pct_below": 0.001
-            },
-            "trailing_stop": {
-              "distance_pct": 0.008,
-              "enabled": true,
-              "mode": "percent"
-            }
-          },
-          "risk_reward_to_tp1": 1.6,
-          "risk_reward_to_tp2": 2.6,
-          "stop_loss": 76700.0,
-          "structured_lesson": null,
-          "symbol": "BTC",
-          "take_profit_1": 75400.0,
-          "take_profit_2": 74900.0,
-          "thesis": "Triggered SHORT entry at EMA_20 resistance bounce. Downtrend continuation expected as price rejects resistance.",
-          "time_horizon": "12-24h",
-          "timestamp": "2026-05-23T03:33:01.734628Z",
-          "total_account_risk_after_action_percent": 0.001619,
-          "total_account_risk_after_action_usdt": 16.4,
-          "total_margin_after_action_usdt": null,
-          "total_notional_after_action_usdt": null,
-          "trigger_order": null
-        },
-        "position_id": "-",
-        "status": "PENDING",
-        "stop_loss": 76700.0,
-        "take_profit_1": 75400.0,
-        "thesis": "Triggered SHORT entry at EMA_20 resistance bounce. Downtrend continuation expected as price rejects resistance.",
-        "trigger_conditions": {
-          "conditions": [
-            {
-              "field": "price",
-              "op": "gte",
-              "value": 76200
-            },
-            {
-              "field": "rsi_14",
-              "op": "lte",
-              "value": 60
-            }
-          ],
-          "logic": "AND"
-        },
-        "trigger_summary": "Price >= 76200 AND RSI14 <= 60",
-        "triggered_at": null,
-        "validation_details": {
-          "missing_fields": [],
-          "normalized": true,
-          "source": "pending_orders.execution_signal_json"
-        }
-      },
-      {
-        "action": "OPEN",
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-05-23T06:37:50.262646",
-        "direction": "LONG",
-        "entry_price": 76050.0,
-        "expires_at": "2026-05-24T06:36:00",
-        "id": "po-crypto-deepseek-4c96b44929",
-        "intent": "OPEN LONG",
-        "leverage": 5.0,
-        "normalized_signal": {
-          "account_risk_percent": 0.00552,
-          "account_risk_usdt": 55.88,
-          "action": "OPEN",
-          "agent": "crypto-deepseek",
-          "average_entry_after_action": null,
-          "confidence": 2,
-          "counterargument": "Downtrend EMAs may cap any bounce attempt; this could be a dead-cat bounce. Low volume suggests insufficient buying conviction.",
-          "daily_loss_status": null,
-          "data_used": [
-            "market_state",
-            "indicators",
-            "trigger_order"
-          ],
-          "dca_count_after_action": null,
-          "decision": "PAPER_TRADE",
-          "direction": "LONG",
-          "entry": 76050.0,
-          "execution_type": "MARKET",
-          "invalidation": "Stop loss hit at $75,200. Price failing to hold above EMA_20 invalidates bounce thesis.",
-          "leverage": 5.0,
-          "liquidation_risk_note": "5x simulated paper leverage; stop at $75,200 is well above any liquidation level. Risk is 0.55% of equity.",
-          "margin_used_percent": 0.0987,
-          "margin_used_usdt": 1000.0,
-          "notes_for_ledger": null,
-          "notional_exposure_usdt": 5000.0,
-          "open_positions_after_action": null,
-          "position_context": null,
-          "position_id": null,
-          "position_risk": {
-            "break_even": {
-              "enabled": true,
-              "fee_buffer_pct": 0.0005,
-              "r_multiple": 1.0,
-              "trigger": "r_multiple"
-            },
-            "time_exit": {
-              "enabled": true,
-              "max_hold_hours": 12,
-              "only_if_profit_pct_below": 0.002
-            }
-          },
-          "risk_reward_to_tp1": 2.0,
-          "risk_reward_to_tp2": 3.12,
-          "stop_loss": 75200.0,
-          "structured_lesson": null,
-          "symbol": "BTC",
-          "take_profit_1": 77750.0,
-          "take_profit_2": 78700.0,
-          "thesis": "Triggered bounce from deep oversold (RSI 17 \u2192 30+). Price reclaimed EMA_20 with improving RSI momentum \u2014 classic mean-reversion setup within downtrend.",
-          "time_horizon": "6-12h",
-          "timestamp": "2026-05-23T06:37:50.262646Z",
-          "total_account_risk_after_action_percent": 0.00552,
-          "total_account_risk_after_action_usdt": 55.88,
-          "total_margin_after_action_usdt": null,
-          "total_notional_after_action_usdt": null,
-          "trigger_order": null
-        },
-        "position_id": "-",
-        "status": "PENDING",
-        "stop_loss": 75200.0,
-        "take_profit_1": 77750.0,
-        "thesis": "Triggered bounce from deep oversold (RSI 17 \u2192 30+). Price reclaimed EMA_20 with improving RSI momentum \u2014 classic mean-r...",
-        "trigger_conditions": {
-          "conditions": [
-            {
-              "field": "price",
-              "op": "gte",
-              "value": 76050
-            },
-            {
-              "field": "rsi_14",
-              "op": "gte",
-              "value": 30
-            }
-          ],
-          "logic": "AND"
-        },
-        "trigger_summary": "Price >= 76050 AND RSI14 >= 30",
-        "triggered_at": null,
-        "validation_details": {
-          "missing_fields": [],
-          "normalized": true,
-          "source": "pending_orders.execution_signal_json"
-        }
-      },
-      {
-        "action": "OPEN",
-        "agent_id": "crypto-deepseek",
         "created_at": "2026-05-23T11:55:34.579959",
         "direction": "SHORT",
         "entry_price": 74186.0,
@@ -7299,8 +5077,31 @@
         }
       }
     ],
-    "pending_orders_count": 3,
+    "pending_orders_count": 1,
     "position_risk": [
+      {
+        "be_stop_price": 76103.24260499999,
+        "break_even_applied": true,
+        "config": {
+          "break_even": {
+            "enabled": true,
+            "fee_buffer_pct": 0.0005,
+            "percent_gain": 0.01,
+            "r_multiple": 1.0,
+            "trigger": "r_multiple"
+          },
+          "time_exit": {
+            "enabled": true,
+            "max_hold_hours": 12.0,
+            "only_if_profit_pct_below": 0.002
+          },
+          "trailing_stop": null
+        },
+        "max_hold_until": "2026-05-24T09:26:31.814428+00:00",
+        "position_id": "crypto-deepseek-61bd8ed9e7",
+        "trail_sl": null,
+        "trailing_active": false
+      },
       {
         "be_stop_price": null,
         "break_even_applied": true,
@@ -7518,23 +5319,23 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 181,
-    "last_cycle_duration_seconds": 114.61381280000205,
-    "last_cycle_started_at": "2026-05-23T20:35:47.094118Z",
-    "next_cycle_at": "2026-05-23T21:25:51.072478Z",
+    "cycle_number": 182,
+    "last_cycle_duration_seconds": 130.26304099999834,
+    "last_cycle_started_at": "2026-05-24T06:44:55.722072Z",
+    "next_cycle_at": "2026-05-24T07:47:06.264800Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 181
+    "total_cycles_completed": 182
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.527306967984934,
-    "accepted_signal_count": 280,
+    "acceptance_rate": 0.525233644859813,
+    "accepted_signal_count": 281,
     "latest_accepted_signal": {
       "action": "HOLD",
       "agent_name": "Crypto DeepSeek",
-      "btc_price": 75995.8,
+      "btc_price": 76776.8,
       "confidence": null,
-      "cycle_number": 181,
+      "cycle_number": 182,
       "decision": "POSITION_UPDATE",
       "direction": "LONG",
       "entry_price": null,
@@ -7545,12 +5346,12 @@
         "position_id": null
       },
       "expected_rr": null,
-      "id": 529,
+      "id": 533,
       "leverage": 2.0,
-      "market_regime": "range_low_vol",
+      "market_regime": "uptrend_low_vol",
       "model_name": "deepseek-v4-flash",
       "notional_usdt": null,
-      "raw_snippet": "```json\n{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"position_id\":\"crypto-deepseek-a9686fe785\",\"position_context\":\"Existing LONG from 75415.08 now at 75995.8 with +30.80 USDT unrealized profit. Sto",
+      "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-61bd8ed9e7\",\n  \"position_context\": \"Existing LONG at avg 76065.21 is now +46.77 USDT unrealize",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
       "risk_pct": null,
@@ -7558,9 +5359,9 @@
       "stop_loss": null,
       "take_profit_1": null,
       "take_profit_2": null,
-      "thesis": "Original LONG thesis of reclaiming support from 75400 area is playing out. Price has climbed steadily over 3 consecutive candles with improving volume. Position is now within striking distance of TP1 at 76150. The break-even automation has locked in profit, making this a free carry toward targets.",
-      "timestamp_local": "2026-05-24T03:24:56.765714+07:00",
-      "timestamp_utc": "2026-05-23T20:24:56.765714Z",
+      "thesis": "Original trend-following thesis intact. Price is in an uptrend_low_vol regime, above both EMAs, MACD bullish. Stop is at break-even so no capital at risk. Letting the position run toward TP1 (77750) and TP2 (78700) with trailing stop automation active.",
+      "timestamp_local": "2026-05-24T13:46:06.309671+07:00",
+      "timestamp_utc": "2026-05-24T06:46:06.309671Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -7570,9 +5371,9 @@
     "latest_rejected_signal": {
       "action": "NONE",
       "agent_name": "Crypto Gemini",
-      "btc_price": 75995.8,
+      "btc_price": 76776.8,
       "confidence": null,
-      "cycle_number": 181,
+      "cycle_number": 182,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -7583,9 +5384,9 @@
         "reason": "agent_runtime_error"
       },
       "expected_rr": null,
-      "id": 531,
+      "id": 535,
       "leverage": null,
-      "market_regime": "range_low_vol",
+      "market_regime": "uptrend_low_vol",
       "model_name": "gemini-3.5-flash",
       "notional_usdt": null,
       "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
@@ -7597,8 +5398,8 @@
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-05-24T03:25:49.570248+07:00",
-      "timestamp_utc": "2026-05-23T20:25:49.570248Z",
+      "timestamp_local": "2026-05-24T13:47:04.574741+07:00",
+      "timestamp_utc": "2026-05-24T06:47:04.574741Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
@@ -7608,6 +5409,44 @@
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 76776.8,
+        "confidence": null,
+        "cycle_number": 182,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": null,
+        "id": 533,
+        "leverage": 2.0,
+        "market_regime": "uptrend_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-61bd8ed9e7\",\n  \"position_context\": \"Existing LONG at avg 76065.21 is now +46.77 USDT unrealize",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Original trend-following thesis intact. Price is in an uptrend_low_vol regime, above both EMAs, MACD bullish. Stop is at break-even so no capital at risk. Letting the position run toward TP1 (77750) and TP2 (78700) with trailing stop automation active.",
+        "timestamp_local": "2026-05-24T13:46:06.309671+07:00",
+        "timestamp_utc": "2026-05-24T06:46:06.309671Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "HOLD",
         "agent_name": "Crypto DeepSeek",
@@ -11361,47 +9200,128 @@
           "reasons": [],
           "rejection_code": null
         }
+      }
+    ],
+    "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Gemini",
+        "btc_price": 76776.8,
+        "confidence": null,
+        "cycle_number": 182,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 535,
+        "leverage": null,
+        "market_regime": "uptrend_low_vol",
+        "model_name": "gemini-3.5-flash",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-24T13:47:04.574741+07:00",
+        "timestamp_utc": "2026-05-24T06:47:04.574741Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Qwen",
+        "btc_price": 76776.8,
+        "confidence": null,
+        "cycle_number": 182,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 534,
+        "leverage": null,
+        "market_regime": "uptrend_low_vol",
+        "model_name": "qwen3-max",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-05-24T13:46:49.550233+07:00",
+        "timestamp_utc": "2026-05-24T06:46:49.550233Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
       },
       {
         "action": "HOLD",
         "agent_name": "Crypto DeepSeek",
-        "btc_price": 77047.9,
-        "confidence": 3.0,
-        "cycle_number": 106,
+        "btc_price": 76776.8,
+        "confidence": null,
+        "cycle_number": 182,
         "decision": "POSITION_UPDATE",
         "direction": "LONG",
-        "entry_price": 77151.0,
+        "entry_price": null,
         "execution_result": {
-          "action": "HOLD",
-          "decision": "POSITION_UPDATE",
           "executed": false,
-          "position_id": null
+          "position_id": null,
+          "reason": "not evaluated yet"
         },
-        "expected_rr": 2.14,
-        "id": 251,
-        "leverage": 10.0,
-        "market_regime": "range_low_vol",
+        "expected_rr": null,
+        "id": 532,
+        "leverage": null,
+        "market_regime": "uptrend_low_vol",
         "model_name": "deepseek-v4-flash",
-        "notional_usdt": 10000.0,
-        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"LONG\",\n  \"execution_type\": \"NONE\",\n  \"entry\": 77151,\n  \"leverage\": 10,\n  \"margin_used_usdt\": 1000,\n  \"margin_used_percen",
-        "rejection_reason_code": null,
-        "rejection_reason_message": null,
-        "risk_pct": 0.00826,
-        "signal_status": "ACCEPTED",
-        "stop_loss": 76500.0,
-        "take_profit_1": 78100.0,
-        "take_profit_2": 78500.0,
-        "thesis": "Position in drawdown at -13.42 USDT. The 16:00 candle pulled back to 76,975, closing at 77,048 below EMA_20 (77,171). MACD gap has converged to nearly zero (122 vs 120). Regime reverted to range_low_vol from uptrend. Despite the pullback, the position remains above the stop loss at 76,500 with a clear risk ceiling. The original thesis (volume-backed breakout above EMA_20) was validated - the trade reached 77,826 (only 274 pts from TP1). The pullback is a natural retrace after touching prior resistance near 78,000. The defined stop at 76,500 provides a controlled maximum loss. Holding allows the trade to resolve within the defined risk parameters.",
-        "timestamp_local": "2026-05-20T23:33:49.218762+07:00",
-        "timestamp_utc": "2026-05-20T16:33:49.218762Z",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-61bd8ed9e7\",\n  \"position_context\": \"Existing LONG at avg 76065.21 is now +46.77 USDT unrealize",
+        "rejection_reason_code": "LEVERAGE_LIMIT_EXCEEDED",
+        "rejection_reason_message": "leverage must be <= 10.0x",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Original trend-following thesis intact. Price is in an uptrend_low_vol regime, above both EMAs, MACD bullish. Stop is at break-even so no capital at risk. Letting the position run toward TP1 (77750) and TP2 (78700) with trailing stop automation active.",
+        "timestamp_local": "2026-05-24T13:45:31.355195+07:00",
+        "timestamp_utc": "2026-05-24T06:45:31.355195Z",
         "validation_details": {
-          "accepted": true,
-          "reasons": [],
-          "rejection_code": null
+          "accepted": false,
+          "reasons": [
+            "leverage must be <= 10.0x"
+          ],
+          "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
         }
-      }
-    ],
-    "recent_rejected_signals": [
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto Gemini",
@@ -15268,162 +13188,43 @@
           ],
           "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Gemini",
-        "btc_price": 77456.0,
-        "confidence": null,
-        "cycle_number": 142,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 391,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "gemini-3.5-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-05-22T13:02:32.569801+07:00",
-        "timestamp_utc": "2026-05-22T06:02:32.569801Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Qwen",
-        "btc_price": 77456.0,
-        "confidence": null,
-        "cycle_number": 142,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 390,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "qwen3-max",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-05-22T13:02:16.565246+07:00",
-        "timestamp_utc": "2026-05-22T06:02:16.565246Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 77456.0,
-        "confidence": null,
-        "cycle_number": 142,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "executed": false,
-          "position_id": null,
-          "reason": "not evaluated yet"
-        },
-        "expected_rr": null,
-        "id": 388,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": null,
-        "raw_snippet": "```json\n{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"direction\":\"LONG\",\"execution_type\":\"NONE\",\"position_id\":\"crypto-deepseek-fd736f5ae7\",\"entry\":77715.54,\"stop_loss\":76900,\"take_profit_1\":78200,\"t",
-        "rejection_reason_code": "PARSE_ERROR",
-        "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-05-22T13:01:05.150718+07:00",
-        "timestamp_utc": "2026-05-22T06:01:05.150718Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal"
-          ],
-          "rejection_code": "PARSE_ERROR"
-        }
       }
     ],
-    "rejected_signal_count": 251,
+    "rejected_signal_count": 254,
     "rejection_breakdown": {
-      "INTERNAL_ERROR": 175,
+      "INTERNAL_ERROR": 177,
       "INVALID_DIRECTION": 4,
-      "LEVERAGE_LIMIT_EXCEEDED": 28,
+      "LEVERAGE_LIMIT_EXCEEDED": 29,
       "PARSE_ERROR": 36,
       "RISK_LIMIT_EXCEEDED": 8
     }
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.62,
+    "action_agreement_rate": 0.58,
     "confidence_correlation": 0.0,
     "convergence_warning": false,
-    "created_at": "2026-05-23T20:25:50.693895Z",
+    "created_at": "2026-05-24T06:47:05.806010Z",
     "directional_agreement_rate": 0.1,
-    "leverage_similarity": 0.948,
+    "leverage_similarity": 0.944,
     "shared_ratio_applied": 0.3,
     "thesis_embedding_similarity": 0.0
   },
   "sync": {
-    "generated_at": "2026-05-23T20:37:41.953714Z",
+    "generated_at": "2026-05-24T06:47:06.414064Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-05-23T20:37:41.707931Z",
+    "latest_cycle_at": "2026-05-24T06:47:05.985113Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.18133962,
-      "input_tokens": 1012003.0,
-      "output_tokens": 141640.0,
-      "requests": 248.0
+      "estimated_cost_usd": 0.18251898000000003,
+      "input_tokens": 1018571.0,
+      "output_tokens": 142568.0,
+      "requests": 250.0
     },
     "crypto-gemini": {
       "estimated_cost_usd": 0.0,
@@ -15440,11 +13241,11 @@
   },
   "trade_history_summary": {
     "crypto-deepseek": {
-      "closed_or_fee_events": 25,
-      "losses": 16,
-      "realized_pnl": 191.1836946388802,
-      "trade_count": 25,
-      "win_rate": 0.36,
+      "closed_or_fee_events": 26,
+      "losses": 17,
+      "realized_pnl": 188.6836946388802,
+      "trade_count": 26,
+      "win_rate": 0.34615384615384615,
       "wins": 9
     },
     "crypto-gemini": {
@@ -15466,31 +13267,31 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 49.76627791326626,
+      "deepseek_workload_pct": 49.65681375557061,
       "gemini_workload_pct": 4.593262411347517,
       "grok_workload_pct": 4.593262411347517,
-      "local_workload_pct": 41.04719726403871,
-      "total_api_cost_usd": 0.054654320000000006
+      "local_workload_pct": 41.156661421734356,
+      "total_api_cost_usd": 0.054752180000000004
     },
-    "deepseek_pct": 50.34230136325186,
+    "deepseek_pct": 50.94317420008999,
     "grok_pct": 4.609929078014184,
     "latest": {
-      "api_cost_usd": 0.0011890200000000003,
-      "deepseek_cost_usd": 0.0011890200000000003,
-      "deepseek_tokens": 7706,
-      "deepseek_workload_pct": 50.34230136325186,
+      "api_cost_usd": 0.00117936,
+      "deepseek_cost_usd": 0.00117936,
+      "deepseek_tokens": 7496,
+      "deepseek_workload_pct": 50.94317420008999,
       "gemini_cost_usd": 0.0,
       "gemini_tokens": 0,
       "gemini_workload_pct": 4.609929078014184,
       "grok_cost_usd": 0.0,
       "grok_tokens": 0,
       "grok_workload_pct": 4.609929078014184,
-      "local_workload_pct": 40.437840480719764,
+      "local_workload_pct": 39.83696764388165,
       "payload": {
-        "deepseek_api_cost_usd": 0.0011890200000000003,
-        "deepseek_input_tokens": 6919,
+        "deepseek_api_cost_usd": 0.00117936,
+        "deepseek_input_tokens": 6568,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 787,
+        "deepseek_output_tokens": 928,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
         "gemini_api_cost_usd": 0.0,
@@ -15509,10 +13310,10 @@
         "local_functions_executed": 29,
         "local_memory_retrievals": 6,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 114.61381280000205
+        "total_wall_time_seconds": 130.26304099999834
       },
-      "timestamp": "2026-05-23T20:25:51.064515"
+      "timestamp": "2026-05-24T06:47:06.245722"
     },
-    "local_pct": 40.437840480719764
+    "local_pct": 39.83696764388165
   }
 }
