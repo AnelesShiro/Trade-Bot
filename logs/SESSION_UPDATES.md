@@ -1639,3 +1639,15 @@ Entry template:
 - Validation: 169 passed, 0 failed; validate-update --no-smoke all PASS
 - Deployment/restart notes: No runner restart required — settings.yaml is hot-reloaded at next cycle.
 - Known limitations or follow-up items: None.
+
+## 2026-06-02 - Observability: Label break-even exits distinctly from real stop-losses
+
+- Problem addressed: User observed positions appearing to "only hit TP1 then close, never TP2". Investigation showed TP2 logic is correct (8 historical hits, 4 since 2026-05-25), but the second half of most positions exits at the break-even stop (moved by apply_break_even at +1R) and was logged with note `stop_loss`, making protective break-even exits look like losses/premature closes.
+- Root cause: `position_manager.update_stops_and_targets` full-close branch labeled exits only as `"stop_loss" if hit_stop else "take_profit_2"`, with no distinction between a genuine stop (loss) and a stop already moved to/above entry (break-even or profitable trail).
+- Files changed:
+  - `src/trading/position_manager.py` — added `_exit_reason(position, hit_stop)` and `_is_protective_stop(position)` helpers; full-close note now resolves to `break_even` when the stop sits at/beyond entry (LONG: stop>=entry, SHORT: stop<=entry), else `stop_loss`; TP2 branch unchanged.
+  - `tests/test_position_manager.py` — added `test_break_even_stop_labeled_distinctly` and `test_real_stop_loss_still_labeled`.
+- Key implementation details: Pure label change derived deterministically from position fields. No change to pnl, notional, status, close timing, or any trading threshold. Win/loss stats are computed from pnl sign in snapshot_exporter, so analytics are unaffected. reflection.py embeds the note as text (break_even is clearer for the LLM); lesson_analytics does not parse notes.
+- Validation: `pytest -q` -> 171 passed in 57.35s; `validate-update --no-smoke` -> all 4 PASS.
+- Deployment/restart notes: settings unchanged; runner picks up code on next restart. No restart required for correctness of existing data. Historical rows keep their original `stop_loss` notes (not back-filled).
+- Known limitations or follow-up items: Existing historical break-even exits remain labeled `stop_loss` (not migrated). Dashboard/trade-history could later surface the `break_even` note as a distinct exit category if desired.

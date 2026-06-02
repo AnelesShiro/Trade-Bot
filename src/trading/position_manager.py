@@ -125,7 +125,7 @@ class PositionManager:
                     entry=position.average_entry,
                     exit_price=exit_price,
                     realized_pnl=pnl,
-                    notes=_join_notes("stop_loss" if hit_stop else "take_profit_2", f"fee={fee:.4f}", f"slippage_bps={self.slippage_bps:g}"),
+                    notes=_join_notes(_exit_reason(position, hit_stop), f"fee={fee:.4f}", f"slippage_bps={self.slippage_bps:g}"),
                     config_version_id=self.config_version_id,
                     config_hash=self.config_hash,
                     code_version=self.code_version,
@@ -290,6 +290,20 @@ class PositionManager:
         if direction == Direction.LONG.value:
             return price * (1 - slip) if is_exit else price * (1 + slip)
         return price * (1 + slip) if is_exit else price * (1 - slip)
+
+
+def _exit_reason(position: PositionRecord, hit_stop: bool) -> str:
+    if not hit_stop:
+        return "take_profit_2"
+    return "break_even" if _is_protective_stop(position) else "stop_loss"
+
+
+def _is_protective_stop(position: PositionRecord) -> bool:
+    """A stop sitting at/beyond entry (moved by break-even or a profitable trail)
+    is an at-worst-flat exit, not a real loss — label it distinctly."""
+    if position.direction == Direction.LONG.value:
+        return position.stop_loss >= position.average_entry
+    return position.stop_loss <= position.average_entry
 
 
 def _join_notes(*parts: str | None) -> str:

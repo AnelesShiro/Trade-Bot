@@ -57,6 +57,33 @@ def test_open_add_tp1_and_tp2_flow(repository) -> None:
     assert position.realized_pnl > 0
 
 
+def test_break_even_stop_labeled_distinctly(repository) -> None:
+    manager = PositionManager(repository)
+    manager.apply_signal(make_signal(position_id="pbe"), 100000)
+
+    # Simulate break-even: stop moved up to entry (as apply_break_even would do).
+    position = repository.get_position("pbe")
+    assert position is not None
+    position.stop_loss = position.average_entry
+    repository.add_or_update_position(position)
+
+    # Price retraces to the break-even stop -> protective exit, not a real loss.
+    trades = manager.update_stops_and_targets(99999)
+    assert len(trades) == 1
+    assert "break_even" in trades[0].notes
+    assert "stop_loss" not in trades[0].notes
+
+
+def test_real_stop_loss_still_labeled(repository) -> None:
+    manager = PositionManager(repository)
+    manager.apply_signal(make_signal(position_id="psl"), 100000)
+    # Stop is below entry (99000); price hits it as a genuine loss.
+    trades = manager.update_stops_and_targets(98900)
+    assert len(trades) == 1
+    assert "stop_loss" in trades[0].notes
+    assert "break_even" not in trades[0].notes
+
+
 def test_close_signal_realizes_pnl(repository) -> None:
     manager = PositionManager(repository)
     position_id = manager.apply_signal(make_signal(position_id="p2"), 100000)
