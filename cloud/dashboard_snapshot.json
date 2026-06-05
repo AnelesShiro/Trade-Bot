@@ -1,14 +1,14 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": -14.94160333090304,
-      "equity": 10228.951938905266,
-      "open_margin": 0.0,
-      "open_positions": 0,
-      "open_risk": 0.0,
-      "realized_pnl": 228.9519389052664,
-      "roi_pct": 2.289519389052657,
-      "unrealized_pnl": 0.0
+      "daily_pnl": -33.60931055655851,
+      "equity": 10210.28423167961,
+      "open_margin": 1000.0,
+      "open_positions": 1,
+      "open_risk": 58.57750497467883,
+      "realized_pnl": 226.4519389052664,
+      "roi_pct": 2.1028423167961043,
+      "unrealized_pnl": -16.167707225655466
     },
     "crypto-gemini": {
       "daily_pnl": 0.0,
@@ -33,13 +33,13 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.47900370000000003,
+      "crypto-deepseek": 0.48058038000000003,
       "crypto-gemini": 0.0,
       "crypto-qwen": 0.16556436
     },
-    "total": 0.64456806
+    "total": 0.64614474
   },
-  "btc_price": 59666.1,
+  "btc_price": 60984.4,
   "competition": {
     "continuous_mode": true,
     "duration_days": 0,
@@ -47,14 +47,14 @@
     "name": "crypto-paper-trading-arena",
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT",
-    "uptime_seconds": 1823655.560541,
+    "uptime_seconds": 1827527.021479,
     "weekly_target_pct": 0.07
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-06-05T19:34:14.736861Z",
+    "active_checkpoint_timestamp": "2026-06-05T20:38:46.171048Z",
     "active_versions_file": {
-      "code_version": "82f87e1efb25",
+      "code_version": "596c89585d9e",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -64,7 +64,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-05T18:31:14.311598Z"
+      "updated_at": "2026-06-05T19:34:24.286957Z"
     },
     "canary": {
       "enabled": false,
@@ -85,13 +85,13 @@
       "update_id": "a69d8865636a434bad93bc199be41a32"
     },
     "latest_checkpoint": {
-      "cycle_number": 466,
-      "id": 529,
+      "cycle_number": 467,
+      "id": 530,
       "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "82f87e1efb25",
+      "code_version": "596c89585d9e",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -101,7 +101,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-05T19:34:19.411592Z"
+      "updated_at": "2026-06-05T20:38:47.857841Z"
     }
   },
   "downtime": {
@@ -267,7 +267,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "drawdown": -0.0005,
@@ -642,24 +642,28 @@
         "timestamp": "2026-06-05T14:35:01.137458Z"
       },
       {
-        "drawdown": -0.008099390441713556,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "drawdown": -0.008341815231535914,
+        "timestamp": "2026-06-05T20:34:26.633293Z"
+      },
+      {
+        "drawdown": -0.009909596441974103,
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ],
     "crypto-gemini": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "drawdown": -0.00025,
@@ -699,7 +703,7 @@
       },
       {
         "drawdown": -0.005951268191319757,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ]
   },
@@ -707,7 +711,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "equity": 9995.0,
@@ -1082,24 +1086,28 @@
         "timestamp": "2026-06-05T14:35:01.137458Z"
       },
       {
-        "equity": 10228.951938905266,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "equity": 10226.45193890527,
+        "timestamp": "2026-06-05T20:34:26.633293Z"
+      },
+      {
+        "equity": 10210.28423167961,
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ],
     "crypto-gemini": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-05T19:34:17.765087Z"
+        "timestamp": "2026-06-05T20:38:46.178188Z"
       },
       {
         "equity": 9997.5,
@@ -1139,28 +1147,28 @@
       },
       {
         "equity": 9962.434581202931,
-        "timestamp": "2026-06-05T19:34:18.765087Z"
+        "timestamp": "2026-06-05T20:38:47.178188Z"
       }
     ]
   },
-  "generated_at": "2026-06-05T19:34:15.560541Z",
+  "generated_at": "2026-06-05T20:38:47.021479Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.47900370000000003,
-      "equity": 10228.951938905266,
+      "api_cost_usd": 0.48058038000000003,
+      "equity": 10210.28423167961,
       "max_drawdown_pct": 0.015065997739038472,
-      "profit_factor": 1.4605625127081854,
-      "realized_pnl": 228.9519389052664,
-      "rejected_signals": 191,
-      "rule_compliance": 0.3274647887323944,
-      "score": 0.4443528509350101,
-      "sharpe": 0.10908688165410008,
-      "sortino": 0.18496977954858818,
-      "total_return_pct": 0.02289519389052657,
-      "unrealized_pnl": 0.0,
-      "win_rate": 0.27956989247311825
+      "profit_factor": 1.4532540537603866,
+      "realized_pnl": 226.4519389052664,
+      "rejected_signals": 193,
+      "rule_compliance": 0.32752613240418116,
+      "score": 0.4335123052965214,
+      "sharpe": 0.10729269431545717,
+      "sortino": 0.18216661336067272,
+      "total_return_pct": 0.021028423167961045,
+      "unrealized_pnl": -16.167707225655466,
+      "win_rate": 0.2765957446808511
     },
     {
       "agent_id": "crypto-gemini",
@@ -1169,9 +1177,9 @@
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 351,
-      "rule_compliance": 0.0028409090909090606,
-      "score": 0.2012840909090909,
+      "rejected_signals": 352,
+      "rule_compliance": 0.0028328611898017497,
+      "score": 0.2012832861189802,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -1185,9 +1193,9 @@
       "max_drawdown_pct": 0.005951268191319939,
       "profit_factor": 0.3955108830105893,
       "realized_pnl": -37.56541879706944,
-      "rejected_signals": 377,
-      "rule_compliance": 0.023316062176165775,
-      "score": 0.1904290698349767,
+      "rejected_signals": 378,
+      "rule_compliance": 0.023255813953488413,
+      "score": 0.19042304501270896,
       "sharpe": -0.27692359799556665,
       "sortino": -0.35361922297283216,
       "total_return_pct": -0.003756541879706856,
@@ -1202,7 +1210,7 @@
         "agents": [
           "crypto-deepseek"
         ],
-        "avg_pnl": 2.461848805432972,
+        "avg_pnl": 2.4090631798432596,
         "badges": [
           "High Confidence",
           "Recently Improved",
@@ -1276,7 +1284,7 @@
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.9702,
+        "rank_score": 0.9699,
         "raw_text": "AUTO_CLOSE SHORT win: notes=stop_loss; fee=1.0000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -1319,7 +1327,7 @@
             "timestamp": "2026-06-05T14:35:01.777615+00:00"
           }
         ],
-        "win_rate": 0.27956989247311825
+        "win_rate": 0.2765957446808511
       },
       {
         "agent_count": 1,
@@ -1348,7 +1356,7 @@
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.6712,
+        "rank_score": 0.6711,
         "raw_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "sentiment": "avoid",
         "source_type": "shared",
@@ -1411,7 +1419,7 @@
           "crypto-grok",
           "crypto-qwen"
         ],
-        "avg_pnl": -3.618374623470385,
+        "avg_pnl": -3.6289317485883275,
         "badges": [
           "Shared",
           "High Confidence",
@@ -1480,7 +1488,7 @@
         "evidence_count": 1305,
         "impact_score": 1.0,
         "is_shared": true,
-        "last_updated": "2026-06-05T19:34:12.298015Z",
+        "last_updated": "2026-06-05T20:38:44.128322Z",
         "lesson_id": "derived-8063207986252322795",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
@@ -1495,40 +1503,40 @@
             "confidence_score": 0.7125,
             "frequency": 1,
             "impact_score": 0.1667,
-            "timestamp": "2026-05-31T19:34:12.298015+00:00"
+            "timestamp": "2026-05-31T20:38:44.128322+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
             "impact_score": 0.3333,
-            "timestamp": "2026-06-01T19:34:12.298015+00:00"
+            "timestamp": "2026-06-01T20:38:44.128322+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
             "impact_score": 0.5,
-            "timestamp": "2026-06-02T19:34:12.298015+00:00"
+            "timestamp": "2026-06-02T20:38:44.128322+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
             "impact_score": 0.6667,
-            "timestamp": "2026-06-03T19:34:12.298015+00:00"
+            "timestamp": "2026-06-03T20:38:44.128322+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
             "impact_score": 0.8333,
-            "timestamp": "2026-06-04T19:34:12.298015+00:00"
+            "timestamp": "2026-06-04T20:38:44.128322+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
             "impact_score": 1.0,
-            "timestamp": "2026-06-05T19:34:12.298015+00:00"
+            "timestamp": "2026-06-05T20:38:44.128322+00:00"
           }
         ],
-        "win_rate": 0.135279057859703
+        "win_rate": 0.13468422830124957
       },
       {
         "agent_count": 3,
@@ -1537,7 +1545,7 @@
           "crypto-deepseek",
           "crypto-qwen"
         ],
-        "avg_pnl": -0.5706955388212109,
+        "avg_pnl": -0.5882907473511151,
         "badges": [
           "Shared",
           "High Confidence",
@@ -1611,7 +1619,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.9701,
+        "rank_score": 0.9697,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=1.0000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -1654,7 +1662,7 @@
             "timestamp": "2026-06-05T14:12:18.973075+00:00"
           }
         ],
-        "win_rate": 0.13022700119474312
+        "win_rate": 0.12923561859732072
       },
       {
         "agent_count": 1,
@@ -1683,7 +1691,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.6379,
+        "rank_score": 0.6377,
         "raw_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -1755,7 +1763,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
-        "rank_score": 0.6379,
+        "rank_score": 0.6377,
         "raw_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -1827,7 +1835,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.6379,
+        "rank_score": 0.6377,
         "raw_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -1878,7 +1886,7 @@
           "crypto-deepseek",
           "crypto-grok"
         ],
-        "avg_pnl": -6.958968847727659,
+        "avg_pnl": -6.985361660522515,
         "badges": [
           "Shared",
           "High Confidence"
@@ -1923,14 +1931,14 @@
           }
         ],
         "evidence_count": 5,
-        "impact_score": 0.4609,
+        "impact_score": 0.4604,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.143588Z",
         "lesson_id": "derived-1111743763669196435",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.5585,
+        "rank_score": 0.5582,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -1939,35 +1947,35 @@
           {
             "confidence_score": 0.696,
             "frequency": 1,
-            "impact_score": 0.0922,
+            "impact_score": 0.0921,
             "timestamp": "2026-05-13T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.7395,
             "frequency": 2,
-            "impact_score": 0.1844,
+            "impact_score": 0.1842,
             "timestamp": "2026-05-14T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.783,
             "frequency": 3,
-            "impact_score": 0.2765,
+            "impact_score": 0.2762,
             "timestamp": "2026-05-15T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.8265,
             "frequency": 4,
-            "impact_score": 0.3687,
+            "impact_score": 0.3683,
             "timestamp": "2026-05-16T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.87,
             "frequency": 5,
-            "impact_score": 0.4609,
+            "impact_score": 0.4604,
             "timestamp": "2026-05-17T23:41:50.143588+00:00"
           }
         ],
-        "win_rate": 0.282642089093702
+        "win_rate": 0.28115501519756836
       },
       {
         "agent_count": 1,
@@ -2002,7 +2010,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.3956,
+        "rank_score": 0.3955,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2026,7 +2034,7 @@
     ],
     "follow_summary": {
       "avg_confidence": 0.7283999999999999,
-      "avg_impact": 0.6460571428571429,
+      "avg_impact": 0.6459857142857143,
       "most_influential_lesson": "Trade only high-quality setups and maintain strict rule compliance.",
       "shared_count": 6,
       "total": 7
@@ -2034,14 +2042,6 @@
   },
   "market": {
     "candles": [
-      {
-        "close": 76082.0,
-        "high": 76157.8,
-        "low": 75960.2,
-        "open": 76028.4,
-        "timestamp": "2026-05-26T20:00:00Z",
-        "volume": 2352.054
-      },
       {
         "close": 75864.0,
         "high": 76092.3,
@@ -3947,54 +3947,61 @@
         "volume": 32030.644
       },
       {
-        "close": 59666.1,
-        "high": 59833.0,
+        "close": 60267.7,
+        "high": 60435.2,
         "low": 59080.0,
         "open": 59362.1,
         "timestamp": "2026-06-05T19:00:00Z",
-        "volume": 13284.662
+        "volume": 23692.266
+      },
+      {
+        "close": 60984.4,
+        "high": 61246.0,
+        "low": 59903.8,
+        "open": 60267.4,
+        "timestamp": "2026-06-05T20:00:00Z",
+        "volume": 14557.584
       }
     ],
-    "current_price": 59666.1,
+    "current_price": 60984.4,
     "indicators": {
-      "atr_14": 1142.642857142857,
-      "bb_high": 64359.89370368943,
-      "bb_low": 59405.57629631057,
-      "bb_mid": 61882.735,
-      "ema_20": 61610.065263069984,
-      "ema_50": 63210.263752320934,
-      "macd": -958.2718720267585,
-      "macd_signal": -754.5181426762904,
-      "rsi_14": 34.6450896769293
+      "atr_14": 1171.0571428571425,
+      "bb_high": 64094.89688989462,
+      "bb_low": 59489.34311010537,
+      "bb_mid": 61792.119999999995,
+      "ema_20": 61602.31664390332,
+      "ema_50": 63145.627205987694,
+      "macd": -852.1721163263428,
+      "macd_signal": -766.3703934608785,
+      "rsi_14": 45.092218292066676
     },
     "regime": "downtrend_normal_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-06-05T19:31:15.753638Z"
+    "timestamp": "2026-06-05T20:34:26.595359Z"
   },
-  "open_positions": [],
-  "recent_trades": [
+  "open_positions": [
     {
-      "action": "OPEN",
       "agent_id": "crypto-deepseek",
-      "code_version": "90c56daa0de1",
-      "config_hash": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
-      "config_version_id": 52,
-      "created_at": "2026-05-26T11:26:07.597974Z",
-      "decision_timestamp": "2026-05-26T08:21:50.888649Z",
-      "direction": "LONG",
-      "displayed_timestamp": "2026-05-26T11:26:07.597974Z",
-      "entry": 77015.4,
-      "execution_timestamp": "2026-05-26T11:26:07.597974Z",
-      "exit_price": null,
-      "id": "trade-crypto-deepseek-0783db8c2b",
+      "average_entry": 60787.840000000004,
+      "closed_at": null,
+      "dca_count": 0,
+      "direction": "SHORT",
+      "id": "crypto-deepseek-2d5970fec8",
       "leverage": 5.0,
       "margin": 1000.0,
-      "notes": "fee=2.5000; slippage_bps=2",
       "notional": 5000.0,
-      "position_id": "crypto-deepseek-9289b75f03",
-      "realized_pnl": -2.5
-    },
+      "opened_at": "2026-06-05T20:34:26.633293Z",
+      "realized_pnl": 0.0,
+      "status": "OPEN",
+      "stop_loss": 61500.0,
+      "symbol": "BTC",
+      "take_profit_1": 59000.0,
+      "take_profit_2": 57500.0,
+      "unrealized_pnl": -16.167707225655466
+    }
+  ],
+  "recent_trades": [
     {
       "action": "AUTO_REDUCE",
       "agent_id": "crypto-deepseek",
@@ -5023,6 +5030,27 @@
       "notional": 2000.0,
       "position_id": "crypto-deepseek-1685509129",
       "realized_pnl": 30.86986329304694
+    },
+    {
+      "action": "OPEN",
+      "agent_id": "crypto-deepseek",
+      "code_version": "29e8849e4baa",
+      "config_hash": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
+      "config_version_id": 53,
+      "created_at": "2026-06-05T20:34:26.633293Z",
+      "decision_timestamp": "2026-06-05T19:32:19.719324Z",
+      "direction": "SHORT",
+      "displayed_timestamp": "2026-06-05T20:34:26.633293Z",
+      "entry": 60787.840000000004,
+      "execution_timestamp": "2026-06-05T20:34:26.633293Z",
+      "exit_price": null,
+      "id": "trade-crypto-deepseek-b9781f1496",
+      "leverage": 5.0,
+      "margin": 1000.0,
+      "notes": "fee=2.5000; slippage_bps=2",
+      "notional": 5000.0,
+      "position_id": "crypto-deepseek-2d5970fec8",
+      "realized_pnl": -2.5
     }
   ],
   "reflections_summary": {
@@ -5033,6 +5061,24 @@
     },
     "count_recent": 50,
     "recent": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-06-05T20:38:44.128322Z",
+        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-gemini",
+        "created_at": "2026-06-05T20:38:44.118276Z",
+        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-06-05T20:38:44.110439Z",
+        "raw_text": "Daily review: equity=10210.28, realized_pnl=226.45, unrealized_pnl=-16.17. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-06-05T19:34:12.298015Z",
@@ -5133,24 +5179,6 @@
         "agent_id": "crypto-gemini",
         "created_at": "2026-06-05T14:35:02.479890Z",
         "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-05T14:35:02.471385Z",
-        "raw_text": "Daily review: equity=10228.95, realized_pnl=228.95, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-05T14:35:01.777615Z",
-        "raw_text": "AUTO_CLOSE SHORT win: notes=stop_loss; fee=1.0000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
-        "summary": "Pause new SHORT entries for one full cycle after a short stop-loss."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "created_at": "2026-06-05T14:16:52.848112Z",
-        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       }
     ],
@@ -5399,11 +5427,67 @@
   },
   "rejected_signals_summary": {
     "by_agent": {
-      "crypto-deepseek": 23,
+      "crypto-deepseek": 24,
       "crypto-gemini": 60,
-      "crypto-qwen": 60
+      "crypto-qwen": 59
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-gemini",
+        "agent_name": "Crypto Gemini",
+        "confidence": null,
+        "created_at": "2026-06-05T20:38:43.727591Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780691892 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19151 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780691892 durationMs=19155 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-qwen",
+        "agent_name": "Crypto Qwen",
+        "confidence": null,
+        "created_at": "2026-06-05T20:38:12.221326Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780691863 sessionId=crypto-qwen-1780691863 phase=stream-ready totalMs=13844 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2852ms@2853ms,bootstrap-context:72ms@2925ms,bundle-tools:5105ms@8030ms,system-prompt:1348ms@9378ms,session-resource-loader:455ms@9833ms,agent-session:3ms@9836ms,stream-setup:4008ms@13844ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780691863 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780691863 stage=assistant decision=surf",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780691863 sessionId=crypto-qwen-1780691863 phase=stream-ready totalMs=13844 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2852ms@2853ms,bootstrap-context:72ms@2925ms,bundle-tools:5105ms@8030ms,system-prompt:1348ms@9378ms,session-resource-loader:455ms@9833ms,agent-session:3ms@9836ms,stream-setup:4008ms@13844ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780691863 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780691863 stage=assistant decision=surface_error reason=auth from=qwen/qwen3-max-2026-01-23 profile=- rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[diagnostic] lane task error: lane=main durationMs=16880 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[diagnostic] lane task error: lane=session:agent:crypto-qwen:explicit:crypto-qwen-1780691863 durationMs=16885 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=qwen/qwen3-max-2026-01-23 candidate=qwen/qwen3-max-2026-01-23 reason=auth next=none detail=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\nFailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-06-05T20:36:11.874523Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal",
+        "reasons": [
+          "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal"
+        ],
+        "rejection_code": "PARSE_ERROR"
+      },
+      {
+        "action": "HOLD",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-06-05T20:35:24.186514Z",
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "message": "leverage must be <= 10.0x",
+        "reasons": [
+          "leverage must be <= 10.0x"
+        ],
+        "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-gemini",
@@ -5695,62 +5779,6 @@
         "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780657547 sessionId=crypto-gemini-1780657547 phase=stream-ready totalMs=13331 stages=workspace-sandbox:2ms@2ms,skills:0ms@2ms,core-plugin-tools:2474ms@2476ms,bootstrap-context:134ms@2610ms,bundle-tools:4670ms@7280ms,system-prompt:1624ms@8904ms,session-resource-loader:407ms@9311ms,agent-session:3ms@9314ms,stream-setup:4017ms@13331ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780657547 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780657547 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover de",
         "reasons": [
           "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780657547 sessionId=crypto-gemini-1780657547 phase=stream-ready totalMs=13331 stages=workspace-sandbox:2ms@2ms,skills:0ms@2ms,core-plugin-tools:2474ms@2476ms,bootstrap-context:134ms@2610ms,bundle-tools:4670ms@7280ms,system-prompt:1624ms@8904ms,session-resource-loader:407ms@9311ms,agent-session:3ms@9314ms,stream-setup:4017ms@13331ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780657547 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780657547 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780657547 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19847 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780657547 durationMs=19851 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-qwen",
-        "agent_name": "Crypto Qwen",
-        "confidence": null,
-        "created_at": "2026-06-05T11:05:47.109046Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780657517 sessionId=crypto-qwen-1780657517 phase=stream-ready totalMs=14231 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:3149ms@3150ms,bootstrap-context:143ms@3293ms,bundle-tools:4876ms@8169ms,system-prompt:1506ms@9675ms,session-resource-loader:426ms@10101ms,agent-session:4ms@10105ms,stream-setup:4126ms@14231ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780657517 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780657517 stage=assistant decision=s",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780657517 sessionId=crypto-qwen-1780657517 phase=stream-ready totalMs=14231 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:3149ms@3150ms,bootstrap-context:143ms@3293ms,bundle-tools:4876ms@8169ms,system-prompt:1506ms@9675ms,session-resource-loader:426ms@10101ms,agent-session:4ms@10105ms,stream-setup:4126ms@14231ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780657517 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780657517 stage=assistant decision=surface_error reason=auth from=qwen/qwen3-max-2026-01-23 profile=- rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[diagnostic] lane task error: lane=main durationMs=17856 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[diagnostic] lane task error: lane=session:agent:crypto-qwen:explicit:crypto-qwen-1780657517 durationMs=17860 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=qwen/qwen3-max-2026-01-23 candidate=qwen/qwen3-max-2026-01-23 reason=auth next=none detail=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\nFailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-06-05T10:03:15.371461Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780653764 sessionId=crypto-gemini-1780653764 phase=stream-ready totalMs=12959 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2376ms@2378ms,bootstrap-context:68ms@2446ms,bundle-tools:4782ms@7228ms,system-prompt:1189ms@8417ms,session-resource-loader:391ms@8808ms,agent-session:4ms@8812ms,stream-setup:4147ms@12959ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780653764 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780653764 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780653764 sessionId=crypto-gemini-1780653764 phase=stream-ready totalMs=12959 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2376ms@2378ms,bootstrap-context:68ms@2446ms,bundle-tools:4782ms@7228ms,system-prompt:1189ms@8417ms,session-resource-loader:391ms@8808ms,agent-session:4ms@8812ms,stream-setup:4147ms@12959ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780653764 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780653764 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780653764 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19192 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780653764 durationMs=19197 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-qwen",
-        "agent_name": "Crypto Qwen",
-        "confidence": null,
-        "created_at": "2026-06-05T10:02:43.623541Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780653734 sessionId=crypto-qwen-1780653734 phase=stream-ready totalMs=14235 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2924ms@2926ms,bootstrap-context:57ms@2983ms,bundle-tools:5390ms@8373ms,system-prompt:1209ms@9582ms,session-resource-loader:440ms@10022ms,agent-session:4ms@10026ms,stream-setup:4209ms@14235ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780653734 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780653734 stage=assistant decision=su",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780653734 sessionId=crypto-qwen-1780653734 phase=stream-ready totalMs=14235 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2924ms@2926ms,bootstrap-context:57ms@2983ms,bundle-tools:5390ms@8373ms,system-prompt:1209ms@9582ms,session-resource-loader:440ms@10022ms,agent-session:4ms@10026ms,stream-setup:4209ms@14235ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780653734 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780653734 stage=assistant decision=surface_error reason=auth from=qwen/qwen3-max-2026-01-23 profile=- rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[diagnostic] lane task error: lane=main durationMs=17337 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[diagnostic] lane task error: lane=session:agent:crypto-qwen:explicit:crypto-qwen-1780653734 durationMs=17340 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=qwen/qwen3-max-2026-01-23 candidate=qwen/qwen3-max-2026-01-23 reason=auth next=none detail=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\nFailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-06-05T08:59:31.445592Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780649941 sessionId=crypto-gemini-1780649941 phase=stream-ready totalMs=12919 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2329ms@2330ms,bootstrap-context:70ms@2400ms,bundle-tools:4747ms@7147ms,system-prompt:1179ms@8326ms,session-resource-loader:395ms@8721ms,agent-session:4ms@8725ms,stream-setup:4194ms@12919ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780649941 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780649941 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780649941 sessionId=crypto-gemini-1780649941 phase=stream-ready totalMs=12919 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2329ms@2330ms,bootstrap-context:70ms@2400ms,bundle-tools:4747ms@7147ms,system-prompt:1179ms@8326ms,session-resource-loader:395ms@8721ms,agent-session:4ms@8725ms,stream-setup:4194ms@12919ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780649941 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780649941 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780649941 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=18805 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780649941 durationMs=18808 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
         ],
         "rejection_code": "INTERNAL_ERROR"
       }
@@ -6320,112 +6348,39 @@
           "normalized": true,
           "source": "pending_orders.execution_signal_json"
         }
-      },
-      {
-        "action": "OPEN",
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-05T19:32:19.805080",
-        "direction": "SHORT",
-        "entry_price": 60800.0,
-        "expires_at": "2026-06-07T19:31:00",
-        "id": "po-crypto-deepseek-09cc3c251e",
-        "intent": "OPEN SHORT",
-        "leverage": 5.0,
-        "normalized_signal": {
-          "account_risk_percent": 0.00563,
-          "account_risk_usdt": 57.57,
-          "action": "OPEN",
-          "agent": "crypto-deepseek",
-          "average_entry_after_action": null,
-          "confidence": 3,
-          "counterargument": "Bounce may be strong enough to break resistance, or price may never reach the trigger level before continuing down.",
-          "daily_loss_status": null,
-          "data_used": [
-            "market_state",
-            "indicators",
-            "recent_candles",
-            "open_interest",
-            "funding_rate",
-            "trigger_order"
-          ],
-          "dca_count_after_action": null,
-          "decision": "PAPER_TRADE",
-          "direction": "SHORT",
-          "entry": 60800.0,
-          "execution_type": "MARKET",
-          "invalidation": "Stop loss at $61,500 hit (above local swing high of 17:00 candle).",
-          "leverage": 5.0,
-          "liquidation_risk_note": "5x simulated leverage; liquidation would be near $36,480 (far from stop). Safe.",
-          "margin_used_percent": 0.0978,
-          "margin_used_usdt": 1000.0,
-          "notes_for_ledger": null,
-          "notional_exposure_usdt": 5000.0,
-          "open_positions_after_action": null,
-          "position_context": null,
-          "position_id": null,
-          "position_risk": {
-            "break_even": {
-              "enabled": true,
-              "fee_buffer_pct": 0.0005,
-              "r_multiple": 1.0,
-              "trigger": "r_multiple"
-            },
-            "time_exit": {
-              "enabled": true,
-              "max_hold_hours": 24,
-              "only_if_profit_pct_below": 0.003
-            },
-            "trailing_stop": {
-              "enabled": false
-            }
-          },
-          "risk_reward_to_tp1": 2.57,
-          "risk_reward_to_tp2": 4.71,
-          "stop_loss": 61500.0,
-          "structured_lesson": null,
-          "symbol": "BTC",
-          "take_profit_1": 59000.0,
-          "take_profit_2": 57500.0,
-          "thesis": "Trend-following short on bounce to resistance in established downtrend. Price below both EMAs, MACD bearish, RSI weak. Bounce to $60,800 is a high-probability short entry zone.",
-          "time_horizon": "12-24h",
-          "timestamp": "2026-06-05T19:32:19.719324Z",
-          "total_account_risk_after_action_percent": 0.00563,
-          "total_account_risk_after_action_usdt": 57.57,
-          "total_margin_after_action_usdt": null,
-          "total_notional_after_action_usdt": null,
-          "trigger_order": null
-        },
-        "position_id": "-",
-        "status": "PENDING",
-        "stop_loss": 61500.0,
-        "take_profit_1": 59000.0,
-        "thesis": "Trend-following short on bounce to resistance in established downtrend. Price below both EMAs, MACD bearish, RSI weak. ...",
-        "trigger_conditions": {
-          "conditions": [
-            {
-              "field": "price",
-              "op": "gte",
-              "value": 60800
-            },
-            {
-              "field": "rsi_14",
-              "op": "gte",
-              "value": 38
-            }
-          ],
-          "logic": "AND"
-        },
-        "trigger_summary": "Price >= 60800 AND RSI14 >= 38",
-        "triggered_at": null,
-        "validation_details": {
-          "missing_fields": [],
-          "normalized": true,
-          "source": "pending_orders.execution_signal_json"
-        }
       }
     ],
-    "pending_orders_count": 2,
+    "pending_orders_count": 1,
     "position_risk": [
+      {
+        "be_stop_price": null,
+        "break_even_applied": false,
+        "config": {
+          "break_even": {
+            "enabled": true,
+            "fee_buffer_pct": 0.0005,
+            "percent_gain": 0.01,
+            "r_multiple": 1.0,
+            "trigger": "r_multiple"
+          },
+          "time_exit": {
+            "enabled": true,
+            "max_hold_hours": 24.0,
+            "only_if_profit_pct_below": 0.003
+          },
+          "trailing_stop": {
+            "atr_multiple": null,
+            "distance_pct": 0.01,
+            "enabled": false,
+            "mode": "percent",
+            "step_pct": null
+          }
+        },
+        "max_hold_until": "2026-06-06T20:34:26.633293+00:00",
+        "position_id": "crypto-deepseek-2d5970fec8",
+        "trail_sl": null,
+        "trailing_active": false
+      },
       {
         "be_stop_price": null,
         "break_even_applied": true,
@@ -7420,48 +7375,49 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 466,
-    "last_cycle_duration_seconds": 180.05537610000465,
-    "last_cycle_started_at": "2026-06-05T19:31:14.435172Z",
-    "next_cycle_at": "2026-06-05T20:34:14.774073Z",
+    "cycle_number": 467,
+    "last_cycle_duration_seconds": 261.51070210000034,
+    "last_cycle_started_at": "2026-06-05T20:34:24.402693Z",
+    "next_cycle_at": "2026-06-05T21:38:46.208095Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 466
+    "total_cycles_completed": 467
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.3688037012557832,
-    "accepted_signal_count": 558,
+    "acceptance_rate": 0.3682476943346509,
+    "accepted_signal_count": 559,
     "latest_accepted_signal": {
-      "action": "PLACE_TRIGGER",
+      "action": "HOLD",
       "agent_name": "Crypto DeepSeek",
-      "btc_price": 59666.1,
-      "confidence": null,
-      "cycle_number": 466,
-      "decision": "PAPER_TRADE",
-      "direction": "NONE",
-      "entry_price": null,
+      "btc_price": 60984.4,
+      "confidence": 4.0,
+      "cycle_number": 467,
+      "decision": "POSITION_UPDATE",
+      "direction": "SHORT",
+      "entry_price": 60787.84,
       "execution_result": {
-        "action": "PLACE_TRIGGER",
-        "executed": true,
-        "pending_order_id": "po-crypto-deepseek-09cc3c251e"
+        "action": "HOLD",
+        "decision": "POSITION_UPDATE",
+        "executed": false,
+        "position_id": null
       },
-      "expected_rr": null,
-      "id": 1511,
-      "leverage": null,
+      "expected_rr": 2.51,
+      "id": 1516,
+      "leverage": 3.0,
       "market_regime": "downtrend_normal_vol",
       "model_name": "deepseek-v4-flash",
       "notional_usdt": null,
-      "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"PAPER_TRADE\",\n  \"action\": \"PLACE_TRIGGER\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"CONDITIONAL\",\n  \"thesis\": \"BTC is in a clear downtrend with price below EMA20 (",
+      "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-2d5970fec8\",\n  \"position_context\": \"SHORT at 60,787.84, currently at 60,984.4 (-16.17 USDT unrealized)",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
       "risk_pct": null,
       "signal_status": "ACCEPTED",
-      "stop_loss": null,
-      "take_profit_1": null,
+      "stop_loss": 61500.0,
+      "take_profit_1": 59000.0,
       "take_profit_2": null,
-      "thesis": "BTC is in a clear downtrend with price below EMA20 ($61,610) and EMA50 ($63,210), MACD deeply negative, and volume spike on the latest drop suggesting selling climax. As a trend-following strategy, I want to short the inevitable bounce to resistance. The trigger waits for a pullback to $60,800 (near short-term resistance and the 1h liquidity void) before entering short, targeting continuation of the downtrend.",
-      "timestamp_local": "2026-06-06T02:32:19.700728+07:00",
-      "timestamp_utc": "2026-06-05T19:32:19.700728Z",
+      "thesis": "The broader downtrend (confirmed by regime=downtrend_normal_vol, EMA20<EMA50, negative MACD) is intact. The bounce from 59k to 61k is a normal retracement within a downtrend, and declining volume on the most recent candle suggests buyers are losing conviction. Price remains below key EMAs. My SHORT entry at 60,787.84 was well-timed near the retracement high. The position should work towards TP1 at 59,000 as the trend resumes.",
+      "timestamp_local": "2026-06-06T03:36:54.275878+07:00",
+      "timestamp_utc": "2026-06-05T20:36:54.275878Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -7471,9 +7427,9 @@
     "latest_rejected_signal": {
       "action": "NONE",
       "agent_name": "Crypto Gemini",
-      "btc_price": 59666.1,
+      "btc_price": 60984.4,
       "confidence": null,
-      "cycle_number": 466,
+      "cycle_number": 467,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -7484,31 +7440,69 @@
         "reason": "agent_runtime_error"
       },
       "expected_rr": null,
-      "id": 1513,
+      "id": 1518,
       "leverage": null,
       "market_regime": "downtrend_normal_vol",
       "model_name": "gemini-3.5-flash",
       "notional_usdt": null,
       "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
       "rejection_reason_code": "INTERNAL_ERROR",
-      "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780688019 sessionId=crypto-gemini-1780688019 phase=stream-ready totalMs=13380 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2398ms@2399ms,bootstrap-context:125ms@2524ms,bundle-tools:4790ms@7314ms,system-prompt:1662ms@8976ms,session-resource-loader:401ms@9377ms,agent-session:4ms@9381ms,stream-setup:3999ms@13380ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780688019 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780688019 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover de",
+      "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
       "risk_pct": null,
       "signal_status": "REJECTED",
       "stop_loss": null,
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-06-06T02:34:11.579480+07:00",
-      "timestamp_utc": "2026-06-05T19:34:11.579480Z",
+      "timestamp_local": "2026-06-06T03:38:43.727079+07:00",
+      "timestamp_utc": "2026-06-05T20:38:43.727079Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
-          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780688019 sessionId=crypto-gemini-1780688019 phase=stream-ready totalMs=13380 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2398ms@2399ms,bootstrap-context:125ms@2524ms,bundle-tools:4790ms@7314ms,system-prompt:1662ms@8976ms,session-resource-loader:401ms@9377ms,agent-session:4ms@9381ms,stream-setup:3999ms@13380ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780688019 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780688019 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780688019 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19590 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780688019 durationMs=19593 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+          "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780691892 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19151 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780691892 durationMs=19155 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
         ],
         "rejection_code": "INTERNAL_ERROR"
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 60984.4,
+        "confidence": 4.0,
+        "cycle_number": 467,
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "entry_price": 60787.84,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": 2.51,
+        "id": 1516,
+        "leverage": 3.0,
+        "market_regime": "downtrend_normal_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-2d5970fec8\",\n  \"position_context\": \"SHORT at 60,787.84, currently at 60,984.4 (-16.17 USDT unrealized)",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": 61500.0,
+        "take_profit_1": 59000.0,
+        "take_profit_2": null,
+        "thesis": "The broader downtrend (confirmed by regime=downtrend_normal_vol, EMA20<EMA50, negative MACD) is intact. The bounce from 59k to 61k is a normal retracement within a downtrend, and declining volume on the most recent candle suggests buyers are losing conviction. Price remains below key EMAs. My SHORT entry at 60,787.84 was well-timed near the retracement high. The position should work towards TP1 at 59,000 as the trend resumes.",
+        "timestamp_local": "2026-06-06T03:36:54.275878+07:00",
+        "timestamp_utc": "2026-06-05T20:36:54.275878Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "PLACE_TRIGGER",
         "agent_name": "Crypto DeepSeek",
@@ -11246,47 +11240,167 @@
           "reasons": [],
           "rejection_code": null
         }
+      }
+    ],
+    "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Gemini",
+        "btc_price": 60984.4,
+        "confidence": null,
+        "cycle_number": 467,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 1518,
+        "leverage": null,
+        "market_regime": "downtrend_normal_vol",
+        "model_name": "gemini-3.5-flash",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-06T03:38:43.727079+07:00",
+        "timestamp_utc": "2026-06-05T20:38:43.727079Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780691892 sessionId=crypto-gemini-1780691892 phase=stream-ready totalMs=13271 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2351ms@2352ms,bootstrap-context:72ms@2424ms,bundle-tools:5245ms@7669ms,system-prompt:1156ms@8825ms,session-resource-loader:406ms@9231ms,agent-session:4ms@9235ms,stream-setup:4036ms@13271ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780691892 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780691892 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780691892 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19151 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780691892 durationMs=19155 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Qwen",
+        "btc_price": 60984.4,
+        "confidence": null,
+        "cycle_number": 467,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 1517,
+        "leverage": null,
+        "market_regime": "downtrend_normal_vol",
+        "model_name": "qwen3-max",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780691863 sessionId=crypto-qwen-1780691863 phase=stream-ready totalMs=13844 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2852ms@2853ms,bootstrap-context:72ms@2925ms,bundle-tools:5105ms@8030ms,system-prompt:1348ms@9378ms,session-resource-loader:455ms@9833ms,agent-session:3ms@9836ms,stream-setup:4008ms@13844ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780691863 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780691863 stage=assistant decision=surf",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-06T03:38:12.221326+07:00",
+        "timestamp_utc": "2026-06-05T20:38:12.221326Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780691863 sessionId=crypto-qwen-1780691863 phase=stream-ready totalMs=13844 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2852ms@2853ms,bootstrap-context:72ms@2925ms,bundle-tools:5105ms@8030ms,system-prompt:1348ms@9378ms,session-resource-loader:455ms@9833ms,agent-session:3ms@9836ms,stream-setup:4008ms@13844ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780691863 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780691863 stage=assistant decision=surface_error reason=auth from=qwen/qwen3-max-2026-01-23 profile=- rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[diagnostic] lane task error: lane=main durationMs=16880 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[diagnostic] lane task error: lane=session:agent:crypto-qwen:explicit:crypto-qwen-1780691863 durationMs=16885 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=qwen/qwen3-max-2026-01-23 candidate=qwen/qwen3-max-2026-01-23 reason=auth next=none detail=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\nFailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
       },
       {
         "action": "NONE",
         "agent_name": "Crypto DeepSeek",
-        "btc_price": 72984.8,
+        "btc_price": 60984.4,
         "confidence": null,
-        "cycle_number": 364,
-        "decision": "WATCHLIST",
-        "direction": "NONE",
+        "cycle_number": 467,
+        "decision": "PARSE_ERROR",
+        "direction": null,
         "entry_price": null,
         "execution_result": {
-          "action": "NONE",
-          "decision": "WATCHLIST",
           "executed": false,
-          "reason": "non_trade_decision"
+          "position_id": null,
+          "reason": "not evaluated yet"
         },
         "expected_rr": null,
-        "id": 1171,
+        "id": 1515,
         "leverage": null,
-        "market_regime": "downtrend_low_vol",
+        "market_regime": "downtrend_normal_vol",
         "model_name": "deepseek-v4-flash",
         "notional_usdt": null,
-        "raw_snippet": "{\"agent\":\"crypto-deepseek\",\"decision\":\"WATCHLIST\",\"action\":\"NONE\",\"symbol\":\"BTC\",\"direction\":\"NONE\",\"execution_type\":\"NONE\",\"time_horizon\":\"12-24h\",\"thesis\":\"BTC is in a confirmed downtrend_low_vol regime. Price ($72,985) is below EMA20 ($7",
-        "rejection_reason_code": null,
-        "rejection_reason_message": null,
+        "raw_snippet": "{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"position_id\":\"crypto-deepseek-2d5970fec8\",\"position_context\":\"SHORT at 60,787.84, currently at 60,984.4 (-16.17 USDT unrealized). Downtrend regime intac",
+        "rejection_reason_code": "PARSE_ERROR",
+        "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal",
         "risk_pct": null,
-        "signal_status": "ACCEPTED",
+        "signal_status": "REJECTED",
         "stop_loss": null,
         "take_profit_1": null,
         "take_profit_2": null,
-        "thesis": "BTC is in a confirmed downtrend_low_vol regime. Price ($72,985) is below EMA20 ($73,555), EMA50 ($73,694), and the lower BB ($73,072). MACD is deeply negative and below signal. Volume spike at 06:00 (7,955 contracts) confirmed selling pressure. However, entry is not attractive now: RSI at 38 is approaching oversold territory, and price below the lower Bollinger Band suggests mean-reversion risk. My preferred regimes are breakout/strong_trend, not low-vol drift. Monitoring for (a) a confirmed breakdown below $72,800 with volume for a continuation SHORT, or (b) a pullback to EMA20/EMA50 (~$73,550-$73,700) that rejects, offering a better R:R short entry. No trade until one of those conditions materializes.",
-        "timestamp_local": "2026-06-01T14:26:18.488686+07:00",
-        "timestamp_utc": "2026-06-01T07:26:18.488686Z",
+        "thesis": null,
+        "timestamp_local": "2026-06-06T03:36:11.874523+07:00",
+        "timestamp_utc": "2026-06-05T20:36:11.874523Z",
         "validation_details": {
-          "accepted": true,
-          "reasons": [],
-          "rejection_code": null
+          "accepted": false,
+          "reasons": [
+            "parse/schema error: 1 validation error for AgentSignal\nconfidence\n  Input should be less than or equal to 5 [type=less_than_equal, input_value=65, input_type=int]\n    For further information visit https://errors.pydantic.dev/2.13/v/less_than_equal"
+          ],
+          "rejection_code": "PARSE_ERROR"
         }
-      }
-    ],
-    "recent_rejected_signals": [
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 60984.4,
+        "confidence": null,
+        "cycle_number": 467,
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false,
+          "position_id": null,
+          "reason": "not evaluated yet"
+        },
+        "expected_rr": null,
+        "id": 1514,
+        "leverage": null,
+        "market_regime": "downtrend_normal_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-2d5970fec8\",\n  \"position_context\": \"SHORT at 60,787.84, currently at 60,984.4 (-16.17 USDT unr",
+        "rejection_reason_code": "LEVERAGE_LIMIT_EXCEEDED",
+        "rejection_reason_message": "leverage must be <= 10.0x",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "The broader downtrend (confirmed by regime=downtrend_normal_vol, EMA20<EMA50, negative MACD) is intact. The bounce from 59k to 61k is a normal retracement within a downtrend, and declining volume on the most recent candle suggests buyers are losing conviction. Price remains below key EMAs. My SHORT entry at 60,787.84 was well-timed near the retracement high. The position should work towards TP1 at 59,000 as the trend resumes.",
+        "timestamp_local": "2026-06-06T03:35:24.185515+07:00",
+        "timestamp_utc": "2026-06-05T20:35:24.185515Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "leverage must be <= 10.0x"
+          ],
+          "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+        }
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto Gemini",
@@ -15110,203 +15224,44 @@
           ],
           "rejection_code": "INTERNAL_ERROR"
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Gemini",
-        "btc_price": 63350.9,
-        "confidence": null,
-        "cycle_number": 426,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 1378,
-        "leverage": null,
-        "market_regime": "downtrend_normal_vol",
-        "model_name": "gemini-3.5-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780535112 sessionId=crypto-gemini-1780535112 phase=stream-ready totalMs=13523 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2835ms@2836ms,bootstrap-context:129ms@2965ms,bundle-tools:4678ms@7643ms,system-prompt:1519ms@9162ms,session-resource-loader:414ms@9576ms,agent-session:3ms@9579ms,stream-setup:3944ms@13523ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780535112 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780535112 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover de",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-04T08:05:43.997862+07:00",
-        "timestamp_utc": "2026-06-04T01:05:43.997862Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780535112 sessionId=crypto-gemini-1780535112 phase=stream-ready totalMs=13523 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2835ms@2836ms,bootstrap-context:129ms@2965ms,bundle-tools:4678ms@7643ms,system-prompt:1519ms@9162ms,session-resource-loader:414ms@9576ms,agent-session:3ms@9579ms,stream-setup:3944ms@13523ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780535112 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780535112 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780535112 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=19859 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780535112 durationMs=19864 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Qwen",
-        "btc_price": 63350.9,
-        "confidence": null,
-        "cycle_number": 426,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 1377,
-        "leverage": null,
-        "market_regime": "downtrend_normal_vol",
-        "model_name": "qwen3-max",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780535084 sessionId=crypto-qwen-1780535084 phase=stream-ready totalMs=13080 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2702ms@2703ms,bootstrap-context:54ms@2757ms,bundle-tools:4788ms@7545ms,system-prompt:1155ms@8700ms,session-resource-loader:424ms@9124ms,agent-session:3ms@9127ms,stream-setup:3953ms@13080ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780535084 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780535084 stage=assistant decision=surf",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-04T08:05:11.858174+07:00",
-        "timestamp_utc": "2026-06-04T01:05:11.858174Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-qwen-1780535084 sessionId=crypto-qwen-1780535084 phase=stream-ready totalMs=13080 stages=workspace-sandbox:1ms@1ms,skills:0ms@1ms,core-plugin-tools:2702ms@2703ms,bootstrap-context:54ms@2757ms,bundle-tools:4788ms@7545ms,system-prompt:1155ms@8700ms,session-resource-loader:424ms@9124ms,agent-session:3ms@9127ms,stream-setup:3953ms@13080ms\n[agent/embedded] embedded run agent end: runId=crypto-qwen-1780535084 isError=true model=qwen3-max-2026-01-23 provider=qwen error=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console. rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[agent/embedded] embedded run failover decision: runId=crypto-qwen-1780535084 stage=assistant decision=surface_error reason=auth from=qwen/qwen3-max-2026-01-23 profile=- rawError=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\n[diagnostic] lane task error: lane=main durationMs=16085 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[diagnostic] lane task error: lane=session:agent:crypto-qwen:explicit:crypto-qwen-1780535084 durationMs=16089 error=\"FailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=qwen/qwen3-max-2026-01-23 candidate=qwen/qwen3-max-2026-01-23 reason=auth next=none detail=403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console.\nFailoverError: 403 The free tier of the model has been exhausted. If you wish to continue access the model on a paid basis, please disable the \"use free tier only\" mode in the management console."
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 63350.9,
-        "confidence": null,
-        "cycle_number": 426,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "executed": false,
-          "position_id": null,
-          "reason": "not evaluated yet"
-        },
-        "expected_rr": null,
-        "id": 1375,
-        "leverage": null,
-        "market_regime": "downtrend_normal_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": null,
-        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"risk_math\": {\n    \"notional_exposure_usdt\": 0,\n    \"account_risk_usdt\": 0,\n    \"a",
-        "rejection_reason_code": "PARSE_ERROR",
-        "rejection_reason_message": "parse/schema error: 1 validation error for AgentSignal\nrisk_math\n  Extra inputs are not permitted [type=extra_forbidden, input_value={'notional_exposure_usdt'...otional_exposure_usdt.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-04T08:03:14.724944+07:00",
-        "timestamp_utc": "2026-06-04T01:03:14.724944Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "parse/schema error: 1 validation error for AgentSignal\nrisk_math\n  Extra inputs are not permitted [type=extra_forbidden, input_value={'notional_exposure_usdt'...otional_exposure_usdt.'}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.13/v/extra_forbidden"
-          ],
-          "rejection_code": "PARSE_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Gemini",
-        "btc_price": 64081.7,
-        "confidence": null,
-        "cycle_number": 425,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 1374,
-        "leverage": null,
-        "market_regime": "downtrend_normal_vol",
-        "model_name": "gemini-3.5-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopbac",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780531296 sessionId=crypto-gemini-1780531296 phase=stream-ready totalMs=12480 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2295ms@2297ms,bootstrap-context:72ms@2369ms,bundle-tools:4605ms@6974ms,system-prompt:1174ms@8148ms,session-resource-loader:398ms@8546ms,agent-session:4ms@8550ms,stream-setup:3930ms@12480ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780531296 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780531296 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover dec",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-04T07:02:05.742587+07:00",
-        "timestamp_utc": "2026-06-04T00:02:05.742587Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: EMBEDDED FALLBACK: Gateway agent failed; running embedded agent: GatewayTransportError: gateway closed (1006 abnormal closure (no close frame)): no close reason\nGateway target: ws://127.0.0.1:18789\nSource: local loopback\nConfig: C:\\Users\\Admin\\.openclaw\\openclaw.json\nBind: loopback\n\nPossible causes:\n- Gateway not yet ready to accept connections (retry after a moment)\n- TLS mismatch (connecting with ws:// to a wss:// gateway, or vice versa)\n- Gateway crashed or was terminated unexpectedly\nRun `openclaw doctor` for diagnostics.\n[skills] failed to create plugin skill symlink \"C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation\" \u2192 \"C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation\": Error: EPERM: operation not permitted, symlink 'C:\\Users\\Admin\\AppData\\Roaming\\npm\\node_modules\\openclaw\\dist\\extensions\\browser\\skills\\browser-automation' -> 'C:\\Users\\Admin\\.openclaw\\plugin-skills\\browser-automation'\n[agent/embedded] [trace:embedded-run] prep stages: runId=crypto-gemini-1780531296 sessionId=crypto-gemini-1780531296 phase=stream-ready totalMs=12480 stages=workspace-sandbox:1ms@1ms,skills:1ms@2ms,core-plugin-tools:2295ms@2297ms,bootstrap-context:72ms@2369ms,bundle-tools:4605ms@6974ms,system-prompt:1174ms@8148ms,session-resource-loader:398ms@8546ms,agent-session:4ms@8550ms,stream-setup:3930ms@12480ms\n[agent/embedded] embedded run agent end: runId=crypto-gemini-1780531296 isError=true model=gemini-3.5-flash provider=openai error=HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[agent/embedded] auth profile failure state updated: runId=crypto-gemini-1780531296 profile=sha256:f7d43a588b65 provider=openai reason=auth window=cooldown reused=false\n[agent/embedded] embedded run failover decision: runId=crypto-gemini-1780531296 stage=assistant decision=surface_error reason=auth from=openai/gemini-3.5-flash profile=sha256:f7d43a588b65 rawError=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\n[diagnostic] lane task error: lane=main durationMs=18455 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[diagnostic] lane task error: lane=session:agent:crypto-gemini:explicit:crypto-gemini-1780531296 durationMs=18458 error=\"FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\"\n[model-fallback/decision] model fallback decision: decision=candidate_failed requested=openai/gemini-3.5-flash candidate=openai/gemini-3.5-flash reason=auth next=none detail=401 Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error\nFailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
       }
     ],
-    "rejected_signal_count": 955,
+    "rejected_signal_count": 959,
     "rejection_breakdown": {
-      "INTERNAL_ERROR": 746,
+      "INTERNAL_ERROR": 748,
       "INVALID_DIRECTION": 4,
-      "LEVERAGE_LIMIT_EXCEEDED": 94,
-      "PARSE_ERROR": 100,
+      "LEVERAGE_LIMIT_EXCEEDED": 95,
+      "PARSE_ERROR": 101,
       "RISK_LIMIT_EXCEEDED": 8,
       "RULEBOOK_VIOLATION": 3
     }
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.54,
+    "action_agreement_rate": 0.5,
     "confidence_correlation": 0.0,
     "convergence_warning": false,
-    "created_at": "2026-06-05T19:34:14.100484Z",
-    "directional_agreement_rate": 0.18,
-    "leverage_similarity": 0.947,
+    "created_at": "2026-06-05T20:38:45.517421Z",
+    "directional_agreement_rate": 0.2,
+    "leverage_similarity": 0.941,
     "shared_ratio_applied": 0.3,
     "thesis_embedding_similarity": 0.0
   },
   "sync": {
-    "generated_at": "2026-06-05T19:34:15.560541Z",
+    "generated_at": "2026-06-05T20:38:47.021479Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-06-05T19:34:14.490548Z",
+    "latest_cycle_at": "2026-06-05T20:38:45.913395Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.47900370000000003,
-      "input_tokens": 2709259.0,
-      "output_tokens": 356098.0,
-      "requests": 659.0
+      "estimated_cost_usd": 0.48058038000000003,
+      "input_tokens": 2717117.0,
+      "output_tokens": 357800.0,
+      "requests": 662.0
     },
     "crypto-gemini": {
       "estimated_cost_usd": 0.0,
@@ -15323,11 +15278,11 @@
   },
   "trade_history_summary": {
     "crypto-deepseek": {
-      "closed_or_fee_events": 93,
-      "losses": 67,
-      "realized_pnl": 228.9519389052664,
-      "trade_count": 93,
-      "win_rate": 0.27956989247311825,
+      "closed_or_fee_events": 94,
+      "losses": 68,
+      "realized_pnl": 226.4519389052664,
+      "trade_count": 94,
+      "win_rate": 0.2765957446808511,
       "wins": 26
     },
     "crypto-gemini": {
@@ -15349,31 +15304,31 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 43.57432199865539,
+      "deepseek_workload_pct": 43.69501421992362,
       "gemini_workload_pct": 4.607328605200945,
       "grok_workload_pct": 4.607328605200945,
-      "local_workload_pct": 47.21102079094271,
-      "total_api_cost_usd": 0.05165216
+      "local_workload_pct": 47.09032856967449,
+      "total_api_cost_usd": 0.05223652
     },
-    "deepseek_pct": 43.09287896033995,
+    "deepseek_pct": 50.654502641575796,
     "grok_pct": 4.609929078014184,
     "latest": {
-      "api_cost_usd": 0.00099694,
-      "deepseek_cost_usd": 0.00099694,
-      "deepseek_tokens": 6281,
-      "deepseek_workload_pct": 43.09287896033995,
+      "api_cost_usd": 0.0015766800000000002,
+      "deepseek_cost_usd": 0.0015766800000000002,
+      "deepseek_tokens": 9560,
+      "deepseek_workload_pct": 50.654502641575796,
       "gemini_cost_usd": 0.0,
       "gemini_tokens": 0,
       "gemini_workload_pct": 4.609929078014184,
       "grok_cost_usd": 0.0,
       "grok_tokens": 0,
       "grok_workload_pct": 4.609929078014184,
-      "local_workload_pct": 47.68726288363168,
+      "local_workload_pct": 40.12563920239584,
       "payload": {
-        "deepseek_api_cost_usd": 0.00099694,
-        "deepseek_input_tokens": 5441,
+        "deepseek_api_cost_usd": 0.0015766800000000002,
+        "deepseek_input_tokens": 7858,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 840,
+        "deepseek_output_tokens": 1702,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
         "gemini_api_cost_usd": 0.0,
@@ -15388,14 +15343,14 @@
         "grok_output_tokens": 0,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 18,
-        "local_functions_executed": 24,
+        "local_database_queries": 29,
+        "local_functions_executed": 33,
         "local_memory_retrievals": 6,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 180.05537610000465
+        "total_wall_time_seconds": 261.51070210000034
       },
-      "timestamp": "2026-06-05T19:34:14.761266"
+      "timestamp": "2026-06-05T20:38:46.194078"
     },
-    "local_pct": 47.68726288363168
+    "local_pct": 40.12563920239584
   }
 }
