@@ -1,14 +1,14 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": 3.4310107635562668,
-      "equity": 10439.241782039691,
-      "open_margin": 1000.0,
-      "open_positions": 1,
-      "open_risk": 40.88058441034307,
-      "realized_pnl": 433.3107712761365,
-      "roi_pct": 4.392417820396913,
-      "unrealized_pnl": 5.931010763556267
+      "daily_pnl": -8.269837515533832,
+      "equity": 10427.540933760602,
+      "open_margin": 1800.0,
+      "open_positions": 2,
+      "open_risk": 85.32024157254443,
+      "realized_pnl": 431.3107712761365,
+      "roi_pct": 4.275409337606016,
+      "unrealized_pnl": -3.7698375155338315
     },
     "crypto-gemini": {
       "daily_pnl": 0.0,
@@ -33,13 +33,13 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.76063862,
+      "crypto-deepseek": 0.76183226,
       "crypto-gemini": 0.0,
       "crypto-qwen": 0.16556436
     },
-    "total": 0.92620298
+    "total": 0.92739662
   },
-  "btc_price": 62613.1,
+  "btc_price": 62580.0,
   "competition": {
     "continuous_mode": true,
     "duration_days": 0,
@@ -47,14 +47,14 @@
     "name": "crypto-paper-trading-arena",
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT",
-    "uptime_seconds": 2976202.019321,
+    "uptime_seconds": 2980147.239699,
     "weekly_target_pct": 0.07
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-06-19T03:43:20.464677Z",
+    "active_checkpoint_timestamp": "2026-06-19T04:49:05.629257Z",
     "active_versions_file": {
-      "code_version": "8e96dfe5a77c",
+      "code_version": "ccb48a70cf88",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -64,7 +64,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-19T02:41:36.296145Z"
+      "updated_at": "2026-06-19T03:43:36.824131Z"
     },
     "canary": {
       "enabled": false,
@@ -85,13 +85,13 @@
       "update_id": "a69d8865636a434bad93bc199be41a32"
     },
     "latest_checkpoint": {
-      "cycle_number": 757,
-      "id": 864,
+      "cycle_number": 758,
+      "id": 865,
       "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "8e96dfe5a77c",
+      "code_version": "ccb48a70cf88",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -101,7 +101,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-19T03:43:31.992489Z"
+      "updated_at": "2026-06-19T04:49:08.366772Z"
     }
   },
   "downtime": {
@@ -267,7 +267,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "drawdown": -0.0005,
@@ -978,24 +978,28 @@
         "timestamp": "2026-06-19T03:41:37.614113Z"
       },
       {
-        "drawdown": -0.011292287935614813,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "drawdown": -0.012043439376505203,
+        "timestamp": "2026-06-19T04:46:58.027568Z"
+      },
+      {
+        "drawdown": -0.012400483259832217,
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ],
     "crypto-gemini": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "drawdown": -0.00025,
@@ -1035,7 +1039,7 @@
       },
       {
         "drawdown": -0.005951268191319757,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ]
   },
@@ -1043,7 +1047,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "equity": 9995.0,
@@ -1754,24 +1758,28 @@
         "timestamp": "2026-06-19T03:41:37.614113Z"
       },
       {
-        "equity": 10439.241782039691,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "equity": 10431.310771276147,
+        "timestamp": "2026-06-19T04:46:58.027568Z"
+      },
+      {
+        "equity": 10427.540933760602,
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ],
     "crypto-gemini": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-19T03:43:30.068355Z"
+        "timestamp": "2026-06-19T04:49:06.450837Z"
       },
       {
         "equity": 9997.5,
@@ -1811,28 +1819,28 @@
       },
       {
         "equity": 9962.434581202931,
-        "timestamp": "2026-06-19T03:43:31.068355Z"
+        "timestamp": "2026-06-19T04:49:07.450837Z"
       }
     ]
   },
-  "generated_at": "2026-06-19T03:43:22.019321Z",
+  "generated_at": "2026-06-19T04:49:07.239699Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.76063862,
-      "equity": 10439.241782039691,
+      "api_cost_usd": 0.76183226,
+      "equity": 10427.540933760602,
       "max_drawdown_pct": 0.023179547342175505,
-      "profit_factor": 1.4069937546587938,
-      "realized_pnl": 433.3107712761365,
-      "rejected_signals": 377,
-      "rule_compliance": 0.3194945848375451,
-      "score": 0.5470502117541525,
-      "sharpe": 0.10464543932068156,
-      "sortino": 0.165484057738581,
-      "total_return_pct": 0.043924178203969134,
-      "unrealized_pnl": 5.931010763556267,
-      "win_rate": 0.2824858757062147
+      "profit_factor": 1.4043556297446926,
+      "realized_pnl": 431.3107712761365,
+      "rejected_signals": 378,
+      "rule_compliance": 0.32014388489208634,
+      "score": 0.540350287368578,
+      "sharpe": 0.10385888557662358,
+      "sortino": 0.16431898807964765,
+      "total_return_pct": 0.042754093376060155,
+      "unrealized_pnl": -3.7698375155338315,
+      "win_rate": 0.2808988764044944
     },
     {
       "agent_id": "crypto-gemini",
@@ -1841,9 +1849,9 @@
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 642,
-      "rule_compliance": 0.0015552099533436836,
-      "score": 0.20115552099533437,
+      "rejected_signals": 643,
+      "rule_compliance": 0.0015527950310558758,
+      "score": 0.2011552795031056,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -1857,9 +1865,9 @@
       "max_drawdown_pct": 0.005951268191319939,
       "profit_factor": 0.3955108830105893,
       "realized_pnl": -37.56541879706944,
-      "rejected_signals": 668,
-      "rule_compliance": 0.013293943870014813,
-      "score": 0.1894268580043616,
+      "rejected_signals": 669,
+      "rule_compliance": 0.013274336283185861,
+      "score": 0.1894248972456787,
       "sharpe": -0.27692359799556665,
       "sortino": -0.35361922297283216,
       "total_return_pct": -0.003756541879706856,
@@ -1874,7 +1882,7 @@
         "agents": [
           "crypto-deepseek"
         ],
-        "avg_pnl": 2.4480834535374942,
+        "avg_pnl": 2.423094220652452,
         "badges": [
           "High Confidence",
           "Critical Warning"
@@ -1947,7 +1955,7 @@
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.9191,
+        "rank_score": 0.9189,
         "raw_text": "AUTO_CLOSE SHORT loss: notes=break_even; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -1990,7 +1998,7 @@
             "timestamp": "2026-06-11T00:16:27.612121+00:00"
           }
         ],
-        "win_rate": 0.2824858757062147
+        "win_rate": 0.2808988764044944
       },
       {
         "agent_count": 1,
@@ -2019,7 +2027,7 @@
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.6389,
+        "rank_score": 0.6388,
         "raw_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "sentiment": "avoid",
         "source_type": "shared",
@@ -2082,7 +2090,7 @@
           "crypto-grok",
           "crypto-qwen"
         ],
-        "avg_pnl": -3.6211276938494805,
+        "avg_pnl": -3.6261255404264885,
         "badges": [
           "Shared",
           "High Confidence",
@@ -2151,7 +2159,7 @@
         "evidence_count": 1298,
         "impact_score": 1.0,
         "is_shared": true,
-        "last_updated": "2026-06-19T03:43:17.890412Z",
+        "last_updated": "2026-06-19T04:49:03.465123Z",
         "lesson_id": "derived-7761909226502371037",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
@@ -2166,40 +2174,40 @@
             "confidence_score": 0.7125,
             "frequency": 1,
             "impact_score": 0.1667,
-            "timestamp": "2026-06-14T03:43:17.890412+00:00"
+            "timestamp": "2026-06-14T04:49:03.465123+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
             "impact_score": 0.3333,
-            "timestamp": "2026-06-15T03:43:17.890412+00:00"
+            "timestamp": "2026-06-15T04:49:03.465123+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
             "impact_score": 0.5,
-            "timestamp": "2026-06-16T03:43:17.890412+00:00"
+            "timestamp": "2026-06-16T04:49:03.465123+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
             "impact_score": 0.6667,
-            "timestamp": "2026-06-17T03:43:17.890412+00:00"
+            "timestamp": "2026-06-17T04:49:03.465123+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
             "impact_score": 0.8333,
-            "timestamp": "2026-06-18T03:43:17.890412+00:00"
+            "timestamp": "2026-06-18T04:49:03.465123+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
             "impact_score": 1.0,
-            "timestamp": "2026-06-19T03:43:17.890412+00:00"
+            "timestamp": "2026-06-19T04:49:03.465123+00:00"
           }
         ],
-        "win_rate": 0.1358622545063223
+        "win_rate": 0.13554485464597824
       },
       {
         "agent_count": 3,
@@ -2208,7 +2216,7 @@
           "crypto-deepseek",
           "crypto-qwen"
         ],
-        "avg_pnl": -0.5752839894530369,
+        "avg_pnl": -0.5836137337480509,
         "badges": [
           "Shared",
           "High Confidence"
@@ -2281,7 +2289,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.9519,
+        "rank_score": 0.9516,
         "raw_text": "AUTO_CLOSE LONG loss: notes=break_even; fee=1.2500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2324,7 +2332,7 @@
             "timestamp": "2026-06-16T14:17:35.595637+00:00"
           }
         ],
-        "win_rate": 0.13119899560577528
+        "win_rate": 0.13066999583853517
       },
       {
         "agent_count": 1,
@@ -2353,7 +2361,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.6055,
+        "rank_score": 0.6054,
         "raw_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2425,7 +2433,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
-        "rank_score": 0.6055,
+        "rank_score": 0.6054,
         "raw_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2497,7 +2505,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.6055,
+        "rank_score": 0.6054,
         "raw_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2548,7 +2556,7 @@
           "crypto-deepseek",
           "crypto-grok"
         ],
-        "avg_pnl": -6.965851523675398,
+        "avg_pnl": -6.978346140117919,
         "badges": [
           "Shared",
           "High Confidence"
@@ -2593,14 +2601,14 @@
           }
         ],
         "evidence_count": 5,
-        "impact_score": 0.4617,
+        "impact_score": 0.4614,
         "is_shared": true,
         "last_updated": "2026-05-17T23:41:50.143588Z",
         "lesson_id": "derived-889073889533484624",
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.5396,
+        "rank_score": 0.5394,
         "raw_text": "AUTO_REDUCE SHORT win: notes=take_profit_1; fee=2.5000; slippage_bps=2. Repeat only when thesis, invalidation, and risk/reward remain clear.",
         "sentiment": "follow",
         "source_type": "derived",
@@ -2615,29 +2623,29 @@
           {
             "confidence_score": 0.7395,
             "frequency": 2,
-            "impact_score": 0.1847,
+            "impact_score": 0.1846,
             "timestamp": "2026-05-14T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.783,
             "frequency": 3,
-            "impact_score": 0.277,
+            "impact_score": 0.2768,
             "timestamp": "2026-05-15T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.8265,
             "frequency": 4,
-            "impact_score": 0.3694,
+            "impact_score": 0.3691,
             "timestamp": "2026-05-16T23:41:50.143588+00:00"
           },
           {
             "confidence_score": 0.87,
             "frequency": 5,
-            "impact_score": 0.4617,
+            "impact_score": 0.4614,
             "timestamp": "2026-05-17T23:41:50.143588+00:00"
           }
         ],
-        "win_rate": 0.28410008071025017
+        "win_rate": 0.28330658105939005
       },
       {
         "agent_count": 1,
@@ -2672,7 +2680,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Recent LONG setups are weakening; pause and reassess before longing again.",
         "market_regime": "unknown",
-        "rank_score": 0.3777,
+        "rank_score": 0.3776,
         "raw_text": "AUTO_CLOSE LONG loss: notes=stop_loss; fee=4.9500; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2696,7 +2704,7 @@
     ],
     "follow_summary": {
       "avg_confidence": 0.7283999999999999,
-      "avg_impact": 0.6461714285714286,
+      "avg_impact": 0.6461285714285714,
       "most_influential_lesson": "Trade only high-quality setups and maintain strict rule compliance.",
       "shared_count": 6,
       "total": 7
@@ -2704,14 +2712,6 @@
   },
   "market": {
     "candles": [
-      {
-        "close": 63213.7,
-        "high": 63402.0,
-        "low": 62715.4,
-        "open": 62841.1,
-        "timestamp": "2026-06-09T04:00:00Z",
-        "volume": 9505.94
-      },
       {
         "close": 63318.5,
         "high": 63499.9,
@@ -4617,30 +4617,38 @@
         "volume": 2107.975
       },
       {
-        "close": 62613.1,
+        "close": 62745.1,
         "high": 63004.8,
         "low": 62237.2,
         "open": 62974.2,
         "timestamp": "2026-06-19T03:00:00Z",
-        "volume": 10555.645
+        "volume": 11677.236
+      },
+      {
+        "close": 62580.0,
+        "high": 62888.8,
+        "low": 62486.0,
+        "open": 62745.1,
+        "timestamp": "2026-06-19T04:00:00Z",
+        "volume": 3904.816
       }
     ],
-    "current_price": 62613.1,
+    "current_price": 62580.0,
     "indicators": {
-      "atr_14": 465.7499999999995,
-      "bb_high": 64576.65286468705,
-      "bb_low": 61938.81713531295,
-      "bb_mid": 63257.735,
-      "ema_20": 63249.3852587699,
-      "ema_50": 64015.834138806524,
-      "macd": -433.44651024656196,
-      "macd_signal": -467.42010010743337,
-      "rsi_14": 29.352451433857425
+      "atr_14": 450.4714285714285,
+      "bb_high": 64405.565980524276,
+      "bb_low": 61944.10401947574,
+      "bb_mid": 63174.83500000001,
+      "ema_20": 63197.00843140793,
+      "ema_50": 63964.50747830831,
+      "macd": -426.9278430993727,
+      "macd_signal": -457.6368636477006,
+      "rsi_14": 30.628398597123407
     },
     "regime": "downtrend_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-06-19T03:41:37.589095Z"
+    "timestamp": "2026-06-19T04:46:58.006755Z"
   },
   "open_positions": [
     {
@@ -4660,31 +4668,29 @@
       "symbol": "BTC",
       "take_profit_1": 62100.0,
       "take_profit_2": 61400.0,
-      "unrealized_pnl": 5.931010763556267
+      "unrealized_pnl": 8.571092208872326
+    },
+    {
+      "agent_id": "crypto-deepseek",
+      "average_entry": 62387.520000000004,
+      "closed_at": null,
+      "dca_count": 0,
+      "direction": "SHORT",
+      "id": "crypto-deepseek-32ded9dc2f",
+      "leverage": 5.0,
+      "margin": 800.0,
+      "notional": 4000.0,
+      "opened_at": "2026-06-19T04:46:58.027568Z",
+      "realized_pnl": 0.0,
+      "status": "OPEN",
+      "stop_loss": 63080.64,
+      "symbol": "BTC",
+      "take_profit_1": 61448.0,
+      "take_profit_2": 60800.0,
+      "unrealized_pnl": -12.340929724406157
     }
   ],
   "recent_trades": [
-    {
-      "action": "AUTO_CLOSE",
-      "agent_id": "crypto-deepseek",
-      "code_version": "444d0c12d01e",
-      "config_hash": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
-      "config_version_id": 57,
-      "created_at": "2026-06-10T17:29:42.320673Z",
-      "decision_timestamp": "2026-06-10T16:12:36.641061Z",
-      "direction": "LONG",
-      "displayed_timestamp": "2026-06-10T17:29:42.320673Z",
-      "entry": 62362.47,
-      "execution_timestamp": "2026-06-10T17:29:42.320673Z",
-      "exit_price": 61873.42284000001,
-      "id": "trade-crypto-deepseek-a152cfb35e",
-      "leverage": 5.0,
-      "margin": 1000.0,
-      "notes": "stop_loss; fee=2.5000; slippage_bps=2",
-      "notional": 5000.0,
-      "position_id": "crypto-deepseek-92d8fb9075",
-      "realized_pnl": -41.710053739051276
-    },
     {
       "action": "OPEN",
       "agent_id": "crypto-deepseek",
@@ -5713,6 +5719,27 @@
       "notional": 5000.0,
       "position_id": "crypto-deepseek-45618524d7",
       "realized_pnl": -2.5
+    },
+    {
+      "action": "OPEN",
+      "agent_id": "crypto-deepseek",
+      "code_version": "69c82a5118b8",
+      "config_hash": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
+      "config_version_id": 63,
+      "created_at": "2026-06-19T04:46:58.027568Z",
+      "decision_timestamp": "2026-06-18T20:29:15.347464Z",
+      "direction": "SHORT",
+      "displayed_timestamp": "2026-06-19T04:46:58.027568Z",
+      "entry": 62387.520000000004,
+      "execution_timestamp": "2026-06-19T04:46:58.027568Z",
+      "exit_price": null,
+      "id": "trade-crypto-deepseek-7f71be951b",
+      "leverage": 5.0,
+      "margin": 800.0,
+      "notes": "Risk: abs(62400-63200)/62400*4000=51.28 USDT. Margin 800 at 5x. Account risk 0.49%. Trailing stop at 0.8% distance. Break-even at TP1. Max hold 12h if profit below 0.15%.; fee=2.0000; slippage_bps=2",
+      "notional": 4000.0,
+      "position_id": "crypto-deepseek-32ded9dc2f",
+      "realized_pnl": -2.0
     }
   ],
   "reflections_summary": {
@@ -5723,6 +5750,24 @@
     },
     "count_recent": 50,
     "recent": [
+      {
+        "agent_id": "crypto-qwen",
+        "created_at": "2026-06-19T04:49:03.465123Z",
+        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-gemini",
+        "created_at": "2026-06-19T04:49:03.456123Z",
+        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-06-19T04:49:03.445125Z",
+        "raw_text": "Daily review: equity=10427.54, realized_pnl=431.31, unrealized_pnl=-3.77. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-06-19T03:43:17.890412Z",
@@ -5822,24 +5867,6 @@
       {
         "agent_id": "crypto-gemini",
         "created_at": "2026-06-18T22:33:36.772491Z",
-        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-18T22:33:36.763492Z",
-        "raw_text": "Daily review: equity=10435.81, realized_pnl=435.81, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "created_at": "2026-06-18T21:32:08.484933Z",
-        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-gemini",
-        "created_at": "2026-06-18T21:32:08.476932Z",
         "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       }
@@ -6089,11 +6116,53 @@
   },
   "rejected_signals_summary": {
     "by_agent": {
-      "crypto-deepseek": 43,
-      "crypto-gemini": 64,
+      "crypto-deepseek": 44,
+      "crypto-gemini": 63,
       "crypto-qwen": 63
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-gemini",
+        "agent_name": "Crypto Gemini",
+        "confidence": null,
+        "created_at": "2026-06-19T04:49:02.730642Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-qwen",
+        "agent_name": "Crypto Qwen",
+        "confidence": null,
+        "created_at": "2026-06-19T04:48:48.504191Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "HOLD",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-06-19T04:47:45.334855Z",
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "message": "leverage must be <= 10.0x",
+        "reasons": [
+          "leverage must be <= 10.0x"
+        ],
+        "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-gemini",
@@ -6399,48 +6468,6 @@
         "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
         "reasons": [
           "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-06-18T17:24:25.082114Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-qwen",
-        "agent_name": "Crypto Qwen",
-        "confidence": null,
-        "created_at": "2026-06-18T17:24:08.861077Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-06-18T16:22:11.418880Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
         ],
         "rejection_code": "INTERNAL_ERROR"
       }
@@ -7023,122 +7050,39 @@
           "normalized": true,
           "source": "pending_orders.execution_signal_json"
         }
-      },
-      {
-        "action": "OPEN",
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-18T20:29:15.347464",
-        "direction": "SHORT",
-        "entry_price": 62400.0,
-        "expires_at": "2026-06-19T20:27:00",
-        "id": "po-crypto-deepseek-a00d1d5f6e",
-        "intent": "OPEN SHORT",
-        "leverage": 5.0,
-        "normalized_signal": {
-          "account_risk_percent": 0.004914,
-          "account_risk_usdt": 51.28,
-          "action": "OPEN",
-          "agent": "crypto-deepseek",
-          "average_entry_after_action": null,
-          "confidence": 3,
-          "counterargument": "Trigger may activate during a volatility liquidity grab that sweeps below support then reverses. RSI still has room to rise, so the bounce may extend further before any breakdown occurs.",
-          "daily_loss_status": null,
-          "data_used": [
-            "market_state",
-            "indicators",
-            "recent_candles",
-            "account_summary",
-            "trigger_order"
-          ],
-          "dca_count_after_action": null,
-          "decision": "PAPER_TRADE",
-          "direction": "SHORT",
-          "entry": 62400.0,
-          "execution_type": "MARKET",
-          "invalidation": "Stop loss reached at $63,200; or price reclaims EMA 20 ($63,619).",
-          "leverage": 5.0,
-          "liquidation_risk_note": "5x simulated paper leverage; stop loss is 1.28% above entry (~$800 away). Liquidation price for 5x long/short is far beyond this narrow stop range. Minimal liquidation risk.",
-          "margin_used_percent": 0.0767,
-          "margin_used_usdt": 800.0,
-          "notes_for_ledger": "Risk: abs(62400-63200)/62400*4000=51.28 USDT. Margin 800 at 5x. Account risk 0.49%. Trailing stop at 0.8% distance. Break-even at TP1. Max hold 12h if profit below 0.15%.",
-          "notional_exposure_usdt": 4000.0,
-          "open_positions_after_action": null,
-          "position_context": null,
-          "position_id": null,
-          "position_risk": {
-            "break_even": {
-              "enabled": true,
-              "fee_buffer_pct": 0.0005,
-              "trigger": "tp1"
-            },
-            "time_exit": {
-              "enabled": true,
-              "max_hold_hours": 12,
-              "only_if_profit_pct_below": 0.0015
-            },
-            "trailing_stop": {
-              "distance_pct": 0.008,
-              "enabled": true,
-              "mode": "percent"
-            }
-          },
-          "risk_reward_to_tp1": 1.19,
-          "risk_reward_to_tp2": 2.0,
-          "stop_loss": 63200.0,
-          "structured_lesson": null,
-          "symbol": "BTC",
-          "take_profit_1": 61448.0,
-          "take_profit_2": 60800.0,
-          "thesis": "Triggered breakdown from low-volume bounce confirms downtrend resumption. Trend-following short aligns with price structure below both EMAs, bearish MACD, and declining volume on bounces.",
-          "time_horizon": "6-12h",
-          "timestamp": "2026-06-18T20:29:15.347464Z",
-          "total_account_risk_after_action_percent": 0.004914,
-          "total_account_risk_after_action_usdt": 51.28,
-          "total_margin_after_action_usdt": null,
-          "total_notional_after_action_usdt": null,
-          "trigger_order": null
-        },
-        "position_id": "-",
-        "status": "PENDING",
-        "stop_loss": 63200.0,
-        "take_profit_1": 61448.0,
-        "thesis": "Triggered breakdown from low-volume bounce confirms downtrend resumption. Trend-following short aligns with price struc...",
-        "trigger_conditions": {
-          "conditions": [
-            {
-              "field": "price",
-              "op": "lte",
-              "value": 62400
-            },
-            {
-              "conditions": [
-                {
-                  "field": "price",
-                  "op": "lte",
-                  "value": 62600
-                },
-                {
-                  "field": "rsi_14",
-                  "op": "lte",
-                  "value": 35
-                }
-              ],
-              "logic": "AND"
-            }
-          ],
-          "logic": "OR"
-        },
-        "trigger_summary": "Price <= 62400",
-        "triggered_at": null,
-        "validation_details": {
-          "missing_fields": [],
-          "normalized": true,
-          "source": "pending_orders.execution_signal_json"
-        }
       }
     ],
-    "pending_orders_count": 2,
+    "pending_orders_count": 1,
     "position_risk": [
+      {
+        "be_stop_price": null,
+        "break_even_applied": false,
+        "config": {
+          "break_even": {
+            "enabled": true,
+            "fee_buffer_pct": 0.0005,
+            "percent_gain": 0.01,
+            "r_multiple": 1.0,
+            "trigger": "r_multiple"
+          },
+          "time_exit": {
+            "enabled": true,
+            "max_hold_hours": 12.0,
+            "only_if_profit_pct_below": 0.0015
+          },
+          "trailing_stop": {
+            "atr_multiple": null,
+            "distance_pct": 0.008,
+            "enabled": true,
+            "mode": "percent",
+            "step_pct": null
+          }
+        },
+        "max_hold_until": "2026-06-19T16:46:58.027568+00:00",
+        "position_id": "crypto-deepseek-32ded9dc2f",
+        "trail_sl": 63080.64,
+        "trailing_active": true
+      },
       {
         "be_stop_price": null,
         "break_even_applied": false,
@@ -9133,49 +9077,49 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 757,
-    "last_cycle_duration_seconds": 103.80177009999898,
-    "last_cycle_started_at": "2026-06-19T03:41:36.455470Z",
-    "next_cycle_at": "2026-06-19T04:43:20.496905Z",
+    "cycle_number": 758,
+    "last_cycle_duration_seconds": 128.5289432999998,
+    "last_cycle_started_at": "2026-06-19T04:46:56.905080Z",
+    "next_cycle_at": "2026-06-19T05:49:05.659351Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 757
+    "total_cycles_completed": 758
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.3203155818540434,
-    "accepted_signal_count": 812,
+    "acceptance_rate": 0.32020480504135485,
+    "accepted_signal_count": 813,
     "latest_accepted_signal": {
       "action": "HOLD",
       "agent_name": "Crypto DeepSeek",
-      "btc_price": 62613.1,
-      "confidence": 4.0,
-      "cycle_number": 757,
+      "btc_price": 62580.0,
+      "confidence": null,
+      "cycle_number": 758,
       "decision": "POSITION_UPDATE",
       "direction": "SHORT",
-      "entry_price": 62687.46,
+      "entry_price": null,
       "execution_result": {
         "action": "HOLD",
         "decision": "POSITION_UPDATE",
         "executed": false,
         "position_id": null
       },
-      "expected_rr": 2.29,
-      "id": 2533,
+      "expected_rr": null,
+      "id": 2537,
       "leverage": 5.0,
       "market_regime": "downtrend_low_vol",
       "model_name": "deepseek-v4-flash",
-      "notional_usdt": 5000.0,
-      "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-45618524d7\",\n  \"position_context\": \"Existing SHORT at 62687.46, currently in profit as price d",
+      "notional_usdt": null,
+      "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"NONE\",\n  \"position_id\": \"crypto-deepseek-45618524d7_AND_crypto-deepseek-32ded9dc2f\"",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
-      "risk_pct": 0.003915,
+      "risk_pct": null,
       "signal_status": "ACCEPTED",
-      "stop_loss": 63200.0,
-      "take_profit_1": 62100.0,
-      "take_profit_2": 61400.0,
-      "thesis": "Downtrend regime confirmed with price below EMA20 (63249) and EMA50 (64016). MACD bearish at -433.45. Recent high-volume candle (10555 BTC) broke below the 62900 support zone, signaling potential continuation. Open interest at 98508 BTC supports directional movement. Funding rate near neutral at 0.0036% presents no headwind.",
-      "timestamp_local": "2026-06-19T10:42:21.703206+07:00",
-      "timestamp_utc": "2026-06-19T03:42:21.703206Z",
+      "stop_loss": null,
+      "take_profit_1": null,
+      "take_profit_2": null,
+      "thesis": "Downtrend remains intact with price below both EMA20 (63197) and EMA50 (63964). The 03:00 UTC breakdown candle with elevated volume confirmed selling pressure. Low-vol consolidation at 62580 suggests continuation potential toward TP levels. P1 has 512-point risk buffer to SL vs 587-point reward to TP1; P2 has 693-point risk vs 940-point reward to TP1. Combined open risk of 85.32 USDT (0.82% of equity) is well within the 2% limit.",
+      "timestamp_local": "2026-06-19T11:48:08.778232+07:00",
+      "timestamp_utc": "2026-06-19T04:48:08.778232Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -9185,9 +9129,9 @@
     "latest_rejected_signal": {
       "action": "NONE",
       "agent_name": "Crypto Gemini",
-      "btc_price": 62613.1,
+      "btc_price": 62580.0,
       "confidence": null,
-      "cycle_number": 757,
+      "cycle_number": 758,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -9198,7 +9142,7 @@
         "reason": "agent_runtime_error"
       },
       "expected_rr": null,
-      "id": 2535,
+      "id": 2539,
       "leverage": null,
       "market_regime": "downtrend_low_vol",
       "model_name": "gemini-3.5-flash",
@@ -9212,8 +9156,8 @@
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-06-19T10:43:16.468819+07:00",
-      "timestamp_utc": "2026-06-19T03:43:16.468819Z",
+      "timestamp_local": "2026-06-19T11:49:02.730642+07:00",
+      "timestamp_utc": "2026-06-19T04:49:02.730642Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
@@ -9223,6 +9167,44 @@
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 62580.0,
+        "confidence": null,
+        "cycle_number": 758,
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "entry_price": null,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": null,
+        "id": 2537,
+        "leverage": 5.0,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"NONE\",\n  \"position_id\": \"crypto-deepseek-45618524d7_AND_crypto-deepseek-32ded9dc2f\"",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Downtrend remains intact with price below both EMA20 (63197) and EMA50 (63964). The 03:00 UTC breakdown candle with elevated volume confirmed selling pressure. Low-vol consolidation at 62580 suggests continuation potential toward TP levels. P1 has 512-point risk buffer to SL vs 587-point reward to TP1; P2 has 693-point risk vs 940-point reward to TP1. Combined open risk of 85.32 USDT (0.82% of equity) is well within the 2% limit.",
+        "timestamp_local": "2026-06-19T11:48:08.778232+07:00",
+        "timestamp_utc": "2026-06-19T04:48:08.778232Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "HOLD",
         "agent_name": "Crypto DeepSeek",
@@ -12965,47 +12947,128 @@
           "reasons": [],
           "rejection_code": null
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 64002.8,
-        "confidence": 1.0,
-        "cycle_number": 623,
-        "decision": "NO_TRADE",
-        "direction": "NONE",
-        "entry_price": 0.0,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "NO_TRADE",
-          "executed": false,
-          "reason": "non_trade_decision"
-        },
-        "expected_rr": 0.0,
-        "id": 2073,
-        "leverage": 0.0,
-        "market_regime": "uptrend_low_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": 0.0,
-        "raw_snippet": "```json\n{\"agent\":\"crypto-deepseek\",\"decision\":\"NO_TRADE\",\"action\":\"NONE\",\"symbol\":\"BTC\",\"direction\":\"NONE\",\"execution_type\":\"NONE\",\"thesis\":\"Price ($64,003) is above EMA20 ($63,521) and EMA50 ($63,107) with bullish MACD crossover intact, bu",
-        "rejection_reason_code": null,
-        "rejection_reason_message": null,
-        "risk_pct": 0.0,
-        "signal_status": "ACCEPTED",
-        "stop_loss": 0.0,
-        "take_profit_1": 0.0,
-        "take_profit_2": 0.0,
-        "thesis": "Price ($64,003) is above EMA20 ($63,521) and EMA50 ($63,107) with bullish MACD crossover intact, but the bounce from $63,500 during the 17:00 candle printed only 1,248 BTC volume \u2014 a 95% decline from the 15:00 volume of 26,003 BTC. For a trend-following strategy that weights volume evidence, this declining-volume bounce in a low-vol regime fails the confirmation threshold. A breakout above BB high ($64,098) without volume would risk a liquidity-sweep rejection.",
-        "timestamp_local": "2026-06-13T00:09:01.435849+07:00",
-        "timestamp_utc": "2026-06-12T17:09:01.435849Z",
-        "validation_details": {
-          "accepted": true,
-          "reasons": [],
-          "rejection_code": null
-        }
       }
     ],
     "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Gemini",
+        "btc_price": 62580.0,
+        "confidence": null,
+        "cycle_number": 758,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 2539,
+        "leverage": null,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "gemini-3.5-flash",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-19T11:49:02.730642+07:00",
+        "timestamp_utc": "2026-06-19T04:49:02.730642Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Qwen",
+        "btc_price": 62580.0,
+        "confidence": null,
+        "cycle_number": 758,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 2538,
+        "leverage": null,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "qwen3-max",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-19T11:48:48.504191+07:00",
+        "timestamp_utc": "2026-06-19T04:48:48.504191Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 62580.0,
+        "confidence": null,
+        "cycle_number": 758,
+        "decision": "POSITION_UPDATE",
+        "direction": "SHORT",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false,
+          "position_id": null,
+          "reason": "not evaluated yet"
+        },
+        "expected_rr": null,
+        "id": 2536,
+        "leverage": null,
+        "market_regime": "downtrend_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"SHORT\",\n  \"execution_type\": \"NONE\",\n  \"position_id\": \"crypto-deepseek-45618524d7_AND_crypto-deepseek-32ded9dc2f\"",
+        "rejection_reason_code": "LEVERAGE_LIMIT_EXCEEDED",
+        "rejection_reason_message": "leverage must be <= 10.0x",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Downtrend remains intact with price below both EMA20 (63197) and EMA50 (63964). The 03:00 UTC breakdown candle with elevated volume confirmed selling pressure. Low-vol consolidation at 62580 suggests continuation potential toward TP levels. P1 has 512-point risk buffer to SL vs 587-point reward to TP1; P2 has 693-point risk vs 940-point reward to TP1. Combined open risk of 85.32 USDT (0.82% of equity) is well within the 2% limit.",
+        "timestamp_local": "2026-06-19T11:47:45.334855+07:00",
+        "timestamp_utc": "2026-06-19T04:47:45.334855Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "leverage must be <= 10.0x"
+          ],
+          "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+        }
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto Gemini",
@@ -16882,164 +16945,44 @@
           ],
           "rejection_code": "INTERNAL_ERROR"
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Qwen",
-        "btc_price": 65841.4,
-        "confidence": null,
-        "cycle_number": 721,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2426,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "qwen3-max",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-qwen', '--session-id', 'crypto-q",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-qwen', '--session-id', 'crypto-qwen-1781669640', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt * levera",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-17T11:17:00.942547+07:00",
-        "timestamp_utc": "2026-06-17T04:17:00.942547Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-qwen', '--session-id', 'crypto-qwen-1781669640', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt * leverage`\\n- `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`\\n- Do not multiply by leverage again after using notional exposure.\\n- Percent fields are decimal fractions: 0.0032 means 0.32% of equity.\\n\\nIf market data is insufficient, return NO_TRADE or WATCHLIST. Never invent current prices, funding, open interest, or news.\\n\\nWhen your action is CLOSE or CUT, you must include a `structured_lesson` object in your JSON response. This is your memory \u2014 it will be retrieved in future cycles to inform your decisions. Be specific: reference the actual regime, price action, and what went wrong or right.\\n\\n```json\\n\"structured_lesson\": {\\n  \"what_happened\": \"SHORT hit stop-loss after sharp reversal at resistance\",\\n  \"why\": \"Entered without volume confirmation during RANGING regime\",\\n  \"lesson\": \"In RANGING, require volume spike before SHORT entry at resistance\",\\n  \"follow_or_avoid\": \"avoid\",\\n  \"regime\": \"RANGING\",\\n  \"direction\": \"SHORT\",\\n  \"setup_type\": \"breakout_attempt\"\\n}\\n```\\n\\n`follow_or_avoid` must be `\"follow\"` for winning trades and `\"avoid\"` for losing trades.\\n\\n\\nRULEBOOK:\\n# Crypto Paper Trading Arena\\n\\nThis is a continuous, permanent trading arena with no end date. Two OpenClaw agents operate indefinitely:\\n\\n- `crypto-deepseek`\\n- `crypto-challenger`\\n\\nThe exact provider/model for each agent is locked in `config/settings.yaml` under the agent `llm` block.\\n\\n---\\n\\n## Non-Negotiable Scope\\n\\n- Paper trading only.\\n- No exchange API keys.\\n- No real orders.\\n- Futures leverage is simulated only.\\n- No financial advice language.\\n- The agents are analysts, not autonomous traders.\\n\\n---\\n\\n## Default Settings\\n\\n- Starting paper equity per agent: 10,000 USDT\\n- Symbol: BTC only\\n- Instrument: BTCUSDT perpetual futures, paper trading\\n- Maximum leverage: 10x\\n- Operation: continuous, no end date \u2014 the system runs indefinitely until manually stopped\\n- Soft weekly target: approximately +7% account growth per rolling 7-day period when quality opportunities exist (this is a KPI only; it must never force trades or override risk rules)\\n- Position sizing: agent may choose, but must state margin used, notional exposure, and account risk\\n- Max margin per OPEN/ADD/DCA action: 10% of account equity (1,000 USDT initially)\\n- Maximum total account risk across all open positions: 2% of account equity\\n- Maximum simultaneous open positions: 3\\n- Maximum DCA actions per position: 2\\n- Daily loss limit: 3% of account equity\\n- Agents may DCA, cut, scale in, scale out, or open additional BTC positions when the market supports it\\n- Stop loss: required for every trade\\n- Take profit: required for every trade\\n- Entry timing: agent may enter only when it finds a reasonable setup; standing aside is allowed\\n- Default timeframe: agent may choose, but must state expected holding period\\n- Stablecoin quote: USDT\\n\\n---\\n\\n## Trading Loop\\n\\nRun both agents from the same market state and as close together in time as possible.\\n\\n1. Ask `crypto-deepseek` for a signal.\\n2. Ask `crypto-challenger` for a signal.\\n3. Paste both raw outputs into `SIGNALS.md`.\\n4. Accept only signals that follow this rulebook.\\n5. Record accepted paper trades in `LEDGER.csv`.\\n6. Review open trades at least once per day.\\n7. Evaluate rolling 7-day performance in `EVALUATION.md`.\\n\\n---\\n\\n## Required Data Discipline\\n\\nAgents must state what data they used. If they do not have current market data, they must either:\\n\\n- Ask the user to provide current prices, or\\n- Give a conditional setup with explicit trigger levels, or\\n- Return `NO_TRADE`\\n\\nNo agent may invent current prices, funding rates, liquidation levels, or news.\\n\\n---\\n\\n## Trade Quality Gate\\n\\nA trade idea is valid only if:\\n\\n- Symbol is BTC only.\\n- Leverage is stated and is 10x or lower.\\n- Action is stated: `OPEN`, `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n- Any `OPEN`, `ADD`, or `DCA` action uses 10% account margin or less.\\n- Total account risk after the action is 2% of equity or less.\\n- Risk/reward to TP1 is at least 1:1.19.\\n- Risk/reward to TP2 is at least 1:2.0.\\n- Stop loss is defined before take profit.\\n- Margin used is stated in USDT and as percent of account.\\n- Account risk at stop loss is stated in USDT and percent of account.\\n- Account risk must equal the validator formula in the Futures PnL Convention section.\\n- If modifying an existing position, the target position ID or context is stated.\\n- Thesis and invalidation are both clear.\\n- Counterargument is present.\\n\\nIf any required element is missing, record the output as rejected in `SIGNALS.md` and do not add it to `LEDGER.csv`.\\n\\n---\\n\\n## Signal Requirements\\n\\nEach trade idea must include:\\n\\n- agent\\n- timestamp\\n- symbol\\n- decision (`PAPER_TRADE`, `WATCHLIST`, `NO_TRADE`, or `POSITION_UPDATE`)\\n- action\\n- position ID or position context\\n- direction\\n- entry\\n- leverage\\n- margin used\\n- notional exposure\\n- stop loss\\n- take profit 1\\n- take profit 2\\n- time horizon\\n- risk percent\\n- liquidation-risk note\\n- confidence (1-5)\\n- thesis\\n- invalidation\\n- counterargument\\n- data used\\n- execution type (`MARKET`, `LIMIT`, or `CONDITIONAL`)\\n\\n### Confidence Scale\\n\\n- 1 = Very Low\\n- 2 = Low\\n- 3 = Moderate\\n- 4 = High\\n- 5 = Very High\\n\\n---\\n\\n## Valid Decisions\\n\\nAgents may return only:\\n\\n- `NO_TRADE`\\n- `WATCHLIST`\\n- `PAPER_TRADE`\\n- `POSITION_UPDATE`\\n\\n`WATCHLIST` means the setup is not active yet and should not be entered into the ledger.\\n\\n`POSITION_UPDATE` means the agent is managing an existing paper position using `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n\\n---\\n\\n## Exit Rules\\n\\nPaper trades close when one of these happens:\\n\\n- Stop loss hit\\n- Take profit hit\\n- Time horizon expires\\n- Invalidation condition occurs\\n- Manual review closes the trade and records the reason\\n\\nPartial exits are allowed only if TP1 and TP2 are clearly specified.\\n\\n---\\n\\n## Position Management\\n\\nAllowed actions:\\n\\n- `OPEN`\\n- `ADD`\\n- `DCA`\\n- `REDUCE`\\n- `CUT`\\n- `CLOSE`\\n- `HOLD`\\n- `PLACE_TRIGGER` (optional local conditional entry; does not open until trigger fires)\\n\\n### Advanced trade-management priority\\n\\n1. Attractive setup right now -> `OPEN`.\\n2. Future pullback, breakout, or RSI condition needed -> `PLACE_TRIGGER`.\\n3. Momentum or trend continuation -> consider `trailing_stop`.\\n4. Break-even stop is enforced locally by default around +1R, before TP if needed.\\n5. Thesis has a time horizon -> set `time_exit.max_hold_hours`.\\n\\nCooldowns are enforced locally; if cooldown context is active, do not request new entries. API failover is automatic and should not affect strategy reasoning.\\n\\n### Local conditional orders (`PLACE_TRIGGER`)\\n\\nUse when the setup should execute automatically without another model call.\\n\\n- `action` must be `PLACE_TRIGGER`.\\n- Include `trigger_order` with:\\n  - `trigger`: AND/OR tree of conditions on `price` or `rsi_14` (`gte`, `lte`, `gt`, `lt`, `eq`).\\n  - optional `expires_at` ISO timestamp.\\n  - `execution_signal`: full compliant JSON for the paper trade to execute when triggered (typically `OPEN` / `PAPER_TRADE`).\\n- The local engine monitors triggers; do not expect a follow-up cycle to enter the trade.\\n\\n### Position risk automation (available on `OPEN`)\\n\\nInclude `position_risk` when it improves trade quality without changing the core setup:\\n\\n- `trailing_stop`: `{enabled, mode: percent|atr|step, distance_pct, atr_multiple, step_pct}`\\n- `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`\\n- `time_exit`: `{enabled, max_hold_hours, only_if_profit_pct_below}`\\n\\nIf omitted, break-even still applies by default at `r_multiple=1.0`; other automation remains opt-in unless configured. Automation never widens stop risk.\\n\\n### Valid JSON Templates\\n\\nUse these templates as shape examples. Replace prices with the live market setup. Do not copy stale prices blindly.\\n\\n#### Normal market entry with correct risk math\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Price reclaimed support with improving momentum.\",\\n  \"invalidation\": \"Close back below support or stop loss hit.\",\\n  \"counterargument\": \"Trend may remain weak and reject the reclaim.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"notes_for_ledger\": \"Risk formula: abs(77000-76500)/77000*5000 = 32.47 USDT.\"\\n}\\n```\\n\\n#### Open with local risk automation\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Breakout continuation setup.\",\\n  \"invalidation\": \"Breakout fails and stop loss is reached.\",\\n  \"counterargument\": \"Breakout may be a liquidity sweep.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"position_risk\": {\\n    \"trailing_stop\": {\"enabled\": true, \"mode\": \"percent\", \"distance_pct\": 0.01},\\n    \"break_even\": {\"enabled\": true, \"trigger\": \"tp1\", \"fee_buffer_pct\": 0.0005},\\n    \"time_exit\": {\"enabled\": true, \"max_hold_hours\": 12, \"only_if_profit_pct_below\": 0.002}\\n  }\\n}\\n```\\n\\n#### Conditional order\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"PLACE_TRIGGER\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"NONE\",\\n  \"execution_type\": \"CONDITIONAL\",\\n  \"thesis\": \"Enter only if price confirms the breakout.\",\\n  \"invalidation\": \"Trigger expires or price breaks the invalidation level first.\",\\n  \"counterargument\": \"Waiting for trigger may miss the first move.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"trigger_order\": {\\n    \"trigger\": {\\n      \"logic\": \"AND\",\\n      \"conditions\": [\\n        {\"field\": \"price\", \"op\": \"gte\", \"value\": 77000},\\n        {\"field\": \"rsi_14\", \"op\": \"gte\", \"value\": 45}\\n      ]\\n    },\\n    \"expires_at\": \"2026-05-18T18:00:00Z\",\\n    \"execution_signal\": {\\n      \"agent\": \"crypto-challenger\",\\n      \"decision\": \"PAPER_TRADE\",\\n      \"action\": \"OPEN\",\\n      \"symbol\": \"BTC\",\\n      \"direction\": \"LONG\",\\n      \"execution_type\": \"MARKET\",\\n      \"leverage\": 5,\\n      \"margin_used_usdt\": 1000,\\n      \"margin_used_percent\": 0.10,\\n      \"notional_exposure_usdt\": 5000,\\n      \"entry\": 77000,\\n      \"stop_loss\": 76500,\\n      \"take_profit_1\": 77800,\\n      \"take_profit_2\": 78200,\\n      \"time_horizon\": \"6-12h\",\\n      \"account_risk_usdt\": 32.47,\\n      \"account_risk_percent\": 0.003247,\\n      \"total_account_risk_after_action_usdt\": 32.47,\\n      \"total_account_risk_after_action_percent\": 0.003247,\\n      \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n      \"confidence\": 3,\\n      \"risk_reward_to_tp1\": 1.6,\\n      \"risk_reward_to_tp2\": 2.4,\\n      \"thesis\": \"Triggered breakout entry.\",\\n      \"invalidation\": \"Stop loss is reached after trigger.\",\\n      \"counterargument\": \"Trigger may activate into a failed breakout.\",\\n      \"data_used\": [\"market_state\", \"indicators\", \"trigger_order\"]\\n    }\\n  }\\n}\\n```\\n\\n#### Position update / hold\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"POSITION_UPDATE\",\\n  \"action\": \"HOLD\",\\n  \"symbol\": \"BTC\",\\n  \"position_id\": \"existing-position-id\",\\n  \"position_context\": \"Existing LONG remains above invalidation and has not reached TP/SL.\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"NONE\",\\n  \"thesis\": \"Original thesis remains intact.\",\\n  \"invalidation\": \"Close below support or stop loss hit.\",\\n  \"counterargument\": \"Momentum is slowing and may require reduce/cut next cycle.\",\\n  \"data_used\": [\"open_positions\", \"market_state\", \"indicators\"]\\n}\\n```\\n\\n### Constraints\\n\\n- Each `OPEN`, `ADD`, or `DCA` uses no more than 10% account equity as new margin.\\n- Maximum DCA actions per position: 2.\\n- DCA is not allowed solely to avoid recognizing a losing trade.\\n- After `ADD` or `DCA`, the agent must restate total margin, total notional exposure, average entry if known, and updated account risk.\\n- If updated risk is unclear, the signal is rejected.\\n- After a stop loss, the agent must wait at least one full decision cycle before opening a new position in the same direction.\\n\\n---\\n\\n## Daily Risk Controls\\n\\n- If cumulative realized + unrealized losses reach 3% in one UTC day, no new positions may be opened until the next UTC day.\\n- Existing positions may still be reduced or closed.\\n\\n---\\n\\n## Futures PnL Convention\\n\\nFor paper tracking:\\n\\n- Notional exposure = margin used x leverage\\n- Long PnL = notional exposure x ((exit price - entry price) / entry price)\\n- Short PnL = notional exposure x ((entry price - exit price) / entry price)\\n- Account risk at stop = abs(entry price - stop loss) / entry price x notional exposure\\n- Do not multiply by leverage again after notional exposure has already been calculated.\\n- Example: margin 1,000 USDT at 5x means notional 5,000 USDT. Long entry 77,000 and stop 76,500 gives risk = 500 / 77,000 x 5,000 = 32.47 USDT, or 0.3247% of a 10,000 USDT account. In JSON, write `account_risk_percent: 0.003247`.\\n- Account PnL % = PnL USDT / 10,000 x 100\\n\\nFees and funding are ignored unless added later.\\n\\n---\\n\\n## Evaluation\\n\\nWinner is determined by risk-adjusted behavior, not profit alone.\\n\\nScore these together:\\n\\n- Total return\\n- Max drawdown\\n- Win rate\\n- Average win / average loss\\n- Risk/reward quality\\n- Rule compliance\\n- Clarity and repeatability\\n- Number of rejected signals\\n- Avoidance of low-quality trades\\n- Rolling 7-day return progress toward the +7% soft weekly target\\n\\n---\\n\\n## Disqualification\\n\\nAn agent may be disqualified for:\\n\\n- Suggesting real-money execution\\n- Ignoring stop loss or risk percent\\n- Using leverage above 10x\\n- Trading symbols other than BTC\\n- Repeatedly forcing low-quality trades\\n- Inventing market data\\n- Asking for exchange credentials\\n- Treating paper trades as real-money instructions\\n\\n---\\n\\n## Performance Criteria\\n\\nAgents are evaluated continuously on risk-adjusted performance.\\n\\nPreferred agent profile:\\n\\n- Consistent rolling 7-day return closest to +7% soft target\\n- Lower drawdown\\n- Fewer invalid/rejected signals\\n- Better adherence to rules\\n- Clearer reasoning that can be audited later\\n- Sustainable compounding over time, not short-term gambling\\n\\n\\nSTRATEGY IDENTITY:\\nStrategy profile for crypto-qwen: archetype=mean_reversion; preferred_indicators=RSI, Bollinger Bands, support/resistance; preferred_regimes=range, exhaustion; aggressiveness=selective; confidence_calibration=skeptical.\\n\\nYou have a unique trading identity.\\nUse shared lessons as optional guidance.\\nDo not imitate the other agent.\\nPrioritize your own historical edge and strategy profile.\\nMaintain distinct decision-making behavior.\\nDiversity status: normal. Maintain your own strategy identity.\\n\\nLESSONS TO AVOID (do not repeat these mistakes):\\n\u2022 Position required system intervention. Consider tighter stop-loss or time_exit rules to avoid AUTO_CLOSE. (regime=unknown, dir=LONG)\\n\\nSHARED LESSONS (advisory, max 30% unless anti-convergence reduces it):\\nThe following are optional cross-agent insights.\\nUse them only when they align with your own strategy and evidence.\\nEvidence-backed lessons about PLACE_TRIGGER, trailing stops, break-even, and time exits are valid.\\n[]\\n\\nSTRICT JSON SCHEMA HINT:\\n{\"agent\":\"crypto-qwen\",\"decision\":\"NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE\",\"action\":\"NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER\",\"symbol\":\"BTC\",\"direction\":\"NONE|LONG|SHORT\",\"execution_type\":\"NONE|MARKET|LIMIT|CONDITIONAL\",\"risk_math\":{\"notional_exposure_usdt\":\"margin_used_usdt * leverage\",\"account_risk_usdt\":\"abs(entry - stop_loss) / entry * notional_exposure_usdt\",\"account_risk_percent\":\"account_risk_usdt / account_equity; use decimal fraction\",\"example\":\"entry 77000, stop 76500, notional 5000 => account_risk_usdt 32.47 and account_risk_percent 0.003247 on 10000 equity\",\"warning\":\"Do not multiply by leverage again after using notional_exposure_usdt.\"},\"required_for_trades\":[\"entry\",\"leverage\",\"margin_used_usdt\",\"stop_loss\",\"take_profit_1\",\"take_profit_2\",\"account_risk_usdt\",\"thesis\",\"invalidation\",\"counterargument\",\"data_used\"],\"optional_tool_request_format\":{\"tool_requests\":[{\"tool\":\"backtest_pattern\",\"arguments\":{}}]},\"advanced_trade_management\":{\"consider_every_cycle\":true,\"PLACE_TRIGGER\":\"Prefer when entry needs future pullback, breakout, or RSI confirmation; include trigger_order and full nested execution_signal.\",\"position_risk\":\"Break-even is always enforced locally around +1R; on OPEN, consider time_exit and add trailing_stop for momentum or trend-continuation trades.\",\"cooldown\":\"If cooldown context is active, avoid new entries unless managing existing positions.\",\"failover\":\"Automatic and transparent; keep reasoning provider-neutral.\"},\"available_local_tools\":[\"backtest_pattern\",\"calculate_position_size\",\"get_funding\",\"get_indicators\",\"get_market_regime\",\"get_market_state\",\"get_news_sentiment\",\"get_open_interest\",\"retrieve_similar_trades\"],\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false}}\\n\\nCURRENT CONTEXT:\\n{\"market_state\":{\"symbol\":\"BTCUSDT\",\"exchange\":\"binanceusdm\",\"timestamp\":\"2026-06-17T04:06:29.780093+00:00\",\"current_price\":65841.4,\"timeframe\":\"1h\",\"funding_rate\":-3.419e-05,\"open_interest\":102688.233,\"regime\":\"range_low_vol\",\"news_sentiment\":0.0,\"indicators\":{\"rsi_14\":56.81026699342185,\"ema_20\":65897.15911466032,\"ema_50\":65794.25542902687,\"atr_14\":287.8071428571405,\"macd\":-77.3354782092938,\"macd_signal\":-73.94702406103453,\"bb_low\":65350.520297499905,\"bb_mid\":65925.33499999999,\"bb_high\":66500.14970250007},\"recent_candles\":[{\"timestamp\":\"2026-06-17T02:00:00Z\",\"open\":65901.1,\"high\":66092.5,\"low\":65743.0,\"close\":65872.7,\"volume\":3487.582},{\"timestamp\":\"2026-06-17T03:00:00Z\",\"open\":65872.6,\"high\":65872.7,\"low\":65671.8,\"close\":65818.6,\"volume\":1896.242},{\"timestamp\":\"2026-06-17T04:00:00Z\",\"open\":65818.6,\"high\":65841.4,\"low\":65787.0,\"close\":65841.4,\"volume\":118.656}]},\"account_summary\":{\"agent_id\":\"crypto-qwen\",\"equity\":9962.434581202931,\"realized_pnl\":-37.56541879706944,\"unrealized_pnl\":0.0,\"open_margin\":0.0,\"open_risk\":0.0,\"daily_pnl\":0.0,\"max_drawdown\":0.0,\"open_positions\":[]},\"similar_trades\":[\"2026-05-19T00:53:58.507311 OPEN LONG entry=77175.73206 pnl=-2.5\",\"2026-05-19T01:30:57.777755 AUTO_CLOSE LONG entry=77175.73206 pnl=-37.36605346235021\",\"2026-05-19T13:13:25.145371 CLOSE LONG entry=76997.99652 pnl=-13.218862013319978\",\"2026-05-21T20:14:47.331442 OPEN LONG entry=77315.45999999999 pnl=-2.5\",\"2026-05-22T00:55:08.406415 AUTO_CLOSE LONG entry=77315.45999999999 pnl=-1.0404406828852313\"],\"backtest_diagnostic\":{\"sample_size\":234.0,\"mean_forward_return\":0.001445458562885444,\"win_rate\":0.5641025641025641},\"strategy_profile\":{\"agent_id\":\"crypto-qwen\",\"archetype\":\"mean_reversion\",\"preferred_indicators\":[\"RSI\",\"Bollinger Bands\",\"support/resistance\"],\"preferred_regimes\":[\"range\",\"exhaustion\"],\"aggressiveness\":\"selective\",\"confidence_calibration\":\"skeptical\"},\"private_lessons\":[\"[AVOID] Position required system intervention. Consider tighter stop-loss or time_exit rules to avoid AUTO_CLOSE. (regime=unknown, dir=LONG)\"],\"shared_lessons\":[],\"shared_learning\":{\"shared_ratio_applied\":0.3,\"convergence_warning\":false,\"shared_lesson_ids\":[],\"shared_lessons_are_advisory_only\":true},\"historical_performance\":null,\"confidence_calibration\":null,\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false},\"version_context\":{\"config_version_id\":61,\"config_hash\":\"191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7\",\"code_version\":\"b0454f1ce827\"}}', '--timeout', '180']' timed out after 180 seconds"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 65841.4,
-        "confidence": null,
-        "cycle_number": 721,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2425,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-deepseek', '--session-id', 'cryp",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-deepseek', '--session-id', 'crypto-deepseek-1781669326', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt ",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-17T11:11:47.100291+07:00",
-        "timestamp_utc": "2026-06-17T04:11:47.100291Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-deepseek', '--session-id', 'crypto-deepseek-1781669326', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt * leverage`\\n- `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`\\n- Do not multiply by leverage again after using notional exposure.\\n- Percent fields are decimal fractions: 0.0032 means 0.32% of equity.\\n\\nIf market data is insufficient, return NO_TRADE or WATCHLIST. Never invent current prices, funding, open interest, or news.\\n\\nWhen your action is CLOSE or CUT, you must include a `structured_lesson` object in your JSON response. This is your memory \u2014 it will be retrieved in future cycles to inform your decisions. Be specific: reference the actual regime, price action, and what went wrong or right.\\n\\n```json\\n\"structured_lesson\": {\\n  \"what_happened\": \"SHORT hit stop-loss after sharp reversal at resistance\",\\n  \"why\": \"Entered without volume confirmation during RANGING regime\",\\n  \"lesson\": \"In RANGING, require volume spike before SHORT entry at resistance\",\\n  \"follow_or_avoid\": \"avoid\",\\n  \"regime\": \"RANGING\",\\n  \"direction\": \"SHORT\",\\n  \"setup_type\": \"breakout_attempt\"\\n}\\n```\\n\\n`follow_or_avoid` must be `\"follow\"` for winning trades and `\"avoid\"` for losing trades.\\n\\n\\nRULEBOOK:\\n# Crypto Paper Trading Arena\\n\\nThis is a continuous, permanent trading arena with no end date. Two OpenClaw agents operate indefinitely:\\n\\n- `crypto-deepseek`\\n- `crypto-challenger`\\n\\nThe exact provider/model for each agent is locked in `config/settings.yaml` under the agent `llm` block.\\n\\n---\\n\\n## Non-Negotiable Scope\\n\\n- Paper trading only.\\n- No exchange API keys.\\n- No real orders.\\n- Futures leverage is simulated only.\\n- No financial advice language.\\n- The agents are analysts, not autonomous traders.\\n\\n---\\n\\n## Default Settings\\n\\n- Starting paper equity per agent: 10,000 USDT\\n- Symbol: BTC only\\n- Instrument: BTCUSDT perpetual futures, paper trading\\n- Maximum leverage: 10x\\n- Operation: continuous, no end date \u2014 the system runs indefinitely until manually stopped\\n- Soft weekly target: approximately +7% account growth per rolling 7-day period when quality opportunities exist (this is a KPI only; it must never force trades or override risk rules)\\n- Position sizing: agent may choose, but must state margin used, notional exposure, and account risk\\n- Max margin per OPEN/ADD/DCA action: 10% of account equity (1,000 USDT initially)\\n- Maximum total account risk across all open positions: 2% of account equity\\n- Maximum simultaneous open positions: 3\\n- Maximum DCA actions per position: 2\\n- Daily loss limit: 3% of account equity\\n- Agents may DCA, cut, scale in, scale out, or open additional BTC positions when the market supports it\\n- Stop loss: required for every trade\\n- Take profit: required for every trade\\n- Entry timing: agent may enter only when it finds a reasonable setup; standing aside is allowed\\n- Default timeframe: agent may choose, but must state expected holding period\\n- Stablecoin quote: USDT\\n\\n---\\n\\n## Trading Loop\\n\\nRun both agents from the same market state and as close together in time as possible.\\n\\n1. Ask `crypto-deepseek` for a signal.\\n2. Ask `crypto-challenger` for a signal.\\n3. Paste both raw outputs into `SIGNALS.md`.\\n4. Accept only signals that follow this rulebook.\\n5. Record accepted paper trades in `LEDGER.csv`.\\n6. Review open trades at least once per day.\\n7. Evaluate rolling 7-day performance in `EVALUATION.md`.\\n\\n---\\n\\n## Required Data Discipline\\n\\nAgents must state what data they used. If they do not have current market data, they must either:\\n\\n- Ask the user to provide current prices, or\\n- Give a conditional setup with explicit trigger levels, or\\n- Return `NO_TRADE`\\n\\nNo agent may invent current prices, funding rates, liquidation levels, or news.\\n\\n---\\n\\n## Trade Quality Gate\\n\\nA trade idea is valid only if:\\n\\n- Symbol is BTC only.\\n- Leverage is stated and is 10x or lower.\\n- Action is stated: `OPEN`, `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n- Any `OPEN`, `ADD`, or `DCA` action uses 10% account margin or less.\\n- Total account risk after the action is 2% of equity or less.\\n- Risk/reward to TP1 is at least 1:1.19.\\n- Risk/reward to TP2 is at least 1:2.0.\\n- Stop loss is defined before take profit.\\n- Margin used is stated in USDT and as percent of account.\\n- Account risk at stop loss is stated in USDT and percent of account.\\n- Account risk must equal the validator formula in the Futures PnL Convention section.\\n- If modifying an existing position, the target position ID or context is stated.\\n- Thesis and invalidation are both clear.\\n- Counterargument is present.\\n\\nIf any required element is missing, record the output as rejected in `SIGNALS.md` and do not add it to `LEDGER.csv`.\\n\\n---\\n\\n## Signal Requirements\\n\\nEach trade idea must include:\\n\\n- agent\\n- timestamp\\n- symbol\\n- decision (`PAPER_TRADE`, `WATCHLIST`, `NO_TRADE`, or `POSITION_UPDATE`)\\n- action\\n- position ID or position context\\n- direction\\n- entry\\n- leverage\\n- margin used\\n- notional exposure\\n- stop loss\\n- take profit 1\\n- take profit 2\\n- time horizon\\n- risk percent\\n- liquidation-risk note\\n- confidence (1-5)\\n- thesis\\n- invalidation\\n- counterargument\\n- data used\\n- execution type (`MARKET`, `LIMIT`, or `CONDITIONAL`)\\n\\n### Confidence Scale\\n\\n- 1 = Very Low\\n- 2 = Low\\n- 3 = Moderate\\n- 4 = High\\n- 5 = Very High\\n\\n---\\n\\n## Valid Decisions\\n\\nAgents may return only:\\n\\n- `NO_TRADE`\\n- `WATCHLIST`\\n- `PAPER_TRADE`\\n- `POSITION_UPDATE`\\n\\n`WATCHLIST` means the setup is not active yet and should not be entered into the ledger.\\n\\n`POSITION_UPDATE` means the agent is managing an existing paper position using `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n\\n---\\n\\n## Exit Rules\\n\\nPaper trades close when one of these happens:\\n\\n- Stop loss hit\\n- Take profit hit\\n- Time horizon expires\\n- Invalidation condition occurs\\n- Manual review closes the trade and records the reason\\n\\nPartial exits are allowed only if TP1 and TP2 are clearly specified.\\n\\n---\\n\\n## Position Management\\n\\nAllowed actions:\\n\\n- `OPEN`\\n- `ADD`\\n- `DCA`\\n- `REDUCE`\\n- `CUT`\\n- `CLOSE`\\n- `HOLD`\\n- `PLACE_TRIGGER` (optional local conditional entry; does not open until trigger fires)\\n\\n### Advanced trade-management priority\\n\\n1. Attractive setup right now -> `OPEN`.\\n2. Future pullback, breakout, or RSI condition needed -> `PLACE_TRIGGER`.\\n3. Momentum or trend continuation -> consider `trailing_stop`.\\n4. Break-even stop is enforced locally by default around +1R, before TP if needed.\\n5. Thesis has a time horizon -> set `time_exit.max_hold_hours`.\\n\\nCooldowns are enforced locally; if cooldown context is active, do not request new entries. API failover is automatic and should not affect strategy reasoning.\\n\\n### Local conditional orders (`PLACE_TRIGGER`)\\n\\nUse when the setup should execute automatically without another model call.\\n\\n- `action` must be `PLACE_TRIGGER`.\\n- Include `trigger_order` with:\\n  - `trigger`: AND/OR tree of conditions on `price` or `rsi_14` (`gte`, `lte`, `gt`, `lt`, `eq`).\\n  - optional `expires_at` ISO timestamp.\\n  - `execution_signal`: full compliant JSON for the paper trade to execute when triggered (typically `OPEN` / `PAPER_TRADE`).\\n- The local engine monitors triggers; do not expect a follow-up cycle to enter the trade.\\n\\n### Position risk automation (available on `OPEN`)\\n\\nInclude `position_risk` when it improves trade quality without changing the core setup:\\n\\n- `trailing_stop`: `{enabled, mode: percent|atr|step, distance_pct, atr_multiple, step_pct}`\\n- `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`\\n- `time_exit`: `{enabled, max_hold_hours, only_if_profit_pct_below}`\\n\\nIf omitted, break-even still applies by default at `r_multiple=1.0`; other automation remains opt-in unless configured. Automation never widens stop risk.\\n\\n### Valid JSON Templates\\n\\nUse these templates as shape examples. Replace prices with the live market setup. Do not copy stale prices blindly.\\n\\n#### Normal market entry with correct risk math\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Price reclaimed support with improving momentum.\",\\n  \"invalidation\": \"Close back below support or stop loss hit.\",\\n  \"counterargument\": \"Trend may remain weak and reject the reclaim.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"notes_for_ledger\": \"Risk formula: abs(77000-76500)/77000*5000 = 32.47 USDT.\"\\n}\\n```\\n\\n#### Open with local risk automation\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Breakout continuation setup.\",\\n  \"invalidation\": \"Breakout fails and stop loss is reached.\",\\n  \"counterargument\": \"Breakout may be a liquidity sweep.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"position_risk\": {\\n    \"trailing_stop\": {\"enabled\": true, \"mode\": \"percent\", \"distance_pct\": 0.01},\\n    \"break_even\": {\"enabled\": true, \"trigger\": \"tp1\", \"fee_buffer_pct\": 0.0005},\\n    \"time_exit\": {\"enabled\": true, \"max_hold_hours\": 12, \"only_if_profit_pct_below\": 0.002}\\n  }\\n}\\n```\\n\\n#### Conditional order\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"PLACE_TRIGGER\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"NONE\",\\n  \"execution_type\": \"CONDITIONAL\",\\n  \"thesis\": \"Enter only if price confirms the breakout.\",\\n  \"invalidation\": \"Trigger expires or price breaks the invalidation level first.\",\\n  \"counterargument\": \"Waiting for trigger may miss the first move.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"trigger_order\": {\\n    \"trigger\": {\\n      \"logic\": \"AND\",\\n      \"conditions\": [\\n        {\"field\": \"price\", \"op\": \"gte\", \"value\": 77000},\\n        {\"field\": \"rsi_14\", \"op\": \"gte\", \"value\": 45}\\n      ]\\n    },\\n    \"expires_at\": \"2026-05-18T18:00:00Z\",\\n    \"execution_signal\": {\\n      \"agent\": \"crypto-challenger\",\\n      \"decision\": \"PAPER_TRADE\",\\n      \"action\": \"OPEN\",\\n      \"symbol\": \"BTC\",\\n      \"direction\": \"LONG\",\\n      \"execution_type\": \"MARKET\",\\n      \"leverage\": 5,\\n      \"margin_used_usdt\": 1000,\\n      \"margin_used_percent\": 0.10,\\n      \"notional_exposure_usdt\": 5000,\\n      \"entry\": 77000,\\n      \"stop_loss\": 76500,\\n      \"take_profit_1\": 77800,\\n      \"take_profit_2\": 78200,\\n      \"time_horizon\": \"6-12h\",\\n      \"account_risk_usdt\": 32.47,\\n      \"account_risk_percent\": 0.003247,\\n      \"total_account_risk_after_action_usdt\": 32.47,\\n      \"total_account_risk_after_action_percent\": 0.003247,\\n      \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n      \"confidence\": 3,\\n      \"risk_reward_to_tp1\": 1.6,\\n      \"risk_reward_to_tp2\": 2.4,\\n      \"thesis\": \"Triggered breakout entry.\",\\n      \"invalidation\": \"Stop loss is reached after trigger.\",\\n      \"counterargument\": \"Trigger may activate into a failed breakout.\",\\n      \"data_used\": [\"market_state\", \"indicators\", \"trigger_order\"]\\n    }\\n  }\\n}\\n```\\n\\n#### Position update / hold\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"POSITION_UPDATE\",\\n  \"action\": \"HOLD\",\\n  \"symbol\": \"BTC\",\\n  \"position_id\": \"existing-position-id\",\\n  \"position_context\": \"Existing LONG remains above invalidation and has not reached TP/SL.\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"NONE\",\\n  \"thesis\": \"Original thesis remains intact.\",\\n  \"invalidation\": \"Close below support or stop loss hit.\",\\n  \"counterargument\": \"Momentum is slowing and may require reduce/cut next cycle.\",\\n  \"data_used\": [\"open_positions\", \"market_state\", \"indicators\"]\\n}\\n```\\n\\n### Constraints\\n\\n- Each `OPEN`, `ADD`, or `DCA` uses no more than 10% account equity as new margin.\\n- Maximum DCA actions per position: 2.\\n- DCA is not allowed solely to avoid recognizing a losing trade.\\n- After `ADD` or `DCA`, the agent must restate total margin, total notional exposure, average entry if known, and updated account risk.\\n- If updated risk is unclear, the signal is rejected.\\n- After a stop loss, the agent must wait at least one full decision cycle before opening a new position in the same direction.\\n\\n---\\n\\n## Daily Risk Controls\\n\\n- If cumulative realized + unrealized losses reach 3% in one UTC day, no new positions may be opened until the next UTC day.\\n- Existing positions may still be reduced or closed.\\n\\n---\\n\\n## Futures PnL Convention\\n\\nFor paper tracking:\\n\\n- Notional exposure = margin used x leverage\\n- Long PnL = notional exposure x ((exit price - entry price) / entry price)\\n- Short PnL = notional exposure x ((entry price - exit price) / entry price)\\n- Account risk at stop = abs(entry price - stop loss) / entry price x notional exposure\\n- Do not multiply by leverage again after notional exposure has already been calculated.\\n- Example: margin 1,000 USDT at 5x means notional 5,000 USDT. Long entry 77,000 and stop 76,500 gives risk = 500 / 77,000 x 5,000 = 32.47 USDT, or 0.3247% of a 10,000 USDT account. In JSON, write `account_risk_percent: 0.003247`.\\n- Account PnL % = PnL USDT / 10,000 x 100\\n\\nFees and funding are ignored unless added later.\\n\\n---\\n\\n## Evaluation\\n\\nWinner is determined by risk-adjusted behavior, not profit alone.\\n\\nScore these together:\\n\\n- Total return\\n- Max drawdown\\n- Win rate\\n- Average win / average loss\\n- Risk/reward quality\\n- Rule compliance\\n- Clarity and repeatability\\n- Number of rejected signals\\n- Avoidance of low-quality trades\\n- Rolling 7-day return progress toward the +7% soft weekly target\\n\\n---\\n\\n## Disqualification\\n\\nAn agent may be disqualified for:\\n\\n- Suggesting real-money execution\\n- Ignoring stop loss or risk percent\\n- Using leverage above 10x\\n- Trading symbols other than BTC\\n- Repeatedly forcing low-quality trades\\n- Inventing market data\\n- Asking for exchange credentials\\n- Treating paper trades as real-money instructions\\n\\n---\\n\\n## Performance Criteria\\n\\nAgents are evaluated continuously on risk-adjusted performance.\\n\\nPreferred agent profile:\\n\\n- Consistent rolling 7-day return closest to +7% soft target\\n- Lower drawdown\\n- Fewer invalid/rejected signals\\n- Better adherence to rules\\n- Clearer reasoning that can be audited later\\n- Sustainable compounding over time, not short-term gambling\\n\\n\\nSTRATEGY IDENTITY:\\nStrategy profile for crypto-deepseek: archetype=trend_following; preferred_indicators=EMA, MACD, OI, volume; preferred_regimes=breakout, strong_trend; aggressiveness=moderate; confidence_calibration=evidence_weighted.\\n\\nYou have a unique trading identity.\\nUse shared lessons as optional guidance.\\nDo not imitate the other agent.\\nPrioritize your own historical edge and strategy profile.\\nMaintain distinct decision-making behavior.\\nDiversity status: normal. Maintain your own strategy identity.\\n\\nSTRICT JSON SCHEMA HINT:\\n{\"agent\":\"crypto-deepseek\",\"decision\":\"NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE\",\"action\":\"NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER\",\"symbol\":\"BTC\",\"direction\":\"NONE|LONG|SHORT\",\"execution_type\":\"NONE|MARKET|LIMIT|CONDITIONAL\",\"risk_math\":{\"notional_exposure_usdt\":\"margin_used_usdt * leverage\",\"account_risk_usdt\":\"abs(entry - stop_loss) / entry * notional_exposure_usdt\",\"account_risk_percent\":\"account_risk_usdt / account_equity; use decimal fraction\",\"example\":\"entry 77000, stop 76500, notional 5000 => account_risk_usdt 32.47 and account_risk_percent 0.003247 on 10000 equity\",\"warning\":\"Do not multiply by leverage again after using notional_exposure_usdt.\"},\"required_for_trades\":[\"entry\",\"leverage\",\"margin_used_usdt\",\"stop_loss\",\"take_profit_1\",\"take_profit_2\",\"account_risk_usdt\",\"thesis\",\"invalidation\",\"counterargument\",\"data_used\"],\"optional_tool_request_format\":{\"tool_requests\":[{\"tool\":\"backtest_pattern\",\"arguments\":{}}]},\"advanced_trade_management\":{\"consider_every_cycle\":true,\"PLACE_TRIGGER\":\"Prefer when entry needs future pullback, breakout, or RSI confirmation; include trigger_order and full nested execution_signal.\",\"position_risk\":\"Break-even is always enforced locally around +1R; on OPEN, consider time_exit and add trailing_stop for momentum or trend-continuation trades.\",\"cooldown\":\"If cooldown context is active, avoid new entries unless managing existing positions.\",\"failover\":\"Automatic and transparent; keep reasoning provider-neutral.\"},\"available_local_tools\":[\"backtest_pattern\",\"calculate_position_size\",\"get_funding\",\"get_indicators\",\"get_market_regime\",\"get_market_state\",\"get_news_sentiment\",\"get_open_interest\",\"retrieve_similar_trades\"],\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false}}\\n\\nCURRENT CONTEXT:\\n{\"market_state\":{\"symbol\":\"BTCUSDT\",\"exchange\":\"binanceusdm\",\"timestamp\":\"2026-06-17T04:06:29.780093+00:00\",\"current_price\":65841.4,\"timeframe\":\"1h\",\"funding_rate\":-3.419e-05,\"open_interest\":102688.233,\"regime\":\"range_low_vol\",\"news_sentiment\":0.0,\"indicators\":{\"rsi_14\":56.81026699342185,\"ema_20\":65897.15911466032,\"ema_50\":65794.25542902687,\"atr_14\":287.8071428571405,\"macd\":-77.3354782092938,\"macd_signal\":-73.94702406103453,\"bb_low\":65350.520297499905,\"bb_mid\":65925.33499999999,\"bb_high\":66500.14970250007},\"recent_candles\":[{\"timestamp\":\"2026-06-17T02:00:00Z\",\"open\":65901.1,\"high\":66092.5,\"low\":65743.0,\"close\":65872.7,\"volume\":3487.582},{\"timestamp\":\"2026-06-17T03:00:00Z\",\"open\":65872.6,\"high\":65872.7,\"low\":65671.8,\"close\":65818.6,\"volume\":1896.242},{\"timestamp\":\"2026-06-17T04:00:00Z\",\"open\":65818.6,\"high\":65841.4,\"low\":65787.0,\"close\":65841.4,\"volume\":118.656}]},\"account_summary\":{\"agent_id\":\"crypto-deepseek\",\"equity\":10435.810771276136,\"realized_pnl\":435.8107712761365,\"unrealized_pnl\":0.0,\"open_margin\":0.0,\"open_risk\":0.0,\"daily_pnl\":0.0,\"max_drawdown\":0.0,\"open_positions\":[]},\"backtest_diagnostic\":{\"sample_size\":234.0,\"mean_forward_return\":0.001445458562885444,\"win_rate\":0.5641025641025641},\"strategy_profile\":{\"agent_id\":\"crypto-deepseek\",\"archetype\":\"trend_following\",\"preferred_indicators\":[\"EMA\",\"MACD\",\"OI\",\"volume\"],\"preferred_regimes\":[\"breakout\",\"strong_trend\"],\"aggressiveness\":\"moderate\",\"confidence_calibration\":\"evidence_weighted\"},\"shared_learning\":{\"shared_ratio_applied\":0.3,\"convergence_warning\":false,\"shared_lesson_ids\":[],\"shared_lessons_are_advisory_only\":true},\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false},\"version_context\":{\"config_version_id\":61,\"config_hash\":\"191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7\",\"code_version\":\"b0454f1ce827\"},\"private_lessons\":[\"[FOLLOW] Risk automation protected capital. Consider tighter stop-loss or time_exit rules to avoid AUTO_REDUCE. (regime=unknown, dir=LONG)\",\"[FOLLOW] Risk automation protected capital. Consider tighter stop-loss or time_exit rules to avoid AUTO_CLOSE. (regime=unknown, dir=SHORT)\",{\"truncated_items\":4}],\"shared_lessons\":[]}\\n\\nContext was compressed to fit the local OpenClaw CLI message limit. Use available_local_tools if more market detail is essential.', '--timeout', '180']' timed out after 180 seconds"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Gemini",
-        "btc_price": 65822.0,
-        "confidence": null,
-        "cycle_number": 720,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2424,
-        "leverage": null,
-        "market_regime": "range_low_vol",
-        "model_name": "gemini-3.5-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-gemini', '--session-id', 'crypto",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-gemini', '--session-id', 'crypto-gemini-1781661778', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt * le",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-17T09:05:58.559966+07:00",
-        "timestamp_utc": "2026-06-17T02:05:58.559966Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: OpenClaw timeout after 180s: Command '['C:\\\\Program Files\\\\nodejs\\\\node.EXE', 'C:\\\\Users\\\\Admin\\\\AppData\\\\Roaming\\\\npm\\\\node_modules\\\\openclaw\\\\openclaw.mjs', 'agent', '--agent', 'crypto-gemini', '--session-id', 'crypto-gemini-1781661778', '--message', 'You are a BTCUSDT perpetual futures paper-trading agent operating in a continuous, permanent trading arena with no end date.\\n\\nThere is no deadline. There is no final day. There is no competition period ending. Your objective is to maximize long-term risk-adjusted returns through sustainable compounding. Preserve capital first, avoid unnecessary drawdowns, and target approximately +7% account growth per rolling 7-day period when quality opportunities exist. NO_TRADE is always acceptable when no valid setup exists. Never force trades to chase a target.\\n\\nYou must obey the rulebook exactly. You do not place real orders and you do not ask for exchange credentials.\\n\\nReturn one JSON object only. Do not wrap it in Markdown. Do not include prose outside JSON.\\n\\nThe JSON must conform to the provided schema. Use uppercase enum values such as PAPER_TRADE, NO_TRADE, OPEN, LONG, LIMIT.\\n\\nAdvanced trade management is available and must be considered on every setup:\\n\\n- If entry is not attractive now, prefer `PLACE_TRIGGER` for pullback, breakout, or RSI confirmation.\\n- Break-even stop is always enforced locally around +1R; still include `position_risk.time_exit` when the thesis has a time window.\\n- Use `position_risk.trailing_stop` selectively for momentum or trend-continuation trades.\\n- If cooldown context is active, return HOLD/NO_TRADE unless managing existing positions.\\n- API failover is automatic; keep reasoning provider-neutral.\\n- Local risk automation may automatically move stop loss to break-even and trailing levels after entry. Always use the current position context as the source of truth.\\n\\nRisk math must match the validator exactly:\\n\\n- `notional_exposure_usdt = margin_used_usdt * leverage`\\n- `account_risk_usdt = abs(entry - stop_loss) / entry * notional_exposure_usdt`\\n- Do not multiply by leverage again after using notional exposure.\\n- Percent fields are decimal fractions: 0.0032 means 0.32% of equity.\\n\\nIf market data is insufficient, return NO_TRADE or WATCHLIST. Never invent current prices, funding, open interest, or news.\\n\\nWhen your action is CLOSE or CUT, you must include a `structured_lesson` object in your JSON response. This is your memory \u2014 it will be retrieved in future cycles to inform your decisions. Be specific: reference the actual regime, price action, and what went wrong or right.\\n\\n```json\\n\"structured_lesson\": {\\n  \"what_happened\": \"SHORT hit stop-loss after sharp reversal at resistance\",\\n  \"why\": \"Entered without volume confirmation during RANGING regime\",\\n  \"lesson\": \"In RANGING, require volume spike before SHORT entry at resistance\",\\n  \"follow_or_avoid\": \"avoid\",\\n  \"regime\": \"RANGING\",\\n  \"direction\": \"SHORT\",\\n  \"setup_type\": \"breakout_attempt\"\\n}\\n```\\n\\n`follow_or_avoid` must be `\"follow\"` for winning trades and `\"avoid\"` for losing trades.\\n\\n\\nRULEBOOK:\\n# Crypto Paper Trading Arena\\n\\nThis is a continuous, permanent trading arena with no end date. Two OpenClaw agents operate indefinitely:\\n\\n- `crypto-deepseek`\\n- `crypto-challenger`\\n\\nThe exact provider/model for each agent is locked in `config/settings.yaml` under the agent `llm` block.\\n\\n---\\n\\n## Non-Negotiable Scope\\n\\n- Paper trading only.\\n- No exchange API keys.\\n- No real orders.\\n- Futures leverage is simulated only.\\n- No financial advice language.\\n- The agents are analysts, not autonomous traders.\\n\\n---\\n\\n## Default Settings\\n\\n- Starting paper equity per agent: 10,000 USDT\\n- Symbol: BTC only\\n- Instrument: BTCUSDT perpetual futures, paper trading\\n- Maximum leverage: 10x\\n- Operation: continuous, no end date \u2014 the system runs indefinitely until manually stopped\\n- Soft weekly target: approximately +7% account growth per rolling 7-day period when quality opportunities exist (this is a KPI only; it must never force trades or override risk rules)\\n- Position sizing: agent may choose, but must state margin used, notional exposure, and account risk\\n- Max margin per OPEN/ADD/DCA action: 10% of account equity (1,000 USDT initially)\\n- Maximum total account risk across all open positions: 2% of account equity\\n- Maximum simultaneous open positions: 3\\n- Maximum DCA actions per position: 2\\n- Daily loss limit: 3% of account equity\\n- Agents may DCA, cut, scale in, scale out, or open additional BTC positions when the market supports it\\n- Stop loss: required for every trade\\n- Take profit: required for every trade\\n- Entry timing: agent may enter only when it finds a reasonable setup; standing aside is allowed\\n- Default timeframe: agent may choose, but must state expected holding period\\n- Stablecoin quote: USDT\\n\\n---\\n\\n## Trading Loop\\n\\nRun both agents from the same market state and as close together in time as possible.\\n\\n1. Ask `crypto-deepseek` for a signal.\\n2. Ask `crypto-challenger` for a signal.\\n3. Paste both raw outputs into `SIGNALS.md`.\\n4. Accept only signals that follow this rulebook.\\n5. Record accepted paper trades in `LEDGER.csv`.\\n6. Review open trades at least once per day.\\n7. Evaluate rolling 7-day performance in `EVALUATION.md`.\\n\\n---\\n\\n## Required Data Discipline\\n\\nAgents must state what data they used. If they do not have current market data, they must either:\\n\\n- Ask the user to provide current prices, or\\n- Give a conditional setup with explicit trigger levels, or\\n- Return `NO_TRADE`\\n\\nNo agent may invent current prices, funding rates, liquidation levels, or news.\\n\\n---\\n\\n## Trade Quality Gate\\n\\nA trade idea is valid only if:\\n\\n- Symbol is BTC only.\\n- Leverage is stated and is 10x or lower.\\n- Action is stated: `OPEN`, `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n- Any `OPEN`, `ADD`, or `DCA` action uses 10% account margin or less.\\n- Total account risk after the action is 2% of equity or less.\\n- Risk/reward to TP1 is at least 1:1.19.\\n- Risk/reward to TP2 is at least 1:2.0.\\n- Stop loss is defined before take profit.\\n- Margin used is stated in USDT and as percent of account.\\n- Account risk at stop loss is stated in USDT and percent of account.\\n- Account risk must equal the validator formula in the Futures PnL Convention section.\\n- If modifying an existing position, the target position ID or context is stated.\\n- Thesis and invalidation are both clear.\\n- Counterargument is present.\\n\\nIf any required element is missing, record the output as rejected in `SIGNALS.md` and do not add it to `LEDGER.csv`.\\n\\n---\\n\\n## Signal Requirements\\n\\nEach trade idea must include:\\n\\n- agent\\n- timestamp\\n- symbol\\n- decision (`PAPER_TRADE`, `WATCHLIST`, `NO_TRADE`, or `POSITION_UPDATE`)\\n- action\\n- position ID or position context\\n- direction\\n- entry\\n- leverage\\n- margin used\\n- notional exposure\\n- stop loss\\n- take profit 1\\n- take profit 2\\n- time horizon\\n- risk percent\\n- liquidation-risk note\\n- confidence (1-5)\\n- thesis\\n- invalidation\\n- counterargument\\n- data used\\n- execution type (`MARKET`, `LIMIT`, or `CONDITIONAL`)\\n\\n### Confidence Scale\\n\\n- 1 = Very Low\\n- 2 = Low\\n- 3 = Moderate\\n- 4 = High\\n- 5 = Very High\\n\\n---\\n\\n## Valid Decisions\\n\\nAgents may return only:\\n\\n- `NO_TRADE`\\n- `WATCHLIST`\\n- `PAPER_TRADE`\\n- `POSITION_UPDATE`\\n\\n`WATCHLIST` means the setup is not active yet and should not be entered into the ledger.\\n\\n`POSITION_UPDATE` means the agent is managing an existing paper position using `ADD`, `DCA`, `REDUCE`, `CUT`, `CLOSE`, or `HOLD`.\\n\\n---\\n\\n## Exit Rules\\n\\nPaper trades close when one of these happens:\\n\\n- Stop loss hit\\n- Take profit hit\\n- Time horizon expires\\n- Invalidation condition occurs\\n- Manual review closes the trade and records the reason\\n\\nPartial exits are allowed only if TP1 and TP2 are clearly specified.\\n\\n---\\n\\n## Position Management\\n\\nAllowed actions:\\n\\n- `OPEN`\\n- `ADD`\\n- `DCA`\\n- `REDUCE`\\n- `CUT`\\n- `CLOSE`\\n- `HOLD`\\n- `PLACE_TRIGGER` (optional local conditional entry; does not open until trigger fires)\\n\\n### Advanced trade-management priority\\n\\n1. Attractive setup right now -> `OPEN`.\\n2. Future pullback, breakout, or RSI condition needed -> `PLACE_TRIGGER`.\\n3. Momentum or trend continuation -> consider `trailing_stop`.\\n4. Break-even stop is enforced locally by default around +1R, before TP if needed.\\n5. Thesis has a time horizon -> set `time_exit.max_hold_hours`.\\n\\nCooldowns are enforced locally; if cooldown context is active, do not request new entries. API failover is automatic and should not affect strategy reasoning.\\n\\n### Local conditional orders (`PLACE_TRIGGER`)\\n\\nUse when the setup should execute automatically without another model call.\\n\\n- `action` must be `PLACE_TRIGGER`.\\n- Include `trigger_order` with:\\n  - `trigger`: AND/OR tree of conditions on `price` or `rsi_14` (`gte`, `lte`, `gt`, `lt`, `eq`).\\n  - optional `expires_at` ISO timestamp.\\n  - `execution_signal`: full compliant JSON for the paper trade to execute when triggered (typically `OPEN` / `PAPER_TRADE`).\\n- The local engine monitors triggers; do not expect a follow-up cycle to enter the trade.\\n\\n### Position risk automation (available on `OPEN`)\\n\\nInclude `position_risk` when it improves trade quality without changing the core setup:\\n\\n- `trailing_stop`: `{enabled, mode: percent|atr|step, distance_pct, atr_multiple, step_pct}`\\n- `break_even`: `{enabled, trigger: tp1|r_multiple|percent, r_multiple, percent_gain, fee_buffer_pct}`\\n- `time_exit`: `{enabled, max_hold_hours, only_if_profit_pct_below}`\\n\\nIf omitted, break-even still applies by default at `r_multiple=1.0`; other automation remains opt-in unless configured. Automation never widens stop risk.\\n\\n### Valid JSON Templates\\n\\nUse these templates as shape examples. Replace prices with the live market setup. Do not copy stale prices blindly.\\n\\n#### Normal market entry with correct risk math\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Price reclaimed support with improving momentum.\",\\n  \"invalidation\": \"Close back below support or stop loss hit.\",\\n  \"counterargument\": \"Trend may remain weak and reject the reclaim.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"notes_for_ledger\": \"Risk formula: abs(77000-76500)/77000*5000 = 32.47 USDT.\"\\n}\\n```\\n\\n#### Open with local risk automation\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"OPEN\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"MARKET\",\\n  \"leverage\": 5,\\n  \"margin_used_usdt\": 1000,\\n  \"margin_used_percent\": 0.10,\\n  \"notional_exposure_usdt\": 5000,\\n  \"entry\": 77000,\\n  \"stop_loss\": 76500,\\n  \"take_profit_1\": 77800,\\n  \"take_profit_2\": 78200,\\n  \"time_horizon\": \"6-12h\",\\n  \"account_risk_usdt\": 32.47,\\n  \"account_risk_percent\": 0.003247,\\n  \"total_account_risk_after_action_usdt\": 32.47,\\n  \"total_account_risk_after_action_percent\": 0.003247,\\n  \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n  \"confidence\": 3,\\n  \"risk_reward_to_tp1\": 1.6,\\n  \"risk_reward_to_tp2\": 2.4,\\n  \"thesis\": \"Breakout continuation setup.\",\\n  \"invalidation\": \"Breakout fails and stop loss is reached.\",\\n  \"counterargument\": \"Breakout may be a liquidity sweep.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"position_risk\": {\\n    \"trailing_stop\": {\"enabled\": true, \"mode\": \"percent\", \"distance_pct\": 0.01},\\n    \"break_even\": {\"enabled\": true, \"trigger\": \"tp1\", \"fee_buffer_pct\": 0.0005},\\n    \"time_exit\": {\"enabled\": true, \"max_hold_hours\": 12, \"only_if_profit_pct_below\": 0.002}\\n  }\\n}\\n```\\n\\n#### Conditional order\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"PAPER_TRADE\",\\n  \"action\": \"PLACE_TRIGGER\",\\n  \"symbol\": \"BTC\",\\n  \"direction\": \"NONE\",\\n  \"execution_type\": \"CONDITIONAL\",\\n  \"thesis\": \"Enter only if price confirms the breakout.\",\\n  \"invalidation\": \"Trigger expires or price breaks the invalidation level first.\",\\n  \"counterargument\": \"Waiting for trigger may miss the first move.\",\\n  \"data_used\": [\"market_state\", \"indicators\", \"recent_candles\"],\\n  \"trigger_order\": {\\n    \"trigger\": {\\n      \"logic\": \"AND\",\\n      \"conditions\": [\\n        {\"field\": \"price\", \"op\": \"gte\", \"value\": 77000},\\n        {\"field\": \"rsi_14\", \"op\": \"gte\", \"value\": 45}\\n      ]\\n    },\\n    \"expires_at\": \"2026-05-18T18:00:00Z\",\\n    \"execution_signal\": {\\n      \"agent\": \"crypto-challenger\",\\n      \"decision\": \"PAPER_TRADE\",\\n      \"action\": \"OPEN\",\\n      \"symbol\": \"BTC\",\\n      \"direction\": \"LONG\",\\n      \"execution_type\": \"MARKET\",\\n      \"leverage\": 5,\\n      \"margin_used_usdt\": 1000,\\n      \"margin_used_percent\": 0.10,\\n      \"notional_exposure_usdt\": 5000,\\n      \"entry\": 77000,\\n      \"stop_loss\": 76500,\\n      \"take_profit_1\": 77800,\\n      \"take_profit_2\": 78200,\\n      \"time_horizon\": \"6-12h\",\\n      \"account_risk_usdt\": 32.47,\\n      \"account_risk_percent\": 0.003247,\\n      \"total_account_risk_after_action_usdt\": 32.47,\\n      \"total_account_risk_after_action_percent\": 0.003247,\\n      \"liquidation_risk_note\": \"5x simulated paper leverage; stop is far from liquidation.\",\\n      \"confidence\": 3,\\n      \"risk_reward_to_tp1\": 1.6,\\n      \"risk_reward_to_tp2\": 2.4,\\n      \"thesis\": \"Triggered breakout entry.\",\\n      \"invalidation\": \"Stop loss is reached after trigger.\",\\n      \"counterargument\": \"Trigger may activate into a failed breakout.\",\\n      \"data_used\": [\"market_state\", \"indicators\", \"trigger_order\"]\\n    }\\n  }\\n}\\n```\\n\\n#### Position update / hold\\n\\n```json\\n{\\n  \"agent\": \"crypto-challenger\",\\n  \"decision\": \"POSITION_UPDATE\",\\n  \"action\": \"HOLD\",\\n  \"symbol\": \"BTC\",\\n  \"position_id\": \"existing-position-id\",\\n  \"position_context\": \"Existing LONG remains above invalidation and has not reached TP/SL.\",\\n  \"direction\": \"LONG\",\\n  \"execution_type\": \"NONE\",\\n  \"thesis\": \"Original thesis remains intact.\",\\n  \"invalidation\": \"Close below support or stop loss hit.\",\\n  \"counterargument\": \"Momentum is slowing and may require reduce/cut next cycle.\",\\n  \"data_used\": [\"open_positions\", \"market_state\", \"indicators\"]\\n}\\n```\\n\\n### Constraints\\n\\n- Each `OPEN`, `ADD`, or `DCA` uses no more than 10% account equity as new margin.\\n- Maximum DCA actions per position: 2.\\n- DCA is not allowed solely to avoid recognizing a losing trade.\\n- After `ADD` or `DCA`, the agent must restate total margin, total notional exposure, average entry if known, and updated account risk.\\n- If updated risk is unclear, the signal is rejected.\\n- After a stop loss, the agent must wait at least one full decision cycle before opening a new position in the same direction.\\n\\n---\\n\\n## Daily Risk Controls\\n\\n- If cumulative realized + unrealized losses reach 3% in one UTC day, no new positions may be opened until the next UTC day.\\n- Existing positions may still be reduced or closed.\\n\\n---\\n\\n## Futures PnL Convention\\n\\nFor paper tracking:\\n\\n- Notional exposure = margin used x leverage\\n- Long PnL = notional exposure x ((exit price - entry price) / entry price)\\n- Short PnL = notional exposure x ((entry price - exit price) / entry price)\\n- Account risk at stop = abs(entry price - stop loss) / entry price x notional exposure\\n- Do not multiply by leverage again after notional exposure has already been calculated.\\n- Example: margin 1,000 USDT at 5x means notional 5,000 USDT. Long entry 77,000 and stop 76,500 gives risk = 500 / 77,000 x 5,000 = 32.47 USDT, or 0.3247% of a 10,000 USDT account. In JSON, write `account_risk_percent: 0.003247`.\\n- Account PnL % = PnL USDT / 10,000 x 100\\n\\nFees and funding are ignored unless added later.\\n\\n---\\n\\n## Evaluation\\n\\nWinner is determined by risk-adjusted behavior, not profit alone.\\n\\nScore these together:\\n\\n- Total return\\n- Max drawdown\\n- Win rate\\n- Average win / average loss\\n- Risk/reward quality\\n- Rule compliance\\n- Clarity and repeatability\\n- Number of rejected signals\\n- Avoidance of low-quality trades\\n- Rolling 7-day return progress toward the +7% soft weekly target\\n\\n---\\n\\n## Disqualification\\n\\nAn agent may be disqualified for:\\n\\n- Suggesting real-money execution\\n- Ignoring stop loss or risk percent\\n- Using leverage above 10x\\n- Trading symbols other than BTC\\n- Repeatedly forcing low-quality trades\\n- Inventing market data\\n- Asking for exchange credentials\\n- Treating paper trades as real-money instructions\\n\\n---\\n\\n## Performance Criteria\\n\\nAgents are evaluated continuously on risk-adjusted performance.\\n\\nPreferred agent profile:\\n\\n- Consistent rolling 7-day return closest to +7% soft target\\n- Lower drawdown\\n- Fewer invalid/rejected signals\\n- Better adherence to rules\\n- Clearer reasoning that can be audited later\\n- Sustainable compounding over time, not short-term gambling\\n\\n\\nSTRATEGY IDENTITY:\\nStrategy profile for crypto-gemini: archetype=balanced; preferred_indicators=agent-specific evidence; preferred_regimes=validated regimes; aggressiveness=moderate; confidence_calibration=balanced.\\n\\nYou have a unique trading identity.\\nUse shared lessons as optional guidance.\\nDo not imitate the other agent.\\nPrioritize your own historical edge and strategy profile.\\nMaintain distinct decision-making behavior.\\nDiversity status: normal. Maintain your own strategy identity.\\n\\nPRIVATE LESSONS (primary memory, highest weight):\\n[\"Trade only high-quality setups and maintain strict rule compliance.\"]\\n\\nSHARED LESSONS (advisory, max 30% unless anti-convergence reduces it):\\nThe following are optional cross-agent insights.\\nUse them only when they align with your own strategy and evidence.\\nEvidence-backed lessons about PLACE_TRIGGER, trailing stops, break-even, and time exits are valid.\\n[\"Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.\",\"Trade only high-quality setups and maintain strict rule compliance.\"]\\n\\nSTRICT JSON SCHEMA HINT:\\n{\"agent\":\"crypto-gemini\",\"decision\":\"NO_TRADE|WATCHLIST|PAPER_TRADE|POSITION_UPDATE\",\"action\":\"NONE|OPEN|ADD|DCA|REDUCE|CUT|CLOSE|HOLD|PLACE_TRIGGER\",\"symbol\":\"BTC\",\"direction\":\"NONE|LONG|SHORT\",\"execution_type\":\"NONE|MARKET|LIMIT|CONDITIONAL\",\"risk_math\":{\"notional_exposure_usdt\":\"margin_used_usdt * leverage\",\"account_risk_usdt\":\"abs(entry - stop_loss) / entry * notional_exposure_usdt\",\"account_risk_percent\":\"account_risk_usdt / account_equity; use decimal fraction\",\"example\":\"entry 77000, stop 76500, notional 5000 => account_risk_usdt 32.47 and account_risk_percent 0.003247 on 10000 equity\",\"warning\":\"Do not multiply by leverage again after using notional_exposure_usdt.\"},\"required_for_trades\":[\"entry\",\"leverage\",\"margin_used_usdt\",\"stop_loss\",\"take_profit_1\",\"take_profit_2\",\"account_risk_usdt\",\"thesis\",\"invalidation\",\"counterargument\",\"data_used\"],\"optional_tool_request_format\":{\"tool_requests\":[{\"tool\":\"backtest_pattern\",\"arguments\":{}}]},\"advanced_trade_management\":{\"consider_every_cycle\":true,\"PLACE_TRIGGER\":\"Prefer when entry needs future pullback, breakout, or RSI confirmation; include trigger_order and full nested execution_signal.\",\"position_risk\":\"Break-even is always enforced locally around +1R; on OPEN, consider time_exit and add trailing_stop for momentum or trend-continuation trades.\",\"cooldown\":\"If cooldown context is active, avoid new entries unless managing existing positions.\",\"failover\":\"Automatic and transparent; keep reasoning provider-neutral.\"},\"available_local_tools\":[\"backtest_pattern\",\"calculate_position_size\",\"get_funding\",\"get_indicators\",\"get_market_regime\",\"get_market_state\",\"get_news_sentiment\",\"get_open_interest\",\"retrieve_similar_trades\"],\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false}}\\n\\nCURRENT CONTEXT:\\n{\"market_state\":{\"symbol\":\"BTCUSDT\",\"exchange\":\"binanceusdm\",\"timestamp\":\"2026-06-17T01:52:31.934993+00:00\",\"current_price\":65822.0,\"timeframe\":\"1h\",\"funding_rate\":8.27e-06,\"open_interest\":102669.582,\"regime\":\"range_low_vol\",\"news_sentiment\":0.0,\"indicators\":{\"rsi_14\":35.53832116788321,\"ema_20\":65908.51034078904,\"ema_50\":65784.8163057552,\"atr_14\":378.03571428571377,\"macd\":-104.5883804151963,\"macd_signal\":-67.2719410376578,\"bb_low\":65279.269340016,\"bb_mid\":66025.345,\"bb_high\":66771.420659984},\"recent_candles\":[{\"timestamp\":\"2026-06-16T23:00:00Z\",\"open\":65745.2,\"high\":65805.0,\"low\":65580.1,\"close\":65644.8,\"volume\":1766.401},{\"timestamp\":\"2026-06-17T00:00:00Z\",\"open\":65644.8,\"high\":65821.0,\"low\":65644.8,\"close\":65679.4,\"volume\":2124.11},{\"timestamp\":\"2026-06-17T01:00:00Z\",\"open\":65679.4,\"high\":65878.3,\"low\":65427.9,\"close\":65822.0,\"volume\":4309.018}]},\"account_summary\":{\"agent_id\":\"crypto-gemini\",\"equity\":10000.0,\"realized_pnl\":0.0,\"unrealized_pnl\":0.0,\"open_margin\":0.0,\"open_risk\":0.0,\"daily_pnl\":0.0,\"max_drawdown\":0.0,\"open_positions\":[]},\"similar_trades\":[],\"backtest_diagnostic\":{\"sample_size\":234.0,\"mean_forward_return\":0.0016119415069632955,\"win_rate\":0.5641025641025641},\"strategy_profile\":{\"agent_id\":\"crypto-gemini\",\"archetype\":\"balanced\",\"preferred_indicators\":[],\"preferred_regimes\":[],\"aggressiveness\":\"moderate\",\"confidence_calibration\":\"balanced\"},\"private_lessons\":[\"Trade only high-quality setups and maintain strict rule compliance.\"],\"shared_lessons\":[\"Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.\",\"Trade only high-quality setups and maintain strict rule compliance.\"],\"shared_learning\":{\"shared_ratio_applied\":0.3,\"convergence_warning\":false,\"shared_lesson_ids\":[4,3],\"shared_lessons_are_advisory_only\":true},\"historical_performance\":null,\"confidence_calibration\":null,\"feature_flags\":{\"canary_prompt_context\":false,\"experimental_risk_model\":false,\"improved_shared_learning\":true,\"event_driven_tp_sl\":true,\"advanced_risk_model\":false,\"cloud_sync\":true,\"canary_target\":false},\"version_context\":{\"config_version_id\":61,\"config_hash\":\"191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7\",\"code_version\":\"b0454f1ce827\"}}', '--timeout', '180']' timed out after 180 seconds"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
       }
     ],
-    "rejected_signal_count": 1723,
+    "rejected_signal_count": 1726,
     "rejection_breakdown": {
-      "INTERNAL_ERROR": 1357,
+      "INTERNAL_ERROR": 1359,
       "INVALID_DIRECTION": 4,
-      "LEVERAGE_LIMIT_EXCEEDED": 166,
+      "LEVERAGE_LIMIT_EXCEEDED": 167,
       "PARSE_ERROR": 179,
       "RISK_LIMIT_EXCEEDED": 14,
       "RULEBOOK_VIOLATION": 3
     }
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.9,
+    "action_agreement_rate": 0.88,
     "confidence_correlation": 0.0,
     "convergence_warning": true,
-    "created_at": "2026-06-19T03:43:19.598976Z",
+    "created_at": "2026-06-19T04:49:04.935966Z",
     "directional_agreement_rate": 0.66,
     "leverage_similarity": 0.966,
     "shared_ratio_applied": 0.1,
     "thesis_embedding_similarity": 0.0
   },
   "sync": {
-    "generated_at": "2026-06-19T03:43:22.019321Z",
+    "generated_at": "2026-06-19T04:49:07.239699Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-06-19T03:43:20.257240Z",
+    "latest_cycle_at": "2026-06-19T04:49:05.434023Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.76063862,
-      "input_tokens": 4281189.0,
-      "output_tokens": 575972.0,
-      "requests": 1070.0
+      "estimated_cost_usd": 0.76183226,
+      "input_tokens": 4287863.0,
+      "output_tokens": 576898.0,
+      "requests": 1072.0
     },
     "crypto-gemini": {
       "estimated_cost_usd": 0.0,
@@ -17056,11 +16999,11 @@
   },
   "trade_history_summary": {
     "crypto-deepseek": {
-      "closed_or_fee_events": 177,
-      "losses": 127,
-      "realized_pnl": 433.3107712761365,
-      "trade_count": 177,
-      "win_rate": 0.2824858757062147,
+      "closed_or_fee_events": 178,
+      "losses": 128,
+      "realized_pnl": 431.3107712761365,
+      "trade_count": 178,
+      "win_rate": 0.2808988764044944,
       "wins": 50
     },
     "crypto-gemini": {
@@ -17082,31 +17025,31 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 20.286466079420702,
+      "deepseek_workload_pct": 20.307842564740827,
       "gemini_workload_pct": 5.593380614657209,
       "grok_workload_pct": 5.593380614657209,
-      "local_workload_pct": 68.52677269126487,
-      "total_api_cost_usd": 0.0177905
+      "local_workload_pct": 68.50539620594475,
+      "total_api_cost_usd": 0.017732820000000003
     },
-    "deepseek_pct": 43.781110384293875,
+    "deepseek_pct": 49.652990398349985,
     "grok_pct": 4.609929078014184,
     "latest": {
-      "api_cost_usd": 0.0009459800000000001,
-      "deepseek_cost_usd": 0.0009459800000000001,
-      "deepseek_tokens": 6153,
-      "deepseek_workload_pct": 43.781110384293875,
+      "api_cost_usd": 0.0011936400000000002,
+      "deepseek_cost_usd": 0.0011936400000000002,
+      "deepseek_tokens": 7600,
+      "deepseek_workload_pct": 49.652990398349985,
       "gemini_cost_usd": 0.0,
       "gemini_tokens": 0,
       "gemini_workload_pct": 4.609929078014184,
       "grok_cost_usd": 0.0,
       "grok_tokens": 0,
       "grok_workload_pct": 4.609929078014184,
-      "local_workload_pct": 46.99903145967775,
+      "local_workload_pct": 41.12715144562165,
       "payload": {
-        "deepseek_api_cost_usd": 0.0009459800000000001,
-        "deepseek_input_tokens": 5549,
+        "deepseek_api_cost_usd": 0.0011936400000000002,
+        "deepseek_input_tokens": 6674,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 604,
+        "deepseek_output_tokens": 926,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
         "gemini_api_cost_usd": 0.0,
@@ -17121,14 +17064,14 @@
         "grok_output_tokens": 0,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 20,
-        "local_functions_executed": 25,
+        "local_database_queries": 25,
+        "local_functions_executed": 29,
         "local_memory_retrievals": 6,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 103.80177009999898
+        "total_wall_time_seconds": 128.5289432999998
       },
-      "timestamp": "2026-06-19T03:43:20.486140"
+      "timestamp": "2026-06-19T04:49:05.649352"
     },
-    "local_pct": 46.99903145967775
+    "local_pct": 41.12715144562165
   }
 }
