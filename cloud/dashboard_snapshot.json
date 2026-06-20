@@ -1,14 +1,14 @@
 {
   "agents": {
     "crypto-deepseek": {
-      "daily_pnl": -13.579691415750125,
-      "equity": 10381.987971393275,
+      "daily_pnl": -5.939709978075625,
+      "equity": 10389.627952830948,
       "open_margin": 1000.0,
       "open_positions": 1,
       "open_risk": 63.880305699866405,
       "realized_pnl": 386.6898612039921,
-      "roi_pct": 3.819879713932751,
-      "unrealized_pnl": -4.701889810717079
+      "roi_pct": 3.8962795283094787,
+      "unrealized_pnl": 2.9380916269574215
     },
     "crypto-gemini": {
       "daily_pnl": 0.0,
@@ -33,13 +33,13 @@
   },
   "api_costs": {
     "by_agent": {
-      "crypto-deepseek": 0.7900085200000001,
+      "crypto-deepseek": 0.79109996,
       "crypto-gemini": 0.0,
       "crypto-qwen": 0.16556436
     },
-    "total": 0.9555728800000001
+    "total": 0.95666432
   },
-  "btc_price": 63552.9,
+  "btc_price": 63650.1,
   "competition": {
     "continuous_mode": true,
     "duration_days": 0,
@@ -47,14 +47,14 @@
     "name": "crypto-paper-trading-arena",
     "start_time": "2026-05-15T17:00:00Z",
     "symbol": "BTCUSDT",
-    "uptime_seconds": 3083172.809542,
+    "uptime_seconds": 3087073.736078,
     "weekly_target_pct": 0.07
   },
   "competition_status": "RUNNING",
   "deployment": {
-    "active_checkpoint_timestamp": "2026-06-20T09:26:10.716095Z",
+    "active_checkpoint_timestamp": "2026-06-20T10:31:13.664557Z",
     "active_versions_file": {
-      "code_version": "7350b4a77c53",
+      "code_version": "10103ab8148d",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -64,7 +64,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-20T08:22:03.956410Z"
+      "updated_at": "2026-06-20T09:26:26.348124Z"
     },
     "canary": {
       "enabled": false,
@@ -85,13 +85,13 @@
       "update_id": "a69d8865636a434bad93bc199be41a32"
     },
     "latest_checkpoint": {
-      "cycle_number": 785,
-      "id": 895,
+      "cycle_number": 786,
+      "id": 896,
       "status": "COMPLETED"
     },
     "pending_updates": [],
     "versions": {
-      "code_version": "7350b4a77c53",
+      "code_version": "10103ab8148d",
       "config_version": "191dbccf7cbb66f9b8b84a4d272c3177d9be4337f2b4abad695fbe209bd2c5f7",
       "rulebook": {
         "hash": "843448d6544895f6b9713e8d2f0fca899846f5204fb4d00fabbc7ddff1faed7f",
@@ -101,7 +101,7 @@
         "hash": "8426a2609d2581bcfb52b92e157dc33b12a4c115504e853072b1211a872ef1cb",
         "path": "prompts\\system_prompt.md"
       },
-      "updated_at": "2026-06-20T09:26:21.859718Z"
+      "updated_at": "2026-06-20T10:31:14.676343Z"
     }
   },
   "downtime": {
@@ -267,7 +267,7 @@
     "crypto-deepseek": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "drawdown": -0.0005,
@@ -1002,24 +1002,24 @@
         "timestamp": "2026-06-20T08:02:43.946294Z"
       },
       {
-        "drawdown": -0.01671483540726897,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "drawdown": -0.01599124755240659,
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ],
     "crypto-gemini": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ],
     "crypto-qwen": [
       {
         "drawdown": 0.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "drawdown": -0.00025,
@@ -1059,7 +1059,7 @@
       },
       {
         "drawdown": -0.005951268191319757,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ]
   },
@@ -1067,7 +1067,7 @@
     "crypto-deepseek": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "equity": 9995.0,
@@ -1802,24 +1802,24 @@
         "timestamp": "2026-06-20T08:02:43.946294Z"
       },
       {
-        "equity": 10381.987971393275,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "equity": 10389.627952830948,
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ],
     "crypto-gemini": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ],
     "crypto-qwen": [
       {
         "equity": 10000.0,
-        "timestamp": "2026-06-20T09:26:19.739041Z"
+        "timestamp": "2026-06-20T10:31:13.018362Z"
       },
       {
         "equity": 9997.5,
@@ -1859,27 +1859,27 @@
       },
       {
         "equity": 9962.434581202931,
-        "timestamp": "2026-06-20T09:26:20.739041Z"
+        "timestamp": "2026-06-20T10:31:14.018362Z"
       }
     ]
   },
-  "generated_at": "2026-06-20T09:26:12.809542Z",
+  "generated_at": "2026-06-20T10:31:13.736078Z",
   "leader": "crypto-deepseek",
   "leaderboard": [
     {
       "agent_id": "crypto-deepseek",
-      "api_cost_usd": 0.7900085200000001,
-      "equity": 10381.987971393275,
+      "api_cost_usd": 0.79109996,
+      "equity": 10389.627952830948,
       "max_drawdown_pct": 0.023179547342175505,
       "profit_factor": 1.3479670831621493,
       "realized_pnl": 386.6898612039921,
-      "rejected_signals": 393,
-      "rule_compliance": 0.31770833333333337,
-      "score": 0.5128058961933183,
+      "rejected_signals": 394,
+      "rule_compliance": 0.317157712305026,
+      "score": 0.5171165377691578,
       "sharpe": 0.09115316748178784,
       "sortino": 0.1439437687535244,
-      "total_return_pct": 0.03819879713932751,
-      "unrealized_pnl": -4.701889810717079,
+      "total_return_pct": 0.038962795283094785,
+      "unrealized_pnl": 2.9380916269574215,
       "win_rate": 0.273224043715847
     },
     {
@@ -1889,9 +1889,9 @@
       "max_drawdown_pct": 0.0,
       "profit_factor": 0.0,
       "realized_pnl": 0.0,
-      "rejected_signals": 670,
-      "rule_compliance": 0.0014903129657227732,
-      "score": 0.2011490312965723,
+      "rejected_signals": 671,
+      "rule_compliance": 0.0014880952380952328,
+      "score": 0.20114880952380954,
       "sharpe": 0.0,
       "sortino": 0.0,
       "total_return_pct": 0.0,
@@ -1905,9 +1905,9 @@
       "max_drawdown_pct": 0.005951268191319939,
       "profit_factor": 0.3955108830105893,
       "realized_pnl": -37.56541879706944,
-      "rejected_signals": 696,
-      "rule_compliance": 0.012765957446808529,
-      "score": 0.189374059362041,
+      "rejected_signals": 697,
+      "rule_compliance": 0.012747875354107596,
+      "score": 0.1893722511527709,
       "sharpe": -0.27692359799556665,
       "sortino": -0.35361922297283216,
       "total_return_pct": -0.003756541879706856,
@@ -1996,7 +1996,7 @@
         "lesson_kind": "avoid",
         "lesson_text": "Pause new SHORT entries for one full cycle after a short stop-loss.",
         "market_regime": "unknown",
-        "rank_score": 0.9646,
+        "rank_score": 0.9643,
         "raw_text": "AUTO_CLOSE SHORT loss: notes=break_even; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2200,7 +2200,7 @@
         "evidence_count": 1297,
         "impact_score": 1.0,
         "is_shared": true,
-        "last_updated": "2026-06-20T09:26:07.429368Z",
+        "last_updated": "2026-06-20T10:31:11.357812Z",
         "lesson_id": "derived-1617951564421861341",
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
@@ -2215,37 +2215,37 @@
             "confidence_score": 0.7125,
             "frequency": 1,
             "impact_score": 0.1667,
-            "timestamp": "2026-06-15T09:26:07.429368+00:00"
+            "timestamp": "2026-06-15T10:31:11.357812+00:00"
           },
           {
             "confidence_score": 0.75,
             "frequency": 2,
             "impact_score": 0.3333,
-            "timestamp": "2026-06-16T09:26:07.429368+00:00"
+            "timestamp": "2026-06-16T10:31:11.357812+00:00"
           },
           {
             "confidence_score": 0.7875,
             "frequency": 3,
             "impact_score": 0.5,
-            "timestamp": "2026-06-17T09:26:07.429368+00:00"
+            "timestamp": "2026-06-17T10:31:11.357812+00:00"
           },
           {
             "confidence_score": 0.825,
             "frequency": 4,
             "impact_score": 0.6667,
-            "timestamp": "2026-06-18T09:26:07.429368+00:00"
+            "timestamp": "2026-06-18T10:31:11.357812+00:00"
           },
           {
             "confidence_score": 0.8625,
             "frequency": 5,
             "impact_score": 0.8333,
-            "timestamp": "2026-06-19T09:26:07.429368+00:00"
+            "timestamp": "2026-06-19T10:31:11.357812+00:00"
           },
           {
             "confidence_score": 0.9,
             "frequency": 6,
             "impact_score": 1.0,
-            "timestamp": "2026-06-20T09:26:07.429368+00:00"
+            "timestamp": "2026-06-20T10:31:11.357812+00:00"
           }
         ],
         "win_rate": 0.13400988810824876
@@ -2331,7 +2331,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.9715,
+        "rank_score": 0.9711,
         "raw_text": "AUTO_CLOSE LONG loss: notes=break_even; fee=2.5000; slippage_bps=2. Treat similar setups as cautionary unless invalidation and risk are improved. Review whether PLACE_TRIGGER, trailing_stop, break_even, or time_exit would have improved management.",
         "sentiment": "avoid",
         "source_type": "derived",
@@ -2403,7 +2403,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "market_regime": "unknown",
-        "rank_score": 0.6038,
+        "rank_score": 0.6037,
         "raw_text": "Repeat only high-quality setups with clear thesis, invalidation, and risk/reward.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2475,7 +2475,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "market_regime": "unknown",
-        "rank_score": 0.6038,
+        "rank_score": 0.6037,
         "raw_text": "Trade only high-quality setups and maintain strict rule compliance.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2547,7 +2547,7 @@
         "lesson_kind": "follow",
         "lesson_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "market_regime": "unknown",
-        "rank_score": 0.6038,
+        "rank_score": 0.6037,
         "raw_text": "Use PLACE_TRIGGER when waiting for pullback confirmation.",
         "sentiment": "follow",
         "source_type": "shared",
@@ -2754,14 +2754,6 @@
   },
   "market": {
     "candles": [
-      {
-        "close": 61350.1,
-        "high": 61426.7,
-        "low": 61113.2,
-        "open": 61303.2,
-        "timestamp": "2026-06-10T10:00:00Z",
-        "volume": 4009.363
-      },
       {
         "close": 61003.1,
         "high": 61406.0,
@@ -4667,30 +4659,38 @@
         "volume": 4745.106
       },
       {
-        "close": 63552.9,
-        "high": 63552.9,
+        "close": 63700.8,
+        "high": 63760.8,
         "low": 63390.3,
         "open": 63390.8,
         "timestamp": "2026-06-20T09:00:00Z",
-        "volume": 1587.474
+        "volume": 3687.354
+      },
+      {
+        "close": 63650.1,
+        "high": 63747.7,
+        "low": 63609.3,
+        "open": 63700.8,
+        "timestamp": "2026-06-20T10:00:00Z",
+        "volume": 1270.454
       }
     ],
-    "current_price": 63552.9,
+    "current_price": 63650.1,
     "indicators": {
-      "atr_14": 260.8642857142851,
-      "bb_high": 63811.89048204491,
-      "bb_low": 62877.829517955106,
-      "bb_mid": 63344.86000000001,
-      "ema_20": 63368.753979591886,
-      "ema_50": 63471.67804734457,
-      "macd": 121.7853224327846,
-      "macd_signal": 90.61156092763969,
-      "rsi_14": 63.43771339381526
+      "atr_14": 262.7642857142845,
+      "bb_high": 63871.11228741147,
+      "bb_low": 62880.92771258852,
+      "bb_mid": 63376.02,
+      "ema_20": 63408.293056352624,
+      "ema_50": 63484.2240638828,
+      "macd": 136.94541046510858,
+      "macd_signal": 101.76606152490073,
+      "rsi_14": 60.640338366202634
     },
     "regime": "range_low_vol",
     "symbol": "BTCUSDT",
     "timeframe": "1h",
-    "timestamp": "2026-06-20T09:24:44.017719Z"
+    "timestamp": "2026-06-20T10:28:50.402975Z"
   },
   "open_positions": [
     {
@@ -4710,7 +4710,7 @@
       "symbol": "BTC",
       "take_profit_1": 64552.0,
       "take_profit_2": 65200.0,
-      "unrealized_pnl": -4.701889810717079
+      "unrealized_pnl": 2.9380916269574215
     }
   ],
   "recent_trades": [
@@ -5775,6 +5775,24 @@
     "recent": [
       {
         "agent_id": "crypto-qwen",
+        "created_at": "2026-06-20T10:31:11.357812Z",
+        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-gemini",
+        "created_at": "2026-06-20T10:31:11.346813Z",
+        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-06-20T10:31:11.338814Z",
+        "raw_text": "Daily review: equity=10389.63, realized_pnl=386.69, unrealized_pnl=2.94. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
+        "summary": "Trade only high-quality setups and maintain strict rule compliance."
+      },
+      {
+        "agent_id": "crypto-qwen",
         "created_at": "2026-06-20T09:26:07.429368Z",
         "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
@@ -5872,24 +5890,6 @@
       {
         "agent_id": "crypto-qwen",
         "created_at": "2026-06-20T05:19:30.835224Z",
-        "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-gemini",
-        "created_at": "2026-06-20T05:19:30.822170Z",
-        "raw_text": "Daily review: equity=10000.00, realized_pnl=0.00, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-20T05:19:30.812449Z",
-        "raw_text": "Daily review: equity=10429.12, realized_pnl=390.57, unrealized_pnl=38.55. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
-        "summary": "Trade only high-quality setups and maintain strict rule compliance."
-      },
-      {
-        "agent_id": "crypto-qwen",
-        "created_at": "2026-06-20T04:12:48.498018Z",
         "raw_text": "Daily review: equity=9962.43, realized_pnl=-37.57, unrealized_pnl=0.00. Keep valid setups only, preserve rule compliance, and note whether conditional entries, profit protection, or stale-trade exits would help.",
         "summary": "Trade only high-quality setups and maintain strict rule compliance."
       }
@@ -6141,9 +6141,51 @@
     "by_agent": {
       "crypto-deepseek": 37,
       "crypto-gemini": 62,
-      "crypto-qwen": 62
+      "crypto-qwen": 61
     },
     "recent": [
+      {
+        "action": "NONE",
+        "agent_id": "crypto-gemini",
+        "agent_name": "Crypto Gemini",
+        "confidence": null,
+        "created_at": "2026-06-20T10:31:11.175762Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "NONE",
+        "agent_id": "crypto-qwen",
+        "agent_name": "Crypto Qwen",
+        "confidence": null,
+        "created_at": "2026-06-20T10:30:53.509155Z",
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "reasons": [
+          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+        ],
+        "rejection_code": "INTERNAL_ERROR"
+      },
+      {
+        "action": "HOLD",
+        "agent_id": "crypto-deepseek",
+        "agent_name": "Crypto DeepSeek",
+        "confidence": null,
+        "created_at": "2026-06-20T10:29:31.072234Z",
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "message": "leverage must be <= 10.0x",
+        "reasons": [
+          "leverage must be <= 10.0x"
+        ],
+        "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+      },
       {
         "action": "NONE",
         "agent_id": "crypto-gemini",
@@ -6451,54 +6493,12 @@
           "leverage must be <= 10.0x"
         ],
         "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-gemini",
-        "agent_name": "Crypto Gemini",
-        "confidence": null,
-        "created_at": "2026-06-20T00:58:07.134178Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-qwen",
-        "agent_name": "Crypto Qwen",
-        "confidence": null,
-        "created_at": "2026-06-20T00:57:53.345270Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "reasons": [
-          "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-        ],
-        "rejection_code": "INTERNAL_ERROR"
-      },
-      {
-        "action": "NONE",
-        "agent_id": "crypto-deepseek",
-        "agent_name": "Crypto DeepSeek",
-        "confidence": null,
-        "created_at": "2026-06-20T00:56:39.651128Z",
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "message": "parse/schema error: 2 validation errors for AgentSignal\nconfidence\n  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=0.6, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.13/v/int_from_float\nstructured_lesson\n  Input should be a valid dictionary or instance of StructuredLessonPayload [type=model_type, input_value='In range_low_vol regimes...hrough within 4-6 bars.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type",
-        "reasons": [
-          "parse/schema error: 2 validation errors for AgentSignal\nconfidence\n  Input should be a valid integer, got a number with a fractional part [type=int_from_float, input_value=0.6, input_type=float]\n    For further information visit https://errors.pydantic.dev/2.13/v/int_from_float\nstructured_lesson\n  Input should be a valid dictionary or instance of StructuredLessonPayload [type=model_type, input_value='In range_low_vol regimes...hrough within 4-6 bars.', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/model_type"
-        ],
-        "rejection_code": "PARSE_ERROR"
       }
     ],
-    "total_recent": 161
+    "total_recent": 160
   },
   "risk_automation": {
-    "active_cooldown_count": 1,
+    "active_cooldown_count": 0,
     "active_models": {
       "crypto-deepseek": {
         "active_model": "deepseek-v4-flash",
@@ -6516,14 +6516,7 @@
         "using_fallback": true
       }
     },
-    "cooldowns": [
-      {
-        "agent_id": "crypto-deepseek",
-        "ends_at": "2026-06-20T09:26:40.192229",
-        "reason": "3 consecutive losses",
-        "started_at": "2026-06-20T08:20:40.192229"
-      }
-    ],
+    "cooldowns": [],
     "failover_events": [
       {
         "agent_id": "crypto-deepseek",
@@ -6627,6 +6620,13 @@
       }
     ],
     "notifications": [
+      {
+        "agent_id": "crypto-deepseek",
+        "created_at": "2026-06-20T10:28:50.434978",
+        "event_type": "COOLDOWN_ENDED",
+        "message": "Cooldown ended: 3 consecutive losses",
+        "severity": "INFO"
+      },
       {
         "agent_id": "crypto-deepseek",
         "created_at": "2026-06-20T08:20:40.198865",
@@ -6969,13 +6969,6 @@
         "event_type": "COOLDOWN_ENDED",
         "message": "Cooldown ended: 3 consecutive losses",
         "severity": "INFO"
-      },
-      {
-        "agent_id": "crypto-deepseek",
-        "created_at": "2026-06-05T03:40:47.120558",
-        "event_type": "COOLDOWN_STARTED",
-        "message": "Cooldown started: 3 consecutive losses; ends at 2026-06-05T04:46:47.115557+00:00",
-        "severity": "WARN"
       }
     ],
     "pending_orders": [],
@@ -9052,49 +9045,49 @@
   },
   "runner": {
     "cycle_interval_seconds": 3600,
-    "cycle_number": 785,
-    "last_cycle_duration_seconds": 87.89332599999943,
-    "last_cycle_started_at": "2026-06-20T09:24:42.596694Z",
-    "next_cycle_at": "2026-06-20T10:26:10.749229Z",
+    "cycle_number": 786,
+    "last_cycle_duration_seconds": 144.0737549000005,
+    "last_cycle_started_at": "2026-06-20T10:28:49.062861Z",
+    "next_cycle_at": "2026-06-20T11:31:13.697070Z",
     "phase": "WAITING",
     "status": "RUNNING",
-    "total_cycles_completed": 785
+    "total_cycles_completed": 786
   },
   "signal_audit_summary": {
-    "acceptance_rate": 0.3185269552012149,
-    "accepted_signal_count": 839,
+    "acceptance_rate": 0.31842304776345715,
+    "accepted_signal_count": 840,
     "latest_accepted_signal": {
       "action": "HOLD",
       "agent_name": "Crypto DeepSeek",
-      "btc_price": 63524.1,
+      "btc_price": 63650.1,
       "confidence": null,
-      "cycle_number": 784,
+      "cycle_number": 786,
       "decision": "POSITION_UPDATE",
       "direction": "LONG",
-      "entry_price": 63612.72,
+      "entry_price": null,
       "execution_result": {
         "action": "HOLD",
         "decision": "POSITION_UPDATE",
         "executed": false,
         "position_id": null
       },
-      "expected_rr": 1.46,
-      "id": 2630,
-      "leverage": 3.0,
+      "expected_rr": null,
+      "id": 2636,
+      "leverage": 1.0,
       "market_regime": "range_low_vol",
       "model_name": "deepseek-v4-flash",
-      "notional_usdt": 5003.6,
-      "raw_snippet": "{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"position_id\":\"crypto-deepseek-b847bfe7ba\",\"position_context\":\"Existing LONG at 63,612.72 is slightly underwater (-6.97 USDT). Price at 63,524.10 remains",
+      "notional_usdt": null,
+      "raw_snippet": "{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"position_id\":\"crypto-deepseek-b847bfe7ba\",\"position_context\":\"Existing LONG at 63612.72, current price 63650.1, unrealized PnL +2.94 USDT. Price is abov",
       "rejection_reason_code": null,
       "rejection_reason_message": null,
-      "risk_pct": 0.0064,
+      "risk_pct": null,
       "signal_status": "ACCEPTED",
-      "stop_loss": 62800.0,
-      "take_profit_1": 64200.0,
-      "take_profit_2": 64800.0,
-      "thesis": "Original LONG thesis remains intact. Price above both EMAs, MACD bullish divergence sustained, funding neutral. The slight pullback over last 3 candles occurred on declining volume (3533 -> 2234), suggesting exhaustion of selling pressure rather than trend reversal. Range_low_vol regime warrants patience while structure holds.",
-      "timestamp_local": "2026-06-20T15:20:40.127532+07:00",
-      "timestamp_utc": "2026-06-20T08:20:40.127532Z",
+      "stop_loss": null,
+      "take_profit_1": null,
+      "take_profit_2": null,
+      "thesis": "Trend-following LONG in range_low_vol regime. Price reclaimed above both EMAs with rising MACD momentum, consistent with prior lesson conditions. Position is slightly in profit; no invalidation signal present.",
+      "timestamp_local": "2026-06-20T17:29:54.066484+07:00",
+      "timestamp_utc": "2026-06-20T10:29:54.066484Z",
       "validation_details": {
         "accepted": true,
         "reasons": [],
@@ -9104,9 +9097,9 @@
     "latest_rejected_signal": {
       "action": "NONE",
       "agent_name": "Crypto Gemini",
-      "btc_price": 63552.9,
+      "btc_price": 63650.1,
       "confidence": null,
-      "cycle_number": 785,
+      "cycle_number": 786,
       "decision": "PARSE_ERROR",
       "direction": null,
       "entry_price": null,
@@ -9117,7 +9110,7 @@
         "reason": "agent_runtime_error"
       },
       "expected_rr": null,
-      "id": 2634,
+      "id": 2638,
       "leverage": null,
       "market_regime": "range_low_vol",
       "model_name": "gemini-3.5-flash",
@@ -9131,8 +9124,8 @@
       "take_profit_1": null,
       "take_profit_2": null,
       "thesis": null,
-      "timestamp_local": "2026-06-20T16:26:05.888482+07:00",
-      "timestamp_utc": "2026-06-20T09:26:05.888482Z",
+      "timestamp_local": "2026-06-20T17:31:11.175762+07:00",
+      "timestamp_utc": "2026-06-20T10:31:11.175762Z",
       "validation_details": {
         "accepted": false,
         "reasons": [
@@ -9142,6 +9135,44 @@
       }
     },
     "recent_accepted_signals": [
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 63650.1,
+        "confidence": null,
+        "cycle_number": 786,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "action": "HOLD",
+          "decision": "POSITION_UPDATE",
+          "executed": false,
+          "position_id": null
+        },
+        "expected_rr": null,
+        "id": 2636,
+        "leverage": 1.0,
+        "market_regime": "range_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "{\"agent\":\"crypto-deepseek\",\"decision\":\"POSITION_UPDATE\",\"action\":\"HOLD\",\"symbol\":\"BTC\",\"position_id\":\"crypto-deepseek-b847bfe7ba\",\"position_context\":\"Existing LONG at 63612.72, current price 63650.1, unrealized PnL +2.94 USDT. Price is abov",
+        "rejection_reason_code": null,
+        "rejection_reason_message": null,
+        "risk_pct": null,
+        "signal_status": "ACCEPTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Trend-following LONG in range_low_vol regime. Price reclaimed above both EMAs with rising MACD momentum, consistent with prior lesson conditions. Position is slightly in profit; no invalidation signal present.",
+        "timestamp_local": "2026-06-20T17:29:54.066484+07:00",
+        "timestamp_utc": "2026-06-20T10:29:54.066484Z",
+        "validation_details": {
+          "accepted": true,
+          "reasons": [],
+          "rejection_code": null
+        }
+      },
       {
         "action": "HOLD",
         "agent_name": "Crypto DeepSeek",
@@ -12885,47 +12916,128 @@
           "reasons": [],
           "rejection_code": null
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto DeepSeek",
-        "btc_price": 64417.1,
-        "confidence": 1.0,
-        "cycle_number": 651,
-        "decision": "NO_TRADE",
-        "direction": "NONE",
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "NO_TRADE",
-          "executed": false,
-          "reason": "non_trade_decision"
-        },
-        "expected_rr": null,
-        "id": 2183,
-        "leverage": null,
-        "market_regime": "uptrend_low_vol",
-        "model_name": "deepseek-v4-flash",
-        "notional_usdt": null,
-        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"NO_TRADE\",\n  \"action\": \"NONE\",\n  \"symbol\": \"BTC\",\n  \"direction\": \"NONE\",\n  \"execution_type\": \"NONE\",\n  \"leverage\": null,\n  \"margin_used_usdt\": null,\n  \"margin_used_percent\": null,\n  \"no",
-        "rejection_reason_code": null,
-        "rejection_reason_message": null,
-        "risk_pct": null,
-        "signal_status": "ACCEPTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": "BTC is in an uptrend_low_vol regime with bullish EMA alignment (price above EMA20/50) and positive MACD. However, RSI at 71.76 is in overbought territory and the last three 1h candles show declining volume (2850\u21922165\u2192432) with tightening ranges. This suggests momentum is slowing near resistance. As a moderate-aggressiveness trend follower, I prefer entries with volume confirmation in breakout/strong_trend regimes. Current conditions do not present an attractive risk-adjusted entry \u2014 a pullback to EMA support (~64,100) or a volume-confirmed breakout above 64,600 would offer better quality.",
-        "timestamp_local": "2026-06-14T07:08:50.703112+07:00",
-        "timestamp_utc": "2026-06-14T00:08:50.703112Z",
-        "validation_details": {
-          "accepted": true,
-          "reasons": [],
-          "rejection_code": null
-        }
       }
     ],
     "recent_rejected_signals": [
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Gemini",
+        "btc_price": 63650.1,
+        "confidence": null,
+        "cycle_number": 786,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 2638,
+        "leverage": null,
+        "market_regime": "range_low_vol",
+        "model_name": "gemini-3.5-flash",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-20T17:31:11.175762+07:00",
+        "timestamp_utc": "2026-06-20T10:31:11.175762Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "NONE",
+        "agent_name": "Crypto Qwen",
+        "btc_price": 63650.1,
+        "confidence": null,
+        "cycle_number": 786,
+        "decision": "PARSE_ERROR",
+        "direction": null,
+        "entry_price": null,
+        "execution_result": {
+          "action": "NONE",
+          "decision": "AGENT_RUNTIME_ERROR",
+          "executed": false,
+          "reason": "agent_runtime_error"
+        },
+        "expected_rr": null,
+        "id": 2637,
+        "leverage": null,
+        "market_regime": "range_low_vol",
+        "model_name": "qwen3-max",
+        "notional_usdt": null,
+        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
+        "rejection_reason_code": "INTERNAL_ERROR",
+        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": null,
+        "timestamp_local": "2026-06-20T17:30:53.508155+07:00",
+        "timestamp_utc": "2026-06-20T10:30:53.508155Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
+          ],
+          "rejection_code": "INTERNAL_ERROR"
+        }
+      },
+      {
+        "action": "HOLD",
+        "agent_name": "Crypto DeepSeek",
+        "btc_price": 63650.1,
+        "confidence": null,
+        "cycle_number": 786,
+        "decision": "POSITION_UPDATE",
+        "direction": "LONG",
+        "entry_price": null,
+        "execution_result": {
+          "executed": false,
+          "position_id": null,
+          "reason": "not evaluated yet"
+        },
+        "expected_rr": null,
+        "id": 2635,
+        "leverage": null,
+        "market_regime": "range_low_vol",
+        "model_name": "deepseek-v4-flash",
+        "notional_usdt": null,
+        "raw_snippet": "```json\n{\n  \"agent\": \"crypto-deepseek\",\n  \"decision\": \"POSITION_UPDATE\",\n  \"action\": \"HOLD\",\n  \"symbol\": \"BTC\",\n  \"position_id\": \"crypto-deepseek-b847bfe7ba\",\n  \"position_context\": \"Existing LONG at 63612.72, current price 63650.1, unrealiz",
+        "rejection_reason_code": "LEVERAGE_LIMIT_EXCEEDED",
+        "rejection_reason_message": "leverage must be <= 10.0x",
+        "risk_pct": null,
+        "signal_status": "REJECTED",
+        "stop_loss": null,
+        "take_profit_1": null,
+        "take_profit_2": null,
+        "thesis": "Trend-following LONG in range_low_vol regime. Price reclaimed above both EMAs with rising MACD momentum, consistent with prior lesson conditions. Position is slightly in profit; no invalidation signal present.",
+        "timestamp_local": "2026-06-20T17:29:31.069233+07:00",
+        "timestamp_utc": "2026-06-20T10:29:31.069233Z",
+        "validation_details": {
+          "accepted": false,
+          "reasons": [
+            "leverage must be <= 10.0x"
+          ],
+          "rejection_code": "LEVERAGE_LIMIT_EXCEEDED"
+        }
+      },
       {
         "action": "NONE",
         "agent_name": "Crypto Gemini",
@@ -16787,164 +16899,44 @@
           ],
           "rejection_code": "INTERNAL_ERROR"
         }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Qwen",
-        "btc_price": 62683.7,
-        "confidence": null,
-        "cycle_number": 746,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2500,
-        "leverage": null,
-        "market_regime": "downtrend_normal_vol",
-        "model_name": "qwen3-max",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-18T23:21:57.825222+07:00",
-        "timestamp_utc": "2026-06-18T16:21:57.825222Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Gemini",
-        "btc_price": 63383.5,
-        "confidence": null,
-        "cycle_number": 745,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2499,
-        "leverage": null,
-        "market_regime": "downtrend_low_vol",
-        "model_name": "gemini-3.5-flash",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-18T22:20:56.320724+07:00",
-        "timestamp_utc": "2026-06-18T15:20:56.320724Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: HTTP 401: Incorrect API key provided. For details, see: https://www.alibabacloud.com/help/en/model-studio/error-code#apikey-error"
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
-      },
-      {
-        "action": "NONE",
-        "agent_name": "Crypto Qwen",
-        "btc_price": 63383.5,
-        "confidence": null,
-        "cycle_number": 745,
-        "decision": "PARSE_ERROR",
-        "direction": null,
-        "entry_price": null,
-        "execution_result": {
-          "action": "NONE",
-          "decision": "AGENT_RUNTIME_ERROR",
-          "executed": false,
-          "reason": "agent_runtime_error"
-        },
-        "expected_rr": null,
-        "id": 2498,
-        "leverage": null,
-        "market_regime": "downtrend_low_vol",
-        "model_name": "qwen3-max",
-        "notional_usdt": null,
-        "raw_snippet": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\age",
-        "rejection_reason_code": "INTERNAL_ERROR",
-        "rejection_reason_message": "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir.",
-        "risk_pct": null,
-        "signal_status": "REJECTED",
-        "stop_loss": null,
-        "take_profit_1": null,
-        "take_profit_2": null,
-        "thesis": null,
-        "timestamp_local": "2026-06-18T22:19:16.314398+07:00",
-        "timestamp_utc": "2026-06-18T15:19:16.314398Z",
-        "validation_details": {
-          "accepted": false,
-          "reasons": [
-            "AGENT_RUNTIME_ERROR: GatewayClientRequestError: FailoverError: No API key found for provider \"qwen\". Auth store: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent\\auth-profiles.json (agentDir: C:\\Users\\Admin\\.openclaw\\agents\\crypto-qwen\\agent). Configure auth for this agent (openclaw agents add <id>) or copy only portable static auth profiles from the main agentDir."
-          ],
-          "rejection_code": "INTERNAL_ERROR"
-        }
       }
     ],
-    "rejected_signal_count": 1795,
+    "rejected_signal_count": 1798,
     "rejection_breakdown": {
-      "INTERNAL_ERROR": 1413,
+      "INTERNAL_ERROR": 1415,
       "INVALID_DIRECTION": 4,
-      "LEVERAGE_LIMIT_EXCEEDED": 177,
+      "LEVERAGE_LIMIT_EXCEEDED": 178,
       "PARSE_ERROR": 184,
       "RISK_LIMIT_EXCEEDED": 14,
       "RULEBOOK_VIOLATION": 3
     }
   },
   "strategy_diversity_metrics": {
-    "action_agreement_rate": 0.42,
+    "action_agreement_rate": 0.4,
     "confidence_correlation": 0.0,
     "convergence_warning": false,
-    "created_at": "2026-06-20T09:26:09.278003Z",
-    "directional_agreement_rate": 0.14,
-    "leverage_similarity": 0.866,
+    "created_at": "2026-06-20T10:31:12.710787Z",
+    "directional_agreement_rate": 0.12,
+    "leverage_similarity": 0.874,
     "shared_ratio_applied": 0.3,
     "thesis_embedding_similarity": 0.0
   },
   "sync": {
-    "generated_at": "2026-06-20T09:26:12.809542Z",
+    "generated_at": "2026-06-20T10:31:13.736078Z",
     "snapshot_path": "cloud/dashboard_snapshot.json",
     "source": "local-sqlite"
   },
   "system_status": {
     "database": "database/arena.db",
-    "latest_cycle_at": "2026-06-20T09:26:10.490020Z",
+    "latest_cycle_at": "2026-06-20T10:31:13.136616Z",
     "local_engine": "ONLINE_AT_EXPORT"
   },
   "token_usage": {
     "crypto-deepseek": {
-      "estimated_cost_usd": 0.7900085200000001,
-      "input_tokens": 4447950.0,
-      "output_tokens": 597484.0,
-      "requests": 1113.0
+      "estimated_cost_usd": 0.79109996,
+      "input_tokens": 4454414.0,
+      "output_tokens": 598150.0,
+      "requests": 1115.0
     },
     "crypto-gemini": {
       "estimated_cost_usd": 0.0,
@@ -16987,31 +16979,31 @@
   },
   "workload": {
     "averages": {
-      "deepseek_workload_pct": 38.31618356432821,
-      "gemini_workload_pct": 4.947990543735224,
-      "grok_workload_pct": 4.947990543735224,
-      "local_workload_pct": 51.78783534820134,
-      "total_api_cost_usd": 0.041192200000000005
+      "deepseek_workload_pct": 39.13664803239249,
+      "gemini_workload_pct": 4.917257683215129,
+      "grok_workload_pct": 4.917257683215129,
+      "local_workload_pct": 51.028836601177254,
+      "total_api_cost_usd": 0.042283640000000004
     },
-    "deepseek_pct": 6.146572104018911,
-    "grok_pct": 6.146572104018911,
+    "deepseek_pct": 47.169795507232806,
+    "grok_pct": 4.609929078014184,
     "latest": {
-      "api_cost_usd": 0.0,
-      "deepseek_cost_usd": 0.0,
-      "deepseek_tokens": 0,
-      "deepseek_workload_pct": 6.146572104018911,
+      "api_cost_usd": 0.0010914400000000002,
+      "deepseek_cost_usd": 0.0010914400000000002,
+      "deepseek_tokens": 7130,
+      "deepseek_workload_pct": 47.169795507232806,
       "gemini_cost_usd": 0.0,
       "gemini_tokens": 0,
-      "gemini_workload_pct": 6.146572104018911,
+      "gemini_workload_pct": 4.609929078014184,
       "grok_cost_usd": 0.0,
       "grok_tokens": 0,
-      "grok_workload_pct": 6.146572104018911,
-      "local_workload_pct": 81.56028368794325,
+      "grok_workload_pct": 4.609929078014184,
+      "local_workload_pct": 43.61034633673883,
       "payload": {
-        "deepseek_api_cost_usd": 0.0,
-        "deepseek_input_tokens": 0,
+        "deepseek_api_cost_usd": 0.0010914400000000002,
+        "deepseek_input_tokens": 6464,
         "deepseek_lessons_generated": 1,
-        "deepseek_output_tokens": 0,
+        "deepseek_output_tokens": 666,
         "deepseek_reflections_generated": 1,
         "deepseek_tool_requests": 0,
         "gemini_api_cost_usd": 0.0,
@@ -17026,14 +17018,14 @@
         "grok_output_tokens": 0,
         "grok_reflections_generated": 1,
         "grok_tool_requests": 0,
-        "local_database_queries": 11,
-        "local_functions_executed": 17,
-        "local_memory_retrievals": 4,
+        "local_database_queries": 25,
+        "local_functions_executed": 29,
+        "local_memory_retrievals": 6,
         "local_tool_calls": 0,
-        "total_wall_time_seconds": 87.89332599999943
+        "total_wall_time_seconds": 144.0737549000005
       },
-      "timestamp": "2026-06-20T09:26:10.739096"
+      "timestamp": "2026-06-20T10:31:13.687070"
     },
-    "local_pct": 81.56028368794325
+    "local_pct": 43.61034633673883
   }
 }
